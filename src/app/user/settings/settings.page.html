@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar color="primary" mode=ios>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()"><ion-icon name="chevron-back-outline"></ion-icon>Back</ion-button>
+    </ion-buttons>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app" *ngIf="user">
+    <div *ngIf="user.name" class="name">
+      <h1>{{ user.name }}</h1>
+    </div>
+    <div class="logout">
+      <ion-button color="warning" (click)="logout()">Log Out &nbsp;&nbsp; <ion-icon name="log-out-outline"></ion-icon></ion-button>
+    </div>
+    <div class="update-user">
+      <div class="title">
+        <h1>
+          {{ ui.changeTitle }}
+        </h1>
+      </div>
+      <div class="body">
+        <div class="username">
+          <ion-item>
+            <ion-label position="floating">Username</ion-label>
+            <ion-input [(ngModel)]="set.username"></ion-input>
+          </ion-item>
+        </div>
+        <div class="name">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input [(ngModel)]="set.name"></ion-input>
+          </ion-item>
+        </div>
+        <div class="phone">
+          <ion-item>
+            <ion-label position="floating">Phone</ion-label>
+            <ion-input [(ngModel)]="set.phone"></ion-input>
+          </ion-item>
+        </div>
+        <ion-button (click)="update()" color="warning">Submit</ion-button>
+      </div>
+    </div>
+    <div class="danger">
+      <div class="title">
+        <h1>Danger Zone</h1>
+      </div>
+      <div class="body">
+        <ion-button color="danger" (click)="danger('password')">Change Password</ion-button>
+        <ion-button color="danger" (click)="danger('remove')">Remove Account</ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

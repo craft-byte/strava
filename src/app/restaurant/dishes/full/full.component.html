@@ -1,0 +1,129 @@
+<div class="app" *ngIf="dish">
+  <div class="top">
+    <div class="back" (click)="back()">
+      <ion-icon name="arrow-back-outline"></ion-icon> DISHES
+    </div>
+    <div class="gap"></div>
+    <div class="edit">
+      <button id="edit" (click)="edit()">Edit</button>
+    </div>
+    <div class="remove">
+      <button id="remove">Remove</button>
+    </div>
+  </div>
+  <div class="details">
+    <div class="title">
+      Details
+    </div>
+    <div class="body">
+      <div class="img ex">
+        Image
+      </div>
+      <div class="nam ex">
+        Name
+      </div>
+      <div class="desc ex">
+        Description
+      </div>
+      <div class="image">
+        <img [src]="image" alt="">
+      </div>
+      <div class="name">
+        {{ dish.name }}
+      </div>
+      <div class="description">
+        {{ dish.description }}
+      </div>
+    </div>
+  </div>
+  <div class="prices">
+    <div class="title">
+      Prices
+    </div>
+    <div class="body">
+      <div class="price-container">
+        <div class="original-price">
+          Original Price: {{ dish.originalPrice }}
+        </div>
+        <div class="price">
+          <div class="self">
+            Current Price: {{ dish.price }}
+          </div>
+          <div *ngIf="dish.originalPrice != dish.price && dish.sale && sale" class="using">
+            Using sale: {{ sale.name }} <br>
+            Expires: {{ saleTo }} <ion-icon name="trash-outline" color="danger" (click)="removeSale()"></ion-icon>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sales">
+        <div class="subtitle">
+          <p>
+            Sales
+          </p>
+          <div class="buttons">
+            <button class="add-button" (click)="addPrice('sale')">Add sale</button>
+          </div>
+        </div>
+        <div class="all">
+          <div class="example">
+            <div class="name">
+              Name
+            </div>
+            <div class="created">
+              Created
+            </div>
+            <div class="cost">
+              Cost
+            </div>
+            <div class="one">
+
+            </div>
+            <div class="two">
+
+            </div>
+          </div>
+          <app-pricesale *ngFor="let i of dish.sales" (Emitter)="onSalesEmit($event)" [data]="i"></app-pricesale>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="goAdd" class="add" (mousedown)="quit()">
+  <div class="body" (mousedown)="$event.stopPropagation()">
+    <div class="left">
+      <div class="title">Add sale</div>
+      <ion-item>
+        <ion-label position="floating">Name</ion-label>
+        <ion-input [(ngModel)]="name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Sale</ion-label>
+        <ion-input [(ngModel)]="cost" type="number"></ion-input>
+      </ion-item>
+    </div>
+    <div class="right">
+      <ion-button color="success" (click)="save()">Save</ion-button>
+    </div>
+  </div>
+</div>
+<div (mousedown)="quit()" *ngIf="goUse" class="use">
+  <div class="body" (mousedown)="$event.stopPropagation()">
+    <div class="title">
+      Set sale on {{ dish.name }}
+    </div>
+    <div class="date">
+      <ion-item>
+        <ion-label position="floating">From Date</ion-label>
+        <ion-datetime mode="ios" [min]="nowDate" max="2023-10-31" [(ngModel)]="from" locale="en-GB"></ion-datetime>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">To Date *</ion-label>
+        <ion-datetime mode="ios" max="2023-10-31" [(ngModel)]="to" locale="en-GB"></ion-datetime>
+      </ion-item>
+    </div>
+    <div class="button">
+      <ion-button color="success" (click)="use()">Use</ion-button>
+    </div>
+  </div>
+</div>

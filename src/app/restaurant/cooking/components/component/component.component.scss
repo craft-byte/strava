@@ -1,0 +1,28 @@
+.app {
+    display: grid;
+    grid-template-columns: 15% 15% 45% 15% 10%;
+    height: 60px;
+    border-bottom: 1px solid var(--border-color);
+    .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .name,.amount,.modified {
+        padding-left: 5px;
+        display: flex;
+        align-items: center;
+        color: rgb(104, 104, 104);
+    }
+    .name {
+        cursor: pointer;
+        &:hover {
+            color: black;
+        }
+    }
+}

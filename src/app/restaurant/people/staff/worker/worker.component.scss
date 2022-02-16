@@ -1,0 +1,26 @@
+.app {
+    display: grid;
+    grid-template-columns: 10% 15% 25% 15% 15% 10%;
+    height: 50px;
+    border-bottom: 1px solid rgb(231, 231, 231);
+    color: rgb(173, 173, 173);
+    .avatar {
+        img {
+            height: 38px;
+            width: 38px;
+            border-radius: 100%;
+        }
+    }
+    div {
+        display: flex;
+        align-items: center;
+    }
+    .buttons {
+        justify-content: end;
+        .more-button {
+            font-size: 24px;
+            cursor: pointer;
+            color: black;
+        }
+    }
+}

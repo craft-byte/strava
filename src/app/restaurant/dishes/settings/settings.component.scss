@@ -1,0 +1,15 @@
+.app {
+    .title {
+        font-size: 20px;
+        font-weight: 600;
+        color: rgb(61, 61, 61);
+        padding-left: 30px;
+        align-items: center;
+    }
+    .all {
+        margin-top: 20px;
+        .one {
+            width: 500px;
+        }
+    }
+}

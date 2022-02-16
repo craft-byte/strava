@@ -1,0 +1,67 @@
+<div (mousedown)="quit({type: ''})" class="remove widnow">
+  <div class="add" *ngIf="windowType == 'add'" (mousedown)="$event.stopPropagation()">
+    <div class="left">
+      <div class="title">Add component</div>
+      <ion-item>
+        <ion-label position="floating">Name</ion-label>
+        <ion-input [(ngModel)]="name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Type</ion-label>
+        <ion-select [(ngModel)]="type" (ionChange)="fullTypeInit()" interface="popover">
+          <ion-select-option value="k">Kilograms</ion-select-option>
+          <ion-select-option value="g">Grams</ion-select-option>
+          <ion-select-option value="p">Pieces</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Amount {{fullType}}s</ion-label>
+        <ion-input [(ngModel)]="amount" type="number"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Price per {{fullType}}</ion-label>
+        <ion-input [(ngModel)]="price" type="number"></ion-input>
+      </ion-item>
+      <div class="help">
+        <a routerLink="help" class="dark-link">Help?</a>
+      </div>
+    </div>
+    <div class="right">
+      <ion-button color="success" (click)="save()">Save</ion-button>
+    </div>
+  </div>
+  <div *ngIf="windowType == 'remove'" class="remove" (mousedown)="$event.stopPropagation()">
+    <div class="title">
+      Are you sure you want to remove {{ component.name }}?
+    </div>
+    <div class="help">
+      <a routerLink="help" class="dark-link">Help?</a>
+    </div>
+    <div class="button">
+      <button class="remove-btn" (click)="remove()">Remove</button>
+    </div>
+  </div>
+  <div class="add" *ngIf="windowType == 'edit'" (mousedown)="$event.stopPropagation()">
+    <div class="left">
+      <div class="title">Edit component</div>
+      <ion-item>
+        <ion-label position="floating">Name</ion-label>
+        <ion-input [(ngModel)]="component.name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Amount {{fullType}}s</ion-label>
+        <ion-input [(ngModel)]="component.amount" type="number"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Price per {{fullType}}</ion-label>
+        <ion-input [(ngModel)]="component.price" type="number"></ion-input>
+      </ion-item>
+      <div class="help">
+        <a routerLink="help" class="dark-link">Help?</a>
+      </div>
+    </div>
+    <div class="right">
+      <ion-button color="success" (click)="edit()">Save</ion-button>
+    </div>
+  </div>
+</div>

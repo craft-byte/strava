@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar color="success" mode=ios>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()"><ion-icon name="chevron-back-outline"></ion-icon>Back</ion-button>
+    </ion-buttons>
+    <ion-title>Staff Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div *ngIf="!restaurant && !form" class="restaurants">
+      <div *ngFor="let r of restaurants" (click)="setRestaurant(r._id)" class="restaurant">
+        {{ r.name }} - {{r.sname}}
+      </div>
+    </div>
+    <div *ngIf="form" class="login">
+      <ion-item *ngIf="!restaurant">
+        <ion-label position="floating">Restaurant</ion-label>
+        <ion-input [(ngModel)]="sname"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Kitchen Password</ion-label>
+        <ion-input [(ngModel)]="password"></ion-input>
+      </ion-item>
+      <ion-button color="success" (click)="login()">Login To Staff</ion-button>
+      <ion-button color="success" (click)="loginToAccount()">Login To Your Account</ion-button>
+    </div>
+    <div *ngIf="restaurant" class="choose cursor-hover">
+      <div class="option" routerLink="/kitchen">
+        <img src="./../../../assets/images/kitchen-logo.png" alt="">
+        <div class="body">
+          <h1>Kitchen</h1>
+        </div>
+      </div>
+      <div class="option cursor-hover" routerLink="/waiter">
+        <img src="./../../../assets/images/waiter-logo.png" alt="">
+        <div class="body">
+          <h1>Waiter</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

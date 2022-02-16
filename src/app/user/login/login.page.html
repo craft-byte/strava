@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <div class="header" type="h1">
+      <p class="title">Log in or sign up</p>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="title">
+      <h1 class="main">Welcome to Ctraba</h1>
+      <h3 class="error-message" *ngIf="msg.length >= 1">{{ msg }}</h3>
+    </div>
+    <div class="login">
+      <div class="inputs">
+        <input class="i top" type="text" placeholder="Username" [(ngModel)]="username" id="username"><br>
+        <input class="i bottom" type="password" placeholder="Password" [(ngModel)]="password" id="password">
+      </div>
+      <small class="small-text">If you don't have account go <a routerLink="/user-create">sign up</a></small><br>
+      <ion-button color="success" id="login-button" (click)="login()">Login</ion-button>
+    </div>
+    <div class="help">
+      <a routerLink="/help" class="dark-link">Need help?</a>
+    </div>
+  </div>
+</ion-content>

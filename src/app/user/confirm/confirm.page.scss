@@ -1,0 +1,40 @@
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    .title {
+        .error-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    }
+    .warning {
+        font-size: 18px;
+        text-align: center;
+        padding: 10px;
+    }
+    .confirm {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        .font-weight-600 {
+            font-weight: 600;
+            margin: 0;
+            font-size: 18px;
+        }
+        .the-label {
+            display: flex;
+            gap: 5px;
+        }
+        .confirm-button {
+            margin-top: 20px;
+        }
+        ion-item {
+            width: 300px;
+        }
+    }
+}

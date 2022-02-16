@@ -1,0 +1,19 @@
+<div class="app" *ngIf="dish" (click)="more()">
+  <div class="image">
+    <img [src]="image" alt="">
+    <div class="time">
+      {{ dish.time }}m
+    </div>
+    <div class="type">
+      {{ type }}
+    </div>
+  </div>
+  <div class="other">
+    <div class="name">
+      {{ dish.name }}
+    </div>
+    <div class="price">
+      {{ dish.price}}$
+    </div>
+  </div>
+</div>

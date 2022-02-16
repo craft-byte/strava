@@ -1,0 +1,16 @@
+<ion-content>
+  <ion-list>
+    <ion-item *ngIf="user">
+      {{ user.username }}
+    </ion-item>
+    <ion-item *ngIf="!user" (click)="signin()">
+      Sign in
+    </ion-item>
+    <ion-item *ngIf="user" (click)="logout()">
+      Log out
+    </ion-item>
+    <ion-item *ngIf="!user" (click)="create()">
+      Create Account
+    </ion-item>
+  </ion-list>
+</ion-content>

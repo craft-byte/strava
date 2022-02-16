@@ -1,0 +1,16 @@
+<div class="app">
+  <div class="nav">
+    <div class="title">
+      Cooking
+    </div>
+    <div class="link" [ngClass]="{ active: page === 'components' }">
+      <a (click)="goOther('components')">Components</a>
+    </div>
+    <!-- <div class="link" [ngClass]="{ active: page === 'settings' }">
+      <a (click)="goOther('settings')">Settings</a>
+    </div> -->
+  </div>
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

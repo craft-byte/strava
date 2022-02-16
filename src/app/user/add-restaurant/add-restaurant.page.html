@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar mode=ios color="warning">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/user-info">
+        <ion-icon name="chevron-back-outline"></ion-icon>Back
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="info()"><ion-icon name="information-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <form [formGroup]="addForm" (ngSubmit)="add()">
+      <div class="title">
+        <p>{{ ui.title }}</p>
+      </div>
+      <ion-item>
+        <ion-label position="floating">Name</ion-label> 
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Short Name</ion-label> 
+        <ion-input formControlName="sname"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Admin Password</ion-label> 
+        <ion-input formControlName="adminPassword"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Kitchen Password</ion-label> 
+        <ion-input formControlName="kitchenPassword"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Payment Methods</ion-label>
+        <ion-select formControlName="payments" multiple="true" cancelText="Exit" okText="Confirm" mode="ios">
+          <ion-select-option *ngFor="let item of types" [value]="item.value">{{item.title}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-button type="submit" color="success">Add</ion-button>
+    </form>
+  </div>
+</ion-content>

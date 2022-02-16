@@ -1,0 +1,35 @@
+<div class="app">
+  <div class="title">
+    <div class="name">
+      Components
+    </div>
+    <div class="search">
+      <ion-searchbar mode="ios" [(ngModel)]="searchText"></ion-searchbar>
+    </div>
+    <div class="buttons">
+      <div class="button">
+        <button id="add-button" (click)="add()"><ion-icon name="add-outline"></ion-icon>Add component</button>
+      </div>
+    </div>
+  </div>
+  <div class="components" *ngIf="restaurant">
+    <div class="example">
+      <div class="name">
+        <p class="name">Name</p>
+      </div>
+      <div class="amount">
+        Amount
+      </div>
+      <div class="gap"></div>
+      <div class="modified">
+        Modified
+      </div>
+      <div class="buttons">
+        
+      </div>
+    </div>
+    <app-component *ngFor="let i of restaurant.components" [data]="i" (Emitter)="onEmited($event)"></app-component>
+  </div>
+</div>
+
+<app-window *ngIf="windowType" (Emitter)="onWindowEmited($event)" [restaurant]="restaurant._id" [windowType]="windowType" [component]="curComponent"></app-window>

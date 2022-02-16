@@ -1,0 +1,50 @@
+.app {
+    .title {
+        display: grid;
+        grid-template-columns: 10% 70% 20%;
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: rgb(61, 61, 61);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .add {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            #add-button {
+                width: 100px;
+                height: 30px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #FFC409;
+                border: 1px solid #FFC409;
+                font-size: 16px;
+                border-radius: 8px;
+                color: black;
+                ion-icon {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+    .content {
+        margin-top: 30px;
+        .all-workers {
+            .example {
+                display: grid;
+                grid-template-columns: 10% 15% 25% 15% 15% 10%;
+                height: 40px;
+                border-bottom: 1px solid rgb(231, 231, 231);
+                color: rgb(173, 173, 173);
+                div {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        }
+    }
+}

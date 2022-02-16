@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+    <ion-title>Payment</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-segment [value]="methods[0]" (ionChange)="segmentChanged($event)">
+    <ion-segment-button *ngFor="let p of methods" [value]="p">
+      <ion-label>
+        {{ convertPayment(p) }}
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <div class="show">
+    <div *ngIf="m === 'card'" class="card">
+      <ion-button color="tertiary" (click)="confirm('card')">Card</ion-button>
+    </div>
+    <div *ngIf="m === 'cash'" class="cash">
+      <ion-button color="success" (click)="confirm('cash')">Cash</ion-button>
+    </div>
+  </div>
+</ion-content>

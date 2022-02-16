@@ -1,0 +1,24 @@
+<div class="app" *ngIf="dish">
+  <div *ngIf="menu" class="menu" [@enterAnimation]>
+    <div  class="top-menu">
+      <div class="icon" (click)="add()"><ion-icon name="add-outline"></ion-icon></div>
+      <div class="title">Add</div>
+    </div>
+    <div class="center" (click)="open()"></div>
+    <div class="bottom-menu">
+      <div class="icon" (click)="remove()"><ion-icon name="remove-outline"></ion-icon></div>
+      <div class="title">Remove</div>
+    </div>
+  </div>
+  <div class="dish" (click)="open()">
+    <div class="quantity">
+      {{ data.quantity }}
+    </div>
+    <div class="name">
+      {{ dish.name }}
+    </div>
+    <div class="price">
+      {{ dish.price }}$
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="app">
+  <div class="name" (click)="more()">
+    {{ data.name }}
+  </div>
+  <div class="amount">
+    {{ data.amount }} {{ fullType }}s
+  </div>
+  <div class="gap">
+
+  </div>
+  <div class="modified">
+    {{ modified }}
+  </div>
+  <div class="buttons">
+    <ion-icon name="ellipsis-vertical" (click)="info($event)"></ion-icon>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .update-user {
+        margin-top: 50px;
+        border: var(--warning-border-color) 1px solid;
+        padding: 20px;
+        border-radius: 15px;
+        width: 300px;
+        .title {
+            width: 100%;
+            height: auto;
+            border-bottom: rgb(248, 181, 56) 1px solid;
+        }
+        .body {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+    }
+    .danger {
+        margin-top: 50px;
+        margin-top: 50px;
+        border: rgb(250, 58, 58) 1px solid;
+        padding: 20px;
+        border-radius: 15px;
+        width: 300px;
+        .title {
+            width: 100%;
+            height: auto;
+            border-bottom: rgb(250, 58, 58) 1px solid;
+        }
+        .body {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+    .logout {
+        margin-top: 50px;
+    }
+}

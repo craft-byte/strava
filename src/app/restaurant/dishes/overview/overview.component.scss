@@ -1,0 +1,64 @@
+.app {
+    .dishes {
+        margin-top: 20px;
+        .example {
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 15% 65% 10% 10%;
+            width: 100%;
+            height: 50px;
+            border-bottom: 1px solid rgb(230, 230, 230);
+            .name-price {
+                padding-left: 10px;
+                display: flex;
+                align-items: center;
+                .name {
+                    margin: 0;
+                    font-size: 18px;
+                    color: rgb(78, 78, 78);
+                }
+            }
+            .date,.buttons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+    .title {
+        display: grid;
+        grid-template-columns: 20% 60% 20%;
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: rgb(61, 61, 61);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            .button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                #add-button {
+                    width: 130px;
+                    height: 30px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: #FFC409;
+                    border: 1px solid #FFC409;
+                    font-size: 16px;
+                    border-radius: 8px;
+                    color: black;
+                    ion-icon {
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+    }
+}

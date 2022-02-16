@@ -1,0 +1,30 @@
+<div class="app">
+  <div class="title">
+    <div class="name">
+      Dishes
+    </div>
+    <div class="search">
+      <ion-searchbar mode="ios" (keyup.enter)="find()" (ionInput)="ionInput($event)"></ion-searchbar>
+    </div>
+    <div class="buttons">
+      <div class="button">
+        <button id="add-button" (click)="addDish()"><ion-icon name="add-outline"></ion-icon>Add dish</button>
+      </div>
+    </div>
+  </div>
+  <div class="dishes">
+    <div class="example">
+      <div class="name-price">
+        <p class="name">Name</p>
+      </div>
+      <div class="gap"></div>
+      <div class="date">
+        Created
+      </div>
+      <div class="buttons">
+        
+      </div>
+    </div>
+    <app-dish *ngFor="let i of dishes" (Emitter)="onDishEmit($event)" [data]="i"></app-dish>
+  </div>
+</div>

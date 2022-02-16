@@ -1,0 +1,37 @@
+<div [attr.class]="class" *ngIf="data" (click)="more()">
+  <!-- [@body]="closed ? 'closed' : 'open'" -->
+  <div class="body" (click)="$event.stopPropagation()">
+    <div class="info" (click)="more()">
+      <div class="title">
+        <div class="settings" (click)="$event.stopPropagation()">
+          <ion-icon (click)="settings()" id="trigger-button" name="ellipsis-vertical-outline"></ion-icon>
+        </div>
+        <p class="self" *ngIf="data.type === 'order'">
+          Order: {{ data.show }}
+        </p>
+        <p class="self" *ngIf="data.type === 'table'">
+          Table: {{ data.show }}
+        </p>
+      </div>
+      <div class="time" *ngIf="data.type === 'order'">
+        <p>Be ready: {{ toTime }}</p>
+      </div>
+      <div *ngIf="data.type === 'table'" class="delay">
+        <p  class="delay-time">{{ hoursDelay }}:{{minutesDelay}} delay!</p>
+      </div>
+      <div class="types">
+        <app-type *ngFor="let i of data.types" [type]="i.n"></app-type>
+      </div>
+      <div class="more" (click)="$event.stopPropagation()">
+        <ion-icon class="self" *ngIf="closed" (click)="more()" name="ellipsis-horizontal-outline"></ion-icon>
+        <ion-icon name="close-outline" *ngIf="!closed" (click)="more()" class="self"></ion-icon>
+      </div>
+    </div>
+    <div class="comment" *ngIf="data.comment.length >= 1">
+      {{ data.comment }}
+    </div>
+    <div class="dishes" (click)="$event.stopPropagation()">
+      <app-dish *ngFor="let i of data.dishes" (Done)="doneDish($event)" (Remove)="removeDish($event)" (Take)="takeDish($event)" [full]="!closed" (SendTypes)="getTypes($event)" [data]="i"></app-dish>
+    </div>
+  </div>
+</div>

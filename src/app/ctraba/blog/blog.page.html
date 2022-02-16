@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-title>Ctraba Blog</ion-title>
+    <ion-buttons mode="ios" slot="end">
+      <ion-button *ngIf="!logged" (click)="login()">Login</ion-button>
+      <ion-avatar *ngIf="logged">
+        <img src="./../../../assets/images/plain-avatar.jpg" alt="">
+      </ion-avatar>
+      <ion-button (click)="goMain()">
+        <ion-icon name="home-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class='app'>
+    <div class="body">
+      <div class="types">
+        <ul>
+          <li>
+            <a class="type" (click)="type('i')">Ctraba Improvements</a>
+          </li>
+          <li>
+            <a class="type" (click)="type('n')">New Features</a>
+          </li>
+          <li>
+            <a class="type" (click)="type('im')">Important</a>
+          </li>
+        </ul>
+      </div>
+      <div class="articles">
+        <div class="article">
+          <div class="date">
+            march 12 2099
+          </div>
+          <div class="title">
+            <h1>Title</h1>
+          </div>
+          <div class="content">
+            <h2>Subtitle</h2>
+            <p>Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text Very Long Text </p>
+            <h2>Subtitle 2</h2>
+            <p>Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! Event longer text! </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

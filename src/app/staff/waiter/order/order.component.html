@@ -1,0 +1,20 @@
+<div class="app" *ngIf="data">
+  <div *ngIf="data.type === 'table'" class="title">
+    <div class="text">
+      Table: {{ data.show }}
+    </div>
+  </div>
+  <div *ngIf="data.type === 'order'" class="title-order">
+    <div class="text">
+      Order: {{ data.show }}
+      <ion-icon name="hourglass-outline"></ion-icon>
+    </div>
+    <div class="function">
+      <ion-button color='success' [disabled]="data.dishesLength > 0" (click)="given()">Given <ion-icon name="checkmark-outline"></ion-icon> </ion-button>
+    </div>
+  </div>
+  <div class="dishes" *ngIf="data.dishes.length > 0">
+    <div class="dishes-title">Dishes</div>
+    <app-dish *ngFor="let dish of data.dishes" [data]="dish" (Done)="done($event)" [type]="data.type"></app-dish>
+  </div>
+</div>

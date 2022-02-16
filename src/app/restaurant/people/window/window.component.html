@@ -1,0 +1,99 @@
+<div class="app" (mousedown)="quit()">
+  <div class="body" (mousedown)="$event.stopPropagation()">
+    <div class="searching" *ngIf="stage == 'searching'">
+      <div class="title">
+        Add worker
+      </div>
+      <div class="search">
+        <ion-searchbar mode="ios" placeholder="Username" [(ngModel)]="searchText" (keyup.enter)="find()"></ion-searchbar>
+      </div>
+      <div class="result">
+        <div *ngIf="found.length == 0" class="help">
+          /\ search
+        </div>
+        <div *ngFor="let i of found" class="user">
+          <div class="avatar">
+            <img [src]="i.img || './../../../../assets/images/plain-avatar.jpg'">
+          </div>
+          <div class="name">
+            {{ i.username }}
+          </div>
+          <div class="gap"></div>
+          <div class="add">
+            <button class="add-button" (click)="add(i)">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="then" *ngIf="stage == 'then' && user">
+      <div class="title">
+        <div class="back">
+          <div class="button" (click)="toSearching()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            BACK
+          </div>
+        </div>
+        <div class="add">
+          <button class="add-button" (click)="invite()">Invite</button>
+        </div>
+      </div>
+      <div class="user">
+        <div class="avatar">
+          <img [src]="user.avatar || './../../../../assets/images/plain-avatar.jpg'" alt="">
+        </div>
+        <div class="name">
+          {{ user.name }}
+        </div>
+        <div class="username">
+          {{ user.username }}
+        </div>
+        <div class="feedbacks">
+          no feedbacks
+        </div>
+      </div>
+    </div>
+    <div class="invite" *ngIf="stage == 'inviting'">
+      <div class="title">Invite {{ user.username }}</div>
+      <div class="role">
+        <ion-item>
+          <ion-label>Role</ion-label>
+          <ion-select [(ngModel)]="newWorker.role" interface="popover" mode="ios">
+            <ion-select-option value="manager">Manager</ion-select-option>
+            <ion-select-option value="cook">Cook</ion-select-option>
+            <ion-select-option value="waiter">Waiter</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+      <div *ngIf="newWorker.role == 'manager'" class="more">
+        <div class="title">
+          Customize
+        </div>
+        <ion-item>
+          <ion-label>Editing and adding dishes</ion-label>
+          <ion-toggle mode="ios" [(ngModel)]="settings.dishes" color="warning"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Removing dishes</ion-label>
+          <ion-toggle [(ngModel)]="settings.removingDishes" mode="ios" color="warning"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Editing components</ion-label>
+          <ion-toggle [(ngModel)]="settings.editingComponents" mode="ios" color="warning"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Staff management</ion-label>
+          <ion-toggle mode="ios" color="warning" [(ngModel)]="settings.staff"></ion-toggle>
+        </ion-item>
+        <div class="staff-more" *ngIf="settings.staff">
+          <ion-item>
+            <ion-label>Removing staff</ion-label>
+            <ion-toggle mode="ios" color="warning" [(ngModel)]="settings.staffRemoving"></ion-toggle>
+          </ion-item>
+        </div>
+      </div>
+      <div class="submit-button">
+        <button class="add-button" (click)="submit()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Kitchen</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <div class="app">
+    <app-order *ngFor="let order of orders" [data]="order"></app-order>
+  </div>
+  <app-info></app-info>
+  <div class="bottom"></div>
+</ion-content>

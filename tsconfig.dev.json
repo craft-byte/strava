@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+        "outDir": "dev"
+    },
+    "files": ["src/index.ts"]
+}

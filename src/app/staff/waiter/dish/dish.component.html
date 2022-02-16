@@ -1,0 +1,12 @@
+<div class="app" *ngIf="dish">
+  <div class="name">
+    {{ dish.name }}
+  </div>
+  <div class="functions">
+    <ion-icon name="information-outline" (click)="info()" color="primary"></ion-icon>
+    <ion-icon name="checkmark-outline" *ngIf="type === 'table'" color="success" (click)="done()"></ion-icon>
+  </div>
+</div>
+<div *ngIf="image" (click)="close()" class="image">
+  <img [src]="image" alt="">
+</div>

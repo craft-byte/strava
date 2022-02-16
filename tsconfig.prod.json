@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+        "outDir": "www"
+    },
+    "files": ["src/index.ts"]
+}

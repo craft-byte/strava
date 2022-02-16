@@ -1,0 +1,87 @@
+
+.card-button-more {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    border: #5260FF 2px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #5260FF;
+    font-size: 32px;
+    background: #5261ff00;
+    margin: 0;
+    &:hover {
+      background: #5261ff08;
+    }
+}
+.card-button-add {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border: #2DD36F 2px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2DD36F;
+    font-size: 32px;
+    background: #2dd36f00;
+    margin: 0;
+    &:hover {
+      background: #2dd36f08;
+    }
+}
+.card-button-analytics {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    border: #9d52ff 2px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #9d52ff;
+    font-size: 32px;
+    background: #9d52ff00;
+    margin: 0;
+    &:hover {
+      background: #9d52ff08;
+    }
+}
+  
+.payment-modal {
+    .modal-wrapper {
+        position: absolute;
+        bottom: 0;
+        min-height: initial;
+        top: initial;
+        height: 400px;
+    }
+}
+
+.light-black {
+    color: var(--text-color);
+}
+  
+.cursor-hover {
+    cursor: pointer;
+}
+
+
+
+
+.header[type=h1] {
+    display: flex;
+    justify-content: center;
+    .title {
+        font-size: 24px;
+        margin: 10px;
+        font-weight: 550;
+    }
+}
+.dark-link {
+    color: rgb(36, 34, 34);
+    font-weight: 600;
+    font-size: 14px;
+}

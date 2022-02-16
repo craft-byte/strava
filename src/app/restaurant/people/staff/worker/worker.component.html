@@ -1,0 +1,20 @@
+<div class="app" *ngIf="user">
+  <div class="avatar">
+    <img [src]="image || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+  </div>
+  <div class="name">
+    {{ name }}
+  </div>
+  <div class="gap">
+
+  </div>
+  <div class="role">
+    {{ data.role }}
+  </div>
+  <div class="joined">
+    {{ data.joined }}
+  </div>
+  <div class="buttons">
+    <ion-icon name="ellipsis-vertical" (click)="more($event)" class="more-button"></ion-icon>
+  </div>
+</div>

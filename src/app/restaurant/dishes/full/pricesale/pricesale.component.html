@@ -1,0 +1,17 @@
+<div class="app">
+  <div class="name">
+    {{ data.name }}
+  </div>
+  <div class="created">
+    {{ date }}
+  </div>
+  <div class="cost">
+    {{ data.cost }}
+  </div>
+  <div class="use">
+    <button class="use-btn" (click)="use()">Use</button>
+  </div>
+  <div class="remove">
+    <button class="remove-btn" (click)="remove()"><ion-icon name="trash-outline"></ion-icon></button>
+  </div>
+</div>

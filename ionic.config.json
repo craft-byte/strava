@@ -1,0 +1,7 @@
+{
+  "name": "ctraba",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

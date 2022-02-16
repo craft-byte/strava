@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ ui.title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app" *ngIf="user">
+    <img [src]="user.avatar || './../../../../assets/images/plain-avatar.jpg'" class="avatar" alt="user-avatar">
+    <div class="title">
+      <h1>
+        {{ user.username }}
+      </h1>
+    </div>
+    <div class="invitation" *ngIf="restaurant">
+      <div *ngIf="!hasNotBeenInvited" class="invite">
+        <ion-button (click)="invite()" color="success" expand="block" *ngIf="restaurant">invite to {{ restaurant.name }}</ion-button>
+      </div>
+      <div class="invited" *ngIf="hasNotBeenInvited">
+        <ion-button (click)="goStaff()" color="success" expand="block" fill=outline>Invited <ion-icon name="checkmark-outline"></ion-icon></ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,35 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .title {
+        display: flex;
+        justify-content: center;
+    }
+    .dishes {
+        width: 100%;
+        margin-top: 50px;
+        margin-bottom: 70px;
+        .no-dishes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        } 
+    }
+    .total {
+        margin: 10px;
+    }
+}
+
+
+#time-picker {
+    width: 250px;
+}
+
+#border {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: var(--border-color) 1px solid;
+    border-radius: 10px;
+}

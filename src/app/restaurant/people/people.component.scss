@@ -1,0 +1,47 @@
+.app {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    gap: 50px;
+    .nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 60px;
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgb(85, 85, 85);
+            margin-bottom: 10px;
+        }
+        .active {
+            border-left: 3px solid #FFC409 !important;
+            padding-left: 10px;
+            font-size: 18px;
+            a {
+                color: rgb(78, 78, 78) !important;
+            }
+        }
+        .link {
+            width: 100px;
+            height: 25px;
+            margin-top: 7px;
+            border-left: rgb(187, 187, 187) 1px solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            a {
+                color: rgb(126, 126, 126);
+            }
+            &:hover {
+                border-left: #FFC409 1px solid;
+                a {
+                    color: black;
+                }
+            }
+        }
+    }
+    .content {
+        padding-top: 30px;
+    }
+}

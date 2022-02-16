@@ -1,0 +1,38 @@
+.app {
+    width: 335px;
+    margin-top: 10px;
+    height: 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background-color: white;
+    display: grid;
+    grid-template-columns: 70% 30%;
+    .name,.funcitons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .functions {
+        font-size: 24px;
+        ion-icon {
+            margin: 0;
+            margin-left: 10px;
+        }
+    }
+}
+.image {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.411);
+    img {
+        width: 350px;
+        height: auto;
+    }
+}

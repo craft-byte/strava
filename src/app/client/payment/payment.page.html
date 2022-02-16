@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Payment</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="title">
+      <h2>Dishes</h2>
+    </div>
+    <div class="dishes">
+      <app-dish *ngFor="let dish of dishes" [data]="dish"></app-dish>
+      <div class="no-dishes" *ngIf="dishes.length == 0">
+        No dishes selected!
+      </div>
+    </div>
+    <div *ngIf="type == 'order'" class="time">
+      <ion-item id="time-picker">
+        <ion-label position="floating">Time</ion-label>
+        <ion-datetime [pickerOptions]="forTime" type="ios" displayFormat="HH:mm"></ion-datetime>
+      </ion-item>
+    </div>
+    <div class="comment">
+      <ion-item id="border">
+        <ion-label position="floating">Add comment</ion-label>
+        <ion-textarea rows="7" cols="27" [(ngModel)]="comment"></ion-textarea>
+      </ion-item>
+    </div>
+    <div class="total light-black">
+      Total {{ service.totalPrice }}$
+    </div>
+    <div class="order">
+      <ion-button color="success" [disabled]="dishes.length === 0" (click)="showModal()">Confirm</ion-button>
+    </div>
+  </div>
+</ion-content>
