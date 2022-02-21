@@ -1,5 +1,6 @@
 import { ObjectId } from "bson";
 import { randomBytes, scryptSync } from "crypto";
+import { stdout } from "process";
 
 function makePassword(password: string) {
     const salt = randomBytes(32).toString("hex");
@@ -28,8 +29,21 @@ function id(str: string) {
     return new ObjectId(str);
 }
 
+function log(...ar: any[]) {
+    const date = new Date();
+    let result = `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] -> `;
+
+    for(let i of ar) {
+        result = result + " " + i;
+    }
+
+    result += "\n";
+    stdout.write(result);
+}
+
 export {
     makePassword,
     compare,
-    id
+    id,
+    log
 }

@@ -13,7 +13,7 @@ export class MoreComponent implements OnInit {
   restaurant: Restaurant;
   component: C;
   fullType: string;
-  windowType: string;
+  windowType: "edit" | "remove" | "add" = null;
 
   constructor(
     private route: ActivatedRoute,

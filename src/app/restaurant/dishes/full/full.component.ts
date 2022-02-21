@@ -27,7 +27,7 @@ export class FullComponent implements OnInit {
   to: Date = null;
   nowDate: string;
   saleTo: string;
-  sale: { _id: string; };
+  sale: { _id: string; name: string; };
 
   constructor(
     private service: RadminService,

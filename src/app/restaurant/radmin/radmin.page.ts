@@ -37,7 +37,7 @@ export class RadminPage implements OnInit {
     this.router.navigate([`${s === 1 ? "user-info" : "add-restaurant"}`], { replaceUrl: true });
   }
 
-  async go(p: "home" | "customers" | "cooking" | "dishes") {
+  async go(p: "home" | "people" | "cooking" | "dishes") {
     this.loading = true;
     this.page = p;
     this.router.navigate(["radmin", p], { queryParamsHandling: "preserve" })

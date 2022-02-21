@@ -22,7 +22,8 @@ const routes: Routes = [
   },
   {
     path: 'user-info',
-    loadChildren: () => import('./user/user-info/user-info.module').then( m => m.UserInfoPageModule)
+    loadChildren: () => import('./user/user-info/user-info.module').then( m => m.UserInfoPageModule),
+    canActivate: [LoginGuard]
   },
   {
     path: "login",

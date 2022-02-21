@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MoreComponent } from './more.component';
 import { ShareModule } from '../share.module';
+import { IonicModule } from '@ionic/angular';
 
 
 
@@ -13,6 +14,7 @@ import { ShareModule } from '../share.module';
   imports: [
     CommonModule,
     ShareModule,
+    IonicModule,
     RouterModule.forChild([
       {
         path: "",

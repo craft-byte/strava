@@ -76,9 +76,6 @@ export class UserInfoPage implements OnInit {
     }
   }
   async ngOnInit() {
-    if(!await this.main.login(true)) {
-      return;
-    };
     this.ui.show = true;
     this.getRestaurants();
     this.getInvitations()

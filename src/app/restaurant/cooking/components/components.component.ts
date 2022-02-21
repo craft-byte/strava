@@ -13,7 +13,7 @@ export class ComponentsComponent implements OnInit {
   restaurant: Restaurant;
   searchText: string = null;
 
-  windowType: string = null;
+  windowType: "edit" | "remove" | "add" = null;
   curComponent: C;
 
   constructor(

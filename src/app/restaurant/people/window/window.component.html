@@ -2,15 +2,12 @@
   <div class="body" (mousedown)="$event.stopPropagation()">
     <div class="searching" *ngIf="stage == 'searching'">
       <div class="title">
-        Add worker
+        {{ui.searchTitle}}
       </div>
       <div class="search">
         <ion-searchbar mode="ios" placeholder="Username" [(ngModel)]="searchText" (keyup.enter)="find()"></ion-searchbar>
       </div>
       <div class="result">
-        <div *ngIf="found.length == 0" class="help">
-          /\ search
-        </div>
         <div *ngFor="let i of found" class="user">
           <div class="avatar">
             <img [src]="i.img || './../../../../assets/images/plain-avatar.jpg'">

@@ -4,7 +4,7 @@
     <div class="info" (click)="more()">
       <div class="title">
         <div class="settings" (click)="$event.stopPropagation()">
-          <ion-icon (click)="settings()" id="trigger-button" name="ellipsis-vertical-outline"></ion-icon>
+          <ion-icon (click)="settings($event)" id="trigger-button" name="ellipsis-vertical-outline"></ion-icon>
         </div>
         <p class="self" *ngIf="data.type === 'order'">
           Order: {{ data.show }}

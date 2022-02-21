@@ -4,6 +4,7 @@ interface Dish {
     name?: string;
     price?: number;
     time?: number;
+    created?: Date;
     description?: string;
     types?: string[];
     categories?: string[];

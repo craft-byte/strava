@@ -18,12 +18,10 @@ export class RidGuard implements CanActivate {
     route: ActivatedRouteSnapshot
   ): Promise<boolean | UrlTree> {
     const restaurant = route.queryParamMap.get("restaurant");
-    console.log("RID ", restaurant);
     if(!restaurant || restaurant.length !== 24) {
       if((this.main.userInfo && this.main.userInfo.restaurants.length > 0) || !await this.main.login(true)) {
         return this.router.navigate(['radmin'], { queryParams: { restaurant: this.main.userInfo.restaurants[0] } })
       } else {
-        console.log("USER INFO");
         return this.router.navigate(["user-info"]);
       }
     } else if(this.main.userInfo && !this.main.isOwner(restaurant)) {

@@ -1,8 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { RadminService } from 'src/app/restaurant/radmin.service';
 import { getImage } from 'src/functions';
 import { Worker } from 'src/models/radmin';
 import { User } from 'src/models/user';
+
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
 
 @Component({
   selector: 'app-worker',
@@ -16,13 +22,27 @@ export class WorkerComponent implements OnInit {
   image: string;
   name: string;
 
+  date: string;
+
   constructor(
-    private service: RadminService
+    private service: RadminService,
+    private router: Router
   ) { };
 
 
   @Input() data: Worker;
   @Output() Emitter = new EventEmitter();
+
+  getDate() {
+    const d = new Date(this.data.joined);
+    const month = monthNames[d.getMonth()];
+
+    this.date = `${d.getDate()} ${month}`;
+  }
+
+  go() {
+    this.router.navigate(["radmin/people/staff/more", this.user._id], { queryParamsHandling: "preserve" });
+  }
 
   more(btn: any) {
     this.Emitter.emit({ type: "more", data: {btn, user: this.data._id} });
@@ -38,6 +58,7 @@ export class WorkerComponent implements OnInit {
     } else {
       this.name = this.user.username;
     }
+    this.getDate();
   }
 
 }

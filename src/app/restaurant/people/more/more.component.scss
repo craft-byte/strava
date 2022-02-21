@@ -1,0 +1,129 @@
+.app {
+    .top {
+        display: grid;
+        grid-template-columns: 20% 70% 10%;
+        .back {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: rgb(155, 155, 155);
+            transition: .4s all;
+            font-size: 18px;
+            ion-icon {
+                font-size: 22px;
+            }
+            &:hover {
+                color: rgb(100, 100, 100);
+            }
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .settings {
+                height: 28px;
+                width: 100px;
+                border: 1px solid ;
+                border-radius: 7px;
+                background: none;
+                background-color: #ffc40907;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #ffc409;
+                &:hover {
+                    color: white;
+                    background-color: #ffc409;
+                }
+            }
+        }
+    }
+    .content {
+        margin-top: 30px;
+        .details {
+            .top {
+                width: 150px;
+                display: flex;
+                border-bottom: 1px solid rgb(212, 212, 212);
+                padding-bottom: 10px;
+                width: 100%;
+                .name-container {
+                    margin-left: 10px;
+                    .username {
+                        font-size: 20px;
+                        color: rgb(90, 90, 90);
+                    }
+                    display: flex;
+                    align-items: center;
+                }
+                .full-name {
+                    .name {
+                        font-size: 20px;
+                        color: rgb(90, 90, 90);
+                    }
+                    .username {
+                        font-size: 17px;
+                        color: rgb(161, 161, 161);
+                    }
+                }
+                .avatar {
+                    width: 64px;
+                    height: 64px;
+                    img {
+                        border-radius: 100%;
+                    }
+                }
+            }
+            .bottom {
+                padding-top: 15px;
+                padding-bottom: 15px;
+                display: flex;
+                .role {
+                    width: 160px;
+                    border-right: 1px solid rgb(212, 212, 212);
+                    padding-left: 20px;
+                    height: 60px;
+                    display: flex;
+                    align-items: center;
+                }
+                .joined {
+                    padding-left: 20px;
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        }
+        .worker {
+            margin-top: 40px;
+            .title {
+                width: 100%;
+                border-bottom: 1px solid rgb(212, 212, 212);
+                .name {
+                    font-size: 20px;
+                    color: rgb(88, 88, 88);
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    height: 60px;
+                }
+            }
+            .content {
+                .manager {
+                    user-select: none;
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none;
+                    -khtml-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    cursor: pointer;
+                    .one {
+                        color:rgb(179, 179, 179);
+                    }
+                    .active {
+                        color: rgb(90, 90, 90);
+                    }
+                }
+            }
+        }
+    }
+}

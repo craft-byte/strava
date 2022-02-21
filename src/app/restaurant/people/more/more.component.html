@@ -1,26 +1,67 @@
 <div class="app">
-  <div class="title">
-    <div class="back"><ion-icon name="arrow-back"></ion-icon>BACK</div>
+  <div class="top">
+    <div class="back" (click)="back()">
+      <ion-icon name="arrow-back"></ion-icon>BACK
+    </div>
     <div class="gap"></div>
     <div class="buttons">
-      <button class="settings" (click)="settings()">Settings</button>
+      <button class="settings" (click)="goSettings()">Settings</button>
     </div>
   </div>
   <div class="content" *ngIf="user">
-    <div class="avatar">
-
+    <div class="details">
+      <div class="top">
+        <div class="avatar">
+          <img [src]="image" alt="">
+        </div>
+        <div class="name-container" [ngClass]="{ 'full-name': !!user.name }">
+          <div class="name" *ngIf="user.name">
+            {{ user.name }}
+          </div>
+          <div class="username">
+            {{ user.username }}
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="role">
+          Role: {{ role }}
+        </div>
+        <div class="joined">
+          Joined: {{ joined }}
+        </div>
+      </div>
     </div>
-    <div class="name">
-
-    </div>
-    <div class="role">
-
-    </div>
-    <div class="joined">
-
-    </div>
-    <div class="history">
-
+    <div class="worker" *ngIf="restaurant">
+      <div class="title">
+        <div id="worker" class="name">
+          {{ restaurant.name }} Worker
+        </div>
+      </div>
+      <div class="content">
+        <span title="Settings">
+          <div *ngIf="worker.role == 'manager'" (click)="goSettings()" class="manager">
+            <div [ngClass]="{ 'active': worker.settings.dishes }" class="one">
+              Dishes management
+            </div>
+            <div [ngClass]="{ 'active': worker.settings.removingDishes }" class="one">
+              Removing dishes
+            </div>
+            <div [ngClass]="{ 'active': worker.settings.editingComponents }" class="one">
+              Components management
+            </div>
+            <div [ngClass]="{ 'active': worker.settings.staff }" class="one">
+              Staff management
+            </div>
+            <div [ngClass]="{ 'active': worker.settings.removingStaff }" class="one">
+              Staff removing
+            </div>
+          </div>
+        </span>
+      </div>
     </div>
   </div>
 </div>
+
+<app-settings-window (Emitter)="onSettingsWindowEmit($event)" [workerId]="user._id" [type]="worker.role"
+  [settings]="worker.settings" *ngIf="settingsWindow"></app-settings-window>

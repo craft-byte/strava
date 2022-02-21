@@ -16,7 +16,7 @@ export class StaffComponent implements OnInit {
 
   staff: Worker[] = [];
 
-  windowType: string = null;
+  windowType: "remove" | "add" = null;
 
   constructor(
     private service: RadminService,

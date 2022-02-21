@@ -1,4 +1,4 @@
-<div class="app" *ngIf="user">
+<div class="app" *ngIf="user" (click)="go()">
   <div class="avatar">
     <img [src]="image || './../../../../../assets/images/plain-avatar.jpg'" alt="">
   </div>
@@ -12,9 +12,9 @@
     {{ data.role }}
   </div>
   <div class="joined">
-    {{ data.joined }}
+    {{ date }}
   </div>
-  <div class="buttons">
+  <div class="buttons" (click)="$event.stopPropagation()">
     <ion-icon name="ellipsis-vertical" (click)="more($event)" class="more-button"></ion-icon>
   </div>
 </div>

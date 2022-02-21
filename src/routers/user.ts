@@ -138,7 +138,7 @@ router.post("/addRestaurant", async (req, res) => {
         staffPassword: ns,
         adminPassword: na,
         owner: new ObjectId(_id),
-        staff: [{ _id: new ObjectId(_id), role: "admin" }],
+        staff: [{ _id: new ObjectId(_id), role: "admin", joined: new Date() }],
         created: new Date(),
         categories: [],
         tables: [],
@@ -480,5 +480,6 @@ router.patch("/confirm/:t", async (req, res) => {
 });
 
 export {
-    router as UserRouter
+    router as UserRouter,
+    session
 }

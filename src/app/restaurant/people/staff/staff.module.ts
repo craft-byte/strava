@@ -5,6 +5,7 @@ import { StaffComponent } from './staff.component';
 import { WindowModule } from '../window.module';
 import { WorkerComponent } from './worker/worker.component';
 import { MoreComponent } from './more/more.component';
+import { IonicModule } from '@ionic/angular';
 
 
 
@@ -16,6 +17,7 @@ import { MoreComponent } from './more/more.component';
   ],
   imports: [
     CommonModule,
+    IonicModule,
     WindowModule,
     RouterModule.forChild([
       {

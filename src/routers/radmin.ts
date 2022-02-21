@@ -4,7 +4,9 @@ import { db } from "./../environments/server";
 import { client, upload } from "../index";
 import { StatisticsRouter } from "./statistics";
 import { readFileSync, unlinkSync } from "fs";
-import { id } from "./functions";
+import { id, log } from "./functions";
+import { logged } from "../middleware/user";
+import { sname } from "../middleware/restaurant";
 
 const router = Router();
 
@@ -117,7 +119,7 @@ router.get("/dishes/:time/:sname", async (req, res) => {
 
     res.send(result);
 });
-router.post("/addDish/:restaurant", async (req, res) => {
+router.post("/addDish/:restaurant", logged, sname, async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
             console.log(err);
@@ -450,8 +452,6 @@ router.post("/worker/add/:restaurant/:user", async (req, res) => {
             { $project: { found: "hello" } }
         ]).toArray();
 
-    console.log(isWorks);
-
     if(isWorks.length > 0) {
         return res.send({ error: "user", acknowledged: false });
     }
@@ -462,8 +462,6 @@ router.post("/worker/add/:restaurant/:user", async (req, res) => {
             { _id: id(restaurant) },
             { $push: { staff: newWorker } }
         );
-
-    console.log(changes);
 
     res.send({ newWorker, acknowledged: changes.acknowledged });
 
@@ -478,6 +476,45 @@ router.get("/user/get/:id", async (req, res) => {
         );
 
     res.send(result);
+});
+router.get("/user/work/:restaurant/:id", async (req, res) => {
+    const { id: user, restaurant } = req.params;
+
+    const result1 = await client.db(db).collection("users")
+        .findOne({ _id: id(user) }, { projection: { avatar: 1, name: 1, username: 1 } })
+
+    let result2 = await client.db(db).collection("restaurants")
+        .aggregate([
+            { $match: { _id: id(restaurant) } },
+            { $unwind: "$staff" },
+            { $match: { "staff._id": id(user) } },
+            { $project: { worker: "$staff" } } 
+        ]).toArray();
+
+    if(!result2 || result2.length == 0) {
+        result2 = null;
+    }
+    result2 = result2[0].worker;
+
+    res.send({ user: result1, worker: result2 });
+});
+router.patch("/worker/settings/set/:restaurant/:workerId", logged, async (req, res) => {
+    const { workerId, restaurant } = req.params;
+    const { setTo, settingName } = req.body;
+
+    let changes = {};
+    changes["staff.$[s1].settings." + settingName] = setTo;
+    
+    const request = await client.db(db).collection("restaurants")
+        .updateOne(
+            { _id: new ObjectId(restaurant) },
+            { $set: changes },
+            { arrayFilters: [{"s1._id": new ObjectId(workerId)}] }
+        );
+
+    log("changing ['", settingName, "'] to ['", setTo, "'] result:", request.acknowledged);
+
+    res.send(request);
 });
 
 

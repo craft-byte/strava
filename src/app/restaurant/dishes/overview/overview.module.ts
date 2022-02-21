@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { OverviewComponent } from './overview.component';
 import { DishComponent } from './dish/dish.component';
 import { SettingsComponent } from './settings/settings.component';
+import { IonicModule } from '@ionic/angular';
 
 
 
@@ -15,6 +16,7 @@ import { SettingsComponent } from './settings/settings.component';
   ],
   imports: [
     CommonModule,
+    IonicModule,
     RouterModule.forChild([
       {
         path: "",

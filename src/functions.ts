@@ -1,6 +1,10 @@
 export function getImage(file: File | string) {
 
     return new Promise<string>((resolve, _reject) => {
+        if(!file) {
+            resolve(null);
+            return;
+        }
         if(typeof file === 'string') {
             resolve(`data:image/jpeg;base64,${file}`);
             return;

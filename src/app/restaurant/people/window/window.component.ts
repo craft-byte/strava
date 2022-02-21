@@ -18,6 +18,10 @@ export class WindowComponent implements OnInit {
     role: "cook"
   };
 
+  ui = {
+    searchTitle: "Search"
+  }
+
   settings = {
     dishes: true,
     removingDishes: false,
@@ -73,7 +77,10 @@ export class WindowComponent implements OnInit {
     >({ newWorker }, "worker/add", this.restaurant, this.user._id);
 
     if(!result.acknowledged) {
-      console.log(result.error);
+      if(result.error == "user") {
+        this.stage = "searching";
+        this.ui.searchTitle = "User works already";
+      }
       return;
     }
 
