@@ -17,6 +17,7 @@ export class StaffComponent implements OnInit {
   staff: Worker[] = [];
 
   windowType: "remove" | "add" = null;
+  invitingsWindow = false;
 
   constructor(
     private service: RadminService,
@@ -28,11 +29,16 @@ export class StaffComponent implements OnInit {
     this.windowType = "add";
   }
 
-  onWindowEmited({ type, newWorker }: { type: string, newWorker?: any }) {
+  openInvitings() {
+    this.invitingsWindow = true;
+  }
+
+  onInvitingsWindowEmit(_data: { type: string, data?: any }) {
+    this.invitingsWindow = false;
+  }
+
+  onWindowEmited(_data: { type: string, newWorker?: any }) {
     this.windowType = null;
-    if(type == "added") {
-      this.staff.push(newWorker);
-    }
   }
 
   async openPopover(btn: any, userId: string) {

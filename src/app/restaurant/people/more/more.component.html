@@ -40,7 +40,7 @@
       </div>
       <div class="content">
         <span title="Settings">
-          <div *ngIf="worker.role == 'manager'" (click)="goSettings()" class="manager">
+          <div *ngIf="worker.role == 'manager'" (click)="managerSettings()" class="manager">
             <div [ngClass]="{ 'active': worker.settings.dishes }" class="one">
               Dishes management
             </div>
@@ -53,7 +53,7 @@
             <div [ngClass]="{ 'active': worker.settings.staff }" class="one">
               Staff management
             </div>
-            <div [ngClass]="{ 'active': worker.settings.removingStaff }" class="one">
+            <div [ngClass]="{ 'active': worker.settings.staffRemoving }" class="one">
               Staff removing
             </div>
           </div>
@@ -64,4 +64,6 @@
 </div>
 
 <app-settings-window (Emitter)="onSettingsWindowEmit($event)" [workerId]="user._id" [type]="worker.role"
-  [settings]="worker.settings" *ngIf="settingsWindow"></app-settings-window>
+  [settings]="worker.settings" *ngIf="managerSettingsWindow"></app-settings-window>
+<app-worker-settings (Emitter)="onWorkerSettingsWindowEmit($event)" *ngIf="settingsWindow"></app-worker-settings>
+<app-firing-window *ngIf="showFiringWindow" (Emitter)="onFiringWindowEmit($event)" [user]="user"></app-firing-window>

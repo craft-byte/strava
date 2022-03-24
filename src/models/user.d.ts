@@ -1,5 +1,3 @@
-import { StringMapWithRename } from "@angular/compiler/src/compiler_facade_interface";
-
 interface NewUser {
     username: string;
     password: string;
@@ -23,6 +21,24 @@ interface User {
     restaurants?: string[];
     invitations?: string[];
     name?: string;
+    feedbacks?: Feedback[];
+}
+
+interface Feedback {
+    worked: number;
+    role: string;
+    restaurant: string;
+    feedback: {
+        comment: string;
+        stars: number;
+    }
+}
+interface ConvertedFeedback {
+    worked: string;
+    role: string;
+    restaurant: string;
+    comment: string;
+    stars: number;
 }
 
 interface PostResult {
@@ -69,7 +85,27 @@ interface Restaurant2 {
     _id: string;
 }
 
+
+
+
+
+interface UserInvitation {
+    restaurant: string;
+    restaurantId: string;
+    role: string;
+    joined: string;
+    _id: string;
+}
+
+
+
+
 export {
+
+    UserInvitation,
+
+
+
     NewUser,
     Restaurant2,
     User,
@@ -79,5 +115,7 @@ export {
     Restaurant,
     Payments,
     NewRestaurant,
-    UserResponse
+    UserResponse,
+    ConvertedFeedback,
+    Feedback
 }

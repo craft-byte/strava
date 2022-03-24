@@ -1,7 +1,7 @@
 .app {
     .top {
         display: grid;
-        grid-template-columns: 20% 60% 10% 10%;
+        grid-template-columns: 20% 50% 30%;
         .back {
             cursor: pointer;
             display: flex;
@@ -16,45 +16,71 @@
                 color: rgb(100, 100, 100);
             }
         }
-        .remove {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            #remove {
-                height: 28px;
-                width: 100px;
-                border: 1px solid #eb445a;
-                border-radius: 7px;
-                background: none;
-                background-color: #eb445a07;
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            .cooking {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                color: #eb445a;
-                &:hover {
-                    color: white;
-                    background-color: #eb445a;
+                #cooking {
+                    height: 28px;
+                    width: 100px;
+                    border: 1px solid #c35cff;
+                    border-radius: 7px;
+                    background: none;
+                    background-color: #c35cff07;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #c35cff;
+                    &:hover {
+                        color: white;
+                        background-color: #c35cff;
+                    }
                 }
             }
-        }
-        .edit {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            #edit {
-                height: 28px;
-                width: 100px;
-                border: 1px solid ;
-                border-radius: 7px;
-                background: none;
-                background-color: #ffc40907;
+            .remove {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                color: #ffc409;
-                &:hover {
-                    color: white;
-                    background-color: #ffc409;
+                #remove {
+                    height: 28px;
+                    width: 100px;
+                    border: 1px solid #eb445a;
+                    border-radius: 7px;
+                    background: none;
+                    background-color: #eb445a07;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #eb445a;
+                    &:hover {
+                        color: white;
+                        background-color: #eb445a;
+                    }
+                }
+            }
+            .edit {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                #edit {
+                    height: 28px;
+                    width: 100px;
+                    border: 1px solid ;
+                    border-radius: 7px;
+                    background: none;
+                    background-color: #ffc40907;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #ffc409;
+                    &:hover {
+                        color: white;
+                        background-color: #ffc409;
+                    }
                 }
             }
         }

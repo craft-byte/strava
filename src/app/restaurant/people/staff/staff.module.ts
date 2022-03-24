@@ -6,6 +6,7 @@ import { WindowModule } from '../window.module';
 import { WorkerComponent } from './worker/worker.component';
 import { MoreComponent } from './more/more.component';
 import { IonicModule } from '@ionic/angular';
+import { InvitingsWindowComponent } from './invitings-window/invitings-window.component';
 
 
 
@@ -14,6 +15,7 @@ import { IonicModule } from '@ionic/angular';
     StaffComponent,
     WorkerComponent,
     MoreComponent,
+    InvitingsWindowComponent
   ],
   imports: [
     CommonModule,

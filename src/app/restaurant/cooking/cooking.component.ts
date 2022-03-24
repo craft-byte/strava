@@ -18,7 +18,7 @@ export class CookingComponent implements OnInit {
     
   }
 
-  goOther(w: "components" | "settings") {
+  goOther(w: "components" | "settings" | "overview") {
     this.page = w;
     this.router.navigate(['radmin', 'cooking', w], { queryParamsHandling: 'merge' });
   }

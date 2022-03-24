@@ -25,6 +25,8 @@ export class MoreComponent implements OnInit {
 
   restaurant: Restaurant;
   settingsWindow = false;
+  managerSettingsWindow = false;
+  showFiringWindow = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,12 +38,34 @@ export class MoreComponent implements OnInit {
     this.router.navigate(["radmin/people/staff"], { queryParamsHandling: "preserve" });
   }
 
+  managerSettings() {
+    this.managerSettingsWindow = true;
+  }
   goSettings() {
     this.settingsWindow = true;
   }
 
-  onSettingsWindowEmit({ type }: { type: string }) {
+  async onFiringWindowEmit({ type, data }: { type: "quit" | "fire", data: { stars: number; feedback: string } }) {
+    this.showFiringWindow = false;
+    if (type == "fire") {
+      const result = await this.service.patch<{ acknowledged: boolean }>({feedback: data}, "worker/fire", this.restaurant._id, this.user._id);
+      if (result.acknowledged) {
+        this.back();
+      }
+    }
+  }
+  async onWorkerSettingsWindowEmit({ type, data }: { type: "role" | "fire" | "quit", data: any }) {
     this.settingsWindow = false;
+    if(type == "fire") {
+      this.showFiringWindow = true;
+    } else if(type == "role") {
+      const d = data as string;
+      await this.service.patch({ setTo: d }, "worker/set/role", this.restaurant._id, this.user._id);
+    }
+  }
+
+  onSettingsWindowEmit({ type }: { type: string }) {
+    this.managerSettingsWindow = false;
     if(type == "") {
       
     }

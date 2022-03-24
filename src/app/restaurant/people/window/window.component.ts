@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Worker } from 'src/models/radmin';
+import { ConvertedFeedback, User } from 'src/models/user';
 import { RadminService } from '../../radmin.service';
 
 @Component({
@@ -11,7 +12,7 @@ export class WindowComponent implements OnInit {
 
   found = [];
   searchText: string = null;
-  user: any = null;
+  user: User = null;
   stage: "then" | "searching" | "inviting" = "searching";
 
   newWorker: Worker = {
@@ -29,6 +30,8 @@ export class WindowComponent implements OnInit {
     staff: false,
     staffRemoving: false
   }
+
+  feedbacks: ConvertedFeedback[];
 
   constructor(
     private service: RadminService
@@ -54,8 +57,9 @@ export class WindowComponent implements OnInit {
     this.user = null;
     this.stage = "searching";
   }
-  add(user: any) {
+  async add(user: any) {
     this.user = user;
+    this.feedbacks = await this.service.get("feedbacks", user._id);
     this.stage = "then";
   }
   invite() {
@@ -64,8 +68,6 @@ export class WindowComponent implements OnInit {
 
   async submit() {
     const newWorker = this.newWorker;
-    newWorker._id = this.user._id;
-    newWorker.joined = new Date();
 
     if(newWorker.role == "manager") {
       newWorker.settings = this.settings;
@@ -85,7 +87,7 @@ export class WindowComponent implements OnInit {
     }
 
 
-    this.Emitter.emit({ type: "added", newWorker: result.newWorker })
+    this.Emitter.emit({ type: "added" })
   }
 
   ngOnInit() {

@@ -17,7 +17,7 @@ import { CookingComponent } from './cooking.component';
           {
             path: "",
             pathMatch: "full",
-            redirectTo: "components"
+            redirectTo: "overview"
           },
           {
             path: "components",
@@ -30,6 +30,10 @@ import { CookingComponent } from './cooking.component';
           {
             path: "components/more/:id",
             loadChildren: () => import("./components/more/more.module").then(m => m.MoreModule)
+          },
+          {
+            path: "overview",
+            loadChildren: () => import("./overview/overview.module").then(m => m.OverviewModule)
           }
         ]
       }

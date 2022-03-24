@@ -1,0 +1,19 @@
+.app {
+    margin-top: 10px;
+    border-bottom: 1px solid rgb(212, 212, 212);
+    padding-bottom: 10px;
+    display: grid;
+    grid-template-columns: 35% 65%;
+    .feedback {
+        .role,.worked {
+            color: rgb(88, 88, 88);
+        }
+        .comment {
+            font-size: 15px;
+            color: rgb(97, 97, 97);
+            margin-top: 10px;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+    }
+}

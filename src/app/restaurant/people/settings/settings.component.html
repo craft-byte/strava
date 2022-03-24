@@ -1,3 +1,17 @@
-<p>
-  settings works!
-</p>
+<div class="app">
+  <div class="title">
+    Settings
+  </div>
+  <div class="settings" *ngIf="settings">
+    <ion-item>
+      <ion-label>Only with QR code</ion-label>
+      <ion-toggle mode="ios" color="warning" [(ngModel)]="settings.customers.onlyByQR" (ionChange)="set('onlyByQR')">
+      </ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Only table orders</ion-label>
+      <ion-toggle mode="ios" color="warning" [(ngModel)]="settings.customers.onlyTableOrders"
+        (ionChange)="set('onlyTableOrders')"></ion-toggle>
+    </ion-item>
+  </div>
+</div>

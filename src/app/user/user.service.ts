@@ -18,6 +18,15 @@ export class UserService {
   ) { };
 
 
+
+  get<T>(...str: string[]) {
+    return this.http.get<T>(this.url + "/" + str.join("/")).toPromise();
+  }
+  patch<T>(body: any, ...path: (string | number)[]) {
+    return this.http.patch<T>(this.url + "/" + path.join("/"), body).toPromise();
+  }
+
+
   confirm(t: "restaurant" | "remove", data: any) {
     return this.http.patch<{ removed: boolean; id: string }>(`${this.url}/confirm/${t}`, data).toPromise();
   }

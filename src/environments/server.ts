@@ -5,4 +5,4 @@ export const serverEnvinroment = {
         }
     }
 }
-export const db = "ctrabaTest";
+export const db = "ctraba";

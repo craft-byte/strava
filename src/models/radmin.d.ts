@@ -39,8 +39,13 @@ interface Worker {
 }
 
 interface ManagerSettings {
-
+    staff: boolean;
+    staffRemoving: boolean;
+    editingComponents: boolean;
+    removingDishes: boolean;
+    dishes: boolean;
 }
+
 
 
 
@@ -121,9 +126,19 @@ interface Work {
     restaurant?: string;
 }
 
+
+interface Inviting {
+    user: string;
+    role: string;
+    joined: Date;
+    _id?: string;
+}
+
+
 export {
     Restaurant,
     User,
+    Inviting,
     Component,
     RestaurantSettings,
     Path,

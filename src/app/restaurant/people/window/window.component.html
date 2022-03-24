@@ -44,8 +44,13 @@
         <div class="username">
           {{ user.username }}
         </div>
-        <div class="feedbacks">
-          no feedbacks
+        <div class="feedbacks" *ngIf="feedbacks">
+          <div class="title">
+            Feedbacks
+          </div>
+          <div class="self">
+            <app-feedback *ngFor="let i of feedbacks" [data]="i"></app-feedback>
+          </div>
         </div>
       </div>
     </div>

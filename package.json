@@ -6,7 +6,6 @@
   "scripts": {
     "ng": "ng",
     "start": "node www/index.js",
-    "postinstall": "rimraf ./**/node_modules/moment",
     "build": "(npm run prod:web || true) && npm run prod:ts",
     "test": "ng test",
     "lint": "ng lint",
@@ -38,7 +37,6 @@
     "@capacitor/status-bar": "1.0.6",
     "@ionic/angular": "^5.5.2",
     "@types/spdy": "^3.4.5",
-    "angular2-chartjs": "^0.5.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -47,6 +45,7 @@
     "express-session": "^1.17.2",
     "heroku-ssl-redirect": "^0.1.1",
     "http2": "^3.3.7",
+    "ionic-rating-component": "^1.2.1",
     "js-cookie": "^3.0.1",
     "mongodb": "^4.1.4",
     "multer": "^1.4.4",

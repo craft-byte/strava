@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SettingsComponent } from './settings.component';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 
 
 
@@ -11,6 +13,8 @@ import { SettingsComponent } from './settings.component';
   ],
   imports: [
     CommonModule,
+    FormsModule,
+    IonicModule,
     RouterModule.forChild([
       {
         path: "",

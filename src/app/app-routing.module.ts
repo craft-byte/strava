@@ -95,6 +95,11 @@ const routes: Routes = [
     canActivate: [DishGuard, RidGuard, LoginGuard]
   },
   {
+    path: 'dish-cooking/:dish',
+    loadChildren: () => import('./restaurant/dish-cooking/dish-cooking.module').then( m => m.DishCookingPageModule)
+    , canActivate: [RidGuard, LoginGuard]
+  },
+  {
     path: "**",
     redirectTo: "user-info"
   }

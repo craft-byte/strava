@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MainService } from 'src/app/main.service';
 import { payments } from 'src/assets/consts';
-import { Restaurant } from 'src/models/user';
+import { Restaurant } from 'src/models/radmin';
+import { UserInvitation } from 'src/models/user';
 import { UserService } from '../user.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class UserInfoPage implements OnInit {
   isAdd = false;
 
   restaurants: Restaurant[] = [];
-  invitations: {name: string, id: string}[] = [];
+  invitations: UserInvitation[] = [];
   works = [];
 
 
@@ -44,31 +45,29 @@ export class UserInfoPage implements OnInit {
   goRestaurant(restaurant: string) {
     this.service.go({ restaurant }, "radmin");
   }
-  async accept(restaurant: string, answer: boolean) {
-    for(let i in this.invitations) {
-      if(this.invitations[i].id == restaurant) {
-        this.invitations.splice(+i, 1);
-        break;
-      }
+  async invitation(id: string, type: "accept" | "reject", restaurant?: string) {
+    let result = null;
+    if(type == "accept") {
+      result = await this.service
+        .patch<{ success: boolean}>({}, "invitation/accept", this.main.userInfo._id, id);
+    } else {
+      result = await this.service
+        .patch({}, "invitation/reject", restaurant, this.main.userInfo._id, id);
     }
-    for(let i in this.main.userInfo.invitations) {
-      if(this.main.userInfo.invitations[i] === restaurant) {
-        this.main.userInfo.invitations.splice(+i, 1);
-        break;
+    if(result.success) {
+      for(let i in this.invitations) {
+        if(this.invitations[i]._id == id) {
+          this.invitations.splice(+i, 1);
+          break;
+        }
       }
-    }
-    await this.service.accept(restaurant, answer, {username: this.main.userInfo.username, _id: this.main.userInfo._id});
-    if(answer) {
-      this.works.push({name: (await this.service.restaurantName(restaurant)).name, _id: restaurant })
     }
   }
   async getRestaurants() {
     this.restaurants = await this.service.getRestaurants(this.main.userInfo._id);
   }
   async getInvitations() {
-    for(let i of this.main.userInfo.invitations) {
-      this.invitations.push({name:(await this.service.restaurantName(i)).name, id: i});
-    }
+    this.invitations = await this.service.get("invitations/get", this.main.userInfo._id);
   }
   async getWorks() {
     for(let i of this.main.userInfo.works) {

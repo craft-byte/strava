@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { getImage } from 'src/functions';
 import { Dish } from 'src/models/dish';
 import { Restaurant } from 'src/models/radmin';
@@ -32,7 +33,8 @@ export class FullComponent implements OnInit {
   constructor(
     private service: RadminService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private alertCtrl: AlertController
   ) {
     const date = new Date();
     this.nowDate = `${date.getFullYear()}-${date.getMonth().toString().length == 1 ? "0" + date.getMonth() : date.getMonth()}-${date.getDate()}`;
@@ -54,7 +56,9 @@ export class FullComponent implements OnInit {
     this.saleInit();
     this.quit();
   }
-
+  cooking() {  
+    this.router.navigate(["dish-cooking", this.dish._id], { queryParamsHandling: "preserve", replaceUrl: true });
+  }
   async save() {
     const result = await this.service
       .patch<{ _id: string; date: Date }>({ price: this.cost, name: this.name }, "add", this.restaurant.sname, this.dish._id);
@@ -88,8 +92,24 @@ export class FullComponent implements OnInit {
   back() {
     this.router.navigate(["radmin", "dishes", "overview"], { queryParamsHandling: "preserve" });
   }
-  remove() {
-    this.service.delete('dishes', 'remove', this.service.restaurant.sname, this.dish._id);
+  async remove() {
+    const alert = await this.alertCtrl.create({
+      cssClass: 'my-custom-class',
+      mode: "ios",
+      header: 'Please be certain.',
+      subHeader: '',
+      message: 'Once you delete a dish, there is no going back.',
+      buttons: [{ text: "Cancel", role: null }, { text: "Remove", role: "remove" }]
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+
+    if(role == "remove") {
+      await this.service.delete('dishes', 'remove', this.service.restaurant.sname, this.dish._id);
+      this.router.navigate(["radmin", "dishes", "overview"], { queryParamsHandling: "preserve" });
+    }
   }
   edit() {
     this.router.navigate(["dish", "edit"], { queryParams: { dish: this.dish._id }, replaceUrl: true, queryParamsHandling: "merge" });

@@ -1,0 +1,29 @@
+<div class="app">
+  <div class="title">
+    <div class="restaurant">
+      {{ data.restaurant }}
+    </div>
+    <div class="stars">
+      <ionic-rating-component
+        activeIcon = "star"
+        defaultIcon = "star-outline"
+        activeColor = "#FFC409" 
+        defaultColor = "#FFC409"
+        readonly="true"
+        [rating]="data.stars"
+        fontSize = "14px">
+      </ionic-rating-component>
+    </div>
+  </div>
+  <div class="feedback">
+    <div class="role">
+      {{ data.role }}
+    </div>
+    <div class="worked">
+      Worked: {{ data.worked }}
+    </div>
+    <div class="comment">
+      {{ data.comment }}
+    </div>
+  </div>
+</div>

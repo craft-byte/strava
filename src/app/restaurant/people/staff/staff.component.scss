@@ -1,7 +1,7 @@
 .app {
     .title {
         display: grid;
-        grid-template-columns: 10% 70% 20%;
+        grid-template-columns: 10% 67% 23%;
         .name {
             font-size: 20px;
             font-weight: 600;
@@ -10,23 +10,47 @@
             justify-content: center;
             align-items: center;
         }
-        .add {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            #add-button {
-                width: 100px;
-                height: 30px;
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            .invitings {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                background-color: #FFC409;
-                border: 1px solid #FFC409;
-                font-size: 16px;
-                border-radius: 8px;
-                color: black;
-                ion-icon {
-                    font-size: 20px;
+                #invitings-button {
+                    width: 125px;
+                    height: 30px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: #c059ff;
+                    border: 1px solid #c059ff;
+                    font-size: 16px;
+                    border-radius: 8px;
+                    color: black;
+                    ion-icon {
+                        font-size: 20px;
+                    }
+                }
+            }
+            .add {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                #add-button {
+                    width: 100px;
+                    height: 30px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: #FFC409;
+                    border: 1px solid #FFC409;
+                    font-size: 16px;
+                    border-radius: 8px;
+                    color: black;
+                    ion-icon {
+                        font-size: 20px;
+                    }
                 }
             }
         }

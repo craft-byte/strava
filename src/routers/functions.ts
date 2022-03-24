@@ -22,21 +22,33 @@ function compare(currentPassword: string, oldPassword: string) {
     }
 }
 
-function id(str: string) {
-    if(str.length != 24) {
-        return null;
+function id(str?: string) {
+    if(str) {
+        if(str.length != 24) {
+            return null;
+        }
+        return new ObjectId(str);
     }
-    return new ObjectId(str);
+    return new ObjectId();
 }
 
-function log(...ar: any[]) {
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
+function getDate(d: Date) {
+    const date = new Date(d);
+    return `${date.getDate()} ${months[date.getMonth()]}`;
+}
+
+function log(status: string, ...ar: any[]) {
     const date = new Date();
-    let result = `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] -> `;
+    let result = `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] -> ${status.toUpperCase()}        `;
 
     for(let i of ar) {
         result = result + " " + i;
     }
-
+    
     result += "\n";
     stdout.write(result);
 }
@@ -45,5 +57,6 @@ export {
     makePassword,
     compare,
     id,
-    log
+    log,
+    getDate
 }

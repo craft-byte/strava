@@ -5,7 +5,8 @@ import { log } from "../routers/functions";
 function logged(req: Request, res: Response, next: NextFunction) {
     if(!session) {
         log("no session");
-        res.sendStatus(404);
+        // res.redirect("/login");
+        res.sendStatus(401);
         return;
     }
     if(session.userid) {
@@ -13,7 +14,7 @@ function logged(req: Request, res: Response, next: NextFunction) {
         return;
     } else {
         log("not logged", req.ip);
-        res.sendStatus(404);
+        res.sendStatus(401);
         return;
     }
 }

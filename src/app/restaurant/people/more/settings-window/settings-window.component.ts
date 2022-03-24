@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RadminService } from 'src/app/restaurant/radmin.service';
 
@@ -23,11 +24,25 @@ export class SettingsWindowComponent implements OnInit {
     this.Emitter.emit({ type: "quit" });
   }
 
-  set(a: string) {
-    this.service.patch({ settingName: a, setTo: this.settings[a] }, "worker/settings/set", this.service.restaurant._id, this.workerId);
+  async set(a: string) {
+    if(this.s[a] != this.settings[a]) {
+      try {
+        const result = await this.service
+          .patch({ settingName: a, setTo: this.settings[a] }, "worker/settings/set", this.service.restaurant._id, this.workerId);
+        result;
+      } catch (e) {
+        const error = e as HttpErrorResponse;
+        console.log(error.status);
+        if(error.status == 401) {
+          
+        }
+      }
+      this.s[a] = this.settings[a];
+    }
   }
 
   ngOnInit() {
+    this.s = JSON.parse(JSON.stringify(this.settings));
   }
 
 }

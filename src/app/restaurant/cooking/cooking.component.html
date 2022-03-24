@@ -3,6 +3,9 @@
     <div class="title">
       Cooking
     </div>
+    <div class="link" [ngClass]="{ active: page === 'overview' }">
+      <a (click)="goOther('overview')">Overview</a>
+    </div>
     <div class="link" [ngClass]="{ active: page === 'components' }">
       <a (click)="goOther('components')">Components</a>
     </div>

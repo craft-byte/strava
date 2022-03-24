@@ -63,19 +63,71 @@
                 }
             }
         }
-        .invites {
+        .invitations {
+            width: 500px;
+            margin-top: 20px;
+            .title {
+                padding-left: 16px;
+                font-size: 20px;
+                color: rgb(73, 73, 73);
+                margin-bottom: 30px;
+            }
             .one {
-                padding: 30px;
-                border-radius: 15px;
-                &:hover {
-                    background-color: rgb(238, 238, 238);
-                }
                 display: grid;
-                grid-template-columns: 1fr 1fr;
-                .name,.buttons {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+                grid-template-columns: 40% 60%;
+                width: 100%;
+                height: 80px;
+                border-bottom: 1px solid rgb(224, 224, 224);
+                .restaurant {
+                    padding-left: 16px;
+                    padding-top: 12px;
+                    // border-right: 1px solid rgb(224, 224, 224);
+                    .name {
+                        font-size: 18px;
+                        color: rgb(97, 97, 97);
+                    }
+                    .role {
+                        color: rgb(109, 109, 109);
+                        font-size: 15px;
+                    }
+                }
+                .info {
+                    padding-left: 16px;
+                    .sent {
+                        color: rgb(112, 112, 112);
+                    }
+                    .buttons {
+                        display: flex;
+                        gap: 20px;
+                        padding-top: 20px;
+                        .accept {
+                            width: 90px;
+                            height: 30px;
+                            border: 1px solid #2dd36f;
+                            border-radius: 8px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background: none;
+                            color: white;
+                            background-color: #2dd36f;
+                        }
+                        .reject {
+                            width: 90px;
+                            height: 30px;
+                            border: 1px solid #eb445a;
+                            border-radius: 8px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background: none;
+                            color: #eb445a;
+                            &:hover {
+                                background-color: #eb445a;
+                                color: white;
+                            }
+                        }
+                    }
                 }
             }
         }

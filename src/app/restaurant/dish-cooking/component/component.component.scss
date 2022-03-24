@@ -1,0 +1,36 @@
+.app {
+    height: 70px;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+    .name {
+        display: flex;
+        align-items: center;
+        padding-left: 12px;
+        color: rgb(92, 92, 92);
+    }
+    .value {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+    }
+    .add {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .add-btn {
+            width: 80px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #2dd36f;
+            background-color: #2dd36f;
+            color: white;
+            border-radius: 8px;
+            ion-icon {
+                font-size: 22px;
+            }
+        }
+    }
+}

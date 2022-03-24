@@ -1,52 +1,48 @@
 
-.card-button-more {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    border: #5260FF 2px solid;
+.red {
+    height: 28px;
+    width: 100px;
+    border: 1px solid #eb445a;
+    border-radius: 7px;
+    background: none;
+    background-color: #eb445a07;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #5260FF;
-    font-size: 32px;
-    background: #5261ff00;
-    margin: 0;
+    color: #eb445a;
     &:hover {
-      background: #5261ff08;
+        color: white;
+        background-color: #eb445a;
+    }
+    &:disabled {
+        border: 1px solid rgb(121, 121, 121);
+        color: rgb(121, 121, 121);
+        &:hover {
+            background-color: rgba(121, 121, 121, 0);
+        }
     }
 }
-.card-button-add {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    -webkit-border-radius: 100%;
-    -moz-border-radius: 100%;
-    border: #2DD36F 2px solid;
+.orange {
+    height: 28px;
+    width: 100px;
+    border: 1px solid #ffc409;
+    border-radius: 7px;
+    background: none;
+    background-color: #ffc40907;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #2DD36F;
-    font-size: 32px;
-    background: #2dd36f00;
-    margin: 0;
+    color: #ffc409;
     &:hover {
-      background: #2dd36f08;
+        color: white;
+        background-color: #ffc409;
     }
-}
-.card-button-analytics {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    border: #9d52ff 2px solid;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #9d52ff;
-    font-size: 32px;
-    background: #9d52ff00;
-    margin: 0;
-    &:hover {
-      background: #9d52ff08;
+    &:disabled {
+        border: 1px solid rgb(121, 121, 121);
+        color: rgb(121, 121, 121);
+        &:hover {
+            background-color: rgba(121, 121, 121, 0);
+        }
     }
 }
   
@@ -68,7 +64,10 @@
     cursor: pointer;
 }
 
-
+.small-gray {
+    color: var(--gray);
+    margin: 6px 4px;
+}
 
 
 .header[type=h1] {
@@ -84,4 +83,16 @@
     color: rgb(36, 34, 34);
     font-weight: 600;
     font-size: 14px;
+}
+
+.square-success {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    background-color: var(--ion-color-success);
+    color: white;
+    border-radius: 12px;
 }

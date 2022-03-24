@@ -2,8 +2,8 @@ import { ObjectId } from "bson";
 import { Router } from "express";
 import { db } from "./../environments/server";
 import { client } from "../index";
-import { NewUser, NewRestaurant, LoginData } from "../models/user";
-import { compare, makePassword } from "./functions";
+import { NewUser, NewRestaurant, LoginData, UserInvitation } from "../models/user";
+import { compare, getDate, id, log, makePassword } from "./functions";
 import { SessionData } from "express-session";
 import { RestaurantSettings } from "../models/radmin";
 
@@ -210,30 +210,6 @@ router.get("/userInfo/:id", async (req, res) => {
         .findOne({ _id: new ObjectId(id) }, { projection: { username: 1, name: 1, works: 1, owns: 1, email: 1 } });
 
     res.send(result);
-});
-router.get("/invite/:userId/:restaurant", async (req, res) => {
-    const { userId, restaurant } = req.params;
-
-    [
-        client.db(db).collection("users")
-            .updateOne({ _id: new ObjectId(userId) }, { $push: { invitations: restaurant } }),
-        client.db(db).collection("restaurants")
-            .updateOne({ _id: new ObjectId(restaurant) }, { $push: { invitations: userId } })
-    ];
-
-    res.send({});
-});
-router.delete('/invitation/:restaurant/:id', async (req, res) => {
-    const { restaurant, id } = req.params;
-
-    [
-        client.db(db).collection("restaurants")
-            .updateOne({ _id: new ObjectId(restaurant) }, { $pull: { invitations: id } }),
-        client.db(db).collection("users")
-            .updateOne({ _id: new ObjectId(id) }, { $pull: { invitations: id } })
-    ]
-
-    res.send({});
 });
 router.get("/name/:id", async (req, res) => {
     const { id } = req.params;
@@ -478,6 +454,158 @@ router.patch("/confirm/:t", async (req, res) => {
             break;
     }
 });
+
+
+router.get("/invitations/get/:user", async (req, res) => {
+    const { user } = req.params;
+
+
+    log("", "getting user invitations");
+
+    const found = await client.db(db).collection("users")
+        .findOne({ _id: id(user) }, { projection: { invitations: 1 } });
+
+    if(!found || !found.invitations) {
+        return res.sendStatus(404);
+    } else if(found.invitations.length == 0) {
+        return res.send([]);
+    }
+
+    const promisedNames = [];
+    const concat = [];
+    
+    for(let { restaurant, role, joined, _id} of found.invitations) {
+        promisedNames.push(client.db(db).collection("restaurants")
+            .findOne({ _id: restaurant }, { projection: { name: 1 } }));
+        concat.push({ joined: getDate(joined), _id, role, restaurantId: restaurant });
+    }
+
+    const names = await Promise.all(promisedNames);
+
+    const result: UserInvitation[] = [];
+
+    for(let i in concat) {
+        result.push(Object.assign(concat[i], { restaurant: names[i].name }));
+    }
+
+    res.send(result);
+});
+router.patch("/invitation/accept/:user/:inv", async (req, res) => {
+    const { user, inv } = req.params;
+
+    const foundUser = await client.db(db).collection("users")
+        .findOne({ _id: id(user) }, { projection: { invitations: 1 } });
+
+    if(!foundUser || !foundUser.invitations) {
+        log("failed invitation accepting", "no user found");
+        return res.sendStatus(404);
+    } else if(foundUser.invitations.length == 0) {
+        log("failed invitation accepting", "no invitations found");
+        return res.sendStatus(404);
+    }
+
+    let exists = true;
+
+    let invitation = null;
+
+    for(let i of foundUser.invitations) {
+        if(i._id.toString() == inv) {
+            invitation = i;
+            exists = true;
+        }
+    }
+
+    const foundR = await client.db(db).collection("restaurants")
+        .findOne({ _id: invitation.restaurant }, { projection: { invitations: 1 } })
+
+    if (!foundR || !foundR.invitations || foundR.invitations.length == 0) {
+        log("failed", `invitation doesnt exists in restaurant [${invitation.restaurant}] [${inv}]`);
+        return res.sendStatus(404);
+    }
+
+    exists = false;
+    for(let i of foundR.invitations) {
+        if(i._id.toString() == inv) {
+            invitation = i;
+            exists = true;
+        }
+    }
+
+    if(!exists) {
+        log("failed", `invitation doesnt exists in restaurant [${foundR._id.toString()}]`);
+        return res.sendStatus(404);
+    }
+
+    const restaurant = foundR._id;
+
+
+    log("info", `user [${user}] is accepting job at restaurant [${restaurant}]`);
+
+
+    const updateUser = await client.db(db).collection("users")
+        .updateOne(
+            { _id: id(user) },
+            {
+                $push: { works: restaurant },
+                $pull: { invitations: { _id: id(inv) } },
+            }
+        );
+    
+    const updateRestaurant = await client.db(db).collection("restaurants")
+        .updateOne(
+            { _id: restaurant },
+            { 
+                $push: { 
+                        staff: { 
+                        _id: id(user), 
+                        joined: new Date(), 
+                        role: invitation.role, 
+                        settings: invitation.settings 
+                    },
+                },
+                $pull: {
+                    invitations: { _id: id(inv) }
+                }
+            }
+        );
+
+    if(updateRestaurant.matchedCount > 0 && updateUser.modifiedCount > 0) {
+        log("success", `adding user [${user}] to restaurant [${restaurant}] staff`);
+        res.send({ success: true });
+    } else {
+        log("failed", `adding user [${user}] to restaurant [${restaurant}] staff`);
+        res.send({ success: false });
+    }
+    
+
+
+});
+router.patch("/invitations/reject/:restaurant/:user/:inv", async (req, res) => {
+    const { user, inv, restaurant } = req.params
+
+    log("info", "rejectin invitation");
+
+    const userUpdate = await client.db(db).collection("users")
+        .updateOne(
+            { _id: id(user) },
+            { $pull: { invitations: { _id: id(inv) } } }
+        );
+
+    const restaurantUpdate = await client.db(db).collection("restaurants")
+        .updateOne(
+            { _id: id(restaurant) },
+            { $pull: { invitations: { _id: id(inv) } } }
+        );
+
+    if(userUpdate.modifiedCount > 0 && restaurantUpdate.modifiedCount > 0) {
+        log('success', "rejecting invitation", `user [${user}], restaurant [${restaurant}]`);
+    } else {
+        log("failed", "rejecting invitation", `user [${user}], restaurant [${restaurant}]`);
+    }
+
+    res.send({ success: userUpdate.modifiedCount > 0 && restaurantUpdate.modifiedCount > 0 });
+});
+
 
 export {
     router as UserRouter,

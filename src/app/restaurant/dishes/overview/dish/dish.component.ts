@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { PopoverController } from '@ionic/angular';
+import { AlertController, PopoverController } from '@ionic/angular';
 import { RadminService } from 'src/app/restaurant/radmin.service';
+import { Dish } from 'src/models/dish';
 import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
@@ -16,10 +17,11 @@ export class DishComponent implements OnInit {
   constructor(
     private service: RadminService,
     private router: Router,
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private alertCtrl: AlertController
   ) { }
 
-  @Input() data: { name: string; price: number; _id: string; created: Date };
+  @Input() data: Dish;
   @Output() Emitter = new EventEmitter();
 
 
@@ -51,10 +53,26 @@ export class DishComponent implements OnInit {
   go() {
     this.router.navigate(['radmin', 'dishes', 'full', this.data._id], { queryParams: { restaurant: this.service.restaurant._id, last: "dishes", ol: "full", dish: this.data._id } });
   }
-  remove() {
-    this.service.delete('dishes', 'remove', this.service.restaurant.sname, this.data._id);
-    this.Emitter.emit({ t: "remove", _id: this.data._id });
+  async remove() {
+    const alert = await this.alertCtrl.create({
+      cssClass: 'my-custom-class',
+      mode: "ios",
+      header: 'Please be certain.',
+      subHeader: '',
+      message: 'Once you delete a dish, there is no going back.',
+      buttons: [{ text: "Cancel", role: null }, { text: "Remove", role: "remove" }]
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+
+    if(role == "remove") {
+      await this.service.delete('dishes', 'remove', this.service.restaurant.sname, this.data._id);
+      this.Emitter.emit({ t: "remove", _id: this.data._id });
+    }
   }
+  
 
 
   ngOnInit() {

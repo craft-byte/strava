@@ -47,7 +47,11 @@
             }
         }
         .then {
-            height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            &::-webkit-scrollbar {
+                width: 10px;
+            }
             .title {
                 width: 100%;
                 display: grid;
@@ -88,7 +92,20 @@
                         height: 148px;
                         width: 148px;
                     }
-                }  
+                }
+                .feedbacks {
+                    width: 100%;
+                    padding-left: 10px;
+                    margin-top: 20px;
+                    display: inline-block;
+                    .title {
+                        font-size: 18px;
+                        color: rgb(110, 110, 110);
+                    }
+                    .self {
+                        padding-left: 10px;
+                    }
+                }
             }
         }
         .invite {

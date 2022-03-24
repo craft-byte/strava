@@ -1,8 +1,10 @@
 <ion-header>
-  <ion-toolbar mode=ios color="success">
+  <ion-toolbar mode=ios color="warning">
     <ion-title>Ctraba</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="settings()"><ion-icon name="person-outline"></ion-icon></ion-button>
+      <ion-button (click)="settings()">
+        <ion-icon name="person-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -12,7 +14,7 @@
     <div class="restaurants">
       <div class="title">
         <div class="text">
-          <p>Restaurants</p>
+          <p>Start a Restaurant</p>
         </div>
         <div class="function">
           <ion-fab-button (click)=addRestaurant() color="success" size="small" class="b">
@@ -28,7 +30,7 @@
         </ion-list>
       </div>
     </div>
-    <div class="other" >
+    <div class="other">
       <div class="work" *ngIf="works.length >= 1">
         <div class="title">
           <p class="text">Work</p>
@@ -39,19 +41,29 @@
           </ion-item>
         </ion-list>
       </div>
-      <div class="invites" *ngIf="invitations.length >= 1">
-        <h1>Invitations</h1>
-        <div *ngFor="let i of invitations" class="one">
-          <div class="name">
-            {{ i.name }}
-          </div>
-          <div class="buttons">
-            <ion-button shape="round" fill="outline" color="danger" (click)="accept(i.id, false)">
-              <ion-icon name="close-outline"></ion-icon>
-            </ion-button>
-            <ion-button shape="round" fill="outline" color="success" (click)="accept(i.id, true)">
-              <ion-icon name="checkmark-outline"></ion-icon>
-            </ion-button>
+      <div class="invitations" *ngIf="invitations.length >= 1">
+        <div class="title">
+          Invitations
+        </div>
+        <div class="self">
+          <div *ngFor="let i of invitations" class="one">
+            <div class="restaurant">
+              <div class="name">
+                {{ i.restaurant }}
+              </div>
+              <div class="role">
+                Offers you a {{ i.role }} job
+              </div>
+            </div>
+            <div class="info">
+              <div class="sent">
+                Sent: {{ i.joined }}
+              </div>
+              <div class="buttons">
+                <button class="accept" (click)="invitation(i._id, 'accept')">Accept</button>
+                <button class="reject" (click)="invitation(i._id, 'reject', i.restaurant)">Reject</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

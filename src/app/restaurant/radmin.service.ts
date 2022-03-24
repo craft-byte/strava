@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Restaurant, Work } from 'src/models/radmin';
+import { MainService } from '../main.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +16,28 @@ export class RadminService {
   work: Work;
 
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) { };
+  constructor(
+    private http: HttpClient, 
+    private main: MainService,
+    private route: ActivatedRoute
+  ) { };
 
+  async handleHttpError(res: HttpErrorResponse) {
+    switch (res.status) {
+      case 401:
+        return await this.main.login(true);
+    
+      default:
+        break;
+    }
+  }
 
   post<T>(body: any, ...args: string[]) {
     return this.http.post<T>(this.url + "/" + args.join("/"), body).toPromise();
   }
   patch<T>(body: any, ...args: string[]) {
-    return this.http.patch<T>(this.url + "/" + args.join("/"), body).toPromise();
+    const url = this.url + "/" + args.join("/");
+    return this.http.patch<T>(url, body).toPromise();  
   }
   get<T>(...args: string[]) {
     return this.http.get<T>(this.url + "/" + args.join("/")).toPromise();
