@@ -22,7 +22,10 @@ export class ComponentComponent implements OnInit {
       return;
     }
     this.color = "dark";
-    this.Emitter.emit({ component: this.component, value: this.value });
+
+    console.log(this.value);
+
+    this.Emitter.emit({ component: this.component, amount: this.value });
   }
 
 

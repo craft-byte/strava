@@ -1,28 +1,19 @@
-<div [ngClass]="full ? 'full' : 'app'" *ngIf="dish">
-  <div class="types">
-    <app-type *ngFor="let t of dish.types" [type]="t"></app-type>
+<div class="app" [ngClass]="{ taken: orderDish.taken }" (click)="chooseDish()">
+  <div *ngIf="orderDish.taken" class="taken">
+    TAKEN <p class="time" *ngIf="orderDish.takenTime && orderDish.takenTime.length > 0">{{ orderDish.takenTime }} ago</p>
+  </div>
+  <div class="image">
+    <img [src]="image" alt="">
   </div>
   <div class="name">
     {{ dish.name }}
   </div>
-  <div class="comment" *ngIf="full">
-    <div *ngIf="data.taken" class="taken">
-      Taken by: {{data.taken}}
+  <div class="time">
+    <div class="cooking">
+      Cooking: {{ dish.time }} min.
     </div>
-  </div>
-  <div class="buttons" *ngIf="full">
-    <div class="take">
-      <ion-button color="warning" fill="outline" (click)="untake()" *ngIf="data.taken && data.taken === username"><ion-icon name="shield-checkmark-outline"></ion-icon></ion-button>
-      <ion-button color="warning" (click)="take()" *ngIf="!data.taken || data.taken !== username" [disabled]="data.taken && data.taken !== username"><ion-icon name="shield-outline"></ion-icon></ion-button>
-    </div>
-    <div class="done">
-      <ion-button color="success" (click)="done()"><ion-icon name="checkmark-outline"></ion-icon></ion-button>
-    </div>
-    <div class="info">
-      <ion-button color="tertiary" fill=outline (click)="info()"><ion-icon name="information-outline"></ion-icon></ion-button>
-    </div>
-    <div class="remove">
-      <ion-button fill="outline" color="danger" (click)="remove()"><ion-icon name="trash-outline"></ion-icon></ion-button>
+    <div class="delay {{ orderDish.time.color }}">
+      Delay: {{ orderDish.time.title }}
     </div>
   </div>
 </div>

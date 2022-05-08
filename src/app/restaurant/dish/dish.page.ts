@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { types1, types2 } from 'src/assets/consts';
+import { strict, general, categories } from 'src/assets/consts';
 import { getImage } from 'src/functions';
 import { Dish } from 'src/models/dish';
-import { Restaurant } from 'src/models/radmin';
+import { Restaurant } from 'src/models/general';
 import { RadminService } from '../radmin.service';
 
 @Component({
@@ -24,8 +24,9 @@ export class DishPage implements OnInit {
 
   addDishForm: FormGroup;
 
-  types = types1;
-  types2 = types2;
+  strict = strict;
+  categories = categories;
+  general = general;
 
   dishImage: File;
   image = "./../../../../assets/images/no-image.jpg";
@@ -42,16 +43,21 @@ export class DishPage implements OnInit {
   ) {
     this.addDishForm = new FormGroup({
       name: new FormControl("", Validators.required),
-      types: new FormControl(null),
       time: new FormControl(null, Validators.required),
       price: new FormControl(null, Validators.required),
       description: new FormControl(""),
-      categories: new FormControl(null, Validators.required)
+      general: new FormControl(null, Validators.required),
+      categories: new FormControl(null, Validators.required),
+      strict: new FormControl(null, Validators.required)
     });
   };
 
   exit() {
-    this.router.navigate(["radmin", "dishes", "overview"], { replaceUrl: true, queryParams: { restaurant: this.restaurant._id } });
+    if(this.mode == "edit") {
+      this.router.navigate(["restaurant", this.restaurant._id, "dishes", "full", this.dish._id], { replaceUrl: true });
+    } else {
+      this.router.navigate(["restaurant", this.restaurant._id, "dishes", "overview"], { replaceUrl: true });
+    }
   }
   async edit() {
     const formData = new FormData();
@@ -61,8 +67,8 @@ export class DishPage implements OnInit {
     }
     formData.append("body", JSON.stringify(this.addDishForm.value));
 
-    await this.service.patch(formData, "dish", "update", this.restaurant.sname, this.dish._id)
-    this.router.navigate(["radmin", "dishes", "full", this.dish._id], { replaceUrl: true, queryParams: { restaurant: this.restaurant._id } });
+    await this.service.patch(formData, "dishes", this.dish._id)
+    this.router.navigate(["restaurant", this.restaurant._id, "dishes", "full", this.dish._id], { replaceUrl: true });
   }
   async setImage(e) {
     this.imageChanged = true;
@@ -81,25 +87,21 @@ export class DishPage implements OnInit {
 
   }
   async addDish(reroute: boolean) {
-    const { name, price, time, description, types, categories } = this.addDishForm.value;
-
+    
     if (
       !this.addDishForm.valid
     ) {
       this.ui.msg = "Some required fields are not filled";
       return;
     }
-
-
+    
     const dish = new FormData();
-    dish.append("body", JSON.stringify({
-      name, price, time, description, types, categories: !categories ? [] : categories
-    }));
+    dish.append("body", JSON.stringify(this.addDishForm.value));
     if(this.dishImage) {
       dish.append("image", this.dishImage, this.dishImage.name);
     }
 
-    await this.service.post(dish, 'addDish', this.restaurant.sname);
+    await this.service.post(dish, 'dishes/add');
 
     if(reroute) {
       this.exit();
@@ -113,15 +115,14 @@ export class DishPage implements OnInit {
 
   async ngOnInit() {
     this.mode = this.route.snapshot.paramMap.get("mode") as "add" | "edit";
-    const restaurant = this.route.snapshot.queryParamMap.get("restaurant");
-    const { restaurant: r }  = await this.service.get('getRestaurant', 'settings', restaurant);
-    this.restaurant = r;
+    const restaurantId = this.route.snapshot.paramMap.get("restaurantId");
+    this.restaurant = await this.service.getRestaurant(restaurantId);
     if(this.mode == "edit") {
       const id = this.route.snapshot.queryParamMap.get("dish");
       if(!id) {
         return this.exit();
       }
-      this.dish = await this.service.get("dish", "full", this.restaurant.sname, id);
+      this.dish = await this.service.get("dishes", id);
       this.ui.title = "Edit " + this.dish.name;
       this.image = await getImage(this.dish.image);
       this.addDishForm = new FormGroup({
@@ -130,6 +131,8 @@ export class DishPage implements OnInit {
         time: new FormControl(this.dish.time),
         price: new FormControl(this.dish.price),
         description: new FormControl(this.dish.description),
+        strict: new FormControl(this.dish.strict),
+        general: new FormControl(this.dish.general),
         categories: new FormControl(this.dish.categories)
       });
     } else {

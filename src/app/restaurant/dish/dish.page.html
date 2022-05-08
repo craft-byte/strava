@@ -71,10 +71,10 @@
               <a routerLink="help" class="dark-link">Help?</a>
             </div>
           </div>
-          <ion-item *ngIf="restaurant.settings.dishes.strictDishCookingCheck">
-            <ion-label>Cooking Types</ion-label>
-            <ion-select formControlName="types" mode="ios" multiple="true" cancelText="Exit" okText="Confirm">
-              <ion-select-option *ngFor="let type of types" [value]="type.value">
+          <ion-item>
+            <ion-label>General</ion-label>
+            <ion-select formControlName="general" mode="ios" cancelText="Exit" okText="Confirm">
+              <ion-select-option *ngFor="let type of general" [value]="type.value">
                 {{ type.title }}
               </ion-select-option>
             </ion-select>
@@ -82,7 +82,15 @@
           <ion-item>
             <ion-label>Categories</ion-label>
             <ion-select formControlName="categories" mode="ios" multiple="true" cancelText="Exit" okText="Confirm">
-              <ion-select-option *ngFor="let type of types2" [value]="type.value">
+              <ion-select-option *ngFor="let type of categories" [value]="type.value">
+                {{ type.title }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label>More categories</ion-label>
+            <ion-select formControlName="strict" mode="ios" multiple="true" cancelText="Exit" okText="Confirm">
+              <ion-select-option *ngFor="let type of strict" [value]="type.value">
                 {{ type.title }}
               </ion-select-option>
             </ion-select>

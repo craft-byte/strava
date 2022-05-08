@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar [color]="ui.color">
+    <ion-title>{{ ui.title }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div *ngIf="type == 1" class="name">
+      <p class="text">
+        {{ ui.name[1] }}
+      </p>
+      <div class="input">
+        <div class="label">
+          Name:
+        </div>
+        <input [(ngModel)]="name" placeholder="..." type="text">
+      </div>
+      <p class="text">
+        {{ ui.name[2] }}
+      </p>
+      <button class="success-button" (click)="submit()">
+        Submit
+      </button>
+    </div>
+    <div *ngIf="type == 2" class="username">
+      <p class="text">
+        {{ ui.username[1] }}
+      </p>
+      <div class="text">
+        {{ ui.username[2] }}
+      </div>
+      <div class="input {{ ui.usernameInput }}">
+        <div class="label">
+          Username:
+        </div>
+        <input (input)="checkUsername($event)" [value]="username" type="text">
+      </div>
+      <p class="text">
+        {{ ui.username[3] }}
+      </p>
+      <button class="success-button" (click)="submit()">
+        Submit
+      </button>
+    </div>
+    <div *ngIf="type == 3" class="email">
+      <p class="text">
+        Email is used by our team to contact you.
+        It will not be shown anywhere else.
+      </p>
+      <div class="input">
+        <div class="label">
+          Email:
+        </div>
+        <input [(ngModel)]="email" type="text">
+      </div>
+      <button [disabled]="ui.disableSend" class="success-button" (click)="send()">
+        Send code
+      </button>
+      <div class="input code">
+        <div class="label">
+          Verification code:
+        </div>
+        <input [(ngModel)]="code" type="text">
+      </div>
+      <p class="text">
+        Put here the code from your email message.
+      </p>
+      <button class="success-button" [disabled]="!ui.disableSend" (click)="verify()">
+        Confirm
+      </button>
+    </div>
+  </div>
+</ion-content>

@@ -8,6 +8,8 @@ interface Dish {
     description?: string;
     types?: string[];
     categories?: string[];
+    strict?: string[];
+    general?: string[];
     image?: string;
     choosen?: boolean;
     bought?: number;

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DishesComponent } from './dishes.component';
-import { RidGuard } from 'src/app/rid.guard';
 
 
 
@@ -18,6 +17,11 @@ import { RidGuard } from 'src/app/rid.guard';
         component: DishesComponent,
         children: [
           {
+            path: "",
+            pathMatch: "full",
+            redirectTo: "overview"
+          },
+          {
             path: "overview",
             loadChildren: () => import("./overview/overview.module").then(m => m.OverviewModule)
           },
@@ -28,7 +32,6 @@ import { RidGuard } from 'src/app/rid.guard';
           {
             path: "full/:id",
             loadChildren: () => import("./full/full.module").then(m => m.FullModule),
-            canActivate: [RidGuard]
           }
         ]
       }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
-import { MainService } from './main.service';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { stat } from 'fs';
+import { MainService } from './services/main.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +15,24 @@ export class LoginGuard implements CanActivate {
 
   }
 
-  async canActivate(): Promise<boolean | UrlTree> {
-    if(await this.main.login(true)) {
-      return true;
+  async canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if(this.main.userInfo){
+      const result = await this.main.auth("false");
+      if(result) {
+        return true;
+      }
+      this.router.navigate(["login"], { replaceUrl: true, queryParams: { last: state.url } });
+      return false;
+    } else {
+      const result = await this.main.auth("true");
+      if(result) {
+        this.main.userInfo = result as any;
+        return true;
+      } else {
+        this.router.navigate(["login"], { replaceUrl: true, queryParams: { last: state.url } });
+        return false;
+      }
     }
-    return this.router.navigate(['login']);
   }
   
 }

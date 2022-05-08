@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-title>Add component</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="help()">Help</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <form [formGroup]="form">
+      <div class="name">
+        <ion-item>
+          <ion-label position="floating">Component name</ion-label>
+          <ion-input formControlName="name"></ion-input>
+        </ion-item>
+      </div>
+      <div class="amount">
+        <ion-item>
+          <ion-label position="floating">Amount grams you have</ion-label>
+          <ion-input formControlName="amount" type="number"></ion-input>
+        </ion-item>
+      </div>
+      <div class="price">
+        <ion-item>
+          <ion-label position="floating">Price per kilogram</ion-label>
+          <ion-input formControlName="price" type="number"></ion-input>
+        </ion-item>
+      </div>
+    </form>
+    <button (click)="submit()" class="success-button">
+      Submit
+    </button>
+  </div>
+</ion-content>

@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RadminService } from 'src/app/restaurant/radmin.service';
 import { getImage } from 'src/functions';
-import { Worker } from 'src/models/radmin';
+import { Worker } from 'src/models/components';
 import { User } from 'src/models/user';
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -17,31 +17,22 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 })
 export class WorkerComponent implements OnInit {
 
-  user: User;
-
   image: string;
   name: string;
 
-  date: string;
-
   constructor(
     private service: RadminService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { };
 
 
-  @Input() data: Worker;
+  @Input() data: any;
   @Output() Emitter = new EventEmitter();
 
-  getDate() {
-    const d = new Date(this.data.joined);
-    const month = monthNames[d.getMonth()];
-
-    this.date = `${d.getDate()} ${month}`;
-  }
 
   go() {
-    this.router.navigate(["radmin/people/staff/more", this.user._id], { queryParamsHandling: "preserve" });
+    this.router.navigate(["more", this.data._id], { relativeTo: this.route, queryParamsHandling: "preserve" });
   }
 
   more(btn: any) {
@@ -49,16 +40,14 @@ export class WorkerComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.user = await this.service.get("user/get", this.data._id);
-    if(this.user.avatar) {
-      this.image = await getImage(this.user.avatar);
+    if(this.data.avatar) {
+      this.image = await getImage(this.data.avatar);
     }
-    if(this.user.name) {
-      this.name = this.user.name;
+    if(this.data.name) {
+      this.name = this.data.name;
     } else {
-      this.name = this.user.username;
+      this.name = this.data.username;
     }
-    this.getDate();
   }
 
 }

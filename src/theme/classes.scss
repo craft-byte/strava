@@ -1,74 +1,36 @@
 
-.red {
-    height: 28px;
-    width: 100px;
-    border: 1px solid #eb445a;
-    border-radius: 7px;
-    background: none;
-    background-color: #eb445a07;
+.red-button {
+    width: 120px;
+    height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #eb445a;
-    &:hover {
-        color: white;
-        background-color: #eb445a;
-    }
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--red);
+    color: white;
     &:disabled {
-        border: 1px solid rgb(121, 121, 121);
-        color: rgb(121, 121, 121);
-        &:hover {
-            background-color: rgba(121, 121, 121, 0);
-        }
+        background-color: red;
+        color: var(--light-gray);
     }
 }
-.orange {
-    height: 28px;
-    width: 100px;
-    border: 1px solid #ffc409;
-    border-radius: 7px;
-    background: none;
-    background-color: #ffc40907;
+.orange-button {
+    width: 120px;
+    height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #ffc409;
-    &:hover {
-        color: white;
-        background-color: #ffc409;
-    }
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--orange);
+    color: white;
     &:disabled {
-        border: 1px solid rgb(121, 121, 121);
-        color: rgb(121, 121, 121);
-        &:hover {
-            background-color: rgba(121, 121, 121, 0);
-        }
+        background-color: orange;
+        color: var(--light-gray);
     }
 }
-  
-.payment-modal {
-    .modal-wrapper {
-        position: absolute;
-        bottom: 0;
-        min-height: initial;
-        top: initial;
-        height: 400px;
-    }
-}
-
-.light-black {
-    color: var(--text-color);
-}
-  
-.cursor-hover {
-    cursor: pointer;
-}
-
-.small-gray {
-    color: var(--gray);
-    margin: 6px 4px;
-}
-
 
 .header[type=h1] {
     display: flex;
@@ -85,6 +47,93 @@
     font-size: 14px;
 }
 
+
+
+
+.gradient-button {
+    --width: 124px;
+    --height: 42px;
+    --color1: var(--orange);
+    --color2: var(--purple);
+    --color3: var(--red);
+    --direction: 90deg;
+    --color: white;
+    width: var(--width);
+    height: var(--height);
+    background: var(--color1);
+    background: linear-gradient(var(--direction), var(--color1) 0%, var(--color2) 50%, var(--color3) 100%);
+    border-radius: 8px;
+    color: var(--color);
+}
+
+
+
+.success-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--green);
+    color: white;
+    &:disabled {
+        background-color: rgb(26, 196, 26);
+        color: var(--light-gray);
+    }
+}
+.purple-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--purple);
+    color: white;
+    &:disabled {
+        background-color: purple;
+        color: var(--light-gray);
+    }
+}
+.blue-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--blue);
+    color: white;
+    &:disabled {
+        background-color: rgb(2, 2, 187);
+        color: var(--light-gray);
+    }
+}
+
+.close-button {
+    width: 92px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 12px;
+    background-color: var(--red);
+    color: white;
+    &:disabled {
+        background-color: var(--gray);
+        color: white;
+    }
+}
+
 .square-success {
     width: 32px;
     height: 32px;
@@ -95,4 +144,100 @@
     background-color: var(--ion-color-success);
     color: white;
     border-radius: 12px;
+}
+
+.department-modal {
+    --width: 624px;
+    .modal-wrapper {
+        --width: 624px;
+        --min-width: 624px;
+    }
+}
+
+.smallest {
+    .modal-wrapper {
+        --width: 428px;
+        --height: 428px; 
+    }
+}
+
+.worker-settings {
+    .modal-wrapper {
+        --width: 624px;
+    }
+}
+
+
+
+.ion-color-red {
+    --ion-color-base: var(--ion-color-red);
+    --ion-color-base-rgb: var(--ion-color-red-rgb);
+    --ion-color-contrast: var(--ion-color-red-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-red-contrast-rgb);
+    --ion-color-shade: var(--ion-color-red-shade);
+    --ion-color-tint: var(--ion-color-red-tint);
+}
+.ion-color-green {
+    --ion-color-base: var(--ion-color-green);
+    --ion-color-base-rgb: var(--ion-color-green-rgb);
+    --ion-color-contrast: var(--ion-color-green-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-green-contrast-rgb);
+    --ion-color-shade: var(--ion-color-green-shade);
+    --ion-color-tint: var(--ion-color-green-tint);
+}
+.ion-color-blue {
+    --ion-color-base: var(--ion-color-blue);
+    --ion-color-base-rgb: var(--ion-color-blue-rgb);
+    --ion-color-contrast: var(--ion-color-blue-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-blue-contrast-rgb);
+    --ion-color-shade: var(--ion-color-blue-shade);
+    --ion-color-tint: var(--ion-color-blue-tint);
+}
+.ion-color-orange {
+    --ion-color-base: var(--ion-color-orange);
+    --ion-color-base-rgb: var(--ion-color-orange-rgb);
+    --ion-color-contrast: var(--ion-color-orange-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-orange-contrast-rgb);
+    --ion-color-shade: var(--ion-color-orange-shade);
+    --ion-color-tint: var(--ion-color-orange-tint);
+}
+.ion-color-pink {
+    --ion-color-base: var(--ion-color-pink);
+    --ion-color-base-rgb: var(--ion-color-pink-rgb);
+    --ion-color-contrast: var(--ion-color-pink-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-pink-contrast-rgb);
+    --ion-color-shade: var(--ion-color-pink-shade);
+    --ion-color-tint: var(--ion-color-pink-tint);
+}
+.ion-color-purple {
+    --ion-color-base: var(--ion-color-purple);
+    --ion-color-base-rgb: var(--ion-color-purple-rgb);
+    --ion-color-contrast: var(--ion-color-purple-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-purple-contrast-rgb);
+    --ion-color-shade: var(--ion-color-purple-shade);
+    --ion-color-tint: var(--ion-color-purple-tint);
+}
+.ion-color-black {
+    --ion-color-base: var(--ion-color-black);
+    --ion-color-base-rgb: var(--ion-color-black-rgb);
+    --ion-color-contrast: var(--ion-color-black-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-black-contrast-rgb);
+    --ion-color-shade: var(--ion-color-black-shade);
+    --ion-color-tint: var(--ion-color-black-tint);
+}
+.ion-color-gray {
+    --ion-color-base: var(--ion-color-gray);
+    --ion-color-base-rgb: var(--ion-color-gray-rgb);
+    --ion-color-contrast: var(--ion-color-gray-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-gray-contrast-rgb);
+    --ion-color-shade: var(--ion-color-gray-shade);
+    --ion-color-tint: var(--ion-color-gray-tint);
+}
+.ion-color-sea {
+    --ion-color-base: var(--ion-color-sea);
+    --ion-color-base-rgb: var(--ion-color-sea-rgb);
+    --ion-color-contrast: var(--ion-color-sea-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-sea-contrast-rgb);
+    --ion-color-shade: var(--ion-color-sea-shade);
+    --ion-color-tint: var(--ion-color-sea-tint);
 }

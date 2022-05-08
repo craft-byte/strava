@@ -5,7 +5,7 @@
     </div>
     <div class="gap"></div>
     <div class="buttons">
-      <button class="settings" (click)="goSettings()">Settings</button>
+      <button class="settings orange-button" (click)="goSettings()">Settings</button>
     </div>
   </div>
   <div class="content" *ngIf="user">
@@ -39,31 +39,15 @@
         </div>
       </div>
       <div class="content">
-        <span title="Settings">
-          <div *ngIf="worker.role == 'manager'" (click)="managerSettings()" class="manager">
-            <div [ngClass]="{ 'active': worker.settings.dishes }" class="one">
-              Dishes management
-            </div>
-            <div [ngClass]="{ 'active': worker.settings.removingDishes }" class="one">
-              Removing dishes
-            </div>
-            <div [ngClass]="{ 'active': worker.settings.editingComponents }" class="one">
-              Components management
-            </div>
-            <div [ngClass]="{ 'active': worker.settings.staff }" class="one">
-              Staff management
-            </div>
-            <div [ngClass]="{ 'active': worker.settings.staffRemoving }" class="one">
-              Staff removing
-            </div>
+        <div class="capabilities" *ngIf="ui.showCapabilities">
+          <div class="title">
+            Capabilities
           </div>
-        </span>
+          <div class="button">
+            <button class="orange-button" (click)="capabilities()">See</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<app-settings-window (Emitter)="onSettingsWindowEmit($event)" [workerId]="user._id" [type]="worker.role"
-  [settings]="worker.settings" *ngIf="managerSettingsWindow"></app-settings-window>
-<app-worker-settings (Emitter)="onWorkerSettingsWindowEmit($event)" *ngIf="settingsWindow"></app-worker-settings>
-<app-firing-window *ngIf="showFiringWindow" (Emitter)="onFiringWindowEmit($event)" [user]="user"></app-firing-window>

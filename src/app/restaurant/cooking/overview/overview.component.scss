@@ -1,0 +1,40 @@
+.app {
+    .title {
+        width: 100%;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding-left: 26px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #3d3d3d;
+    }
+    .warning {
+        .title {
+            padding-left: 16px;
+            color: var(--text-color);
+        }
+        .components {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            .component {
+                margin: 16px;
+                padding: 4px;
+                height: 86px;
+                border-radius: 12px;
+                border: 2px solid var(--orange);
+                transition: all .4s;
+                cursor: pointer;
+                .name {
+                    font-size: 18px;
+                    color: var(--title-color);
+                }
+                &:hover {
+                    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                }
+            }
+        }
+    }
+}

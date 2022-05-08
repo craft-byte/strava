@@ -12,7 +12,7 @@
       </div>
     </div>
   </div>
-  <div class="components" *ngIf="restaurant">
+  <div class="components" *ngIf="components">
     <div class="example">
       <div class="name">
         <p class="name">Name</p>
@@ -28,8 +28,10 @@
         
       </div>
     </div>
-    <app-component *ngFor="let i of restaurant.components" [data]="i" (Emitter)="onEmited($event)"></app-component>
+    <div *ngIf="ui.noComponents" class="no-components">
+      <p>You don't have any components yet.</p>
+      <button class="orange-button" (click)="add()">Add first component</button>
+    </div>
+    <app-component *ngFor="let i of components" [data]="i" (Emitter)="onEmited($event)"></app-component>
   </div>
 </div>
-
-<app-window *ngIf="windowType" (Emitter)="onWindowEmited($event)" [restaurant]="restaurant._id" [windowType]="windowType" [component]="curComponent"></app-window>

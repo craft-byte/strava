@@ -4,14 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FullComponent } from './full.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { PricesaleComponent } from './pricesale/pricesale.component';
 
 
 
 @NgModule({
   declarations: [
     FullComponent,
-    PricesaleComponent
   ],
   imports: [
     CommonModule,

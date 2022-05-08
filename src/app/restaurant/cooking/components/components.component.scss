@@ -1,6 +1,15 @@
 .app {
     .components {
         margin-top: 20px;
+        .no-components {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            button {
+                width: 228px;
+            }
+        }
         .example {
             margin-bottom: 20px;
             display: grid;

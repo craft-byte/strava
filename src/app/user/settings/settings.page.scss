@@ -1,45 +1,142 @@
+.header {
+    height: 60px;
+    padding: 0 412px;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    display: grid;
+    grid-template-columns: 5% 70% 25%;
+
+    .name {
+        display: flex;
+        align-items: center;
+        padding-left: 20px;
+
+        p {
+            margin: 0;
+            font-size: 20px;
+            padding-left: 20px;
+            font-weight: 600;
+            background: var(--orange);
+            background: -webkit-linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
+            background: -moz-linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
+            background: linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    }
+
+    .exit {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        #exit {
+            border-radius: 8px;
+            background: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            color: rgb(85, 85, 85);
+        }
+    }
+
+    .links {
+        display: grid;
+        grid-template-columns: 1fr;
+        .link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            a {
+                color: var(--gray);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+
+
 .app {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .update-user {
-        margin-top: 50px;
-        border: var(--warning-border-color) 1px solid;
-        padding: 20px;
-        border-radius: 15px;
-        width: 300px;
-        .title {
-            width: 100%;
-            height: auto;
-            border-bottom: rgb(248, 181, 56) 1px solid;
-        }
-        .body {
-            margin-top: 10px;
+    padding: 24px 412px;
+
+    .user-info {
+        height: 256px;
+        display: grid;
+        grid-template-columns: 20% 80%;
+        border-bottom: 2px var(--border-color) solid;
+
+        .avatar {
             display: flex;
+            justify-content: center;
             align-items: center;
-            flex-direction: column;
+
+            img {
+                height: 196px;
+                width: 196px;
+                border-radius: 100%;
+                object-fit: cover;
+            }
         }
-    }
-    .danger {
-        margin-top: 50px;
-        margin-top: 50px;
-        border: rgb(250, 58, 58) 1px solid;
-        padding: 20px;
-        border-radius: 15px;
-        width: 300px;
-        .title {
-            width: 100%;
-            height: auto;
-            border-bottom: rgb(250, 58, 58) 1px solid;
+
+        .other {
+            padding-left: 12px;
+            padding-top: 24px;
+            position: relative;
+
+            button {
+                margin-top: 12px;
+                border-radius: 8px;
+                display: grid;
+                grid-template-columns: 27% 73%;
+                height: 32px;
+                .label {
+                    height: 100%;
+                    padding-left: 6px;
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    font-size: 18px;
+                }
+                .value {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                }
+            }
+
+            .name {
+                margin-top: 16px;
+                font-size: 22px;
+                color: var(--text-color);
+                button {
+                    width: 364px;
+                    border: 1px solid var(--orange);
+                }
+            }
+
+            .username {
+                font-size: 18px;
+                color: var(--gray);
+                button {
+                    width: 364px;
+                    border: 1px solid var(--purple);
+                }
+            }
+
+            .email {
+                font-size: 18px;
+                color: var(--gray);
+                button {
+                    width: 364px;
+                    border: 1px solid var(--red);
+                }
+            }
         }
-        .body {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-    }
-    .logout {
-        margin-top: 50px;
     }
 }

@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar [color]="color">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ title }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="handle()">{{ button }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="top" *ngIf="showDish">
+      <div class="image">
+        <img *ngIf="image" [src]="image" alt="">
+      </div>
+      <div class="name">
+        {{ dish.name }}
+      </div>
+      <div class="delay">
+        Delay: <p class="{{ orderDish.time.color }}">{{ orderDish.time.title }}</p>
+      </div>
+    </div>
+    <div class="cooking" *ngIf="cooking">
+      <div class="title">
+        Cooking
+      </div>
+      <div class="recipee">
+        <div class="title">
+          Recipee
+        </div>
+        <div class="body">
+          {{ cooking.recipee }}
+        </div>
+      </div>
+      <div class="components">
+        <div class="title">You'll need:</div>
+        <div class="body">
+          <div class="component" *ngFor="let i of cooking.components">
+            <div class="amount">
+              {{ i.amount }} grams 
+            </div>
+            <div class="name">
+              <ion-text [color]="i.color">
+                of {{ i.name }} (you have {{i.has}})
+              </ion-text>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

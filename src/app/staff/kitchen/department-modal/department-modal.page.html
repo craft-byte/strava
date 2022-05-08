@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar [color]="color">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app" *ngIf="convertedDishes">
+    <app-dish *ngFor="let i of kitchen.dishes[type]" (Emitter)="openDishModal($event)" [dish]="convertedDishes[i.dishId]" [orderDish]="i"></app-dish>
+  </div>
+</ion-content>

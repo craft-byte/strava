@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MainService } from 'src/app/main.service';
+import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { MainService } from 'src/app/services/main.service';
 import { UserService } from '../user.service';
 
 @Component({
@@ -9,7 +11,6 @@ import { UserService } from '../user.service';
 })
 export class UserCreatePage implements OnInit {
 
-  email = "";
   password = "";
   username = "";
 
@@ -20,24 +21,25 @@ export class UserCreatePage implements OnInit {
 
   constructor(
     private service: UserService,
-    private main: MainService
+    private main: MainService,
+    private modalCtrl: ModalController,
+    private router: Router
   ) { }
 
 
   async signup() {
-    const { email, password, username } = this;
+    const { password, username } = this;
     if(
-      email.length == 0 ||
       password.length == 0 ||
       username.length == 0
     ) {
-      this.ui.message = "Something Went Wrong"
+      this.ui.message = "Fill all the fields.";
       return;
     }
-    const result = await this.service.createAccount({ email: this.email, password: this.password, username: this.username });
+    const result = await this.service.createAccount({ password: this.password, username: this.username });
     if(result.acknowledged) {
       this.main.userInfo = result.user;
-      this.service.go({}, "user-info");
+      this.router.navigate(["email-setup"], { queryParamsHandling: "preserve", replaceUrl: true });
     }
   }
 

@@ -3,19 +3,17 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MoreComponent } from './more.component';
 import { IonicModule } from '@ionic/angular';
-import { SettingsWindowComponent } from './settings-window/settings-window.component';
 import { FormsModule } from '@angular/forms';
-import { WorkerSettingsComponent } from './worker-settings/worker-settings.component';
-import { FiringWindowComponent } from './firing-window/firing-window.component';
 import { IonicRatingComponentModule } from 'ionic-rating-component';
+import { SettingsModalPage } from '../settings-modal/settings-modal.page';
+import { FirePage } from '../fire/fire.page';
 
 
 @NgModule({
   declarations: [
     MoreComponent,
-    SettingsWindowComponent,
-    WorkerSettingsComponent,
-    FiringWindowComponent
+    SettingsModalPage,
+    FirePage
   ],
   imports: [
     CommonModule,

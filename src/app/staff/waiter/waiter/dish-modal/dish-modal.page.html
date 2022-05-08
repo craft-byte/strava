@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        Cancel
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ name }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="done()">
+        Done
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div class="app">
+    {{ type }}
+  </div>
+</ion-content>

@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { MainService } from 'src/app/main.service';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { MainService } from 'src/app/services/main.service';
 import { User } from 'src/models/user';
 import { UserService } from '../user.service';
+import { ChangeModalPage } from './change-modal/change-modal.page';
 
 @Component({
   selector: 'app-settings',
@@ -16,46 +19,41 @@ export class SettingsPage implements OnInit {
     changeTitle: "Change"
   }
 
-  set = {
-    username: "",
-    name: "",
-    phone: ""
-  }
-
   constructor(
     private service: UserService,
-    private main: MainService
+    private modalCtrl: ModalController,
+    private router: Router,
+    private main: MainService,
   ) { };
 
 
-  back() {
-    this.service.go({}, "user-info");
-  }
   logout() {
     this.main.logout();
-    this.service.go({}, "login");
+    this.router.navigate(["login"], { replaceUrl: true, queryParamsHandling: "preserve" });
     this.main.last = null;
   }
-  danger(type: "remove" | "password") {
-    this.service.go({}, "danger", type);
+  exit() {
+    this.router.navigate(["user/info"], { replaceUrl: true, queryParamsHandling: "preserve" });
   }
-  async update() {
-    const result = await this.service
-      .update({ username: this.set.username, phone: this.set.phone, name: this.set.name }, this.user._id);
-    if(result.acknowledged) {
-      this.ui.changeTitle = "Changed";
-      this.main.userInfo.phone = this.set.phone;
-    } else {
-      this.ui.changeTitle = "Something went wrong";
-      console.log(result.error);
-    }
+
+
+  async change(n: number) {
+    const modal = await this.modalCtrl.create({
+      component: ChangeModalPage,
+      mode: "ios",
+      swipeToClose: true,
+      componentProps: {
+        type: n
+      }
+    });
+
+
+    modal.present();
   }
 
   async ngOnInit() {
-    await this.main.login(true, { url: "settings" });
+    console.log(this.main.userInfo);
     this.user = this.main.userInfo;
-    this.set.username = this.user.username;
-    this.set.name = this.user.name;
   }
 
 }

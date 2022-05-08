@@ -1,55 +1,54 @@
-<ion-header>
-  <ion-toolbar color="primary" mode=ios>
-    <ion-buttons slot="start">
-      <ion-button (click)="back()"><ion-icon name="chevron-back-outline"></ion-icon>Back</ion-button>
-    </ion-buttons>
-    <ion-title>Settings</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="header">
+  <div class="exit">
+    <button id="exit" (click)="exit()"><ion-icon name="close-outline"></ion-icon></button>
+  </div>
+  <div class="name">
+    <p>Settings</p>
+  </div>
+  <div class="links">
+    <div class="link">
+      <a (click)="logout()">Logout</a>
+    </div>
+  </div>
+</div>
 
 <ion-content>
-  <div class="app" *ngIf="user">
-    <div *ngIf="user.name" class="name">
-      <h1>{{ user.name }}</h1>
-    </div>
-    <div class="logout">
-      <ion-button color="warning" (click)="logout()">Log Out &nbsp;&nbsp; <ion-icon name="log-out-outline"></ion-icon></ion-button>
-    </div>
-    <div class="update-user">
-      <div class="title">
-        <h1>
-          {{ ui.changeTitle }}
-        </h1>
+  <div class="app">
+    <div class="user-info">
+      <div class="avatar">
+        <img src="./../../../assets/images/plain-avatar.jpg" alt="">
       </div>
-      <div class="body">
-        <div class="username">
-          <ion-item>
-            <ion-label position="floating">Username</ion-label>
-            <ion-input [(ngModel)]="set.username"></ion-input>
-          </ion-item>
-        </div>
+      <div class="other">
         <div class="name">
-          <ion-item>
-            <ion-label position="floating">Name</ion-label>
-            <ion-input [(ngModel)]="set.name"></ion-input>
-          </ion-item>
+          <button (click)="change(1)">
+            <div class="label">
+              Name:
+            </div>
+            <div class="value">
+              {{ user.name }}
+            </div>
+          </button>
         </div>
-        <div class="phone">
-          <ion-item>
-            <ion-label position="floating">Phone</ion-label>
-            <ion-input [(ngModel)]="set.phone"></ion-input>
-          </ion-item>
+        <div class="username">
+          <button (click)="change(2)">
+            <div class="label">
+              Username:
+            </div>
+            <div class="value">
+              {{ user.username }}
+            </div>
+          </button>
         </div>
-        <ion-button (click)="update()" color="warning">Submit</ion-button>
-      </div>
-    </div>
-    <div class="danger">
-      <div class="title">
-        <h1>Danger Zone</h1>
-      </div>
-      <div class="body">
-        <ion-button color="danger" (click)="danger('password')">Change Password</ion-button>
-        <ion-button color="danger" (click)="danger('remove')">Remove Account</ion-button>
+        <div class="email">
+          <button (click)="change(3)">
+            <div class="label">
+              Email:
+            </div>
+            <div class="value">
+              {{ user.email }}
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>

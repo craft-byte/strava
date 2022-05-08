@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-title>Update {{ name }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="update()">Update</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <ion-item>
+      <ion-label>Amount to add:</ion-label>
+      <ion-input [(ngModel)]="amount" type="number"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Warning when less than:</ion-label>
+      <ion-input [(ngModel)]="newWarning" type="number"></ion-input>
+    </ion-item>
+  </div>
+</ion-content>

@@ -1,26 +1,25 @@
 <div class="header">
-  <!-- <ion-toolbar mode=ios color="warning">
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon name="chevron-back-outline"></ion-icon> Back
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ ui.title }}</ion-title>
-  </ion-toolbar> -->
-
   <div class="nav">
     <div class="links">
       <div class="link">
-        <a (click)="go('home')" [ngClass]="{'active': page == 'home'}">Home</a>
+        <button (click)="go('home')" [ngClass]="{'active': page == 'home'}">
+          Home
+        </button>
       </div>
       <div class="link">
-        <a (click)="go('dishes')" [ngClass]="{'active': page == 'dishes'}">Dishes</a>
+        <button (click)="go('dishes')" [disabled]="ui.disableDishes" [ngClass]="{'active': page == 'dishes'}">
+          Dishes
+        </button>
       </div>
       <div class="link">
-        <a (click)="go('people')" [ngClass]="{'active': page == 'people'}">People</a>
+        <button (click)="go('people')" [disabled]="ui.disablePeople" [ngClass]="{'active': page == 'people'}">
+          People
+        </button>
       </div>
       <div class="link">
-        <a (click)="go('cooking')" [ngClass]="{'active': page == 'cooking'}">Cooking</a>
+        <button (click)="go('cooking')" [disabled]="ui.disableCooking" [ngClass]="{'active': page == 'cooking'}">
+          Cooking
+        </button>
       </div>
     </div>
     <div class="gap"></div>
@@ -29,7 +28,7 @@
         <div class="dropdown">
           <button class="dropbtn" *ngIf="name">{{ name }}</button>
           <div class="dropdown-content" *ngIf="restaurants">
-            <a *ngFor="let i of restaurants" (click)="choose(i)">{{ i.name }}</a>
+            <a *ngFor="let i of restaurants" (click)="choose(i._id)">{{ i.name }}</a>
             <a (click)="goOther(2)">Add new <ion-icon name="add-outline"></ion-icon></a>
           </div>
         </div>
@@ -46,141 +45,6 @@
 
 <ion-content>
   <div class="app">
-
-
     <router-outlet></router-outlet>
-
-    <div class="loading" *ngIf="loading">
-      <div class="lds-dual-ring"></div>
-    </div>
-
-
-    <!-- <div *ngIf="showAll" class="restaurants">
-      <div class="title">
-        <h2>Choose Restaurant</h2>
-      </div>
-      <div class="all">
-        <ion-list>
-          <app-restaurant *ngFor="let one of restaurants" [id]="one" (click)="getRestaurant(one)"></app-restaurant>
-        </ion-list>
-      </div>
-    </div>
-    <div class="dashboard" *ngIf="restaurant">
-      <div class="staff ch" [routerLink]="['/restaurant-workers']" [queryParams]="{restaurant: restaurant._id}">
-        <div class="logo">
-          <img class='self' src="./../../../assets/icon/team-svgrepo-com.svg" alt="">
-        </div>
-        <div class="all-workers">
-          All workers: {{ restaurant.workers.length }}
-        </div>
-        <div class="add">
-          <div class="title">
-            Add worker
-          </div>
-          <div class="button" (click)="$event.stopPropagation()">
-            <ion-fab-button color="success" class="self" [routerLink]="['/restaurant-workers/add']" [queryParams]="{restaurant: restaurant._id}">
-              <ion-icon name="add-outline"></ion-icon>
-            </ion-fab-button>
-          </div>
-        </div>
-        <div class="title">
-          {{ ui.title }} staff
-        </div>
-        <div class="help" (click)="$event.stopPropagation()">
-          <a routerLink="help" class="dark-link">Help?</a>
-        </div>
-      </div>
-      <div class="tables ch" [routerLink]="['/restaurant-tables']" [queryParams]="{restaurant: restaurant._id}">
-        <div class="all-tables">
-          All tables: {{ restaurant.tables.length }}
-        </div>
-        <div class="real-time">
-          <div class="title">
-            Real time
-          </div>
-          <div class="button" (click)="$event.stopPropagation()">
-            <ion-fab-button class="self" color="tertiary" [routerLink]="['/restaurant-tables/real-time']" [queryParams]="{restaurant: restaurant._id}">
-              <ion-icon name="search-outline"></ion-icon>
-            </ion-fab-button>
-          </div>
-        </div>
-        <div class="title">
-          Potatosita tables
-        </div>
-        <div class="help" (click)="$event.stopPropagation()">
-          <a routerLink="help" class="dark-link">Help?</a>
-        </div>
-      </div>
-      <div class="dishes ch" [routerLink]="['/restaurant-dishes']" [queryParams]="{restaurant: restaurant._id}">
-        <div class="logo">
-          <img class="self" src="./../../../assets/icon/pot-dinner-svgrepo-com.svg" alt="">
-        </div>
-        <div class="total">
-          All dishes: {{ dishes.length }}
-        </div>
-        <div class="add">
-          <div class="child-title">
-            Add dish
-          </div>
-          <div class="button" (click)="$event.stopPropagation()">
-            <ion-fab-button class="self" color="success" [routerLink]="['/add-dish']" [queryParams]="{restaurant: restaurant._id}"><ion-icon name="add-outline"></ion-icon></ion-fab-button>
-          </div>
-        </div>
-        <div class="title">
-          {{ ui.title }} dishes
-        </div>
-        <div class="help" (click)="$event.stopPropagation()">
-          <a [routerLink]="['/help']" [queryParams]="{fragment: 'dishes' }" class="dark-link">Help?</a>
-        </div>
-      </div>
-      <div [routerLink]="['/control']" [queryParams]="{restaurant: restaurant._id}" class="write ch">
-        <div class="logo">
-          <img class="self" src="./../../../assets/icon/notepad-note-svgrepo-com.svg" alt="">
-        </div>
-        <div class="title">
-          Figure out something
-        </div>
-        <div class="buttons" (click)="$event.stopPropagation()">
-          <div class="one">
-            <div class="t">
-              Button 1
-            </div>
-            <div class="b">
-              <ion-fab-button class="self" color="success" [routerLink]="['/control']" [queryParams]="{restaurant: restaurant._id}">
-                <ion-icon name="create-outline"></ion-icon>
-              </ion-fab-button>
-            </div>
-          </div>
-        </div>
-        <div class="help" (click)="$event.stopPropagation()">
-          <a [routerLink]="['/help']" [queryParams]="{fragment: 'dishes' }" class="dark-link">Help?</a>
-        </div>
-      </div>
-        <div class="logo">
-          <ion-icon name="analytics-outline"></ion-icon>
-        </div>
-        <div class="title">
-          {{ ui.title }} statistics
-        </div>
-      </div> -->
-      <!-- <div class="container-tb">
-        <div class="work ch small-ch" (click)="goWork()">
-          <div class="logo">
-            <ion-icon name="construct-outline"></ion-icon>
-          </div>
-          <div class="title">
-            Go work
-          </div>
-        </div>
-        <div class="settings ch small-ch" (click)="goSettings()">
-          <div class="logo">
-            <ion-icon name="settings-outline"></ion-icon>
-          </div>
-          <div class="title">
-            {{ ui.title }} settings
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </ion-content>

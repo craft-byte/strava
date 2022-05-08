@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Restaurant } from 'src/models/radmin';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Restaurant } from 'src/models/general';
 
 @Component({
   selector: 'app-cooking',
@@ -14,20 +14,21 @@ export class CookingComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute
   ) {
     
   }
 
   goOther(w: "components" | "settings" | "overview") {
     this.page = w;
-    this.router.navigate(['radmin', 'cooking', w], { queryParamsHandling: 'merge' });
+    this.router.navigate([w], { relativeTo: this.route, queryParamsHandling: 'preserve' });
   }
 
   init() {
     const r = this.router.url.split("/");
     if(r[r.length - 1].split("?")[0] === "dishes") {
       this.page = "components";
-      this.router.navigate(["radmin", "dishes", "components"], { queryParamsHandling: "merge" });
+      this.router.navigate(["components"], { relativeTo: this.route, queryParamsHandling: "preserve" });
     } else if(r[3] === "full") {
       this.page = "components";
     } else {

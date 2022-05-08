@@ -1,9 +1,3 @@
-interface NewUser {
-    username: string;
-    password: string;
-    email: string;
-}
-
 interface UserResponse {
     acknowledged: boolean;
     error?: string;
@@ -106,7 +100,6 @@ export {
 
 
 
-    NewUser,
     Restaurant2,
     User,
     PostResult,

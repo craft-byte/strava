@@ -51,11 +51,10 @@ export class DishComponent implements OnInit {
   }
 
   go() {
-    this.router.navigate(['radmin', 'dishes', 'full', this.data._id], { queryParams: { restaurant: this.service.restaurant._id, last: "dishes", ol: "full", dish: this.data._id } });
+    this.router.navigate(['restaurant', this.service.restaurant._id, 'dishes', 'full', this.data._id], { queryParamsHandling: "preserve" });
   }
   async remove() {
     const alert = await this.alertCtrl.create({
-      cssClass: 'my-custom-class',
       mode: "ios",
       header: 'Please be certain.',
       subHeader: '',
@@ -68,7 +67,7 @@ export class DishComponent implements OnInit {
     const { role } = await alert.onDidDismiss();
 
     if(role == "remove") {
-      await this.service.delete('dishes', 'remove', this.service.restaurant.sname, this.data._id);
+      await this.service.delete('dishes', 'remove', this.service.restaurant._id, this.data._id);
       this.Emitter.emit({ t: "remove", _id: this.data._id });
     }
   }
@@ -77,11 +76,9 @@ export class DishComponent implements OnInit {
 
   ngOnInit() {
 
-    const date = new Date(this.data.created);
+    const date = new Date((this.data as any).date);
 
     this.date = date.toLocaleDateString();
-
-    this.service;
   }
 
 }

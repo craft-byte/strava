@@ -1,66 +1,67 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { Restaurant, Work } from 'src/models/radmin';
-import { MainService } from '../main.service';
+import { Worker } from 'src/models/components';
+import { Restaurant } from 'src/models/general';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RadminService {
 
-  url = environment.url + "/radmin";
+  url = environment.url + "/radmin/";
+
   
   restaurant: Restaurant;
-  work: Work;
+  restaurantId: string;
+
+  role: string;
 
 
   constructor(
     private http: HttpClient, 
-    private main: MainService,
-    private route: ActivatedRoute
+    private router: Router,
   ) { };
 
-  async handleHttpError(res: HttpErrorResponse) {
-    switch (res.status) {
-      case 401:
-        return await this.main.login(true);
-    
-      default:
-        break;
-    }
-  }
-
   post<T>(body: any, ...args: string[]) {
-    return this.http.post<T>(this.url + "/" + args.join("/"), body).toPromise();
+    return this.http.post<T>(this.url + this.restaurantId + "/" + args.join("/"), body).toPromise();
   }
   patch<T>(body: any, ...args: string[]) {
-    const url = this.url + "/" + args.join("/");
+    const url = this.url + this.restaurantId + "/" + args.join("/");
     return this.http.patch<T>(url, body).toPromise();  
   }
   get<T>(...args: string[]) {
-    return this.http.get<T>(this.url + "/" + args.join("/")).toPromise();
+    return this.http.get<T>(this.url + this.restaurantId + "/" + args.join("/")).toPromise();
   }
   delete<T>(...args: string[]) {
-    return this.http.delete<T>(this.url + "/" + args.join("/")).toPromise();
+    return this.http.delete<T>(this.url + this.restaurantId + "/" + args.join("/")).toPromise();
   }
 
+  async   initUser() {
+    const result = await this.get("self", this.restaurantId);
 
-  async getRestaurant(t?: "settings" | "components" | "staff") {
+    return result;
+  }
+  async getRestaurant(restaurantId?: string) {
+    if(restaurantId) {
+      this.restaurantId = restaurantId;
+    }
     if(!this.restaurant) {
-      const restaurant = this.route.snapshot.queryParamMap.get("restaurant");
-      const { restaurant: r, work } = await this.get<{restaurant: Restaurant; work: Work}>("getRestaurant", t || "exists", restaurant);
+      if(!this.restaurantId) {
+        this.router.navigate(["user/info"], { replaceUrl: true });
+        return null;
+      }
+      const result = await this.get<Restaurant>("");
 
-      this.restaurant = r;
-      this.work = work;
+      this.restaurant = result;
+      return result;
+    } else {
+      if(this.restaurant._id != restaurantId) {
+        this.restaurant = await this.get<Restaurant>("");
+        return this.restaurant;
+      }
       return this.restaurant;
     }
-    if(!t) {
-      return this.restaurant;
-    }
-    const { restaurant } = await this.get("getRestaurant", t, this.restaurant._id);
-    this.restaurant = Object.assign(this.restaurant, restaurant);
-    return this.restaurant;
   }
 }

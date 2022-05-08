@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { RadminService } from '../../radmin.service';
 
 @Component({
   selector: 'app-customers',
@@ -7,8 +8,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CustomersComponent implements OnInit {
 
-  constructor() { }
+  orders: any[] = [];
+  restaurantId: string;
 
-  ngOnInit() {}
+  ui = {
+    showOrders: false,
+    showNoOrders: false,
+  }
+
+  constructor(
+    private service: RadminService
+  ) { }
+
+  async ngOnInit() {
+    this.restaurantId = this.service.restaurantId;
+    this.orders = await this.service.get("orders");
+
+    if(this.orders.length > 0) {
+      this.ui.showOrders = true;
+    } else {
+      this.ui.showNoOrders = true;
+    }
+  }
 
 }

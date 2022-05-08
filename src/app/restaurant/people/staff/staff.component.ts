@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
-import { Restaurant, Worker } from 'src/models/radmin';
+import { Restaurant } from 'src/models/general';
 import { RadminService } from '../../radmin.service';
 import { MoreComponent } from './more/more.component';
 
@@ -16,7 +16,6 @@ export class StaffComponent implements OnInit {
 
   staff: Worker[] = [];
 
-  windowType: "remove" | "add" = null;
   invitingsWindow = false;
 
   constructor(
@@ -25,8 +24,8 @@ export class StaffComponent implements OnInit {
     private router: Router
   ) { };
 
-  add() {
-    this.windowType = "add";
+  addUser() {
+    this.router.navigate(["invite-user", this.restaurant._id], { queryParamsHandling: "preserve" });
   }
 
   openInvitings() {
@@ -37,9 +36,6 @@ export class StaffComponent implements OnInit {
     this.invitingsWindow = false;
   }
 
-  onWindowEmited(_data: { type: string, newWorker?: any }) {
-    this.windowType = null;
-  }
 
   async openPopover(btn: any, userId: string) {
     const popover = await this.ppCtrl.create({
@@ -54,7 +50,7 @@ export class StaffComponent implements OnInit {
 
     switch (role) {
       case "more":
-        this.router.navigate(["radmin", "people", "staff", "more", userId], { queryParamsHandling: "preserve" });
+        this.router.navigate(["restaurant", this.restaurant._id, "people", "staff", "more", userId], { queryParamsHandling: "preserve" });
         break;
     
       default:
@@ -69,8 +65,8 @@ export class StaffComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.restaurant = await this.service.getRestaurant("staff");
-    this.staff = this.restaurant.staff;
+    this.restaurant = await this.service.getRestaurant();
+    this.staff = await this.service.get("staff");
   }
 
 }

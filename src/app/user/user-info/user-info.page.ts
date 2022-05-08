@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { MainService } from 'src/app/main.service';
-import { payments } from 'src/assets/consts';
-import { Restaurant } from 'src/models/radmin';
+import { Component, ElementRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { MainService } from 'src/app/services/main.service';
+import { getImage } from 'src/functions';
 import { UserInvitation } from 'src/models/user';
 import { UserService } from '../user.service';
 
@@ -12,38 +12,44 @@ import { UserService } from '../user.service';
 })
 export class UserInfoPage implements OnInit {
 
-  isAdd = false;
 
-  restaurants: Restaurant[] = [];
+  avatar: string;
+
+  role: string;
+
+
+  restaurants: any[] = [];
+  works: any[] = [];
   invitations: UserInvitation[] = [];
-  works = [];
 
 
   ui = {
-    show: false,
-    addRestaurantMessage: "",
-    showSettings: false
-  }
-
-  types = payments;
+    name: "",
+    username: "",
+    email: "",
+    addRestaurant: false,
+    showRestaurants: false,
+    showJobs: false,
+    showFindJob: false,
+    showInvitations: false,
+  };
 
   constructor(
     private service: UserService, 
-    private main: MainService
-  ) { }
+    private main: MainService,
+    private router: Router
+  ) {
+  }
 
 
   goWork(where: string) {
-    this.service.go({ restaurant: where }, "staff-login");
-  }
-  settings() {
-    this.service.go({}, "user-settings");
+    this.router.navigate(["staff", where, "dashboard"], { replaceUrl: true, queryParamsHandling: "preserve" });
   }
   addRestaurant() {
-    this.service.go({}, "add-restaurant");
+    this.router.navigate(["add-restaurant"], { replaceUrl: true, queryParamsHandling: "preserve" });
   }
   goRestaurant(restaurant: string) {
-    this.service.go({ restaurant }, "radmin");
+    this.router.navigate(["restaurant", restaurant], { replaceUrl: true, queryParamsHandling: "preserve" });
   }
   async invitation(id: string, type: "accept" | "reject", restaurant?: string) {
     let result = null;
@@ -61,24 +67,84 @@ export class UserInfoPage implements OnInit {
           break;
         }
       }
+      if(this.invitations.length == 0) {
+        this.ui.showInvitations = false;
+      }
+    }
+    if(result.job) {
+      this.works.push(result.job);
+      this.ui.showJobs = true;
+    }
+    if(result.restaurant) {
+      this.restaurants.push(result.restaurant);
+      this.ui.showRestaurants = true;
     }
   }
-  async getRestaurants() {
-    this.restaurants = await this.service.getRestaurants(this.main.userInfo._id);
+  setRole(r: string) {
+    this.role = r;
   }
-  async getInvitations() {
-    this.invitations = await this.service.get("invitations/get", this.main.userInfo._id);
-  }
-  async getWorks() {
-    for(let i of this.main.userInfo.works) {
-      this.works.push({name: (await this.service.restaurantName(i)).name, _id: i });
+  async getUser() {
+    const {
+      username,
+      name,
+      email,
+      avatar,
+      restaurants,
+      works,
+      invitations
+    } = this.main.userInfo;
+
+
+    let showRestaurants = false;
+    let showAddRestaurant = false;
+    let showJobs = true;
+    let showInvitations = false;
+    let showFindJobs = false;
+    
+    
+    if(name) {
+      this.ui.name = name;
+      this.ui.username = username;
+    } else {
+      this.ui.name = username;
+      this.ui.email = email;
     }
+
+    this.avatar = await getImage(avatar);
+    if(!this.avatar) {
+      this.avatar = "./../../../assets/images/plain-avatar.jpg";
+    }
+
+
+    if(restaurants.length > 0) {
+      this.restaurants = await this.service.get("restaurants");
+      showRestaurants = true;
+    } else {
+      showAddRestaurant = true;
+    }
+    if(works.length > 0) {
+      this.works = await this.service.get("works");
+      showAddRestaurant = false;
+    } else {
+      showJobs = false;
+      showFindJobs = showRestaurants ? false : true;
+    }
+
+    if(invitations.length > 0) {
+      this.invitations = await this.service.get('invitations');
+      showInvitations = true;
+    }
+
+    this.ui.showJobs = showJobs;
+    this.ui.showFindJob = showFindJobs;
+    this.ui.showRestaurants = showRestaurants;
+    this.ui.addRestaurant = showAddRestaurant;
+    this.ui.showInvitations = showInvitations;
+  }
+  findJob() {
+    this.router.navigate(["jobs"], { queryParams: { role: this.role }, queryParamsHandling: "merge", replaceUrl: true });
   }
   async ngOnInit() {
-    this.ui.show = true;
-    this.getRestaurants();
-    this.getInvitations()
-    this.getWorks();
+    this.getUser();
   }
-
 }

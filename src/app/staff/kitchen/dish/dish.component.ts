@@ -1,6 +1,10 @@
+import { createOfflineCompileUrlResolver } from '@angular/compiler';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SmallDish } from 'src/models/staff';
-import { StaffService } from '../../staff.service';
+import { StaffService } from 'src/app/staff/staff.service';
+import { getImage } from 'src/functions';
+import { Dish } from 'src/models/dish';
+import { KitchenDish } from 'src/models/kitchen';
+import { KitchenService } from '../kitchen.service';
 
 @Component({
   selector: 'app-dish',
@@ -9,43 +13,27 @@ import { StaffService } from '../../staff.service';
 })
 export class DishComponent implements OnInit {
 
-
-  dish: { name: string; types: string[]; } = null;
-  username: string;
+  image: string;
 
   constructor(
-    private service: StaffService,
-  ) {
-    this.username = this.service.username;
-  };
+    private kitchen: KitchenService,
+    private service: StaffService
+  ) { };
 
-  @Input() data: SmallDish;
-  @Input() full: boolean;
+  @Input() dish: Dish;
+  @Input() orderDish: KitchenDish;
+  @Output() Emitter = new EventEmitter();
 
-  @Output() SendTypes = new EventEmitter();
-  @Output() Done = new EventEmitter();
-  @Output() Take = new EventEmitter();
-  @Output() Remove = new EventEmitter();
-
-  take() {
-    this.Take.emit({ take: true, id: this.data._id })
-  }
-  done() {
-    this.Done.emit({_id: this.data._id, dishId: this.data.dishId, types: this.dish.types });
-  }
-  remove() {
-    this.Remove.emit({ _id: this.data._id, types: this.dish.types });
-  }
-  untake() {
-    this.Take.emit({ take: false, id: this.data._id })
-  }
-  info() {
-    this.service.infoId.next(this.data.dishId);
+  chooseDish() {
+    this.Emitter.emit({orderDish: this.orderDish, dish: this.dish });
   }
 
   async ngOnInit() {
-    this.dish = await this.service.get(["kitchenDish"], [this.service.sname, this.data.dishId]);
-    this.SendTypes.emit(this.dish.types);
+    if(!this.dish) {
+      this.dish = await this.service.get("kitchen", this.service.restaurantId, "dish", this.orderDish.dishId);
+      this.kitchen.convertedDishes[this.dish._id] = this.dish;
+    }
+    this.image = await getImage(this.dish.image);
   }
 
 }

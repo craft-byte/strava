@@ -1,0 +1,167 @@
+<div class="header">
+  <div class="close">
+    <button (click)="close()">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+  </div>
+  <div class="title">
+    {{ ui.title }}
+  </div>
+</div>
+
+<ion-content>
+  <div class="app">
+    <div *ngIf="ui.showError" class="error">
+      {{ ui.error }}
+      <button class="gradient-button" (click)="close()">Go back</button>
+    </div>
+    <div *ngIf="!ui.showError" class="content">
+      <div class="roles">
+        <div class="title">
+          Role
+        </div>
+        <div class="choose">
+          <div class="role m" [ngClass]="{ chosen: role == 'manager' }" (click)="setRole('manager')">
+            <div class="wrap">
+              Manager
+            </div>
+          </div>
+          <div class="role c" [ngClass]="{ chosen: role == 'cook' }" (click)="setRole('cook')">
+            <div class="wrap">
+              Cook
+            </div>
+          </div>
+          <div class="role w" [ngClass]="{ chosen: role == 'waiter' }" (click)="setRole('waiter')">
+            <div class="wrap">
+              Waiter
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="role == 'manager'" class="settings manager-settings">
+        <div class="block">
+          <div class="title">Can work</div>
+          <div class="body">
+            <div class="option">
+              <div class="label">Cook</div>
+              <div class="button">
+                <ion-toggle color="orange" (ionChange)="setSetting('work', 'cook')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+            <div class="option">
+              <div class="label">Waiter</div>
+              <div class="button">
+                <ion-toggle color="red" (ionChange)="setSetting('work', 'waiter')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="title">People</div>
+          <div class="body">
+            <div class="sub-block">
+              <div class="title">Staff</div>
+              <div class="body">
+                <div class="option">
+                  <div class="label">Hiring</div>
+                  <div class="button">
+                    <ion-toggle color="purple" (ionChange)="setSetting('staff', 'hire')" mode="ios"></ion-toggle>
+                  </div>
+                </div>
+                <div class="option">
+                  <div class="label">Firing</div>
+                  <div class="button">
+                    <ion-toggle color="orange" (ionChange)="setSetting('staff', 'fire')" mode="ios"></ion-toggle>
+                  </div>
+                </div>
+                <div class="option">
+                  <div class="label">Settings</div>
+                  <div class="button">
+                    <ion-toggle color="red" (ionChange)="setSetting('staff', 'settings')" mode="ios"></ion-toggle>
+                  </div>
+                </div>
+                <div class="option">
+                  <div class="label">Statistics</div>
+                  <div class="button">
+                    <ion-toggle color="orange" (ionChange)="setSetting('staff', 'statistics')" mode="ios"></ion-toggle>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sub-block">
+              <div class="title">Customers</div>
+              <div class="body">
+                <div class="option">
+                  <div class="label">Blacklisting</div>
+                  <div class="button">
+                    <ion-toggle color="purple" (ionChange)="setSetting('customers', 'blacklisting')" mode="ios"></ion-toggle>
+                  </div>
+                </div>
+                <div class="option">
+                  <div class="label">Statistics</div>
+                  <div class="button">
+                    <ion-toggle color="red" (ionChange)="setSetting('customers', 'statistics')" mode="ios"></ion-toggle>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="title">Components management</div>
+          <div class="body">
+            <div class="option">
+              <div class="label">Adding & Updating</div>
+              <div class="button">
+                <ion-toggle color="purple" (ionChange)="setSetting('components', 'add')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+            <div class="option">
+              <div class="label">Removing</div>
+              <div class="button">
+                <ion-toggle color="orange" (ionChange)="setSetting('components', 'remove')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="title">Dishes</div>
+          <div class="body">
+            <div class="option">
+              <div class="label">Adding & Editing</div>
+              <div class="button">
+                <ion-toggle color="purple" (ionChange)="setSetting('dishes', 'add')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+            <div class="option">
+              <div class="label">Removing</div>
+              <div class="button">
+                <ion-toggle color="orange" (ionChange)="setSetting('dishes', 'remove')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="title">Restaurant Settings</div>
+          <div class="body">
+            <div class="option">
+              <div class="label">Theme</div>
+              <div class="button">
+                <ion-toggle color="purple" (ionChange)="setSetting('restaurant', 'theme')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+            <div class="option">
+              <div class="label">Logo</div>
+              <div class="button">
+                <ion-toggle color="red" (ionChange)="setSetting('restaurant', 'logo')" mode="ios"></ion-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="submit" *ngIf="role">
+        <button class="gradient-button" (click)="submit()">Submit</button>
+      </div>
+    </div>
+  </div>
+</ion-content>

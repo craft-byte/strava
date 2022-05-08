@@ -5,14 +5,8 @@
 	<div class="all" *ngIf="restaurant && restaurant.settings">
 		<div class="one">
 			<ion-item>
-				<ion-label>Use more types for dishes</ion-label>
-				<ion-toggle [(ngModel)]="settings.dishes.allTypes" (ionChange)="set('allTypes')" mode="ios" color="warning"></ion-toggle>
-			</ion-item>
-		</div>
-		<div class="one">
-			<ion-item>
 				<ion-label>Strict dish cooking check</ion-label>
-				<ion-toggle [(ngModel)]="settings.dishes.strictDishCookingCheck" (ionChange)="set('strictDishCookingCheck')" mode="ios" color="warning"></ion-toggle>
+				<ion-toggle [(ngModel)]="settings.dishes.strictIngredients" (ionChange)="set('strictIngredients')" mode="ios" color="warning"></ion-toggle>
 			</ion-item>
 		</div>
 	</div>

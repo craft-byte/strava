@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MainService } from 'src/app/main.service';
+import { MainService } from 'src/app/services/main.service';
 import { AdminService } from '../admin.service';
 
 @Component({
@@ -24,9 +24,6 @@ export class BlogPage implements OnInit {
 
   goMain() {
     this.router.navigate([""]);
-  }
-  login() {
-    this.main.login(true, { url: "blog" });
   }
 
   ngOnInit() {

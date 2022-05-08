@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Restaurant } from 'src/models/radmin';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Restaurant } from 'src/models/general';
 import { RadminService } from '../radmin.service';
 
 @Component({
@@ -11,17 +11,16 @@ import { RadminService } from '../radmin.service';
 export class PeopleComponent implements OnInit {
 
   page: "staff" | "customers" | "settings" = "staff";
-  restaurant: Restaurant;
 
   constructor(
     private router: Router,
-    // private route: ActivatedRoute,
+    private route: ActivatedRoute,
     private service: RadminService
   ) { }
 
   go(p: "staff" | "customers" | "settings") {
     this.page = p;
-    this.router.navigate(["radmin/people", p], { queryParamsHandling: "preserve" });
+    this.router.navigate([p], { relativeTo: this.route, queryParamsHandling: "preserve" });
   }
 
   pageInit() {
@@ -31,7 +30,6 @@ export class PeopleComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.restaurant = await this.service.getRestaurant();
     this.pageInit();
   }
 

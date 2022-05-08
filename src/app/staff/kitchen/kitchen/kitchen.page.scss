@@ -1,0 +1,156 @@
+.header {
+    height: 52px;
+    border-bottom: 2px solid var(--border-color);
+    padding: 0 412px;
+    display: grid;
+    grid-template-columns: 10% 60% 30%;
+
+    .links {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .title {
+        display: flex;
+        align-items: center;
+        padding-left: 12px;
+
+        .text {
+            font-size: 24px;
+            font-weight: 600;
+            background: var(--purple);
+            background: -webkit-linear-gradient(to right, var(--purple) 0%, var(--red) 100%);
+            background: -moz-linear-gradient(to right, var(--purple) 0%, var(--red) 100%);
+            background: linear-gradient(to right, var(--purple) 0%, var(--red) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    }
+
+    .close {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button {
+            font-size: 32px;
+            background: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 100%;
+        }
+    }
+}
+
+.app {
+    padding: 0 412px;
+    padding-bottom: 96px;
+    height: var(--height);
+    background-color: rgb(238, 238, 238);
+
+    .categories {
+        gap: 42px;
+        padding-top: 24px;
+        .block {
+            width: 100%;
+            display: flex;
+            gap: 24px;
+        }
+        .category {
+            margin-top: 24px;
+
+            .body {
+                min-height: 196px;
+                -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                width: 542px;
+                background-color: white;
+                --container-text: white;
+                border-radius: 12px;
+                border: 3px solid var(--container-color);
+                border-top: none;
+                position: relative;
+
+                .dishes {
+                    display: grid;
+                    height: auto;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 16px;
+                    padding: 24px 14px;
+                    padding-bottom: 38px;
+                }
+
+                .more {
+                    width: 100%;
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 28px;
+                    border-bottom-left-radius: 9px;
+                    border-bottom-right-radius: 9px;
+                    background-color: var(--container-color);
+                    color: var(--container-text);
+                }
+
+                
+                .title {
+                    cursor: pointer;
+                    border-top-left-radius: 10px;
+                    border-top-right-radius: 10px;
+                    width: 100%;
+                    height: 38px;
+                    display: grid;
+                    grid-template-columns: 85% 15%;
+                    background-color: var(--container-color);
+
+                    .text {
+                        display: flex;
+                        align-items: center;
+                        padding-left: 8px;
+                        font-size: 18px;
+                        color: var(--container-text);
+                    }
+
+                    .quantity {
+                        color: var(--container-text);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                }
+            }
+        }
+
+        .appetizers {
+            --container-color: var(--orange);
+        }
+
+        .salads {
+            --container-color: var(--green);
+        }
+
+        .desserts {
+            --container-color: var(--pink);
+        }
+
+        .entrees {
+            --container-color: var(--red);
+        }
+
+        .sides {
+            --container-color: var(--purple);
+        }
+
+        .soups {
+            --container-color: var(--blue);
+        }
+
+        .beverages {
+            --container-color: var(--sea);
+        }
+    }
+}

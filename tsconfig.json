@@ -13,8 +13,6 @@
     "target": "es6",
     "module": "es2020",
     "lib": ["es2018", "dom"],
-    "noUnusedParameters": true,
-    "noUnusedLocals": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

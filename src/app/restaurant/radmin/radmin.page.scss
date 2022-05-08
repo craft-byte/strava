@@ -9,21 +9,12 @@
     .links {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
-        .active {
-            background-color: #FFC409;
-            color: black !important;
-            &:hover {
-                background-color: #f3ba00 !important;
-                color: white !important;
-            }
-        }
         .link {
             display: flex;
             justify-content: center;
             align-items: center;
-            a {
-                cursor: pointer;
-                text-decoration: none;
+            button {
+                background: none;
                 color: rgb(107, 107, 107);
                 width: 100px;
                 height: 30px;
@@ -35,6 +26,16 @@
                 &:hover {
                     background-color: rgb(182, 182, 182);
                     color: white;
+                }
+                &:disabled:hover {
+                    background-color: var(--red);
+                }
+            }
+            .active {
+                background-color: var(--orange);
+                color: white;
+                &:hover {
+                    background-color: var(--orange);
                 }
             }
         }
@@ -55,10 +56,10 @@
                 width: 150px;
                 font-size: 16px;
                 height: 30px;
-                border: 1px solid #FFC409;
+                border: 1px solid var(--orange);
                 transition: all 0.3s;
                 &:hover {
-                    background-color: #FFC409;
+                    background-color: var(--orange);
                 }
             }
               
@@ -112,42 +113,6 @@
     padding-left: 250px;
     padding-right: 250px;
     min-height: 100vh;
-    .loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.178);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .lds-dual-ring {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-        }
-        .lds-dual-ring:after {
-            content: " ";
-            display: block;
-            width: 32px;
-            height: 32px;
-            margin: 8px;
-            border-radius: 50%;
-            border: 6px solid rgb(129, 129, 129);
-            border-color: rgb(129, 129, 129) transparent rgb(129, 129, 129) transparent;
-            animation: lds-dual-ring 1.2s linear infinite;
-        }
-    }
-}
-
-@keyframes lds-dual-ring {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
 }
 
 

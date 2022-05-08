@@ -2,11 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ComponentsComponent } from './components.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ComponentComponent } from './component/component.component';
 import { InfoComponent } from './info/info.component';
-import { ShareModule } from './share.module';
+import { AddWindowPage } from './add-window/add-window.page';
+import { EditWindowPage } from './edit-window/edit-window.page';
+import { UpdateWindowPage } from './update-window/update-window.page';
 
 
 
@@ -14,12 +16,15 @@ import { ShareModule } from './share.module';
   declarations: [
     ComponentsComponent,
     ComponentComponent,
-    InfoComponent
+    InfoComponent,
+    AddWindowPage,
+    EditWindowPage,
+    UpdateWindowPage
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
-    ShareModule,
     IonicModule,
     RouterModule.forChild([
       {

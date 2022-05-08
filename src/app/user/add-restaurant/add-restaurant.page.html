@@ -1,45 +1,130 @@
-<ion-header>
-  <ion-toolbar mode=ios color="warning">
-    <ion-buttons slot="start">
-      <ion-button routerLink="/user-info">
-        <ion-icon name="chevron-back-outline"></ion-icon>Back
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button (click)="info()"><ion-icon name="information-outline"></ion-icon></ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<header>
+  <div class="title">
+    Ctraba
+  </div>
+  <div class="links">
+    <div class="link">
+      <a routerLink="/user/info">Cancel</a>
+    </div>
+  </div>
+</header>
 
 <ion-content>
-  <div class="app">
-    <form [formGroup]="addForm" (ngSubmit)="add()">
-      <div class="title">
-        <p>{{ ui.title }}</p>
-      </div>
-      <ion-item>
-        <ion-label position="floating">Name</ion-label> 
-        <ion-input formControlName="name"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Short Name</ion-label> 
-        <ion-input formControlName="sname"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Admin Password</ion-label> 
-        <ion-input formControlName="adminPassword"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Kitchen Password</ion-label> 
-        <ion-input formControlName="kitchenPassword"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Payment Methods</ion-label>
-        <ion-select formControlName="payments" multiple="true" cancelText="Exit" okText="Confirm" mode="ios">
-          <ion-select-option *ngFor="let item of types" [value]="item.value">{{item.title}}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-button type="submit" color="success">Add</ion-button>
-    </form>
+  <div class="back-button" (click)="back()">
+    <ion-icon name="chevron-back-outline"></ion-icon>
   </div>
+  <ion-slides (ionSlideDidChange)="onSlide()" [options]="slideOpts">
+    <ion-slide>
+      <div class="first">
+        <h1>Name for your restaurant</h1>
+        <div class="info">
+          <p>With this name your restaurant can be found and it will be used as a logo if one is not provided</p>
+        </div>
+        <div class="center">
+          <div class="input">
+            <div class="label">
+              Name:
+            </div>
+            <input [(ngModel)]="name" type="text">
+          </div>
+          <div class="submit">
+            <button (click)="nameSubmit()">Submit</button>
+          </div>
+        </div>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="second">
+        <img *ngIf="image" [src]="image" alt="">
+        <h1>Logotype</h1>
+        <div class="info">
+          <p>Choose logo for {{ name }}.</p>
+          <p>Logo will be shown in shop to clients.</p>
+          <p>If not provided the name will be shown.</p>
+        </div>
+        <div class="container" appDnd (fileDropped)="onFileDropped($event)">
+          <ion-icon name="download-outline"></ion-icon>
+          <input type="file" #fileDropRef id="fileDropRef" multiple (change)="setImage($event.target.files)" />
+          <h3>Drag and drop image here</h3>
+          <h3>or</h3>
+          <label for="fileDropRef">Browse for file</label>
+        </div>
+        <div class="submit">
+          <button (click)="imageSubmit()">Submit</button>
+        </div>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="third">
+        <h1>Define theme color</h1>
+        <div class="list">
+          <div class="item" (click)="choose('green')">
+            <div class="label"> <div [ngClass]="{active: theme == 'green'}"></div> Green</div>
+            <div class="color">
+              <div class="green"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('orange')">
+            <div class="label"><div [ngClass]="{active: theme == 'orange'}"></div>Orange</div>
+            <div class="color">
+              <div class="orange"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('red')">
+            <div class="label"><div [ngClass]="{active: theme == 'red'}"></div>Red</div>
+            <div class="color">
+              <div class="red"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('pink')">
+            <div class="label"><div [ngClass]="{active: theme == 'pink'}"></div>Pink</div>
+            <div class="color">
+              <div class="pink"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('purple')">
+            <div class="label"><div [ngClass]="{active: theme == 'purple'}"></div>Purple</div>
+            <div class="color">
+              <div class="purple"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('blue')">
+            <div class="label"><div [ngClass]="{active: theme == 'blue'}"></div>Blue</div>
+            <div class="color">
+              <div class="blue"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('gray')">
+            <div class="label"><div [ngClass]="{active: theme == 'gray'}"></div>Gray</div>
+            <div class="color">
+              <div class="gray"></div>
+            </div>
+          </div>
+          <div class="item" (click)="choose('black')">
+            <div class="label"><div [ngClass]="{active: theme == 'black'}"></div>Black</div>
+            <div class="color">
+              <div class="black"></div>
+            </div>
+          </div>
+        </div>
+        <div class="submit">
+          <button (click)="themeSubmit()">Submit</button>
+        </div>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="fourth">
+        <h1>Good luck!</h1>
+        <div class="info">
+          <p>You can change everything in restaurant settings.</p>
+          <p>What to do next you will see on the {{name}} dashboard.</p>
+        </div>
+        <div class="submit">
+          <button [disabled]="disableAddButton" (click)="create()">
+            Proceed to {{ name }} dashboard
+          </button>
+        </div>
+      </div>
+    </ion-slide>
+  </ion-slides>
 </ion-content>

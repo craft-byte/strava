@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Restaurant, Component as C } from 'src/models/radmin';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
+import { Component as C } from 'src/models/components';
 import { RadminService } from '../../radmin.service';
+import { AddWindowPage } from './add-window/add-window.page';
 
 @Component({
   selector: 'app-components',
@@ -10,60 +12,97 @@ import { RadminService } from '../../radmin.service';
 })
 export class ComponentsComponent implements OnInit {
 
-  restaurant: Restaurant;
+  components: any[] = [];
   searchText: string = null;
 
-  windowType: "edit" | "remove" | "add" = null;
-  curComponent: C;
+  ui = {
+    noComponents: false,
+  }
 
   constructor(
     private router: Router,
-    private service: RadminService
-  ) { };
+    private modalCtrl: ModalController,
+    private service: RadminService,
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController
+  ) {
+    
+  };
 
-  add() {
-    this.windowType = "add";
-  }
-  quit() {
-    this.windowType = null;
-  }
-  onWindowEmited({ type, data }: { type: "error" | "removed" | "added" | "edited", data: any }) {
-    this.windowType = null;
-    if(type == "error") {
-      console.log("ERROR EMITED");
-    } else if(type == "removed") {
-      const { _id } = data;
-      for(let i in this.restaurant.components) {
-        if(this.restaurant.components[i]._id == _id) {
-          this.restaurant.components.splice(+i, 1);
-          break;
-        }
-      }
-    } else if(type == "added") {
-      this.restaurant.components.push(data);
-    } else if(type == "edited") {
-      const { updated, _id } = data;
-      for (let i in this.restaurant.components) {
-        if(this.restaurant.components[i]._id == _id) {
-          this.restaurant.components[i] = updated;
-          break;
-        }
-      }
+  async add() {
+    const modal = await this.modalCtrl.create({
+      component: AddWindowPage,
+      mode: "ios",
+      cssClass: "department-modal",
+      swipeToClose: true,
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+
+    if(data) {
+      const result = await this.service.post(data, "components");
+
+      this.ui.noComponents = false;
+      this.components.push(result);
     }
   }
-  onEmited({ role, data }: { role: string; data: C }) {
-    this.curComponent = JSON.parse(JSON.stringify(data));
+  async onEmited({ role, data }: { role: string; data: C }) {
     if(role == "edit") {
-      this.windowType = "edit";
+      
     } else if(role == "remove") {
-      this.windowType = "remove";
+      const alert = await this.alertCtrl.create({
+        header: "Are you sure?",
+        mode: "ios",
+        buttons: [
+          {
+            text: "Cancel",
+            role: "none"
+          },
+          {
+            text: "Submit",
+            role: "remove"
+          }
+        ]
+      });
+
+      await alert.present();
+
+      const { role } = await alert.onDidDismiss();
+
+      if(role == "remove") {
+        const result = await this.service.delete("components", data._id);
+
+        if((result as any).modifiedCount > 0) {
+          for(let i in this.components) {
+            if(this.components[i]._id == data._id) {
+              this.components.splice(+i, 1);
+              break;
+            }
+          }
+        } else {
+          const toast = await this.toastCtrl.create({
+            message: "Something went wrong. Try again later.",
+            color: "red",
+            duration: 4000,
+            mode: "ios"
+          });
+
+          toast.present();
+        }
+      }
     } else if(role == "more") {
-      this.router.navigate(["radmin/cooking/components/more", data._id], { queryParamsHandling: "preserve" });
+      this.router.navigate(["restaurant", this.service.restaurantId, "cooking", "components", "more", data._id], { queryParamsHandling: "preserve" });
     }
   }
 
   async ngOnInit() {
-    this.restaurant = await this.service.getRestaurant("components");
+    this.components = await this.service.get("components/all");
+
+    if(this.components.length == 0) {
+      this.ui.noComponents = true;
+    }
   }
 
 }

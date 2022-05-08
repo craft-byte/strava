@@ -36,7 +36,7 @@ export class DishCookingPage implements OnInit {
   ) { };
 
   async find() {
-    this.found = await this.service.patch({ searchText: this.searchText }, "components/find", this.service.restaurant._id);
+    this.found = await this.service.patch({ searchText: this.searchText }, "components");
   }
 
   removeChosen(id: string) {
@@ -59,10 +59,9 @@ export class DishCookingPage implements OnInit {
             workers: this.choosenWorkers
           },
           info: {
-            sname: this.service.restaurant.sname,
-            restaurantId: this.service.restaurant._id,
             dishId: this.dishId
-          }
+          },
+          restaurantId: this.service.restaurant._id,
         },
         "cooking/set"
       );
@@ -76,7 +75,7 @@ export class DishCookingPage implements OnInit {
 
   exit() {
     this.router.navigate(
-      ["radmin/dishes/full", this.dishId], 
+      ["restaurant", this.service.restaurantId, "dishes", "full", this.dishId], 
       { queryParamsHandling: "preserve" }
     );
   }
@@ -96,8 +95,8 @@ export class DishCookingPage implements OnInit {
     }
   }
 
-  onComponentEmited({component, value}: { component: { name: string; _id: string}, value: number }) {
-    this.chosen.push(Object.assign(component, { value }));
+  onComponentEmited({component, amount}: { component: { name: string; _id: string}, amount: number }) {
+    this.chosen.push(Object.assign(component, { amount }));
     for(let i in this.found) {
       if(this.found[i]._id == component._id) {
         this.found.splice(+i, 1);
@@ -107,9 +106,9 @@ export class DishCookingPage implements OnInit {
   }
 
   async ngOnInit() {
-    await this.service.getRestaurant("components");
+    await this.service.getRestaurant();
     this.dishId = this.route.snapshot.paramMap.get("dish");
-    const { recipee, components, name, workers } = await this.service.get("cooking/dish", this.service.restaurant._id, this.service.restaurant.sname, this.dishId);
+    const { recipee, components, name, workers } = await this.service.get("cooking/dish", this.service.restaurantId, this.dishId);
 
     this.chosen = components;
     this.recipee = recipee;

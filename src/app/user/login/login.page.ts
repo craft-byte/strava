@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MainService } from 'src/app/main.service';
+import { MainService } from 'src/app/services/main.service';
 import { CookieService } from 'ngx-cookie-service';
 import { User } from 'src/models/user';
-import { StaffService } from 'src/app/staff/staff.service';
+import { UserService } from '../user.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,43 +19,43 @@ export class LoginPage implements OnInit {
 
   constructor(
     private main: MainService,
-    private service: StaffService,
-    private cookieservice: CookieService
+    private service: UserService,
+    private cookieservice: CookieService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-    this.username = this.cookieservice.get("CTRABAUSERNAME");
+    this.username = this.cookieservice.get("CTRABAUSERID");
   };
 
   async login() {
-    const result = await this.main.loginFirst({ username: this.username, password: this.password }) as User;
-    if(result && result.hasOwnProperty("error")) {
-      const { error } = (result as unknown) as { error: string };
-
-      if(error === 'user') {
-        this.msg = "Something went wrong!";
-      } else if(error === "password") {
-        this.msg = "Password is wrong!";
-      }
-      
-      this.password = "";
+    if(!this.password || this.password.length < 3) {
+      this.msg = "Please provide the correct password.";
       return;
-    } else if(result) {
-      this.main.userInfo = result;
-      this.cookieservice.set("CTRABAUSERID", result._id);
-      this.cookieservice.set("CTRABAUSERNAME", result.username);
-      if(this.main.last) {
-        this.service.go(this.main.last.queryParams || {}, this.main.last.url);
-      } else {
-        if(result.restaurants.length > 0) {
-          this.service.go({ restaurant: result.restaurants[0] }, "radmin");
-        } else {
-          this.service.go({}, "user-info");
-        }
+    }
+    const result = await this.main.login({ username: this.username, password: this.password });
+    if(result.hasOwnProperty("error")) {
+      this.msg = "Something went wrong.";
+      return;
+    }
+    if(result) {
+      const last = this.route.snapshot.queryParams.last;
+      if(last) {
+        return this.router.navigate([last], { replaceUrl: true });
       }
+      this.router.navigate(["user/info"], { replaceUrl: true });
+    } else {
+      this.msg = "Something went wrong.";
     }
   }
-  staff() {
-    this.service.go({}, "staff-login");
-  }
   async ngOnInit() {
+    const authorized = await this.main.auth(this.main.userInfo ? "false" : "true") as User;
+    if(!authorized) {
+      return;
+    }
+    if(!authorized.email) {
+      this.router.navigate(["email-setup"], { replaceUrl: true, queryParamsHandling: "preserve" });
+    }
+    this.main.userInfo = authorized;
+    this.router.navigate(["user/info"], { replaceUrl: true, queryParamsHandling: "preserve" });
   }
 }

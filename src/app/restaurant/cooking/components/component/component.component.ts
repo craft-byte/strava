@@ -1,10 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
-import { Component as C } from 'src/models/radmin';
+import { Component as C } from 'src/models/components';
 import { InfoComponent } from '../info/info.component';
-
-var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 
 @Component({
   selector: 'app-component',
@@ -12,10 +9,6 @@ var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   styleUrls: ['./component.component.scss'],
 })
 export class ComponentComponent implements OnInit {
-
-
-  modified: string;
-  fullType: string;
 
 
   constructor(
@@ -43,29 +36,8 @@ export class ComponentComponent implements OnInit {
     this.Emitter.emit({ role: "more", data: this.data });
   }
 
-  fullTypeInit() {
-    switch (this.data.type) {
-      case "k":
-        this.fullType = "Kilogram";
-        break;
-      case "g":
-        this.fullType = "Gram";
-        break;
-      case "p":
-        this.fullType = "Piece";
-        break;
-    }
-  }
-
 
   ngOnInit() {
-    // if(this.data.type == "k") {
-    //   this.data.amount = this.data.amount / 1000;
-    // }
-    const date = new Date(this.data.modified);
-    const month = months[date.getMonth()];
-    this.modified = `${date.getDate()} ${month}`;
-    this.fullTypeInit()
   }
 
 }

@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { RidGuard } from 'src/app/rid.guard';
+import { RestaurantGuard } from 'src/app/restaurant.guard';
 
 import { RadminPage } from './radmin.page';
 
 const routes: Routes = [
   {
-    path: '',
+    path: ':restaurantId',
     component: RadminPage,
+    canActivate: [RestaurantGuard],
     children: [
       {
         path: "",
@@ -28,8 +29,7 @@ const routes: Routes = [
       },
       {
         path: "home",
-        loadChildren: () => import("./../home/home.module").then(m => m.HomeModule),
-        canActivate: [RidGuard]
+        loadChildren: () => import("./../home/home.module").then(m => m.HomeModule)
       }
     ]
   },

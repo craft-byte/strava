@@ -1,4 +1,4 @@
-export const types1 = [
+export const strict = [
     {
         value: "m",
         title: "Meat",
@@ -20,6 +20,11 @@ export const types1 = [
         img: "",
     },
     {
+        value: "ic",
+        title: "Ice cream",
+        img: ""
+    },
+    {
         value: "f",
         title: "Fried",
         img: ""
@@ -30,7 +35,7 @@ export const types1 = [
         img: "../../assets/icon/coffee-svgrepo-com.svg"
     }
 ];
-export const types2 = [
+export const categories = [
     {
         value: "b",
         title: "Breakfast",
@@ -61,25 +66,45 @@ export const types2 = [
         title: "Desserts",
         img: "../../assets/icon/pancakes-dessert.svg"
     }
-]
-export const types3 = [ // cooking types
+];
+export const general = [
     {
-        value: "c",
-        title: "For Chief",
+        title: "Appetizers",
+        img: "snacks.svg",
+        value: "a"
     },
     {
-        value: "c",
-        title: "",
+        title: "Soups",
+        img: "soup.svg",
+        value: "so"
     },
     {
-        value: "c",
-        title: "For Chief",
+        title: "Salads",
+        value: "sa",
+        img: "salad.svg"
     },
     {
-        value: "c",
-        title: "For Chief",
+        title: "Entrees",
+        value: "e",
+        img: "pot-dinner-svgrepo-com.svg"
     },
-]
+    {
+        title: "Sides",
+        value: "si",
+        img: "potatoes.svg"
+    },
+    {
+        title: "Desserts",
+        value: "d",
+        img: "pancakes-dessert.svg"
+    },
+    {
+        title: "Beverages",
+        img: "wine-svgrepo-com.svg",
+        value: "b"
+    }
+];
+
 
 export const payments = [
     // {
@@ -99,15 +124,4 @@ export const payments = [
         title: "Cash"
     }
 ]
-
-export const cook = [
-    {
-        title: "Desserts",
-        value: "d"
-    },
-    {
-        title: "Potatos",
-        value: "p"
-    }
-];
 

@@ -29,7 +29,7 @@ import { CookingComponent } from './cooking.component';
           },
           {
             path: "components/more/:id",
-            loadChildren: () => import("./components/more/more.module").then(m => m.MoreModule)
+            loadChildren: () => import("./more/more.module").then(m => m.MoreModule)
           },
           {
             path: "overview",

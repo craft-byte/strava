@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <div class="header" type="h1">
+      <p class="title">Verify email address</p>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <h1 class="message">{{msg}}</h1>
+    <div class="info">
+      <p>Verify email address to recover password or to start your own business</p>
+    </div>
+    <div class="input email">
+      <div class="label">
+        Email address:
+      </div>
+      <input type="text" [disabled]="disable" [(ngModel)]="email">
+      <div class="clear">
+        <button (click)="clear()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+    <div class="info">
+      <p>By this email address you can get into your account</p>
+    </div>
+    <button (click)="sendCode()" [disabled]="disable" class="success-button submit">Send verification code</button>
+    <div class="input">
+      <div class="label">
+        Verification code:
+      </div>
+      <input type="text" [disabled]="!disable" [(ngModel)]="code">
+    </div>
+    <div class="info">
+      <p>You'll get the verification code on your email</p>
+    </div>
+    <button (click)="verify()" [disabled]="!disable" class="success-button verify">Verify</button>
+  </div>
+</ion-content>

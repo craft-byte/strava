@@ -1,3 +1,13 @@
-<p>
-  customers works!
-</p>
+<div class="app">
+  <div class="title">
+    <p>Orders</p>
+  </div>
+  <div class="body">
+    <div class="list" *ngIf="ui.showOrders">
+      <app-order [restaurantId]="restaurantId" *ngFor="let i of orders" [data]="i"></app-order>
+    </div>
+    <div *ngIf="ui.showNoOrders" class="no-orders">
+      No orders yet
+    </div>
+  </div>
+</div>

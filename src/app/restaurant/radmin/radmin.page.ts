@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MainService } from '../../main.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ManagerSettings } from 'src/models/components';
+import { MainService } from '../../services/main.service';
 import { RadminService } from '../radmin.service';
 
 @Component({
@@ -8,72 +10,81 @@ import { RadminService } from '../radmin.service';
   templateUrl: './radmin.page.html',
   styleUrls: ['./radmin.page.scss'],
 })
-export class RadminPage implements OnInit {
+export class RadminPage implements OnInit, OnDestroy {
 
   restaurant: string;
   name: string;
+  subs: Subscription;
 
   restaurants: { name: string; _id: string }[];
 
-  loading = true;
+  ui = {
+    disableDishes: true,
+    disablePeople: true,
+    disableCooking: true,
+    showTutorials: false,
+  }
 
-  page = "home";
+  page = "";
 
   constructor(
     public main: MainService,
     private router: Router,
     private service: RadminService,
     private route: ActivatedRoute
-  ) { };
-
-  choose({ name, _id: id }: { name: string; _id: string; }) {
-    this.restaurant = id;
-    this.name = name;
-    this.router.navigate(["radmin"], { queryParams: { restaurant: id }, skipLocationChange: false }).then(() => window.location.reload());
-    this.ngOnInit();
-  }
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  };
 
   goOther(s: 1 | 2) {
-    this.router.navigate([`${s === 1 ? "user-info" : "add-restaurant"}`], { replaceUrl: true });
+    this.router.navigate([`${s === 1 ? "user/info" : "add-restaurant"}`], { replaceUrl: true });
   }
 
   async go(p: "home" | "people" | "cooking" | "dishes") {
-    this.loading = true;
-    this.page = p;
-    this.router.navigate(["radmin", p], { queryParamsHandling: "preserve" })
-    setTimeout(() => {
-      this.loading = false;
-    }, 200);
+    this.router.navigate([p], { relativeTo: this.route, queryParamsHandling: "preserve" });
   }
 
-  async init(restaurant: string) {
-    const r = this.router.url.split("/");
-    if(!r[2]) {
-      this.page = "home";
-      this.router.navigate(["radmin", "home"], { queryParamsHandling: "preserve" });
-    } else {
-      this.page = r[2].split("?")[0];
-    }
-    await this.getRestaurant();
-    setTimeout(() => {
-      this.loading = false;
-    }, 300);
-    this.restaurants = await this.service.patch({ ids: this.main.userInfo.restaurants.filter(el => el !== restaurant) }, "restaurants");
-  }
 
-  async getRestaurant() {
-    const restaurant = await this.service.getRestaurant();
-    this.restaurant = restaurant._id;
-    this.name = restaurant.name;
-    return 1;
+  choose(_id: string) {
+    this.router.navigate(["restaurant", _id]);
   }
 
 
   async ngOnInit() {
-    const restaurant = this.route.snapshot.queryParamMap.get("restaurant");
-    if (!restaurant || restaurant == "undefined") {
-      this.router.navigate(["user-info"]);
+    const restaurantId = this.route.snapshot.paramMap.get("restaurantId");
+    const r = this.router.url.split("/");
+    
+    const { _id, name } = await this.service.getRestaurant(restaurantId);
+    const settings = await this.service.initUser();
+
+
+    this.name = name;
+    this.restaurant = _id;
+    this.page = r[3];
+
+    if(typeof settings == "boolean" && settings) {
+      this.service.role = "a";
+      this.ui.disableDishes = false;
+      this.ui.disablePeople = false;
+      this.ui.disableCooking = false;
+    } else if(typeof settings == "boolean" && !settings) {
+      this.router.navigate(["user/info"], { replaceUrl: true });
+    } else {
+      this.service.role = "m";
+      this.ui.disableDishes = !(settings as ManagerSettings).dishes?.overview;
+      this.ui.disablePeople = !(settings as ManagerSettings).staff?.overview;
+      this.ui.disableCooking = !(settings as ManagerSettings).components?.overview;
     }
-    this.init(restaurant);
+    this.restaurants = await this.service.get("restaurants");
+
+    this.subs = this.router.events.subscribe((data) => {
+      if(data instanceof NavigationEnd) {
+        this.page = data.url.split('/')[3];
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 }

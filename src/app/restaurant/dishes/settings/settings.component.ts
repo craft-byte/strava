@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Restaurant, RestaurantSettings } from 'src/models/radmin';
+import { Restaurant } from 'src/models/general';
+import { RestaurantSettings } from 'src/models/components';
 import { RadminService } from '../../radmin.service';
 
 @Component({
@@ -24,7 +25,7 @@ export class SettingsComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.restaurant = await this.service.getRestaurant("settings");
+    this.restaurant = await this.service.getRestaurant();
     this.settings = JSON.parse(JSON.stringify(this.restaurant.settings));
   }
 

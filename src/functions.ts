@@ -1,5 +1,4 @@
-export function getImage(file: File | string) {
-
+export function getImage(file: File | string, quality?: number) {
     return new Promise<string>((resolve, _reject) => {
         if(!file) {
             resolve(null);
@@ -32,7 +31,7 @@ export function getImage(file: File | string) {
 
                 ctx.drawImage(image, 0, 0, width, height);
 
-                resolve(canvas.toDataURL("image/jpeg", 1));
+                resolve(canvas.toDataURL("image/jpeg", quality || 1));
             };
         };
     });

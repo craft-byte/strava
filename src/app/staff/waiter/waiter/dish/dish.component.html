@@ -1,0 +1,14 @@
+<div class="app {{ orderDish.time.color }}" (click)="open()">
+  <div class="image">
+    <img [src]="image" alt="">
+  </div>
+  <div class="name">
+    {{ dish.name }}
+  </div>
+  <div class="table">
+    {{ orderDish.table }}
+  </div>
+  <div class="time">
+    Delay: {{ orderDish.time.title }}
+  </div>
+</div>

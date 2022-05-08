@@ -1,0 +1,71 @@
+<div class="header">
+  <div class="title">
+    Ctraba
+  </div>
+  <div class="links">
+    <div class="link"></div>
+  </div>
+</div>
+
+<ion-content>
+  <div class="app">
+    <div class="info">
+      <div class="title">
+        Provide some information.
+      </div>
+      <div class="grid">
+        <div class="role">
+          <div class="im">
+            I'm a...
+          </div>
+          <div class="list">
+            <div class="option">
+              <div class="text">
+                Manager
+              </div>
+              <div class="button">
+                <div *ngIf="role == 'm'">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                </div>
+              </div>
+            </div>
+            <div class="option">
+              <div class="text">
+                Cook
+              </div>
+              <div class="button">
+                <div *ngIf="role == 'c'">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                </div>
+              </div>
+            </div>
+            <div class="option">
+              <div class="text">
+                Waiter
+              </div>
+              <div class="button">
+                <div *ngIf="role == 'w'">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="city">
+          <div class="picker">
+  
+          </div>
+          <div class="count">
+  
+          </div>
+        </div>
+      </div>
+      <div class="submit">
+        <button>Find</button>
+      </div>
+    </div>
+    <div class="result">
+
+    </div>
+  </div>
+</ion-content>
