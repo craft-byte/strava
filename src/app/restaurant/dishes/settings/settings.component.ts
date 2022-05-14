@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Restaurant } from 'src/models/general';
 import { RestaurantSettings } from 'src/models/components';
 import { RadminService } from '../../radmin.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-settings',
@@ -14,19 +15,27 @@ export class SettingsComponent implements OnInit {
   settings: RestaurantSettings;
 
   constructor(
-    private service: RadminService
+    private service: RadminService,
+    private toastCtrl: ToastController
   ) { };
 
-  set(t: string) {
-    if(this.settings.dishes[t] !== this.restaurant.settings.dishes[t]) {
-      this.restaurant.settings.dishes[t] = this.settings.dishes[t];
-      this.service.patch({ setTo: this.restaurant.settings.dishes[t] }, "settings", this.restaurant._id, "dishes", t);
+  async set(t: string) {
+    this.settings.dishes[t] = !this.settings.dishes[t];
+    const result: any = await this.service.patch({ value: this.settings.dishes[t], f1: "dishes", f2: t }, "settings");
+
+    if(!result.updated) {
+      (await this.toastCtrl.create({
+        duration: 4000,
+        color: "red",
+        mode: "ios",
+        message: "Something went wrong. Try again later."
+      })).present();
     }
   }
 
   async ngOnInit() {
     this.restaurant = await this.service.getRestaurant();
-    this.settings = JSON.parse(JSON.stringify(this.restaurant.settings));
+    this.settings = await this.service.get("settings");
   }
 
 }

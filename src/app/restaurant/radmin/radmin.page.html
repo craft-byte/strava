@@ -7,18 +7,23 @@
         </button>
       </div>
       <div class="link">
-        <button (click)="go('dishes')" [disabled]="ui.disableDishes" [ngClass]="{'active': page == 'dishes'}">
+        <button *ngIf="!ui.disableDishes" (click)="go('dishes')" [disabled]="ui.disableDishes" [ngClass]="{'active': page == 'dishes'}">
           Dishes
         </button>
       </div>
       <div class="link">
-        <button (click)="go('people')" [disabled]="ui.disablePeople" [ngClass]="{'active': page == 'people'}">
+        <button *ngIf="!ui.disablePeople" (click)="go('people')" [disabled]="ui.disablePeople" [ngClass]="{'active': page == 'people'}">
           People
         </button>
       </div>
       <div class="link">
-        <button (click)="go('cooking')" [disabled]="ui.disableCooking" [ngClass]="{'active': page == 'cooking'}">
+        <button *ngIf="!ui.disableCooking" (click)="go('cooking')" [disabled]="ui.disableCooking" [ngClass]="{'active': page == 'cooking'}">
           Cooking
+        </button>
+      </div>
+      <div class="link">
+        <button *ngIf="!ui.disableSettings" (click)="go('settings')" [disabled]="ui.disableSettings" [ngClass]="{'active': page == 'settings'}">
+          Settings
         </button>
       </div>
     </div>

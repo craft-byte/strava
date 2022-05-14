@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Change name</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="text">
+      <p>
+        You can change name whenever you want
+      </p>
+    </div>
+    <div class="input">
+      <input type="text" [(ngModel)]="name">
+    </div>
+    <button class="success-button" (click)="submit()">Submit</button>
+  </div>
+</ion-content>

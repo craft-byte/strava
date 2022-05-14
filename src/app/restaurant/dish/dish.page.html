@@ -1,7 +1,9 @@
 <ion-header>
   <div class="nav">
     <div class="exit">
-      <button id="exit" (click)="exit()"><ion-icon name="close-outline"></ion-icon></button>
+      <button id="exit" (click)="exit()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
     <div class="name">
       <p *ngIf="restaurant">{{ ui.title }}</p>
@@ -24,12 +26,22 @@
         <div class="message">
           {{ ui.msg }}
         </div>
-        <div class="image">
+        <div class="aspect-ratio">
+          <ion-item>
+            <ion-label>Resolution</ion-label>
+            <ion-select interface="popover" [value]="resolution" (ionChange)="resolutionChange($event)">
+              <ion-select-option value="1">1 x 1 (drinks)</ion-select-option>
+              <ion-select-option value="1.33">4 x 3</ion-select-option>
+              <ion-select-option value="1.77">16 x 9</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+        <div class="image {{ imageClass }}">
           <img [src]="image" class="the-image" alt="">
           <div class="bg">
             <div class="img-button">
               <label for="img-upload">Image</label>
-              <input id="img-upload" (change)="setImage($event)" type="file">
+              <input id="img-upload" onclick="this.value = null" (change)="setImage($event)" type="file">
             </div>
           </div>
         </div>
@@ -50,9 +62,10 @@
         <div class="time">
           <div class="field">
             <ion-item>
-              <ion-label>Time m. <p class="optional">optional</p> </ion-label>
-              <ion-input formControlName="time" type="number"></ion-input> 
-            </ion-item> 
+              <ion-label>Time m. <p class="optional">optional</p>
+              </ion-label>
+              <ion-input formControlName="time" type="number"></ion-input>
+            </ion-item>
           </div>
           <div class="text">
             <a class="dark-link" routerLink="help">Help?</a>
@@ -60,7 +73,8 @@
         </div>
         <div class="description">
           <ion-item>
-            <ion-label position="floating">Description <p class="optional">optional</p></ion-label>
+            <ion-label position="floating">Description <p class="optional">optional</p>
+            </ion-label>
             <ion-textarea cols="10" rows="12" formControlName="description"></ion-textarea>
           </ion-item>
         </div>

@@ -35,7 +35,7 @@ import { PeopleComponent } from './people.component';
           },
           {
             path: "staff/more/:id",
-            loadChildren: () => import("./more/more.module").then(m => m.MoreModule)
+            loadChildren: () => import("./full-worker/more.module").then(m => m.MoreModule)
           }
         ]
       }

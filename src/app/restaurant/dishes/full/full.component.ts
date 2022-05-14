@@ -1,6 +1,8 @@
+import { StringMapWithRename } from '@angular/compiler/src/compiler_facade_interface';
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { getImage } from 'src/functions';
 import { Dish } from 'src/models/dish';
 import { Restaurant } from 'src/models/general';
@@ -12,23 +14,26 @@ import { RadminService } from '../../radmin.service';
   styleUrls: ['./full.component.scss'],
 })
 export class FullComponent implements OnInit {
-  
+
   ui = {
     title: ""
   }
   dish: Dish;
   image: string;
+  imageClass: string;
   restaurant: Restaurant;
 
   constructor(
     private service: RadminService,
     private route: ActivatedRoute,
     private router: Router,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private s: DomSanitizer
   ) {
   };
 
-  cooking() {  
+  cooking() {
     this.router.navigate(["dish-cooking", this.restaurant._id, this.dish._id], { queryParamsHandling: "preserve", replaceUrl: true });
   }
   back() {
@@ -47,7 +52,7 @@ export class FullComponent implements OnInit {
 
     const { role } = await alert.onDidDismiss();
 
-    if(role == "remove") {
+    if (role == "remove") {
       await this.service.delete('dishes', this.dish._id);
       this.back();
     }
@@ -63,10 +68,30 @@ export class FullComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get("id");
     this.restaurant = await this.service.getRestaurant();
     this.dish = await this.service.get<Dish>("dishes", id);
-    if(!this.dish) {
-      return;
+    if (!this.dish) {
+      (await this.toastCtrl.create({
+        message: "No dish found.",
+        color: "orange",
+        duration: 4000,
+        mode: "ios",
+      })).present();
+      return this.back();
     }
-    this.image = await getImage(this.dish.image);
+    if (this.dish.image) {
+      if ((this.dish as any).image) {
+        this.image = (this.dish as any).image;
+      }
+      if ((this.dish as any).resolution) {
+        if ((this.dish as any).resolution === 1.33) {
+          this.imageClass = "r2"
+        } else if ((this.dish as any).resolution === 1.77) {
+          this.imageClass == "r3";
+        } else {
+          this.imageClass = "r1";
+        }
+      }
+    } else {
+      this.image = "./../../../../assets/images/no-image.jpg";
+    }
   }
-
 }

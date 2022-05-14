@@ -1,4 +1,3 @@
-import { createOfflineCompileUrlResolver } from '@angular/compiler';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { StaffService } from 'src/app/staff/staff.service';
 import { getImage } from 'src/functions';
@@ -33,7 +32,7 @@ export class DishComponent implements OnInit {
       this.dish = await this.service.get("kitchen", this.service.restaurantId, "dish", this.orderDish.dishId);
       this.kitchen.convertedDishes[this.dish._id] = this.dish;
     }
-    this.image = await getImage(this.dish.image);
+    this.image = await getImage((this.dish as any).image);
   }
 
 }

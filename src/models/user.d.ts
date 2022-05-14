@@ -63,23 +63,8 @@ interface NewRestaurant extends Payments {
     adminPassword: string;
 }
 
-interface Payments {
-    types: ("only-card" | "only-cash" | "all" | "self-card" | "self-cash" | "self-all" | "self-all" | "everything")[];
-}
 
-interface Restaurant {
-    name: string;
-    sname: string;
-    _id: string;
-}
-interface Restaurant2 {
-    name: string;
-    workers: { _id: string }[];
-    invitations: string[];
-    _id: string;
-}
-
-
+type Payments = ("only-card" | "only-cash" | "all" | "self-card" | "self-cash" | "self-all" | "self-all" | "everything")[];
 
 
 

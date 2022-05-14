@@ -53,21 +53,20 @@ class AuthInterceptor implements HttpInterceptor {
 }
 
 @NgModule({
-  declarations: [AppComponent, DragAndDropDirective],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    SocketIoModule.forRoot({ url: environment.socketLink, options: {} }),
-    IonicModule.forRoot(),
-    AppRoutingModule,
-    HttpClientModule
-  ],
-  providers: [
-    { provide: HashLocationStrategy, useClass: IonicRouteStrategy },
-    CookieService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
-  ],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent, DragAndDropDirective],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        SocketIoModule.forRoot({ url: environment.socketLink, options: {} }),
+        IonicModule.forRoot(),
+        AppRoutingModule,
+        HttpClientModule
+    ],
+    providers: [
+        { provide: HashLocationStrategy, useClass: IonicRouteStrategy },
+        CookieService,
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

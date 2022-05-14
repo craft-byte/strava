@@ -79,7 +79,7 @@ export class DishPage implements OnInit {
       this.color = this.orderDish.time.color;
       this.button = "Take";
     }
-    this.image = await getImage(this.dish.image);
+    this.image = await getImage((this.dish as any).image);
     this.showDish = true;
     this.cooking = await this.service.get("kitchen", this.service.restaurantId, "dishes/cooking", this.orderDish.dishId);
 

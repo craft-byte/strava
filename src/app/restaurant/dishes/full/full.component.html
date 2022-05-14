@@ -1,4 +1,4 @@
-<div class="app" *ngIf="dish">
+<div class="app">
   <div class="top">
     <div class="back" (click)="back()">
       <ion-icon name="arrow-back-outline"></ion-icon> DISHES
@@ -13,17 +13,18 @@
       </div>
     </div>
   </div>
-  <div class="details">
+  <div class="details" *ngIf="dish">
     <div class="body">
-      <div class="image">
-        <img [src]="image" alt="">
+      <div class="image {{ imageClass }}">
+        <!-- <img *ngIf="image" [src]="image"> -->
+        <img *ngIf="image" [src]="image">
       </div>
       <div class="info">
         <div class="name">
           {{ dish.name }}
         </div>
         <div class="price">
-          {{ dish.price }}$
+          ${{ dish.price }}
         </div>
         <div class="time">
           {{ dish.time }} min.
@@ -34,7 +35,7 @@
       </div>
     </div>
   </div>
-  <div class="cooking">
+  <div class="cooking" *ngIf="dish">
     <div class="title">
       Cooking 
       <button id="cooking" (click)="cooking()">

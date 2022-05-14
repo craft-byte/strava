@@ -22,6 +22,7 @@ export class RadminPage implements OnInit, OnDestroy {
     disableDishes: true,
     disablePeople: true,
     disableCooking: true,
+    disableSettings: true,
     showTutorials: false,
   }
 
@@ -53,7 +54,7 @@ export class RadminPage implements OnInit, OnDestroy {
   async ngOnInit() {
     const restaurantId = this.route.snapshot.paramMap.get("restaurantId");
     const r = this.router.url.split("/");
-    
+
     const { _id, name } = await this.service.getRestaurant(restaurantId);
     const settings = await this.service.initUser();
 
@@ -62,23 +63,25 @@ export class RadminPage implements OnInit, OnDestroy {
     this.restaurant = _id;
     this.page = r[3];
 
-    if(typeof settings == "boolean" && settings) {
+    if (typeof settings == "boolean" && settings) {
       this.service.role = "a";
       this.ui.disableDishes = false;
       this.ui.disablePeople = false;
       this.ui.disableCooking = false;
-    } else if(typeof settings == "boolean" && !settings) {
+      this.ui.disableSettings = false;
+    } else if (typeof settings == "boolean" && !settings) {
       this.router.navigate(["user/info"], { replaceUrl: true });
     } else {
       this.service.role = "m";
       this.ui.disableDishes = !(settings as ManagerSettings).dishes?.overview;
       this.ui.disablePeople = !(settings as ManagerSettings).staff?.overview;
       this.ui.disableCooking = !(settings as ManagerSettings).components?.overview;
+      this.ui.disableSettings = !(settings as ManagerSettings).restaurant?.overview;
     }
     this.restaurants = await this.service.get("restaurants");
 
     this.subs = this.router.events.subscribe((data) => {
-      if(data instanceof NavigationEnd) {
+      if (data instanceof NavigationEnd) {
         this.page = data.url.split('/')[3];
       }
     });

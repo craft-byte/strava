@@ -4,11 +4,11 @@
     padding-left: 250px;
     padding-right: 250px;
     display: grid;
-    grid-template-columns: 40% 35% 25%;
+    grid-template-columns: 50% 25% 25%;
     background-color: rgb(231, 231, 231);
     .links {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         .link {
             display: flex;
             justify-content: center;

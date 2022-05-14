@@ -1,0 +1,47 @@
+.app {
+    margin-bottom: 150px;
+    .settings {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .block {
+            width: 512px;
+            margin-top: 32px;
+            border-left: 3px solid rgb(201, 201, 201);
+            padding-left: 32px;
+            .title {
+                padding-left: 12px;
+                font-size: 20px;
+                color: var(--text-color);
+            }
+            .body {
+                margin-top: 12px;
+                padding-left: 6px;
+                .option {
+                    margin-top: 6px;
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: 80% 20%;
+                }
+                .sub-block {
+                    margin-top: 24px;
+                    border-left: 3px solid rgb(201, 201, 201);
+                    margin-left: 32px;
+                    padding-left: 32px;
+                }
+            }
+        }
+    }
+}
+
+ion-content {
+    --offset-bottom: auto!important;
+    --overflow: hidden;
+    overflow: auto;
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgb(180, 180, 180);
+    }
+}

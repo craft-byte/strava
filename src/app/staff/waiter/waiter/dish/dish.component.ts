@@ -49,7 +49,7 @@ export class DishComponent implements OnInit {
       this.dish = await this.service.get("waiter", this.service.restaurantId, "dish", this.orderDish.dishId);
       console.log(this.dish);
     }
-    this.image = await getImage(this.dish.image);
+    this.image = await getImage((this.dish as any).image);
   }
 
 }

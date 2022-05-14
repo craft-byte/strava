@@ -10,7 +10,7 @@ interface Dish {
     categories?: string[];
     strict?: string[];
     general?: string[];
-    image?: string;
+    image?: { data: string | any; resolution: number; date: string | Date };
     choosen?: boolean;
     bought?: number;
     _id: string;

@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit() {
     this.restaurant = await this.service.getRestaurant();
-    this.ui.showTutorials = this.service.role == "a" ? true : false;
+    this.ui.showTutorials = this.service.role == "a";
   }
 
 }

@@ -40,7 +40,7 @@ export class LoginPage implements OnInit {
     if(result) {
       const last = this.route.snapshot.queryParams.last;
       if(last) {
-        return this.router.navigate([last], { replaceUrl: true });
+        return this.router.navigateByUrl(last, { replaceUrl: true });
       }
       this.router.navigate(["user/info"], { replaceUrl: true });
     } else {

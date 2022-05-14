@@ -147,12 +147,19 @@
 }
 
 .department-modal {
-    --width: 624px;
     .modal-wrapper {
         --width: 624px;
         --min-width: 624px;
     }
 }
+
+.image-cropper {
+    .modal-wrapper {
+        --width: 624px;
+        --height: 428px;
+    }
+}
+
 
 .smallest {
     .modal-wrapper {
@@ -240,4 +247,15 @@
     --ion-color-contrast-rgb: var(--ion-color-sea-contrast-rgb);
     --ion-color-shade: var(--ion-color-sea-shade);
     --ion-color-tint: var(--ion-color-sea-tint);
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }

@@ -8,15 +8,3 @@
         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     }
 }
-
-ion-content {
-    --offset-bottom: auto!important;
-    --overflow: hidden;
-    overflow: auto;
-    &::-webkit-scrollbar {
-        width: 4px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background: rgb(180, 180, 180);
-    }
-}

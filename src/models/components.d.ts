@@ -25,6 +25,7 @@ interface ManagerSettings {
         statistics: boolean;
     };
     restaurant: {
+        overview?: boolean;
         theme: boolean;
         logo: boolean;
     };

@@ -7,6 +7,7 @@ import { Restaurant } from 'src/models/general';
 import { User } from 'src/models/user';
 import { RadminService } from '../../radmin.service';
 import { SettingsModalPage } from '../settings-modal/settings-modal.page';
+import { CapabilitiesPage } from './capabilities/capabilities.page';
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -47,7 +48,7 @@ export class MoreComponent implements OnInit {
   async goSettings() {
     const modal = await this.modalCtrl.create({
       mode: "ios",
-      cssClass: "worker-settings",
+      cssClass: "department-settings",
       swipeToClose: true,
       component: SettingsModalPage,
       id: "settings",
@@ -71,8 +72,18 @@ export class MoreComponent implements OnInit {
 
   async capabilities() {
     const modal = await this.modalCtrl.create({
-      component: ""
+      component: CapabilitiesPage,
+      swipeToClose: true,
+      mode: "ios",
+      cssClass: "department-modal",
+      componentProps: {
+        name: this.name,
+        settings: this.worker.settings,
+        userId: this.user._id
+      },
     });
+
+    modal.present();
   }
 
   async ngOnInit() {

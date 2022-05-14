@@ -67,7 +67,7 @@ export class DishComponent implements OnInit {
     const { role } = await alert.onDidDismiss();
 
     if(role == "remove") {
-      await this.service.delete('dishes', 'remove', this.service.restaurant._id, this.data._id);
+      await this.service.delete('dishes', this.data._id);
       this.Emitter.emit({ t: "remove", _id: this.data._id });
     }
   }

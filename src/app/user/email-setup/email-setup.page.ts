@@ -48,10 +48,10 @@ export class EmailSetupPage implements OnInit {
   }
 
   async sendCode() {
+    this.disable = true;
     if(this.email && this.verifyEmail()) {
       const result = await this.service.post<{ error: "none" | "used" }>({ email: this.email }, "email/setEmail");
       if(result.error == "none") {
-        this.disable = true;
         return;
       } else if(result.error == "used") {
         this.msg = "This email address is already in use.";

@@ -76,7 +76,7 @@ export class WorkerSetUpPage implements OnInit {
       settings: this.settings
     };
 
-    const result = await this.service.post<any>(worker, "staff", this.restaurant._id, "invite");
+    const result = await this.service.post<any>(worker, "staff", "invite");
 
     if(result.acknowledged) {
       this.router.navigate(["restaurant", this.restaurant._id, "people", "staff"], { queryParamsHandling: "preserve", replaceUrl: true });
@@ -91,7 +91,7 @@ export class WorkerSetUpPage implements OnInit {
     const userId = this.route.snapshot.paramMap.get("user");
     const restaurantId = this.route.snapshot.params.restaurantId;
     this.restaurant = await this.service.getRestaurant(restaurantId);
-    this.user = await this.service.get("user/setUp", this.restaurant._id, userId);
+    this.user = await this.service.get("user/setUp", userId);
 
     if(this.user.hasOwnProperty("error")) {
       const { error } = this.user as unknown as any;

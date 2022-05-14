@@ -24,8 +24,8 @@ export class SettingsComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.settings = await this.service.get('settings');
     this.restaurant = await this.service.getRestaurant();
-    this.settings = JSON.parse(JSON.stringify(this.restaurant.settings));
   }
 
 }

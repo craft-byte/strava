@@ -24,7 +24,7 @@ export class CustomersComponent implements OnInit {
     this.restaurantId = this.service.restaurantId;
     this.orders = await this.service.get("orders");
 
-    if(this.orders.length > 0) {
+    if(this.orders && this.orders.length > 0) {
       this.ui.showOrders = true;
     } else {
       this.ui.showNoOrders = true;

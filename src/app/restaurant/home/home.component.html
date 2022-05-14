@@ -1,52 +1,6 @@
 <div class="app" *ngIf="restaurant">
   <h1 class="title">Welcome to {{ restaurant.name }}!</h1>
-  <div class="tutorials" *ngIf="restaurant.tutorials && ui.showTutorials">
-    <div class="title">
-      <h1>Set up your restaurant</h1>
-      <div class="close">
-        <button class="close-button" (click)="noTutorials()">Close</button>
-      </div>
-    </div>
-    <div class="list">
-      <div class="dishes block" [ngClass]="{passed: restaurant.tutorials.dishes}">
-        <header>
-          <h3>
-            Dishes
-          </h3>
-        </header>
-        <div class="body">
-          <p>Think of your menu</p>
-          <p>Add dishes</p>
-        </div>
-          <button class="purple-button" (click)="go('dishes')">Explore</button>
-      </div>
-      <div class="staff block" [ngClass]="{passed: restaurant.tutorials.staff}">
-        <header>
-          <h3>
-            Staff
-          </h3>
-        </header>
-        <div class="body">
-          <p>Add workers</p>
-          <p>See workers stats</p>
-          <p>See workers feedbacks</p>
-        </div>
-          <button class="orange-button" (click)="go('staff')">Command</button>
-      </div>
-      <div class="cooking block" [ngClass]="{passed: restaurant.tutorials.cooking}">
-        <header>
-          <h3>
-            Cooking
-          </h3>
-        </header>
-        <div class="body">
-          <p>Set cooking to dishes</p>
-          <p>Control your ingredients</p>
-          <p>See spendings</p>
-          <p>Smart Shelf integration coming soon...</p>
-        </div>
-          <button class="red-button" (click)="go('cooking')">Control</button>
-      </div>
-    </div>
+  <div class="tutorials" *ngIf="ui.showTutorials">
+    
   </div>
 </div>
