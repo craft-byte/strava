@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Change ingredient</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <ion-item>
+      <ion-label>Amount</ion-label>
+      <ion-input type="number" [(ngModel)]="amount"></ion-input>
+    </ion-item>
+    <div class="buttons">
+      <button class="red-button" (click)="remove()">Remove</button>
+      <button class="orange-button" (click)="change()">Submit</button>
+    </div>
+  </div>
+</ion-content>

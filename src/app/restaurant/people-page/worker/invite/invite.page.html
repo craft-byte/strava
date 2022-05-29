@@ -1,0 +1,31 @@
+<div class="app">
+  <div class="header">
+    <div class="title">
+      Invite worker
+    </div>
+  </div>
+  <div class="content">
+    <div class="search">
+      <ion-searchbar mode="ios" (ionInput)="find($event)"></ion-searchbar>
+      <button class="orange-button">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </div>
+    <div class="list" *ngIf="users && users.length > 0">
+      <div *ngFor="let i of users" class="one">
+        <div class="avatar">
+          <img [src]="i.avatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+        </div>
+        <div class="name">
+          {{ i.name }}
+        </div>
+        <div class="buttons">
+          <button class="success-button" (click)="invite(i._id)">Invite</button>
+          <button class="more" (click)="more()">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

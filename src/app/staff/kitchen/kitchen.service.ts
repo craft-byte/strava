@@ -12,7 +12,15 @@ export class KitchenService {
 
   url = environment.url + "/staff/kitchen/";
 
-  dishes = null;
+  dishes: {
+    a: any[],
+    so: any[],
+    si: any[],
+    sa: any[],
+    b: any[],
+    e: any[],
+    d: any[]
+  } = null;
   convertedDishes = null;
 
   constructor(

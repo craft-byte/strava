@@ -1,0 +1,74 @@
+<div class="app" *ngIf="dish">
+    <div class="header">
+        <div class="back">
+            <p (click)="back()"><ion-icon name="arrow-back"></ion-icon> BACK</p>
+        </div>
+        <div class="gap">
+
+        </div>
+        <div class="buttons">
+            <button (click)="edit()" class="orange-button">Edit</button>
+            <button (click)="remove()" class="red-button">Delete</button>
+        </div>
+    </div>
+    <div class="dish">
+        <div class="image">
+            <img [src]="image" [class]="imageClass" alt="">
+        </div>
+        <div class="details">
+            <div class="name">
+                {{ dish.name }}
+            </div>
+            <div class="price">
+                $ {{ dish.price }}
+            </div>
+            <div class="time">
+                {{ dish.time }} min.
+            </div>
+            <div class="description">
+                {{ dish.description }}
+            </div>
+        </div>
+    </div>
+    <div class="cooking" *ngIf="dish.cooking">
+        <div class="block main">
+            <div class="title">
+                Cooking
+            </div>
+            <div class="content">
+                <button class="purple-button" (click)="cooking()">Change</button>
+            </div>
+        </div>
+        <div class="block time">
+            <div class="title">
+                Time:
+            </div>
+            <div class="content">
+                {{ dish.time }} min.
+            </div>
+        </div>
+        <div class="block recipee">
+            <div class="title">
+                Recipee:
+            </div>
+            <div class="content">
+                {{ dish.cooking.recipee }}
+            </div>
+        </div>
+        <div class="block ingredients">
+            <div class="title">
+                Ingredients:
+            </div>
+            <div class="content">
+                <div *ngFor="let i of dish.cooking.components" class="one">
+                    <div class="amount">
+                        {{i.amount}} grams
+                    </div>
+                    <div class="name">
+                        of <p (click)="component(i._id)">{{ i.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

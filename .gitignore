@@ -31,3 +31,8 @@ npm-debug.log*
 /plugins
 /www
 /dev
+/server/node_modules
+/server/dev
+/server/build
+/server/uploads
+

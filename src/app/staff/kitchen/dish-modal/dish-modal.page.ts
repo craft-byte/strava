@@ -16,7 +16,7 @@ export class DishPage implements OnInit {
 
   image: string;
   showDish = false;
-  cooking: { recipee: string; components: { name: string; amount: string }[] };
+  cooking: { recipee: string; components: { name: string; amount: string; color: string; has: string; }[] };
 
   color: string;
   button: string;

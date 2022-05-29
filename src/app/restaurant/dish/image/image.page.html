@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+    <ion-title>Image</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="setResolution($event)">Resolution</ion-button>
+      <ion-button></ion-button>
+      <ion-button (click)="done()">Done</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <image-cropper 
+    [imageChangedEvent]="event" 
+    [maintainAspectRatio]="true" 
+    [aspectRatio]="resolution" 
+    format="jpeg"
+    (imageCropped)="imageCropped($event)"
+    (loadImageFailed)="loadImageFailed()"></image-cropper>
+</ion-content>

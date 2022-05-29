@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { SequentialRoutingGuardService } from './other/sequential-routing-guard.service';
+import { RestaurantService } from './restaurant/services/restaurant.service';
 import { MainService } from './services/main.service';
 
 @Injectable({
@@ -7,22 +10,44 @@ import { MainService } from './services/main.service';
 })
 export class RestaurantGuard implements CanActivate {
   constructor(
-    private service: MainService
-  ) {};
+    private service: RestaurantService,
+    private router: Router,
+    private main: MainService,
+    private sequentialRoutingGuardService: SequentialRoutingGuardService,
+  ) { };
 
 
-  async canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-    
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
 
-    const restaurantId = route.params.restaurantId;
+    console.log("RESTAURANT GUARD");
 
-    // const result = await this.service.allowed(state.url, restaurantId);
+    const observable = new Observable<boolean>(subs => {
+      if (!this.main.userInfo) {
+        return subs.next(false);
+      }
 
-    // console.log(result);
+      const restaurantId = route.paramMap.get("restaurantId");
 
-    return true;
+
+      if (restaurantId.length != 24) {
+        this.router.navigate(["user/info"], { replaceUrl: true });
+        return subs.next(false);
+      }
+
+      this.service.init(restaurantId).subscribe((res: any) => {
+        if (!res) {
+          this.router.navigate(["user/info"], { replaceUrl: true })
+          return subs.next(false);
+        }
+
+
+        this.service.restaurant = res.restaurant;
+
+        return subs.next(true);
+      });
+    });
+
+    return this.sequentialRoutingGuardService.queue(route, observable);
   }
-  
+
 }

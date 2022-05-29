@@ -8,12 +8,12 @@ interface User {
     username?: string;
     password?: string;
     email?: string;
-    avatar?: string;
+    avatar?: any;
     works: string[];
     _id?: string;
     phone?: string;
     restaurants?: string[];
-    invitations?: string[];
+    invitations?: any[];
     name?: string;
     feedbacks?: Feedback[];
 }
@@ -72,7 +72,7 @@ interface UserInvitation {
     restaurant: string;
     restaurantId: string;
     role: string;
-    joined: string;
+    date: string;
     _id: string;
 }
 

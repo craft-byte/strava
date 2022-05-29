@@ -40,22 +40,32 @@ export class LoginPage implements OnInit {
     if(result) {
       const last = this.route.snapshot.queryParams.last;
       if(last) {
-        return this.router.navigateByUrl(last, { replaceUrl: true });
+        this.router.navigate([last], { replaceUrl: true, queryParams: { last: null } });
+        return;
       }
-      this.router.navigate(["user/info"], { replaceUrl: true });
+      this.router.navigate(["user/info"], { replaceUrl: true, queryParams: { last: null }, queryParamsHandling: "merge" });
     } else {
       this.msg = "Something went wrong.";
     }
   }
   async ngOnInit() {
-    const authorized = await this.main.auth(this.main.userInfo ? "false" : "true") as User;
-    if(!authorized) {
-      return;
+    // const authorized = await this.main.auth(this.main.userInfo ? "false" : "true") as User;
+    // if(!authorized) {
+    //   return;
+    // }
+    // if(!authorized.email) {
+    //   this.router.navigate(["email-setup"], { replaceUrl: true, queryParamsHandling: "preserve" });
+    // }
+    // this.main.userInfo = authorized;
+    // this.router.navigate(["user/info"], { replaceUrl: true, queryParamsHandling: "preserve" });
+    const authorized = await this.service.get("login");
+
+    if(authorized) {
+      this.main.userInfo = authorized as any;
+      if(!(authorized as any).email) {
+        return this.router.navigate(["email-setup"], { replaceUrl: true, queryParamsHandling: "merge", queryParams: { last: null } });
+      }
+      return this.router.navigate(["user/info"], { replaceUrl: true, queryParamsHandling: "merge", queryParams: { last: null } });
     }
-    if(!authorized.email) {
-      this.router.navigate(["email-setup"], { replaceUrl: true, queryParamsHandling: "preserve" });
-    }
-    this.main.userInfo = authorized;
-    this.router.navigate(["user/info"], { replaceUrl: true, queryParamsHandling: "preserve" });
   }
 }

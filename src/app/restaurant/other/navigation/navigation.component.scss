@@ -1,0 +1,47 @@
+.app {
+    width: 100%;
+    position: relative;
+    min-height: 124px;
+    padding: 6px;
+    .restaurants {
+        width: 214px;
+        .title {
+            font-weight: 550;
+        }
+        .list {
+            padding: 2px 4px;
+            .one {
+                display: flex;
+                align-items: center;
+                padding-left: 12px;
+                height: 26px;
+                cursor: pointer;
+                transition: all .4s;
+                border-radius: 6px;
+                &:hover {
+                    background-color: rgb(235, 235, 235);
+                }
+            }
+        }
+    }
+    .user {
+        font-size: 28px;
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        cursor: pointer;
+        &:hover {
+            color: rgb(54, 54, 54);
+        }
+    }
+    .tutorials {
+        position: absolute;
+        bottom: 4px;
+        right: 8px;
+        font-weight: 550;
+        .title {
+            color: var(--purple);
+            cursor: pointer;
+        }
+    }
+}

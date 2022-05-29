@@ -18,11 +18,9 @@ interface ManagerSettings {
         hire: boolean;
         fire: boolean;
         settings: boolean;
-        statistics: boolean;
     };
     customers: {
         blacklisting: boolean;
-        statistics: boolean;
     };
     restaurant: {
         overview?: boolean;

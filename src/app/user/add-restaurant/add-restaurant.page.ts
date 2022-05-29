@@ -46,21 +46,6 @@ export class AddRestaurantPage implements OnInit, AfterViewInit {
     this.slides.lockSwipes(true);
   }
 
-  async setImage(files: FileList) {
-    const file: File = files.item(0);
-
-    const name = file.name.split(".");
-
-    if (!["jpg", "jpeg", "JPG", "JPEG", "jfif", "svg"].includes(name[name.length - 1]) || !file) {
-      console.log("UNSUPPORTED FILE EXTENSION");
-      return;
-    }
-
-    this.logo = file;
-
-    this.image = await getImage(file);
-  }
-
   async create() {
     this.disableAddButton = true;
     const newRestaurant = {

@@ -1,15 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
-import { ImageCroppedEvent, LoadedImage } from 'ngx-image-cropper';
-import { strict, general, categories } from 'src/assets/consts';
+import { ModalController, ToastController } from '@ionic/angular';
+import { categories, general, strict } from 'src/assets/consts';
 import { getImage } from 'src/functions';
-import { Dish } from 'src/models/dish';
 import { Restaurant } from 'src/models/general';
-import { RadminService } from '../radmin.service';
-import { ImageCropperModalPage } from './image-cropper-modal/image-cropper-modal.page';
+import { RestaurantService } from '../services/restaurant.service';
+import { ImagePage } from './image/image.page';
+
+interface ConvertedDish {
+  name: string;
+  price: string;
+  image: {
+    binary: any;
+    resolution: number;
+  };
+  _id: string;
+  description: string;
+  strict: any;
+  general: any;
+  categories: any;
+  time: number;
+}
 
 @Component({
   selector: 'app-dish',
@@ -17,164 +29,195 @@ import { ImageCropperModalPage } from './image-cropper-modal/image-cropper-modal
   styleUrls: ['./dish.page.scss'],
 })
 export class DishPage implements OnInit {
+
   restaurant: Restaurant;
-
+  dish: ConvertedDish;
+  form: FormGroup;
   mode: "edit" | "add";
+  resolution: number = 1;
   imageClass: string = "r1";
+  imageFile: File;
+  image: string;
+  imageUpdated: boolean = false;
 
-  imageChanged = false;
-
-  dish: Dish;
-  resolution = "1";
-  currentResolution: string;
-
-  addDishForm: FormGroup;
-
-  strict = strict;
-  categories = categories;
   general = general;
-
-  dishImage: File;
-  image: any = "./../../../../assets/images/no-image.jpg";
+  categories = categories;
+  strict = strict;
 
   ui = {
-    title: "",
-    msg: "",
+    disableSave: false,
+    disableAdd: false
   }
 
   constructor(
+    private service: RestaurantService,
     private route: ActivatedRoute,
     private router: Router,
-    private service: RadminService,
-    private sanitizer: DomSanitizer,
-    private modalCtrl: ModalController
-  ) {
-    this.addDishForm = new FormGroup({
-      name: new FormControl("", Validators.required),
-      time: new FormControl(null, Validators.required),
-      price: new FormControl(null, Validators.required),
-      description: new FormControl(""),
-      general: new FormControl(null, Validators.required),
-      categories: new FormControl(null, Validators.required),
-      strict: new FormControl(null, Validators.required)
-    });
-  };
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController,
+  ) { };
 
-  exit() {
-    if (this.mode == "edit") {
-      this.router.navigate(["restaurant", this.restaurant._id, "dishes", "full", this.dish._id], { replaceUrl: true });
+
+
+  close() {
+    if(this.mode == "add") {
+      this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
     } else {
-      this.router.navigate(["restaurant", this.restaurant._id, "dishes", "overview"], { replaceUrl: true });
+      this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id]);
     }
   }
-  async edit() {
+  async setImage(event: any) {
 
-    const body = this.addDishForm.value;
-
-    if(this.imageChanged) {
-      body.image = { data: this.image.changingThisBreaksApplicationSecurity, resolution: Number(this.currentResolution) };
-    }
-
-    body.price = body.price * 100;
-
-    await this.service.patch(body, "dishes", this.dish._id)
-    this.router.navigate(["restaurant", this.restaurant._id, "dishes", "full", this.dish._id], { replaceUrl: true });
-  }
-  async setImage(e: any) {
-    this.imageChanged = true;
-    const file: File = e.target.files.item(0);
-    
-    const strs = file.name.split(".");
-
-    
-
-    if (!file || !["jpg", "jpeg", "JPG", "JPEG", "jfif", "svg"].includes(strs[strs.length - 1])) {
-      console.log("UNSUPPORTED FILE EXTENSION");
-      return;
-    }
+    this.imageFile = event.target.files.item(0);
 
     const modal = await this.modalCtrl.create({
-      component: ImageCropperModalPage,
+      component: ImagePage,
       mode: "ios",
-      cssClass: "image-cropper",
+      cssClass: "modal-width",
+      swipeToClose: true,
       componentProps: {
-        file: file,
-        resolution: this.resolution
+        event
       }
     });
 
-    
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
-    
+
     if(data) {
-      this.image = this.sanitizer.bypassSecurityTrustUrl(data.image);
-      this.currentResolution = data.resolution;
+      this.imageUpdated = true;
+      this.image = data.image;
+      this.resolution = data.resolution;
+      if(data.resolution == 1) {
+        this.imageClass = "r1";
+      } else if(data.resolution == 1.33) {
+        this.imageClass = "r2";
+      } else {
+        this.imageClass = "r3";
+      }
     }
   }
+  async add(r: boolean) {
+    this.ui.disableAdd = true;
+    if(!this.form.valid) {
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Fill all given fields.",
+        color: "red",
+        mode: "ios"
+      }))
+      return;
+    }
 
-  resolutionChange(e) {
-    this.resolution = e.target.value;
-    if(this.resolution === "1") {
-      this.imageClass = "r1";
-    } else if(this.resolution === "1.33") {
-      this.imageClass = "r2"
+    const dish = {
+      ...this.form.value,
+      image: {
+        binary: this.image,
+        resolution: this.resolution || 1,
+      }
+    };
+
+    const result: any = await this.service.post({ dish }, "dishes");
+
+    if(result.added) {
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Successfuly added.",
+        color: "green",
+        mode: "ios",
+      })).present();
+      if(r) {
+        this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
+      }
     } else {
-      this.imageClass = "r3";
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Something went wrong. Try again later.",
+        color: "red",
+        mode: "ios",
+      })).present();
     }
   }
+  async save() {
+    this.ui.disableSave = true;
 
-  async addDish(reroute: boolean) {
-
-    if (
-      !this.addDishForm.valid
-    ) {
-      this.ui.msg = "Some required fields are not filled";
+    if(!this.form.valid) {
+      this.ui.disableSave = false;
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Fill all required fields.",
+        color: "red",
+        mode: "ios"
+      })).present();
       return;
     }
 
-    await this.service.post({ ...this.addDishForm.value, price: this.addDishForm.value.price * 100, image: { resolution: Number(this.currentResolution), data: this.image.changingThisBreaksApplicationSecurity } }, 'dishes');
+    const body: any = this.form.value;
 
-
-    if (reroute) {
-      this.exit();
-      return;
+    if(this.imageUpdated) {
+      body.image = { data: this.image };
+      body.image.resolution = this.resolution;
     }
 
-    this.addDishForm.reset();
-    this.image = "./../../../../assets/images/no-image.jpg";
+    const result: any = await this.service.patch(body, "dishes", this.dish._id);
+
+    if(result.updated) {
+      this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id], { replaceUrl: true });
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Successfuly updated.",
+        color: "green",
+        mode: "ios"
+      })).present();
+    } else {
+      this.ui.disableSave = false;
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Something went wrong. Try again later.",
+        color: "red",
+        mode: "ios"
+      })).present();
+    }
   }
 
   async ngOnInit() {
-    this.mode = this.route.snapshot.paramMap.get("mode") as "add" | "edit";
-    const restaurantId = this.route.snapshot.paramMap.get("restaurantId");
-    this.restaurant = await this.service.getRestaurant(restaurantId);
-    if (this.mode == "edit") {
-      const id = this.route.snapshot.queryParamMap.get("dish");
-      if (!id) {
-        return this.exit();
-      }
-      this.dish = await this.service.get("dishes", id);
-      this.ui.title = "Edit " + this.dish.name;
-      if(this.dish.image) {
-        this.image = this.sanitizer.bypassSecurityTrustUrl((this.dish as any).image);
-        if(this.dish.image.resolution) {
-          this.resolution = this.dish.image.resolution.toString();
-          this.resolutionChange({ target: { value: this.dish.image.resolution }});
-        }
-      }
-      this.addDishForm = new FormGroup({
-        name: new FormControl(this.dish.name),
-        time: new FormControl(this.dish.time),
-        price: new FormControl(this.dish.price),
-        description: new FormControl(this.dish.description),
-        strict: new FormControl(this.dish.strict),
-        general: new FormControl(this.dish.general),
-        categories: new FormControl(this.dish.categories)
+    this.restaurant = this.service.restaurant;
+    this.mode = this.route.snapshot.params["mode"] as any;
+    if(this.mode != "add" && this.mode as any != "edit") {
+      this.router.navigate(["restaurant", this.restaurant._id, "dishes", "list"], { replaceUrl: true });
+      return;
+    }
+    if(this.mode == "add") {
+      this.form = new FormGroup({
+        name: new FormControl("", Validators.required),
+        price: new FormControl(null, Validators.required),
+        time: new FormControl(null, Validators.required),
+        description: new FormControl(""),
+        strict: new FormControl(null),
+        categories: new FormControl(null),
+        general: new FormControl(null, Validators.required)
       });
     } else {
-      this.ui.title = "Add new dishes to " + this.restaurant.name;
+      const dishId = this.route.snapshot.params["dishId"] as any;
+      this.dish = await this.service.get("dishes", dishId);
+      this.image = getImage(this.dish.image.binary);
+      this.resolution = this.dish.image.resolution;
+      if(this.resolution == 1) {
+        this.imageClass = "r1";
+      } else if(this.resolution == 1.33) {
+        this.imageClass = "r2";
+      } else {
+        this.imageClass = "r3";
+      }
+      this.form = new FormGroup({
+        name: new FormControl(this.dish.name, Validators.required),
+        price: new FormControl(this.dish.price, Validators.required),
+        time: new FormControl(this.dish.time, Validators.required),
+        description: new FormControl(this.dish.description),
+        strict: new FormControl(this.dish.strict),
+        categories: new FormControl(this.dish.categories),
+        general: new FormControl(this.dish.general, Validators.required)
+      });
     }
   }
 

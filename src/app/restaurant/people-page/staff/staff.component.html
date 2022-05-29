@@ -1,0 +1,49 @@
+<div class="app">
+  <div class="header">
+    <div class="gap">
+
+    </div>
+    <div class="buttons">
+      <button class="purple-button" (click)="invitations()">Invitations</button>
+      <button class="orange-button" (click)="add()"><ion-icon name="add"></ion-icon>Add worker</button>
+    </div>
+  </div>
+  <div class="list">
+    <div class="one exp">
+      <div class="avatar">
+
+      </div>
+      <div class="name">
+        Username
+      </div>
+      <div class="role">
+        Role
+      </div>
+      <div class="date">
+        Joined
+      </div>
+      <div class="buttons">
+
+      </div>
+    </div>
+    <div class="one" (click)="full(i._id)" *ngFor="let i of staff">
+      <div class="avatar">
+        <img [src]="i.avatar || './../../../../assets/images/plain-avatar.jpg'">
+      </div>
+      <div class="name">
+        {{ i.username }}
+      </div>
+      <div class="role">
+        {{ i.role }}
+      </div>
+      <div class="date">
+        {{ i.date }}
+      </div>
+      <div class="button" (click)="$event.stopPropagation()">
+        <button (click)="open($event, i._id)">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

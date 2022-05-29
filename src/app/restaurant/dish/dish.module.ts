@@ -6,21 +6,22 @@ import { IonicModule } from '@ionic/angular';
 
 import { DishPageRoutingModule } from './dish-routing.module';
 import { ImageCropperModule } from 'ngx-image-cropper';
+
 import { DishPage } from './dish.page';
-import { ImageCropperModalPage } from './image-cropper-modal/image-cropper-modal.page';
+import { ImagePage } from './image/image.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReactiveFormsModule,
     DishPageRoutingModule,
+    ReactiveFormsModule,
     ImageCropperModule
   ],
   declarations: [
     DishPage,
-    ImageCropperModalPage
+    ImagePage
   ]
 })
 export class DishPageModule {}

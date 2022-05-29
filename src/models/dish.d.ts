@@ -5,20 +5,15 @@ interface Dish {
     price?: number;
     time?: number;
     created?: Date;
+    modified?: Date;
     description?: string;
-    types?: string[];
     categories?: string[];
     strict?: string[];
     general?: string[];
-    image?: { data: string | any; resolution: number; date: string | Date };
-    choosen?: boolean;
+    image?: { binary: string | any; resolution: number; date: string | Date };
     bought?: number;
     _id: string;
-    sale: { _id: string; to: Date };
-    originalPrice: number;
     cooking?: { recipee: string; components: {v: number; id: string; }[] };
-    dates?: Stats[];
-    sales: { cost: number; _id: string; created?: Date; name: string; }[];
 }
 
 

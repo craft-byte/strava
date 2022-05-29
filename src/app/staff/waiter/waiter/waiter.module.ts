@@ -8,6 +8,7 @@ import { WaiterPageRoutingModule } from './waiter-routing.module';
 
 import { WaiterPage } from './waiter.page';
 import { DishComponent } from './dish/dish.component';
+import { DishModalPage } from './dish-modal/dish-modal.page';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { DishComponent } from './dish/dish.component';
   ],
   declarations: [
     WaiterPage,
-    DishComponent
+    DishComponent,
+    DishModalPage,
   ]
 })
 export class WaiterPageModule {}

@@ -1,0 +1,26 @@
+.app {
+    width: 324px;
+    .button {
+        cursor: pointer;
+        width: 100%;
+        height: 32px;
+        color: var(--blue);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        padding-left: 12px;
+        font-size: 18px;
+        &:hover {
+            background-color: rgb(250, 250, 250);
+        }
+        &:last-of-type {
+            border: none;
+        }
+    }
+    .remove {
+        color: var(--red);
+    }
+    .edit {
+        color: var(--orange);
+    }
+}

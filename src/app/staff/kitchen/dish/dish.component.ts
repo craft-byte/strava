@@ -19,8 +19,8 @@ export class DishComponent implements OnInit {
     private service: StaffService
   ) { };
 
-  @Input() dish: Dish;
-  @Input() orderDish: KitchenDish;
+  @Input() dish: { _id: string; dishId: string; takenTime: string; taken: { userId: string; }; image: string; name: string; time: { color: string; title: string } };
+  @Input() orderDish: { _id: string; dishId: string; taken: any; takenTime: string; image: string; name: string; time: { color: string; title: string } };
   @Output() Emitter = new EventEmitter();
 
   chooseDish() {

@@ -1,0 +1,19 @@
+<div class="app">
+  <div class="header">
+    <div class="title">People:</div>
+    <div class="links">
+      <div class="link staff" (click)="go('staff')" [ngClass]="{ active: page == 'staff' }">
+        Staff
+      </div>
+      <div class="link orders" (click)="go('orders')" [ngClass]="{ active: page == 'orders' }">
+        Orders
+      </div>
+      <div class="link blacklist" (click)="go('blacklist')" [ngClass]="{ active: page == 'blacklist' }">
+        Blacklist
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

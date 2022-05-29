@@ -54,7 +54,7 @@ export class MainService {
     return result.restaurants;
   }
   auth(s: string) {
-    return this.http.get(environment.url + "/user/authenticate/" + s).toPromise();
+    return this.http.get(environment.url + "/user/authenticate/" + s);
   }
   logout() {
     this.userInfo = null;

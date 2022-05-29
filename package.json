@@ -5,10 +5,13 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "node index.js",
+    "start": "(npm run web:build && true) && npm run server",
     "build": "npm run prod:web",
     "web": "ionic serve",
-    "prod:web": "ng build --configuration production"
+    "server": "(npm run server:build || true) && npm run server:start",
+    "server:build": "(cd ./server || true) && npm run prod:build",
+    "server:start": "(cd ./server || true) && npm run start",
+    "web:build": "ng build --configuration production"
   },
   "private": true,
   "dependencies": {
@@ -29,7 +32,7 @@
     "@capacitor/status-bar": "1.0.6",
     "@ionic/angular": "^5.9.4",
     "@stripe/stripe-js": "^1.29.0",
-    "express": "^4.17.1",
+    "express": "^4.18.1",
     "ionic-rating-component": "^1.2.1",
     "js-cookie": "^3.0.1",
     "ngx-cookie-service": "^13.0.0",

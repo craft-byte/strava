@@ -1,0 +1,30 @@
+<div class="header">
+  <div class="restaurant {{ navClass }}" (click)="more($event)">
+    <div class="name">
+      {{ restaurant.name }}
+    </div>
+    <div class="button">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </div>
+  </div>
+  <div class="links">
+    <div (click)="go('dishes')" class="link dishes" [ngClass]="{ active: page == 'dishes' }">
+      <a>Dishes</a>
+    </div>
+    <div (click)="go('people')" class="link people" [ngClass]="{ active: page == 'people' }">
+      <a>People</a>
+    </div>
+    <div (click)="go('settings')" class="link settings" [ngClass]="{ active: page == 'settings' }">
+      <a class="settings">Settings</a>
+    </div>
+  </div>
+  <div class="user">
+    <ion-icon routerLink="/user/info" [replaceUrl]="true" name="person-circle-outline"></ion-icon>
+  </div>
+</div>
+
+<ion-content>
+  <div class="app">
+    <router-outlet></router-outlet>
+  </div>
+</ion-content>

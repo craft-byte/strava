@@ -1,132 +1,65 @@
-<ion-header>
-  <div class="nav">
-    <div class="exit">
-      <button id="exit" (click)="exit()"><ion-icon name="close-outline"></ion-icon></button>
+<div class="header">
+  <div class="title">
+    <div class="close">
+      <ion-icon (click)="close()" name="close-outline"></ion-icon>
     </div>
-    <div class="name">
-      <p>Cooking {{name}}</p>
-    </div>
-    <div class="save">
-      <div class="gap"></div>
-      <button id="save" (click)="save()">Save</button>
+    <div class="text">
+      Cooking
     </div>
   </div>
-</ion-header>
+  <div class="buttons">
+    <button class="orange-button" [disabled]="ui.disableSave" (click)="save()">Save</button>
+  </div>
+</div>
 
 <ion-content>
   <div class="app">
-    <div class="msg">
-      {{ ui.title }}
-    </div>
-    <div class="block">
+    <div class="block s1">
       <div class="title">
-        <div class="step">
+        <div class="text">
           Step 1
         </div>
         <div class="info">
-          What components to use?
+          Recipee
         </div>
       </div>
-      <div class="body">
-        <div class="components">
-          <div class="search">
-            <ion-searchbar (keydown.enter)="find()" [(ngModel)]="searchText" class="searchbar" mode="ios"></ion-searchbar>
-            <button id="find" (click)="find()"><ion-icon name="search-outline"></ion-icon></button>
-          </div>
-          <div class="chosen" *ngIf="chosen.length > 0">
-            <div class="sub-title">
-              Chosen
-            </div>
-            <div *ngFor="let i of chosen" class="component">
+      <div class="content">
+        <textarea [(ngModel)]="recipee" placeholder="Recipee" cols="40" rows="10"></textarea>
+      </div>
+    </div>
+    <div class="block s2">
+      <div class="title">
+        <div class="text">Step 2</div>
+        <div class="info">
+          Ingredients to use
+        </div>
+      </div>
+      <div class="content">
+        <div class="chosen" *ngIf="selected && selected.length > 0">
+          <div class="subtitle">Selected:</div>
+          <div class="list">
+            <div class="one" *ngFor="let i of selected">
               <div class="name">
                 {{ i.name }}
               </div>
-              <div class="value">
+              <div class="amount">
                 {{ i.amount }} grams
               </div>
-              <div class="remove">
-                <button (click)="removeChosen(i._id)" class="remove-btn"> <ion-icon name="trash-outline"></ion-icon> Remove</button>
+              <div class="edit">
+                <button class="orange-button" (click)="edit(i)">Edit</button>
               </div>
             </div>
           </div>
-          <div class="found" *ngIf="found.length > 0">
-            <div class="sub-title">
-              Found
-            </div>
-            <app-component *ngFor="let i of found" [component]="i" (Emitter)="onComponentEmited($event)"></app-component>
+        </div>
+        <div class="list">
+          <div class="subtitle">
+            <ion-searchbar (ionInput)="find($event)" mode="ios" showClearButton="always"></ion-searchbar>
+          </div>
+          <div class="self" *ngIf="components && components.length > 0">
+            <app-ingredient (Emitter)="onIngredientEmit($event)" *ngFor="let i of components" [c]="i"></app-ingredient>
           </div>
         </div>
       </div>
     </div>
-    <div class="block">
-      <div class="title">
-        <div class="step">
-          Step 2
-        </div>
-        <div class="info">
-          How to cook?
-        </div>
-      </div>
-      <div class="body recipee">
-        <ion-item class="border">
-          <ion-textarea [(ngModel)]="recipee" rows="10" autoGrow placeholder="Recipee"></ion-textarea>
-        </ion-item>
-      </div>
-    </div>
-    <div class="block">
-      <div class="title">
-        <div class="step">
-          Step 3 <p>optional</p>
-        </div>
-        <div class="info">
-          Choose who cooks
-        </div>
-      </div>
-      <div class="body workers-block">
-        <div class="small">
-          <small class="small-gray">The person you choose will receive notification when someone orders {{ name }}, but anyone can cook it anyway</small>
-        </div>
-        <div class="workers">
-          <div *ngFor="let i of workers" class="worker">
-            <div class="avatar">
-              <img [src]="i.avatar">
-            </div>
-            <div class="name">
-              {{ i.name }}
-            </div>
-            <div class="add">
-              <button (click)="choose(i._id)" class="square-success">
-                <ion-icon name="add-outline" *ngIf="!i.choosen"></ion-icon>
-                <ion-icon name="checkmark-outline" *ngIf="i.choosen"></ion-icon>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- <div class="block">
-      <div class="title">
-        <div class="step">
-          Step 3 <p>optional</p>
-        </div>
-        <div class="info">
-          Who cooks?
-        </div>
-      </div>
-      <div class="body cooks" *ngIf="workers && workers.length > 0">
-        <div *ngFor="let i of workers" class="worker">
-          <div class="avatar">
-            {{ i.avatar }}
-          </div>
-          <div class="name">
-            {{ i.name }}
-          </div>
-          <div class="gap"></div>
-          <div class="add">
-            <button class="add-btn"><ion-icon name="add-outline"></ion-icon></button>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </ion-content>

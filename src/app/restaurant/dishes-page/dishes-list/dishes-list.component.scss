@@ -1,0 +1,87 @@
+.app {
+    .overview {
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .buttons {
+                button {
+                    ion-icon {
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+    }
+    .dishes { 
+        .header {
+            display: flex;
+            align-items: center;
+            ion-searchbar {
+                width: 624px;
+            }
+            button {
+                width: 36px;
+                height: 36px;
+                font-size: 22px;
+            }
+        }
+        .list {
+            .ex {
+                color: var(--text-color);
+                font-size: 18px;
+            }
+            div {
+                display: grid;
+                grid-template-columns: 50% 20% 20% 10%;
+                height: 52px;
+                border-bottom: 1px solid var(--border-color);
+                div {
+                    display: flex;
+                    align-items: center;
+                    padding-left: 12px;
+                }
+                .bought {
+                    color: var(--text-color);
+                }
+                .date {
+                    color: var(--text-color);
+                }
+                .start {
+                    flex-direction: column;
+                    align-items: baseline;
+                    justify-content: center;
+                    p {
+                        margin: 0;
+                    }
+                    .name {
+                        font-size: 18px;
+                        color: var(--title-color);
+                    }
+                    .price {
+                        color: var(--text-color);
+                    }
+                }
+                .info {
+                    button {
+                        width: 32px;
+                        height: 32px;
+                        font-size: 24px;
+                        background: none;
+                    }
+                }
+            }
+            .dish:hover {
+                background-color: rgb(251, 251, 251);
+                cursor: pointer;
+            }
+        }
+        .no-dishes {
+            margin-top: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+    }
+}

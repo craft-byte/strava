@@ -1,0 +1,14 @@
+<div class="app">
+  <div class="name">
+    {{ c.name }}
+  </div>
+  <div class="amount">
+      <ion-item>
+        <ion-label>Amount grams: </ion-label>
+        <ion-input [(ngModel)]="amount" type="number"></ion-input>
+      </ion-item>
+  </div>
+  <div class="buttons">
+    <button class="success-button" (click)="add()">Add</button>
+  </div>
+</div>

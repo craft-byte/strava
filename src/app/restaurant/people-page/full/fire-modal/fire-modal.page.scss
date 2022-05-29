@@ -1,0 +1,10 @@
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    .title {
+        font-size: 18px;
+        margin: 12px;
+    }
+}

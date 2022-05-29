@@ -1,7 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getImage } from 'src/functions';
-import { RadminService } from '../radmin.service';
+import { ModalController, ToastController } from '@ionic/angular';
+import { RestaurantService } from '../services/restaurant.service';
+import { IngredientModalPage } from './ingredient-modal/ingredient-modal.page';
+
+interface Dish {
+  name: string;
+  _id: string;
+}
+interface Ing {
+  name: string;
+  _id: string;
+  amount: number;
+}
 
 @Component({
   selector: 'app-dish-cooking',
@@ -10,119 +21,157 @@ import { RadminService } from '../radmin.service';
 })
 export class DishCookingPage implements OnInit {
 
+
+  dish: Dish;
+  components: Ing[];
+  recipee: string;
+  selected: Ing[] = [];
+
+  timeout: any;
+
   ui = {
-    title: ""
+    disableSave: false,
   };
 
-
-  choosenWorkers: string[] = [];
-
-  dishId: string = null;
-
-  chosen = [];
-  found = [];
-
-  recipee: string = null;
-  searchText: string = null;
-  name: string = null;
-
-  workers: { _id: string; name: string; avatar: string; choosen: boolean }[] = [];
-
-
   constructor(
-    private service: RadminService,
+    private route: ActivatedRoute,
+    private service: RestaurantService,
     private router: Router,
-    private route: ActivatedRoute
+    private toastCtrl: ToastController,
+    private modalCtrl: ModalController,
   ) { };
 
-  async find() {
-    this.found = await this.service.patch({ searchText: this.searchText }, "components");
+  close() {
+    this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id], { replaceUrl: true });
   }
 
-  removeChosen(id: string) {
-    for(let i in this.chosen) {
-      if(this.chosen[i]._id == id) {
-        this.chosen.splice(+i, 1);
-        break;
+  find(event: any) {
+    const { target: { value } } = event;
+    clearTimeout(this.timeout);
+    
+    this.timeout = setTimeout(async () => {
+      this.addComponents(
+        await this.service.patch({ searchText: value }, "components")
+      );
+    }, 1000);
+  }
+
+  async edit(comp: Ing) {
+    const modal = await this.modalCtrl.create({
+      component: IngredientModalPage,
+      mode: "ios",
+      swipeToClose: true,
+      cssClass: "modal-width",
+      componentProps: {
+        data: comp
+      }
+    });
+
+    await modal.present();
+
+    const { data: d } = await modal.onDidDismiss();
+
+    if(d) {
+      if (d.type == 1) {
+        if (!d.amount || d.amount < 1) {
+          (await this.toastCtrl.create({
+            message: "Amount should be more than 0 grams :/",
+            color: "red",
+            duration: 3000,
+            mode: "ios"
+          })).present();
+          return;
+        }
+        for (let i in this.selected) {
+          if (this.selected[i]._id == comp._id) {
+            this.selected[i].amount = d.amount;
+          }
+        }
+      } else if (d.type == 2) {
+        for (let i in this.selected) {
+          if (this.selected[i]._id == comp._id) {
+            delete this.selected[i].amount;
+            this.components.push(this.selected.splice(+i, 1)[0]);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  async onIngredientEmit(data: { _id: string; amount?: number; data?: any }) {
+    if (!data.amount || data.amount < 1) {
+      (await this.toastCtrl.create({
+        message: "Amount should be more than 0 grams :/",
+        color: "red",
+        duration: 3000,
+        mode: "ios"
+      })).present();
+      return;
+    } else {
+      for (let i in this.components) {
+        if (this.components[i]._id) {
+          this.selected.push({ ...this.components[i], amount: data.amount });
+          this.components.splice(+i, 1);
+          break;
+        }
       }
     }
   }
 
   async save() {
-    this.ui.title = "";
-    const result = await this.service
-      .patch<{ success: boolean }>(
-        { 
-          cooking: { 
-            recipee: this.recipee, 
-            components: this.chosen,
-            workers: this.choosenWorkers
-          },
-          info: {
-            dishId: this.dishId
-          },
-          restaurantId: this.service.restaurant._id,
-        },
-        "cooking/set"
-      );
+    this.ui.disableSave = true;
+    const result: any = await this.service.post({ components: this.selected, recipee: this.recipee }, "dishes", this.dish._id, "cooking");
 
-    if(result.success) {
-      this.exit();
+    if(result.updated) {
+      this.close();
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Successfuly updated.",
+        color: "green",
+        mode: "ios",
+      })).present();
     } else {
-      this.ui.title = "Something went wrong. Try again later";
+      (await this.toastCtrl.create({
+        duration: 4000,
+        message: "Something went wrong. Try again later.",
+        color: "red",
+        mode: "ios",
+      })).present();
+      this.ui.disableSave = false;
     }
   }
 
-  exit() {
-    this.router.navigate(
-      ["restaurant", this.service.restaurantId, "dishes", "full", this.dishId], 
-      { queryParamsHandling: "preserve" }
-    );
-  }
-
-  choose(id: string) {
-    for(let i of this.workers) {
-      if(i._id == id) {
-        if(i.choosen) {
-          this.choosenWorkers.splice(this.choosenWorkers.indexOf(id), 1);
-          i.choosen = false;
-          return;
+  addComponents(comps: Ing[]) {
+    this.components = [];
+    if(!this.selected || this.selected.length == 0) {
+      return this.components.push(...comps);
+    }
+    for(let i of comps) {
+      let add = true;
+      for(let j of this.selected) {
+        if(i._id == j._id) {
+          add = false;
+          break;
         }
-        i.choosen = true;
-        this.choosenWorkers.push(id);
-        return;
       }
-    }
-  }
-
-  onComponentEmited({component, amount}: { component: { name: string; _id: string}, amount: number }) {
-    this.chosen.push(Object.assign(component, { amount }));
-    for(let i in this.found) {
-      if(this.found[i]._id == component._id) {
-        this.found.splice(+i, 1);
-        break;
+      if(add) {
+        this.components.push(i);
       }
     }
   }
 
   async ngOnInit() {
-    await this.service.getRestaurant();
-    this.dishId = this.route.snapshot.paramMap.get("dish");
-    const { recipee, components, name, workers } = await this.service.get("cooking/dish", this.service.restaurantId, this.dishId);
+    const dishId = this.route.snapshot.paramMap.get("dishId");
+    const { cooking, dish, components } = await this.service.get("dishes", dishId, "cooking");
 
-    this.chosen = components;
-    this.recipee = recipee;
-    this.name = name;
-    this.workers = workers;
-
-    for(let i of this.workers) {
-      if(!i.avatar) {
-        i.avatar = "./../../../../assets/images/plain-avatar.jpg";
-      } else {
-        i.avatar = await getImage(i.avatar);
-      }
+    if (cooking) {
+      this.selected = cooking.components;
+      this.recipee = cooking.recipee;
     }
 
+    this.addComponents(components);
+    this.dish = dish;
   }
 
 }

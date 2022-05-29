@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoginGuard } from './login.guard';
-import { DishGuard } from './restaurant/dish.guard';
 import { RestaurantGuard } from './restaurant.guard';
 
 
@@ -39,34 +38,32 @@ const user: Routes = [
     canActivate: [LoginGuard]
   },
 ];
+
+
 const restaurant: Routes = [
+  {
+    path: "restaurant/:restaurantId",
+    loadChildren: () => import("./restaurant/restaurant.module").then(m => m.RestaurantPageModule),
+    canActivate: [LoginGuard, RestaurantGuard]
+  },
   {
     path: "dish/:restaurantId/:mode",
     loadChildren: () => import("./restaurant/dish/dish.module").then(m => m.DishPageModule),
-    canActivate: [LoginGuard, RestaurantGuard, DishGuard]
-  },
-  {
-    path: 'dish-cooking/:restaurantId/:dish',
-    loadChildren: () => import('./restaurant/dish-cooking/dish-cooking.module').then( m => m.DishCookingPageModule)
-    , canActivate: [LoginGuard, RestaurantGuard]
-  },
-  {
-    path: 'invite-user/:restaurantId',
-    loadChildren: () => import('./restaurant/invite-user/invite-user.module').then( m => m.InviteUserPageModule),
     canActivate: [LoginGuard, RestaurantGuard]
   },
   {
-    path: 'invite-user/:restaurantId/:user',
-    loadChildren: () => import('./restaurant/worker-set-up/worker-set-up.module').then( m => m.WorkerSetUpPageModule),
+    path: "dish/:restaurantId/:mode/:dishId",
+    loadChildren: () => import("./restaurant/dish/dish.module").then(m => m.DishPageModule),
     canActivate: [LoginGuard, RestaurantGuard]
   },
   {
-    path: 'restaurant',
-    loadChildren: () => import('./restaurant/radmin/radmin.module').then( m => m.RadminPageModule),
-    canActivate: [LoginGuard],
-    runGuardsAndResolvers: "always"
+    path: "cooking/:restaurantId/:dishId",
+    loadChildren: () => import("./restaurant/dish-cooking/dish-cooking.module").then(m => m.DishCookingPageModule),
+    canActivate: [LoginGuard, RestaurantGuard],
   },
 ];
+
+
 const staff: Routes = [
   {
     path: "staff/:restaurantId/dashboard",
@@ -91,24 +88,12 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import("./ctraba/main/main.module").then(m => m.MainPageModule)
   },
-  {
-    path: 'admin',
-    loadChildren: () => import('./ctraba/admin/admin.module').then( m => m.AdminPageModule)
-  },
-  {
-    path: 'blog',
-    loadChildren: () => import('./ctraba/blog/blog.module').then( m => m.BlogPageModule)
-  },
   ...staff,
   ...user,
   ...restaurant,
   {
     path: "**",
-    redirectTo: "user"
-  },
-  {
-    path: 'jobs',
-    loadChildren: () => import('./user/jobs/jobs.module').then( m => m.JobsPageModule)
+    redirectTo: "user/info"
   },
   {
     path: 'dashboard',

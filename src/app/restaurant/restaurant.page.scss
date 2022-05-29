@@ -1,0 +1,79 @@
+.header {
+    background-color: rgb(236, 236, 236);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+    padding: 0 412px;
+    .restaurant {
+        font-size: 20px;
+        font-weight: 550;
+        color: var(--title-color);
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+    
+        .button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+    
+            ion-icon {
+                transition: all .5s;
+            }
+        }
+    
+        &.active {
+            .button {
+                ion-icon {
+                    -webkit-transform: rotate(90deg);
+                    -moz-transform: rotate(90deg);
+                    -ms-transform: rotate(90deg);
+                    -o-transform: rotate(90deg);
+                    transform: rotate(90deg);
+                }
+            }
+        }
+    }
+    .links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 400px;
+        .link {
+            width: 124px;
+            height: 28px;
+            background-color: rgb(236, 236, 236);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            cursor: pointer;
+            a {
+                transition: all .3s;
+                text-decoration: none;
+                // font-weight: 550;
+                color: black;
+            }
+            &:hover {
+                background-color: rgb(202, 202, 202);
+            }
+            &.active {
+                background-color: var(--orange);
+            }
+        }
+    }
+    .user {
+        width: 52px;
+        ion-icon {
+            font-size: 28px;
+            cursor: pointer;
+            &:hover {
+                color: rgb(85, 85, 85);
+            }
+        }
+    }
+}
+.app {
+    padding: 12px 412px;
+}

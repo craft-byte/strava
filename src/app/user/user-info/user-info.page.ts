@@ -42,14 +42,14 @@ export class UserInfoPage implements OnInit {
   }
 
 
-  goWork(where: string) {
-    this.router.navigate(["staff", where, "dashboard"], { replaceUrl: true, queryParamsHandling: "preserve" });
+  goWork(restaurantId: string) {
+    this.router.navigate(["staff", restaurantId, "dashboard"], { replaceUrl: true });
   }
   addRestaurant() {
-    this.router.navigate(["add-restaurant"], { replaceUrl: true, queryParamsHandling: "preserve" });
+    this.router.navigate(["add-restaurant"], { replaceUrl: true });
   }
   goRestaurant(restaurant: string) {
-    this.router.navigate(["restaurant", restaurant], { replaceUrl: true, queryParamsHandling: "preserve" });
+    this.router.navigate(["restaurant", restaurant], { replaceUrl: true });
   }
   async invitation(id: string, type: "accept" | "reject", restaurant?: string) {
     let result = null;
@@ -67,15 +67,23 @@ export class UserInfoPage implements OnInit {
           break;
         }
       }
+      for(let i in this.main.userInfo.invitations) {
+        if(this.main.userInfo.invitations[i]._id == id) {
+          this.main.userInfo.invitations.splice(+i, 1);
+          break;
+        }
+      }
       if(this.invitations.length == 0) {
         this.ui.showInvitations = false;
       }
     }
     if(result.job) {
+      this.main.userInfo.works.push(result.job);
       this.works.push(result.job);
       this.ui.showJobs = true;
     }
     if(result.restaurant) {
+      this.main.userInfo.restaurants.push(result.restaurant);
       this.restaurants.push(result.restaurant);
       this.ui.showRestaurants = true;
     }
@@ -110,7 +118,7 @@ export class UserInfoPage implements OnInit {
       this.ui.email = email;
     }
 
-    this.avatar = await getImage(avatar);
+    this.avatar = getImage(avatar);
     if(!this.avatar) {
       this.avatar = "./../../../assets/images/plain-avatar.jpg";
     }

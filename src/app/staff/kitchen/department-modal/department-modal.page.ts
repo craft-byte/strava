@@ -13,7 +13,7 @@ import { KitchenService } from '../kitchen.service';
 })
 export class DepartmentModalPage implements OnInit {
 
-  convertedDishes: { image: string; name: string; time: { color: string; title: string } }[] = null;
+  convertedDishes: { _id: string; dishId: string; takenTime: string; taken: { userId: string; }; image: string; name: string; time: { color: string; title: string } }[] = null;
 
   constructor(
     private modalCtrl: ModalController,
