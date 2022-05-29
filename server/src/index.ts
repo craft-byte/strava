@@ -52,8 +52,6 @@ const client = new MongoClient(`mongodb+srv://bazhan:Kaliman228@cluster0.lbe4g.m
 const server = createServer(app);
 const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
 
-// const whitelist = ["http://localhost:8100", "http://localhost:8101", "https://localhost:4200"];
-
 const splitted = process.cwd().split("\\");
 splitted.splice(splitted.length - 1, splitted.length);
 
