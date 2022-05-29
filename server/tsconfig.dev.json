@@ -1,0 +1,9 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dev",
+    },
+    "files": [
+        "src/index.ts",
+    ],
+}
