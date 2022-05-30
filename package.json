@@ -1,8 +1,10 @@
 {
   "name": "ctraba",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Bazhan",
+  "engines": {
+    "node": "16.13.1"
+  },
   "scripts": {
     "ng": "ng",
     "start": "(npm install --force || false) && (npm run web:build || false) && npm run server",
