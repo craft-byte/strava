@@ -9,7 +9,7 @@
     "build": "npm run prod:web",
     "web": "ionic serve",
     "server": "(npm run server:build || false) && npm run server:start",
-    "server:build": "(cd ./server || false) && npm run prod:build",
+    "server:build": "(cd ./server || false) && (npm install || false) && npm run prod:build",
     "server:start": "(cd ./server || false) && npm run start",
     "web:build": "ng build --configuration production"
   },
