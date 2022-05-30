@@ -5,11 +5,11 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "(npm install || false) && (npm run web:build || false) && npm run server",
+    "start": "(npm install --production || false) && (npm run web:build || false) && npm run server",
     "build": "npm run prod:web",
     "web": "ionic serve",
     "server": "(npm run server:build || false) && npm run server:start",
-    "server:build": "(cd ./server || false) && (npm install || false) && npm run prod:build",
+    "server:build": "(cd ./server || false) && (npm install --production || false) && npm run prod:build",
     "server:start": "(cd ./server || false) && npm run start",
     "web:build": "ng build --configuration production"
   },
