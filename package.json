@@ -5,7 +5,7 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "(npm run web:build || false) && npm run server",
+    "start": "(npm install || false) && (npm run web:build || false) && npm run server",
     "build": "npm run prod:web",
     "web": "ionic serve",
     "server": "(npm run server:build || false) && npm run server:start",
