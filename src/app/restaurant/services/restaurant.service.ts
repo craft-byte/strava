@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Dish } from 'src/models/dish';
 import { Restaurant } from 'src/models/general';
@@ -12,9 +13,13 @@ export class RestaurantService {
   url = environment.url + "/restaurant/";
   restaurantId: string;
   restaurant: Restaurant;
+  restaurants: { _id: string; name: string; }[];
   currentDish: Dish;
 
-  constructor(private http: HttpClient) { };
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) { };
 
 
   patch<T>(body: any, ...args: string[]) {

@@ -7,8 +7,9 @@ import { IonicModule } from '@ionic/angular';
 import { DishCookingPageRoutingModule } from './dish-cooking-routing.module';
 
 import { DishCookingPage } from './dish-cooking.page';
-import { IngredientComponent } from './ingredient/ingredient.component';
 import { IngredientModalPage } from './ingredient-modal/ingredient-modal.page';
+import { AddIngredientPage } from './add-ingredient/add-ingredient.page';
+import { IngredientPage } from './ingredient/ingredient.page';
 
 @NgModule({
   imports: [
@@ -19,8 +20,9 @@ import { IngredientModalPage } from './ingredient-modal/ingredient-modal.page';
   ],
   declarations: [
     DishCookingPage,
-    IngredientComponent,
     IngredientModalPage,
+    AddIngredientPage,
+    IngredientPage,
   ]
 })
 export class DishCookingPageModule {}

@@ -75,6 +75,7 @@ interface KitchenDish {
     type: Category;
     orderId: ObjectId;
     _id: ObjectId;
+    comment?: string;
     taken?: boolean;
     takenTime: string;
 }

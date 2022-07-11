@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Component, Cooking, Order, Feedback, Invitation, Payment, RestaurantSettings, Table, Worker } from "./components";
+import { Component, Cooking, Order, Feedback, Invitation, Payment, RestaurantSettings, Table, Worker, Session } from "./components";
 
 interface Restaurant {
     _id: ObjectId;
@@ -12,12 +12,8 @@ interface Restaurant {
     payments?: Payment[];
     components?: Component[];
     invitations?: Invitation[];
-    blackList?: ObjectId[];
-    tutorials?: {
-        dishes: boolean;
-        cooking: boolean;
-        staff: boolean;
-    }
+    blacklist?: ObjectId[];
+    sessions?: Session[];
 }
 
 interface Work {
@@ -46,9 +42,13 @@ interface User {
     name?: string;
     username?: string;
     email?: string;
+    blacklisted?: ObjectId[];
     _id?: ObjectId;
     works?: ObjectId[];
-    avatar?: Buffer;
+    avatar?: {
+        binary: Buffer;
+        modified: Date;
+    };
     feedbacks?: Feedback[];
     invitations?: Invitation[];
     works?: ObjectId[];

@@ -1,73 +1,29 @@
 .app {
-    width: 246px;
-    height: 228px;
-    border-radius: 12px;
-    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-    position: relative;
+    width: 236px;
+    border-radius: 8px;
+    padding: 8px;
     cursor: pointer;
-    .image {
-        img {
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            height: 137px;
-            width: 100%;
-            object-fit: cover;
-        }
+    border: 2px solid transparent;
+    transition: border .4s;
+    &:hover {
+        border: 2px solid var(--orange);
     }
-    .name {
-        height: 32px;
+    img {
+        width: 228px;
+        height: 152px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .top {
+        margin-top: 8px;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding-left: 6px;
     }
-    .time {
-        width: 100%;
-        .cooking {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding-left: 6px;
-            color: rgb(158, 158, 158);
-        }
-        .delay {
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 6px;
-            &.red {
-                color: var(--red);
-            }
-            &.green {
-                color: var(--green);
-            }
-            &.orange {
-                color: var(--orange);
-            }
-        }
-    }
-    &.taken {
-        img {
-            filter: grayscale(100%);
-        }
-        .taken {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+    .delay {
+        margin-top: 8px;
+        &.red {
             color: var(--red);
-            position: absolute;
-            top: 24px;
-            font-size: 19px;
-            font-weight: 600;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            p {
-                margin: 6px;
-            }
         }
     }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
+import { RestaurantService } from '../../services/restaurant.service';
 
 @Component({
   selector: 'app-navigation',
@@ -8,8 +9,11 @@ import { PopoverController } from '@ionic/angular';
 })
 export class NavigationComponent implements OnInit {
 
+  restaurants: { _id: string; name: string; }[];
+
   constructor(
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private service: RestaurantService,
   ) { };
 
   tutorials() {
@@ -19,6 +23,12 @@ export class NavigationComponent implements OnInit {
     this.popoverCtrl.dismiss(null, "1");
   }
 
-  ngOnInit() {}
+  go(id: string) {
+    this.popoverCtrl.dismiss(id);
+  }
+
+  async ngOnInit() {
+    this.restaurants = this.service.restaurants;
+  }
 
 }

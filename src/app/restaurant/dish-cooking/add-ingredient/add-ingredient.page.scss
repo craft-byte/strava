@@ -1,0 +1,42 @@
+.app {
+    .search {
+        display: flex;
+        align-items: center;
+        button {
+            width: 46px;
+            height: 42px;
+        }
+    }
+    .list {
+        padding-left: 18px;
+        .component {
+            display: grid;
+            grid-template-columns: 40% 40% 20%;
+            height: 46px;
+            width: 100%;
+            border-bottom: 1px solid rgb(236, 236, 236);
+            .name, .amount {
+                display: flex;
+                align-items: center;
+                p {
+                    margin: 0;
+                }
+            }
+            .name {
+                font-size: 18px;
+            }
+            .buttons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            button {
+                width: 32px;
+                height: 32px;
+                ion-icon {
+                    font-size: 24px;
+                }
+            }
+        }
+    }
+}

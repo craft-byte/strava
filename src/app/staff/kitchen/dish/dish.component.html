@@ -1,19 +1,21 @@
-<div class="app" [ngClass]="{ taken: orderDish.taken }" (click)="chooseDish()">
-  <div *ngIf="orderDish.taken" class="taken">
-    TAKEN <p class="time" *ngIf="orderDish.takenTime && orderDish.takenTime.length > 0">{{ orderDish.takenTime }} ago</p>
-  </div>
+<div class="app">
   <div class="image">
     <img [src]="image" alt="">
   </div>
-  <div class="name">
-    {{ dish.name }}
+  <div class="top">
+    <div class="name">
+      {{ dish.name }}
+    </div>
+    <div class="time">
+      {{ dish.time }} min
+    </div>
   </div>
-  <div class="time">
-    <div class="cooking">
-      Cooking: {{ dish.time }} min.
-    </div>
-    <div class="delay {{ orderDish.time.color }}">
-      Delay: {{ orderDish.time.title }}
-    </div>
+  <div class="delay {{ orderDish.time.color }}">
+    <span title="{{orderDish.time.hours}} hours and {{ orderDish.time.minutes}} minutes delay">
+      <span *ngIf="orderDish.time.hours > 0">
+        {{ orderDish.time.hours }} hours
+      </span>
+      {{ orderDish.time.minutes }} mins.
+    </span>
   </div>
 </div>

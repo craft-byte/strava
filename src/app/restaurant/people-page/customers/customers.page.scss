@@ -1,0 +1,86 @@
+.app {
+    .header {
+        margin-top: 24px;
+        .search {
+            width: 512px;
+            display: flex;
+            align-items: center;
+            button {
+                width: 42px;
+                height: 42px;
+            }
+        }
+    }
+    .list {
+        .grid {
+            display: grid;
+            grid-template-columns: 10% 30% 25% 25% 10%;
+        }
+        .example {
+            height: 52px;
+            border-bottom: 1px solid var(--border-color);
+            div {
+                color: var(--text-color);
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+            }
+        }
+        .customer {
+            height: 52px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            &:hover {
+                background-color: rgb(250, 250, 250);
+            }
+            .avatar {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 52px;
+                img {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 100%;
+                    object-fit: cover;
+                }
+            }
+            .name,.total,.visit {
+                display: flex;
+                align-items: center;
+                padding-left: 6px;
+            }
+            .total,.visit {
+                color: var(--text-color);
+                font-size: 17px;
+            }
+            .name {
+                font-size: 18px;
+                .red {
+                    color: var(--red);
+                    font-weight: 550;
+                }
+                p {
+                    margin: 0;
+                }
+            }
+            .buttons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                button {
+                    height: 42px;
+                    width: 42px;
+                    border-radius: 100%;
+                    background: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    ion-icon {
+                        font-size: 24px;
+                    }
+                }
+            }
+        }
+    }
+}

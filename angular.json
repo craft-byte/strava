@@ -42,6 +42,18 @@
             "namedChunks": true
           },
           "configurations": {
+            "testing": {
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": true,
+              "vendorChunk": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.testing.ts"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -76,6 +88,9 @@
             "browserTarget": "app:build"
           },
           "configurations": {
+            "testing": {
+              "browserTarget": "app:build:testing"
+            },
             "production": {
               "browserTarget": "app:build:production"
             },

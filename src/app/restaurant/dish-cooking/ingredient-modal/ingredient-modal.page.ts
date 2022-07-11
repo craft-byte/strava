@@ -29,6 +29,7 @@ export class IngredientModalPage implements OnInit {
   }
 
   ngOnInit() {
+    this.amount = this.data.amount;
   }
 
 }

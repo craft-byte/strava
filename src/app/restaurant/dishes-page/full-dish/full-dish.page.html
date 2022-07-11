@@ -30,16 +30,19 @@
             </div>
         </div>
     </div>
-    <div class="cooking" *ngIf="dish.cooking">
+    <div class="cooking">
         <div class="block main">
             <div class="title">
                 Cooking
             </div>
             <div class="content">
-                <button class="purple-button" (click)="cooking()">Change</button>
+                <button class="purple-button" (click)="cooking()">
+                    <p *ngIf="dish.cooking">Change</p>
+                    <p *ngIf="!dish.cooking">Add</p>
+                </button>
             </div>
         </div>
-        <div class="block time">
+        <div class="block time" *ngIf="dish.cooking">
             <div class="title">
                 Time:
             </div>
@@ -47,7 +50,7 @@
                 {{ dish.time }} min.
             </div>
         </div>
-        <div class="block recipee">
+        <div class="block recipee" *ngIf="dish.cooking">
             <div class="title">
                 Recipee:
             </div>
@@ -55,7 +58,7 @@
                 {{ dish.cooking.recipee }}
             </div>
         </div>
-        <div class="block ingredients">
+        <div class="block ingredients" *ngIf="dish.cooking">
             <div class="title">
                 Ingredients:
             </div>

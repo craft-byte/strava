@@ -1,0 +1,117 @@
+.header {
+    height: 60px;
+    padding: 0 412px;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    display: grid;
+    grid-template-columns: 5% 70% 25%;
+
+    .name {
+        display: flex;
+        align-items: center;
+        padding-left: 20px;
+
+        p {
+            margin: 0;
+            font-size: 20px;
+            padding-left: 20px;
+            font-weight: 600;
+            background: var(--orange);
+            background: -webkit-linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
+            background: -moz-linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
+            background: linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    }
+
+    .exit {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        #exit {
+            border-radius: 8px;
+            background: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            color: rgb(85, 85, 85);
+        }
+    }
+
+    .links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        .link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            a {
+                color: var(--gray);
+                text-decoration: none;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+
+
+.app {
+    padding: 24px 412px;
+
+    .user-info {
+        height: 256px;
+        display: grid;
+        grid-template-columns: 20% 80%;
+        border-bottom: 2px var(--border-color) solid;
+
+        .avatar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+                height: 196px;
+                width: 196px;
+                border-radius: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .other {
+            padding: 32px 12px;
+            position: relative;
+
+            
+
+            div {
+                height: 30px;
+                font-size: 18px;
+                color: var(--text-color);
+                display: flex;
+                align-items: center;
+                p {
+                    display: flex;
+                    align-items: center;
+                    cursor: pointer;
+                    &:hover {
+                        color: var(--orange);
+                        ion-icon {
+                            color: var(--orange);
+                        }
+                    }
+                    ion-icon {
+                        font-size: 18px;
+                        color: var(--text-color);
+                        margin-right: 4px;
+                    }
+                }
+            }
+        }
+    }
+}

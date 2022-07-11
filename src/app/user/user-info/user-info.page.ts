@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MainService } from 'src/app/services/main.service';
@@ -15,23 +16,25 @@ export class UserInfoPage implements OnInit {
 
   avatar: string;
 
-  role: string;
-
-
   restaurants: any[] = [];
   works: any[] = [];
   invitations: UserInvitation[] = [];
 
+  role: "manager" | "waiter" | "cook" = null!;
+
 
   ui = {
-    name: "",
-    username: "",
-    email: "",
-    addRestaurant: false,
+    title: "Ctraba",
     showRestaurants: false,
     showJobs: false,
-    showFindJob: false,
+    showAdd: false,
     showInvitations: false,
+    registrationParagraphs: {
+      email: "Add email address",
+      avatar: "Add avatar image",
+      // food: "What food do you like?"
+    },
+    showRegistration: false,
   };
 
   constructor(
@@ -41,15 +44,25 @@ export class UserInfoPage implements OnInit {
   ) {
   }
 
-
+  objectKeys = Object.keys;
+  registration(type: "continue" | "email" | "avatar" | "food") {
+    if(type == "continue") {
+      if(!this.main.userInfo.email) {
+        this.router.navigate(["user/email"], { replaceUrl: true });
+      } else if(!this.main.userInfo.avatar) {
+        this.router.navigate(["user/avatar/2"], { replaceUrl: true });
+      }
+    } else if(type == "email") {
+      this.router.navigate(["user/email"], { replaceUrl: true });
+    } else if(type == "avatar") {
+      this.router.navigate(["user/avatar/2"], { replaceUrl: true });
+    }
+  }
   goWork(restaurantId: string) {
     this.router.navigate(["staff", restaurantId, "dashboard"], { replaceUrl: true });
   }
   addRestaurant() {
-    this.router.navigate(["add-restaurant"], { replaceUrl: true });
-  }
-  goRestaurant(restaurant: string) {
-    this.router.navigate(["restaurant", restaurant], { replaceUrl: true });
+    this.router.navigate(["add-restaurant/name"], { replaceUrl: true });
   }
   async invitation(id: string, type: "accept" | "reject", restaurant?: string) {
     let result = null;
@@ -88,71 +101,22 @@ export class UserInfoPage implements OnInit {
       this.ui.showRestaurants = true;
     }
   }
-  setRole(r: string) {
-    this.role = r;
-  }
   async getUser() {
-    const {
-      username,
-      name,
-      email,
-      avatar,
-      restaurants,
-      works,
-      invitations
-    } = this.main.userInfo;
 
+    const { ui, restaurants, works } = await this.service.get("userInfo");
 
-    let showRestaurants = false;
-    let showAddRestaurant = false;
-    let showJobs = true;
-    let showInvitations = false;
-    let showFindJobs = false;
-    
-    
-    if(name) {
-      this.ui.name = name;
-      this.ui.username = username;
-    } else {
-      this.ui.name = username;
-      this.ui.email = email;
-    }
+    console.log(ui);
 
-    this.avatar = getImage(avatar);
-    if(!this.avatar) {
-      this.avatar = "./../../../assets/images/plain-avatar.jpg";
-    }
+    this.restaurants = restaurants;
+    this.works = works;
 
-
-    if(restaurants.length > 0) {
-      this.restaurants = await this.service.get("restaurants");
-      showRestaurants = true;
-    } else {
-      showAddRestaurant = true;
-    }
-    if(works.length > 0) {
-      this.works = await this.service.get("works");
-      showAddRestaurant = false;
-    } else {
-      showJobs = false;
-      showFindJobs = showRestaurants ? false : true;
-    }
-
-    if(invitations.length > 0) {
-      this.invitations = await this.service.get('invitations');
-      showInvitations = true;
-    }
-
-    this.ui.showJobs = showJobs;
-    this.ui.showFindJob = showFindJobs;
-    this.ui.showRestaurants = showRestaurants;
-    this.ui.addRestaurant = showAddRestaurant;
-    this.ui.showInvitations = showInvitations;
+    this.ui = ui;
   }
   findJob() {
     this.router.navigate(["jobs"], { queryParams: { role: this.role }, queryParamsHandling: "merge", replaceUrl: true });
   }
   async ngOnInit() {
+    this.router.navigate([], { queryParams: { last: null } });
     this.getUser();
   }
 }

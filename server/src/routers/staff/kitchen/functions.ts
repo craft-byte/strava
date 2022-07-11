@@ -1,15 +1,10 @@
 import { ObjectId } from "mongodb";
 import { Subject } from "rxjs";
 import { Socket } from "socket.io";
-import { general } from "../../../assets/consts";
-import { ManagerSettings, Order, StatisticsOrder } from "../../../models/components";
-import { Dish } from "../../../models/general";
-import { KitchenDish } from "../../../models/other";
+import { ManagerSettings, StatisticsOrder } from "../../../models/components";
 import { KitchenResponse } from "../../../models/responses";
 import { createNotificationData } from "../../../utils/client";
-import { getDishes } from "../../../utils/dish";
 import { id, log } from "../../../utils/functions";
-import { getDelay } from "../../../utils/other";
 import { Orders, Restaurant, Stats } from "../../../utils/restaurant";
 
 class Session {
@@ -67,9 +62,12 @@ class Session {
         
         const dish = await Restaurant(this.restaurantId).dishes.one(dishId).get({ projection: { cooking: { components: 1 } } });
 
-        for(let i of dish?.cooking?.components!) {
-            Restaurant(this.restaurantId).components.substract(i._id, i.amount);
+        if(dish?.cooking) {
+            for(let i of dish?.cooking?.components!) {
+                Restaurant(this.restaurantId).components.substract(i._id, i.amount);
+            }
         }
+
 
         return null;
     }
@@ -110,137 +108,47 @@ async function allowed(userId: string, restaurantId: string) {
 
     return false;
 }
-async function sortDishesForKitchen(restaurantId: string | ObjectId, orders: Order[]) {
 
-    const finalDishes: KitchenDish[] = [];
-    let convertedDishes = {};
+// function sortQuantity(dishes: string[]) {
+//     const result = [] as { dishId: string; quantity: number }[];
 
-    const now = Date.now();
+//     for(let i of dishes) {
+//         let add = true;
+//         for(let j of result) {
+//             if(i == j.dishId) {
+//                 j.quantity++;
+//                 add = false;
+//                 break;
+//             }
+//         }
+//         if(add) {
+//             result.push({ dishId: i, quantity: 1 });
+//         }
+//     }
 
+//     return {
+//         result: result,
+//         ids: (function() {
+//             const ids: ObjectId[] = [];
 
-    if(orders.length == 0) {
-        return {
-            categories: () => {
-                return {
-                    a: [],
-                    so: [],
-                    sa: [],
-                    e: [],
-                    si: [],
-                    d: [],
-                    b: []
-                }
-            },
-            convertedDishes,
-            dishes: []
-        };
-    }
+//             for(let i of result) {
+//                 ids.push(id(i.dishId)!);
+//             }
 
-    for(let order of orders) {
+//             return ids;
+//         })()
+//     };
+// }
 
-        const orderDishesIdsConvert = () => {
-            const result = new Set;
-            for(let i of order.dishes!) {
-                result.add(i.dishId);
-            }
-            return Array.from(result);
-        }
-
-        const dishIds = orderDishesIdsConvert();
-
-        const dishes = await getDishes(restaurantId.toString(), { _id: { $in: dishIds } }, { projection: { name: 1, general: 1, image: 1, time: 1 } });
-        const newConvertedDishes: { [key: string]: Dish } = {};
-
-        for(let i of dishes) {
-            newConvertedDishes[i._id.toString()] = i;
-        }
-
-        for (let dish of order.dishes!) {
-            const getType = () => {
-                for(let i of general) {
-                    if(i.value == newConvertedDishes[dish.dishId.toString()].general) {
-                        return i;
-                    }
-                }
-                return null;
-            }
-            const finalDish: KitchenDish = {
-                dishId: dish.dishId,
-                _id: dish._id,
-                time: getDelay(order.time!),
-                type: getType(),
-                orderId: order._id!,
-                taken: !!dish.taken,
-                takenTime: getDelay(dish.taken?.time!).title
-            }
-            if(dish.taken?.time! > now) {
-                finalDishes.push(finalDish);
-            } else {
-                finalDishes.unshift(finalDish);
-            }
-        }
-
-        convertedDishes = Object.assign(convertedDishes, newConvertedDishes);
-    }
-
-
-    return {
-        dishes: finalDishes,
-        convertedDishes,
-        categories: () => {
-            const result: any = {
-                a: [],
-                so: [],
-                sa: [],
-                e: [],
-                si: [],
-                d: [],
-                b: []
-            };
-
-            for(let i of finalDishes) {
-                result[i.type!.value][i.taken ? "push" : "unshift"](i);
-            }
-
-            return result;
-        }
-    };
-}
-function sortQuantity(dishes: string[]) {
-    const result = [] as { dishId: string; quantity: number }[];
-
-    for(let i of dishes) {
-        let add = true;
-        for(let j of result) {
-            if(i == j.dishId) {
-                j.quantity++;
-                add = false;
-                break;
-            }
-        }
-        if(add) {
-            result.push({ dishId: i, quantity: 1 });
-        }
-    }
-
-    return {
-        result: result,
-        ids: (function() {
-            const ids: ObjectId[] = [];
-
-            for(let i of result) {
-                ids.push(id(i.dishId)!);
-            }
-
-            return ids;
-        })()
-    };
-}
 
 function KitchenSocket(socket: Socket) {
     const subs = new Subject<KitchenResponse>();
 
     let session: Session;
+
+
+    // new dishes is in client socket
+
 
     socket.on("kitchenConnect", ({ restaurantId, userId }: { restaurantId: string; userId: string; }) => {
         if (!allowed(userId, restaurantId)) {
@@ -266,12 +174,13 @@ function KitchenSocket(socket: Socket) {
             subs.next({
                 type: "kitchen/dish/take",
                 data: {
-                    orderDishId
+                    orderDishId,
+                    orderId
                 },
                 send: [`${session.restaurantId.toString()}/restaurant`]
             });
         } else {
-            log("error", "something went wrong kitchen/dish/take");
+            throw "kitchen/dish/take error";
         }
     });
 
@@ -280,11 +189,11 @@ function KitchenSocket(socket: Socket) {
             return;
         }
 
-        const { dishId, orderId } = (data);
+        const { orderDishId, orderId } = data;
 
         session.doneDish(data);
 
-        const notification = await createNotificationData(dishId, orderId, session.restaurantId);
+        const notification = await createNotificationData(orderDishId, orderId, session.restaurantId);
 
         if(notification) {
             subs.next({
@@ -293,8 +202,23 @@ function KitchenSocket(socket: Socket) {
                 ...notification,
             });
         }
+        subs.next({
+            type: "kitchen/dish/done",
+            data: {
+                orderId,
+                orderDishId
+            },
+            send: [`${session.restaurantId.toString()}/restaurant`],
+        });
+        // subs.next({
+        //     type: "waiter/dish/new",
+        //     event: "waiter",
+        //     data: {
 
-    })
+        //     },
+        //     send: [`${session.restaurantId.toString()}/restaurant`]
+        // });
+    });
 
     socket.on("disconnect", () => {
         session = null!;
@@ -305,6 +229,4 @@ function KitchenSocket(socket: Socket) {
 
 export {
     KitchenSocket,
-    sortDishesForKitchen,
-    sortQuantity
 }

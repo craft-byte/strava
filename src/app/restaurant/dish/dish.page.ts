@@ -101,7 +101,7 @@ export class DishPage implements OnInit {
     this.ui.disableAdd = true;
     if(!this.form.valid) {
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 2000,
         message: "Fill all given fields.",
         color: "red",
         mode: "ios"
@@ -121,7 +121,7 @@ export class DishPage implements OnInit {
 
     if(result.added) {
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 2000,
         message: "Successfuly added.",
         color: "green",
         mode: "ios",
@@ -131,7 +131,7 @@ export class DishPage implements OnInit {
       }
     } else {
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 2000,
         message: "Something went wrong. Try again later.",
         color: "red",
         mode: "ios",
@@ -144,7 +144,7 @@ export class DishPage implements OnInit {
     if(!this.form.valid) {
       this.ui.disableSave = false;
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 2000,
         message: "Fill all required fields.",
         color: "red",
         mode: "ios"
@@ -155,8 +155,7 @@ export class DishPage implements OnInit {
     const body: any = this.form.value;
 
     if(this.imageUpdated) {
-      body.image = { data: this.image };
-      body.image.resolution = this.resolution;
+      body.image = { data: this.image, resolution: this.resolution };
     }
 
     const result: any = await this.service.patch(body, "dishes", this.dish._id);
@@ -164,7 +163,7 @@ export class DishPage implements OnInit {
     if(result.updated) {
       this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id], { replaceUrl: true });
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 2000,
         message: "Successfuly updated.",
         color: "green",
         mode: "ios"
@@ -172,7 +171,7 @@ export class DishPage implements OnInit {
     } else {
       this.ui.disableSave = false;
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 2000,
         message: "Something went wrong. Try again later.",
         color: "red",
         mode: "ios"

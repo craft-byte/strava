@@ -5,18 +5,13 @@
   <div class="name">
     <p>Settings</p>
   </div>
-  <div class="links">
-    <div class="link">
-      <a (click)="logout()">Logout</a>
-    </div>
-  </div>
 </div>
 
 <ion-content>
   <div class="app">
     <div class="user-info">
       <div class="avatar">
-        <img src="./../../../assets/images/plain-avatar.jpg" alt="">
+        <img (click)="changeAvatar()" [src]="avatar" alt="">
       </div>
       <div class="other">
         <div class="name">

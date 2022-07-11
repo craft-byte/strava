@@ -1,5 +1,5 @@
 <div class="header">
-  <div class="restaurant {{ navClass }}" (click)="more($event)">
+  <div class="restaurant {{ navClass }}" (click)="navigation($event)">
     <div class="name">
       {{ restaurant.name }}
     </div>
@@ -19,7 +19,9 @@
     </div>
   </div>
   <div class="user">
-    <ion-icon routerLink="/user/info" [replaceUrl]="true" name="person-circle-outline"></ion-icon>
+    <a routerLink="/user/info" [replaceUrl]="true">
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </a>
   </div>
 </div>
 

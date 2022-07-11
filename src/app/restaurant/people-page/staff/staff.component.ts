@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController, PopoverController } from '@ionic/angular';
+import { getImage } from 'src/functions';
 import { MoreComponent } from '../../other/more/more.component';
 import { RestaurantService } from '../../services/restaurant.service';
 import { InvitationsPage } from './invitations/invitations.page';
@@ -21,7 +22,7 @@ interface Worker {
 })
 export class StaffComponent implements OnInit {
 
-  staff: Worker[];
+  staff: Worker[] = [];
 
   constructor(
     private service: RestaurantService,
@@ -71,7 +72,14 @@ export class StaffComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.staff = await this.service.get("staff");
+    const staff: any = await this.service.get("staff");
+
+    for(let i of staff) {
+      this.staff.push({
+        ...i,
+        avatar: getImage(i.avatar),
+      });
+    }
 
     console.log(this.staff);
   }

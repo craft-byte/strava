@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
   url: "/api",
-  socketLink: "/"
+  socketLink: "/",
+  askEmail: true,
 };

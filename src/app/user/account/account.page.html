@@ -1,0 +1,45 @@
+<div class="header">
+  <div class="exit">
+    <button id="exit" (click)="exit()"><ion-icon name="close-outline"></ion-icon></button>
+  </div>
+  <div class="name">
+    <p>Your account</p>
+  </div>
+  <div class="links">
+    <div class="link settings" id="settings">
+      <a routerLink="/user/settings" [replaceUrl]="true">
+        Settings
+      </a>
+    </div>
+    <div class="link">
+      <a (click)="logout()">Logout</a>
+    </div>
+  </div>
+</div>
+
+<ion-content>
+  <div class="app">
+    <div class="user-info">
+      <div class="avatar">
+        <img [src]="avatar" alt="">
+      </div>
+      <div class="other">
+        <div class="name">
+          {{ user.name }}
+          <p *ngIf="!user.name" (click)="name()">
+            <ion-icon name="add"></ion-icon>No name
+          </p>
+        </div>
+        <div class="username">
+          {{ user.username }}
+        </div>
+        <div class="email">
+          {{ user.email }}
+          <p *ngIf="!user.email" (click)="email()">
+            <ion-icon name="add"></ion-icon>No email address
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

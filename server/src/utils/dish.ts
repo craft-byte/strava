@@ -147,10 +147,13 @@ class DishHashTableUltra {
 
     table: { [key: string]: Dish } = {};
 
-    constructor(private restaurantId: string, private projection: any) { }
+    constructor(private restaurantId: string | ObjectId, private projection: any) { }
 
 
     async get(id: string | ObjectId) {
+        if(!id) {
+            return null;
+        }
         const ext = this.table[id.toString()];
         if(!ext) {
             const dish = await Restaurant(this.restaurantId).dishes.one(id).get({ projection: this.projection });

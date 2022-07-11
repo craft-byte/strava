@@ -137,9 +137,7 @@ export class IngredientsComponent implements OnInit {
   }
 
   async ngOnInit() {
-    const { components, warning } = await this.service.get("components");
-
-    this.components = components;
+    this.components = await this.service.get("components");
   }
 
 }

@@ -21,7 +21,7 @@
 
     .links {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
 
         .settings {
             a {
@@ -32,10 +32,26 @@
         }
 
         .restaurant {
-            a {
+            button {
+                width: auto;
+                height: auto;
+                padding: 12px 8px;
+                background: none;
+                font-size: 18px;
+                color: var(--gray);
+                transition: 0.4s all;
+                border-radius: 10px;
+
                 &:hover {
-                    color: var(--orange);
+                    color: black;
+                    background-color: var(--orange);
                 }
+            }
+        }
+
+        .account {
+            a:hover {
+                color: var(--green);
             }
         }
 
@@ -65,6 +81,7 @@
 
 .app {
     padding: 24px 412px;
+    margin-bottom: 200px;
 
     .user-info {
         height: 256px;
@@ -129,316 +146,348 @@
     }
 
     .content {
-        padding-top: 32px;
         width: 100%;
         display: grid;
         grid-template-columns: 65% 35%;
 
         .left {
-            .restaurants {
+
+            padding: 0 26px;
+
+            .account-registration {
+                -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                width: 100%;
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                position: relative;
+                height: 160px;
+                margin-bottom: 32px;
+
                 .title {
-                    padding: 0 32px;
-                    font-size: 24px;
-                    font-weight: 600;
-                    color: var(--text-color);
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding-left: 24px;
+                    height: 58px;
+
+                    h1 {
+                        margin: 0;
+                        font-size: 22px;
+                        color: var(--text-color);
+                    }
                 }
 
-                .list {
-                    margin: 24px 42px;
-                    border: 2px solid var(--border-color);
-                    border-radius: 16px;
+                .text {
+                    display: flex;
+                    align-items: center;
 
-                    .restaurant {
-                        width: 100%;
-                        height: 46px;
-                        border-bottom: 1px solid var(--border-color);
-                        display: grid;
-                        grid-template-columns: 50% 38% 12%;
+                    li {
+                        color: var(--gray);
+                        cursor: pointer;
+                        transition: font-size .2s;
 
-                        .name {
+                        &:hover {
+                            color: var(--orange);
                             font-size: 18px;
-                            font-weight: 550;
-                            display: flex;
-                            align-items: center;
-                            padding-left: 16px;
                         }
+                    }
+                }
 
-                        .status {
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            font-size: 17px;
-                        }
+                #continue-registration {
+                    position: absolute;
+                    right: 16px;
+                    top: 50%;
+                    transform: translateY(-50%);
 
-                        .OK {
-                            color: var(--green)
-                        }
-
-                        .button {
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-
-                            button {
-                                width: 36px;
-                                height: 36px;
-                                border-radius: 100%;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                font-size: 24px;
-                                border: 2px solid var(--orange)
-                            }
-                        }
-
-                        &:last-of-type {
-                            border-bottom: none;
-                        }
+                    ion-icon {
+                        font-size: 21px;
                     }
                 }
             }
 
-            .jobs {
-                .title {
-                    padding: 0 32px;
-                    font-size: 24px;
-                    font-weight: 600;
-                    color: var(--text-color);
+
+            .container-restaurants-jobs {
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                padding: 12px;
+                -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+
+                .restaurants {
+                    .title {
+                        margin-top: 8px;
+                        padding: 0 16px;
+                        font-size: 22px;
+                        font-weight: 600;
+                        color: var(--text-color);
+                    }
+
+                    .list {
+                        margin-top: 24px;
+                    }
                 }
 
-                .list {
-                    margin: 24px 42px;
-                    border: 2px solid var(--border-color);
-                    border-radius: 16px;
+                .jobs {
+                    margin-top: 24px;
 
-                    .restaurant {
-                        width: 100%;
-                        height: 46px;
-                        border-bottom: 1px solid var(--border-color);
-                        display: grid;
-                        grid-template-columns: 88% 12%;
+                    .title {
+                        margin-top: 8px;
+                        padding: 0 16px;
+                        font-size: 22px;
+                        font-weight: 600;
+                        color: var(--text-color);
+                    }
 
-                        .name {
-                            font-size: 18px;
-                            font-weight: 550;
-                            display: flex;
-                            align-items: center;
-                            padding-left: 16px;
-                        }
+                    .list {
+                        margin-top: 24px;
 
-                        .button {
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
+                        .restaurant {
+                            border-radius: 8px;
+                            width: 100%;
+                            height: 46px;
+                            margin-top: 12px;
+                            border: 1px solid rgb(242, 242, 242);
+                            display: grid;
+                            grid-template-columns: 88% 12%;
 
-                            button {
-                                width: 36px;
-                                height: 36px;
-                                border-radius: 100%;
+
+                            &:hover {
+                                background-color: rgb(250, 250, 250);
+                            }
+
+                            .name {
+                                font-size: 18px;
+                                font-weight: 550;
+                                display: flex;
+                                align-items: center;
+                                padding-left: 16px;
+                            }
+
+                            .button {
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
-                                font-size: 24px;
-                                border: 2px solid var(--pink);
-                            }
-                        }
 
-                        &:last-of-type {
-                            border-bottom: none;
+                                button {
+                                    width: 36px;
+                                    height: 36px;
+                                    border-radius: 100%;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 24px;
+                                    border: 2px solid var(--purple);
+                                    background: none;
+
+                                    &:hover {
+                                        background-color: var(--purple);
+                                        color: white;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
 
             .add-restaurant {
+                margin-top: 42px;
+                -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
                 width: 100%;
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                position: relative;
+                height: 280px;
+
+                .title,
+                .subtitle {
+                    width: 100%;
+                    text-align: center;
+                }
+
+                h1 {
+                    font-size: 22px;
+                }
+
+                h2 {
+                    font-size: 18px;
+                    margin-top: 12px;
+                    color: var(--text-color);
+                }
+
+                .text {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+
+                    ul {
+                        padding-left: 64px;
+
+                        li {
+                            color: var(--gray);
+                            transition: font-size .2s;
+                            cursor: default;
+
+                            &:hover {
+                                color: var(--orange);
+                                font-size: 18px;
+                            }
+                        }
+                    }
+                }
+
+                .button {
+                    position: absolute;
+                    left: 0;
+                    bottom: 12px;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+
+            .or {
+                width: 100%;
+                margin: 24px 0;
                 display: flex;
-                justify-content: center;
                 align-items: center;
 
-                .content {
-                    margin: 24px 12px;
-                    height: 158px;
-                    width: 428px;
-                    border-radius: 12px;
-                    position: relative;
+                .line {
+                    width: 47%;
+                    height: 2px;
+                    background-color: var(--border-color);
+                }
+
+                .text {
+                    width: 36px;
+                    height: 16px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: var(--text-color);
+                }
+            }
+
+            .find-job {
+                -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                width: 100%;
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                position: relative;
+                height: 400px;
+
+                .title,
+                .subtitle {
+                    width: 100%;
+                    text-align: center;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                h1 {
+                    font-size: 22px;
+                }
+
+                h2 {
+                    font-size: 18px;
+                    margin-top: 12px;
+                    color: var(--text-color);
+                    width: 500px;
+                }
+
+                .roles {
+                    padding: 12px 24px;
                     display: grid;
-                    grid-template-columns: auto auto;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    gap: 16px;
 
-                    .text {
-                        border: 1px solid var(--orange);
-                        border-right: none;
-                        padding: 12px 12px;
-                        font-size: 20px;
-                        font-weight: 600;
-                        border-top-left-radius: 12px;
-                        border-bottom-left-radius: 12px;
-                    }
+                    .role {
+                        border: 2px solid rgb(244, 244, 244);
+                        height: 150px;
+                        border-radius: 12px;
+                        transition: .4s box-shadow;
+                        display: grid;
+                        grid-template-rows: 42px 108px;
 
-                    .buttons {
-                        margin-top: auto;
-                        width: 200px;
-                        height: 100%;
-                        position: relative;
+                        &.active {
+                            -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                            -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                            box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
 
-                        .info {
-                            border-top-right-radius: 12px;
-                            background-color: var(--purple);
-                            color: rgb(233, 229, 229);
-                            display: flex;
-                            justify-content: center;
-                            align-items: flex-start;
-                            padding-top: 8px;
-                            font-size: 20px;
-                            font-weight: 600;
-                            width: 200px;
-                            height: 89px;
-                            position: absolute;
-                            top: 0;
-                            right: 0;
+                            .icon,
+                            .title {
+                                color: var(--text-color);
+                            }
                         }
 
-                        .add {
-                            border-top-left-radius: 12px;
-                            border-bottom-right-radius: 12px;
-                            background-color: var(--orange);
+                        .title {
+                            color: var(--gray);
                             display: flex;
                             justify-content: center;
                             align-items: center;
-                            font-size: 22px;
-                            font-weight: 600;
-                            width: 200px;
-                            height: 48px;
-                            position: absolute;
-                            bottom: 0;
-                            left: 0;
+                            font-size: 18px;
+                            height: 38px;
+                            transition: .4s all;
+                        }
+
+                        .icon {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: var(--gray);
+                            transition: .4s all;
+
+                            ion-icon {
+                                font-size: 42px;
+                            }
                         }
                     }
+
+                    .manager.active {
+                        border: 2px solid var(--purple);
+                    }
+
+                    .waiter.active {
+                        border: 2px solid var(--red);
+                    }
+
+                    .cook.active {
+                        border: 2px solid var(--orange);
+                    }
+                }
+
+                .button {
+                    position: absolute;
+                    left: 0;
+                    bottom: 12px;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
             }
         }
 
         .right {
-            .job {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-
-                .body {
-                    width: 296px;
-                    height: 242px;
-                    border: double 4px transparent;
-                    border-radius: 12px;
-                    background-image: linear-gradient(white, white), linear-gradient(to right, var(--red), var(--orange), var(--purple));
-                    background-origin: border-box;
-                    background-clip: content-box, border-box;
-
-                    .im {
-                        padding-left: 12px;
-                        height: 36px;
-                        font-size: 17px;
-                        font-weight: 550;
-                    }
-
-                    .title {
-                        background: #121FCF;
-                        background: -webkit-linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
-                        background: -moz-linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
-                        background: linear-gradient(to right, var(--red) 0%, var(--purple) 50%, var(--orange) 100%);
-                        -webkit-background-clip: text;
-                        -webkit-text-fill-color: transparent;
-                        width: 100%;
-                        height: 36px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        font-size: 18px;
-                        font-weight: 600;
-                    }
-
-                    .choose {
-                        height: 124px;
-
-                        .option {
-                            display: grid;
-                            grid-template-columns: 70% 30%;
-
-                            .button {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                            }
-
-                            .text {
-                                display: flex;
-                                align-items: center;
-                            }
-
-                            cursor: pointer;
-                            transition: .5s background-color;
-                            width: 100%;
-                            height: 42px;
-                            font-size: 18px;
-                            color: var(--text-color);
-                            padding-left: 12px;
-                            border-top: 1px solid var(--border-color);
-
-                            &:first-of-type {
-                                border: none;
-                            }
-
-                            .chosen {
-                                width: 16px;
-                                height: 16px;
-                                border-radius: 100%;
-                                background-color: var(--green);
-                                color: white;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                            }
-                        }
-
-                        .w:hover {
-                            background-color: var(--purple);
-                            color: white;
-                        }
-
-                        .c:hover {
-                            background-color: var(--red);
-                            color: white;
-                        }
-
-                        .m:hover {
-                            background-color: var(--orange);
-                            color: white;
-                        }
-                    }
-
-                    .continue {
-                        button {
-                            background: rgb(131, 58, 180);
-                            background: linear-gradient(90deg, var(--red) 0%, var(--orange) 50%, var(--purple) 100%);
-                            width: 100%;
-                            color: white;
-                            font-size: 17px;
-                            height: 42px;
-                            border-bottom-left-radius: 10px;
-                            border-bottom-right-radius: 10px;
-                        }
-                    }
-                }
-            }
             .invitations {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 padding: 24px 0;
+
                 .body {
                     width: 324px;
                     height: auto;
                     border-radius: 12px;
                     border: 4px solid var(--border-color);
+
                     .title {
                         font-size: 18px;
                         color: var(--gray);
@@ -448,26 +497,32 @@
                         justify-content: center;
                         align-items: center;
                     }
+
                     .list {
                         .one {
                             width: 100%;
                             border-bottom: 2px solid var(--border-color);
                             display: grid;
+
                             &:last-of-type {
                                 border-bottom: none;
                             }
+
                             .restaurant {
                                 width: 80%;
                                 padding-left: 6px;
                                 height: 58px;
+
                                 .name {
                                     color: var(--text-color);
                                     font-size: 18px;
                                     font-weight: 550;
                                 }
+
                                 .text {
                                     color: rgb(151, 151, 151);
                                     display: flex;
+
                                     .role {
                                         margin: 0 4px;
                                         font-weight: 550;
@@ -477,18 +532,22 @@
                                     }
                                 }
                             }
+
                             .other {
                                 display: flex;
                                 align-items: flex-end;
                                 justify-content: center;
                                 flex-direction: column;
                                 padding: 6px;
+
                                 .send {
                                     padding: 4px;
                                     color: var(--text-color);
                                 }
+
                                 .buttons {
                                     display: flex;
+
                                     .accept {
                                         height: 26px;
                                         width: 124px;
@@ -496,6 +555,7 @@
                                         border-bottom-right-radius: 0;
                                         margin: 0;
                                     }
+
                                     .reject {
                                         height: 26px;
                                         margin: 0;
@@ -505,87 +565,6 @@
                                         border-top-left-radius: 0;
                                     }
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    .other {
-        .invitations {
-            width: 500px;
-            margin-top: 20px;
-
-            .title {
-                padding-left: 16px;
-                font-size: 20px;
-                color: rgb(73, 73, 73);
-                margin-bottom: 30px;
-            }
-
-            .one {
-                display: grid;
-                grid-template-columns: 40% 60%;
-                width: 100%;
-                height: 80px;
-                border-bottom: 1px solid rgb(224, 224, 224);
-
-                .restaurant {
-                    padding-left: 16px;
-                    padding-top: 12px;
-
-                    .name {
-                        font-size: 18px;
-                        color: rgb(97, 97, 97);
-                    }
-
-                    .role {
-                        color: rgb(109, 109, 109);
-                        font-size: 15px;
-                    }
-                }
-
-                .info {
-                    padding-left: 16px;
-
-                    .sent {
-                        color: rgb(112, 112, 112);
-                    }
-
-                    .buttons {
-                        display: flex;
-                        gap: 20px;
-                        padding-top: 20px;
-
-                        .accept {
-                            width: 90px;
-                            height: 30px;
-                            border: 1px solid #2dd36f;
-                            border-radius: 8px;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            background: none;
-                            color: white;
-                            background-color: #2dd36f;
-                        }
-
-                        .reject {
-                            width: 90px;
-                            height: 30px;
-                            border: 1px solid #eb445a;
-                            border-radius: 8px;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            background: none;
-                            color: #eb445a;
-
-                            &:hover {
-                                background-color: #eb445a;
-                                color: white;
                             }
                         }
                     }

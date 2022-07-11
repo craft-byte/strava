@@ -27,7 +27,7 @@ export class DishComponent implements OnInit {
   async open() {
     const modal = await this.modalCtrl.create({
       component: DishModalPage,
-      cssClass: "smallest",
+      cssClass: "modal-width",
       mode: "ios",
       componentProps: {
         name: this.dish.name,
@@ -49,7 +49,7 @@ export class DishComponent implements OnInit {
       this.dish = await this.service.get("waiter", this.service.restaurantId, "dish", this.orderDish.dishId);
       console.log(this.dish);
     }
-    this.image = await getImage((this.dish as any).image);
+    this.image = getImage((this.dish as any).image.binary);
   }
 
 }

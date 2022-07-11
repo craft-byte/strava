@@ -1,0 +1,50 @@
+<ion-content>
+  <div class="app">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">Sign up</h2>
+      </div>
+      <div class="body">
+        <input (focusout)="checkUsername($event)" id="username" [ngClass]="{ 'red': ui.usernameRed }" type="text" placeholder="Username">
+        <div class="message username-message" *ngIf="ui.usernameMessage.length > 0">
+          {{ ui.usernameMessage }}
+        </div>
+        <input (focusout)="checkPassword($event)" id="password" [ngClass]="{ 'red': ui.passwordRed }" type="password" placeholder="Password">
+        <div class="message password-message" *ngIf="ui.passwordMessage.length > 0">
+          {{ ui.passwordMessage }}
+        </div>
+        <input (focusout)="checkConfirm($event)" id="confirm-password" [ngClass]="{ 'red': ui.confirmRed }" type="password" placeholder="Confirm">
+        <div class="message confirm-message" *ngIf="ui.confirmMessage.length > 0">
+          {{ ui.confirmMessage }}
+        </div>
+      </div>
+      <div class="buttons">
+        <button [disabled]="ui.disableButtons" id="sign-in" (click)="signIn()">
+          Sign in instead
+        </button>
+        <button [disabled]="ui.disableButtons" id="next" (click)="signUp()">
+          Next
+        </button>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

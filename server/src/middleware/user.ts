@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { getUser } from "../utils/users";
 
 
 function logged(req: Request, res: Response, next: NextFunction) {
@@ -19,7 +20,18 @@ function order(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
+async function email(req: Request, res: Response, next: NextFunction) {
+    const user = await getUser(req.user as string, { projection: { email: 1 } });
+
+    if(!user.email) {
+        return res.sendStatus(403);
+    }
+
+    next();
+}
+
 export {
     logged,
     order,
+    email,
 }

@@ -76,7 +76,8 @@ router.get("/", allowed("manager", "staff"), async (req, res) => {
         result.push({
             ...users[i],
             date: getDate(restaurant.staff[i].joined),
-            role: restaurant.staff[i].role
+            role: restaurant.staff[i].role,
+            avatar: users[i].avatar!.binary,
         });
     }
 
@@ -107,7 +108,7 @@ router.get("/:userId", allowed("manager", "staff"), async (req, res) => {
     worker.joined = getDate(worker.joined);
     worker.role = worker.role[0].toUpperCase() + worker.role.slice(1, worker.role.length);
 
-    res.send({ user: worker ? result1 : null, worker });
+    res.send({ user: worker ? { ...result1, avatar: result1.avatar?.binary} : null, worker });
 });
 router.patch("/:userId/fire", allowed("manager", "staff", "fire"), async (req, res) => {
     const { userId, restaurantId } = req.params;

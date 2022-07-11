@@ -69,7 +69,8 @@ interface KitchenResponse {
         "kitchen/dish/remove" |
         "kitchen/dish/done" |
         "kitchen/dish/take" |
-        "customer/notification"
+        "customer/notification" |
+        "waiter/dish/new"
     ,
     send: string[];
     data: any;

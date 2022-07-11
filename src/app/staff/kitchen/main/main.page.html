@@ -1,0 +1,121 @@
+<div class="close-header">
+  <div class="close">
+    <button id="close" (click)="back()">
+      <ion-icon name="close"></ion-icon>
+    </button>
+  </div>
+  <div class="title">
+    {{ ui.title }}
+  </div>
+</div>
+
+<ion-content>
+  <div class="app">
+    <!-- <div class="control-panel">
+      <div class="info">
+        <div class="online">
+          <div class="icon">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <div class="amount">
+            25
+          </div>
+          <div class="title">
+            online
+          </div>
+        </div>
+        <div class="orders">
+          <div class="icon">
+            <ion-icon name="fast-food"></ion-icon>
+          </div>
+          <div class="amount">
+            5
+          </div>
+          <div class="title">
+            orders
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+
+      </div>
+    </div> -->
+    <div class="delayed" *ngIf="delayed && delayed.length > 0">
+      <div class="title">
+        Most delayed
+      </div>
+      <div class="dishes">
+        <app-dish *ngFor="let i of delayed | slice:0:4" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+      </div>
+    </div>
+    <div *ngIf="allDishes" class="all">
+      <div class="appetizers block">
+        <div class="title">
+          Appetizers -&nbsp;<span class="count">{{allDishes.a.length}}</span>
+        </div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.a || allDishes.a.length == 0" class="no-dishes">
+            No appetizers yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.a" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+      <div class="soups block">
+        <div class="title">
+          Soups -&nbsp;<span class="count">{{allDishes.so.length}}</span>
+        </div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.so || allDishes.so.length == 0" class="no-dishes">
+            No appetizers yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.so" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+      <div class="salads block">
+        <div class="title">Salads -&nbsp;<span class="count">{{allDishes.sa.length}}</span></div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.sa || allDishes.sa.length == 0" class="no-dishes">
+            No salads yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.sa" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+      <div class="entrees block">
+        <div class="title">Entrees -&nbsp;<span class="count">{{allDishes.e.length}}</span></div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.e || allDishes.e.length == 0" class="no-dishes">
+            No entrees yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.e" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+      <div class="sides block">
+        <div class="title">Sides -&nbsp;<span class="count">{{allDishes.si.length}}</span></div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.si || allDishes.si.length == 0" class="no-dishes">
+            No sides yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.si" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+      <div class="desserts block">
+        <div class="title">Desserts -&nbsp;<span class="count">{{allDishes.d.length}}</span></div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.d || allDishes.d.length == 0" class="no-dishes">
+            No desserts yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.d" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+      <div class="beverages block">
+        <div class="title">Beverages -&nbsp;<span class="count">{{allDishes.b.length}}</span></div>
+        <div class="dishes">
+          <div *ngIf="!allDishes.b || allDishes.b.length == 0" class="no-dishes">
+            No beverages yet
+          </div>
+          <app-dish *ngFor="let i of allDishes.b" (click)="onDishClick(i.orderId, i._id)" [orderDish]="i"></app-dish>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

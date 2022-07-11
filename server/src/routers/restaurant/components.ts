@@ -1,31 +1,71 @@
 import { Router } from "express";
 import { allowed } from "../../middleware/restaurant";
 import { Component } from "../../models/components";
-import { getDate, id, log } from "../../utils/functions";
+import { getDate, id } from "../../utils/functions";
 import { convertComponents } from "../../utils/other";
 import { Restaurant } from "../../utils/restaurant";
 
 
 const router = Router({ mergeParams: true });
 
+router.get("/all/:dishId", allowed("manager", "components"), async (req, res) => {
+    const { restaurantId, dishId } = req.params;
 
-router.get("/", allowed("manager", "components"), async (req, res) => {
-    const { restaurantId } = req.params as any;
+    const result = await Restaurant(restaurantId).components.getAll({ modified: 1, name: 1, amount: 1, _id: 1, });
 
-    const components = await Restaurant(restaurantId).components.getAll({ name: 1, _id: 1, warning: 1, amount: 1, modified: 1, price: 1 });
+    const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { cooking: { components: 1 } } });
 
-    const result: any = {
-        warning: [],
-        components: convertComponents(components),
+    if(!result) {
+        return res.sendStatus(404);
+    }
+    if(!dish) {
+        return res.sendStatus(404);
     }
 
-    for(let i of components) {
-        if(i.amount! < i.warning!) {
-            result.warning.push(...convertComponents([i]));
+    const components = [];
+
+    for(let i of result) {
+        let add = true;
+        if(dish.cooking!.components) {
+            for(let j of dish!.cooking!.components) {
+                if(i._id!.equals(j._id!)) {
+                   add = false; 
+                }
+            }
+        }
+        if(add) {
+            components.push({
+                modified: getDate(i.modified!),
+                name: i.name,
+                amount: i.amount,
+                _id: i._id
+            });
         }
     }
 
-    res.send(result);
+    res.send(components);
+});
+router.get("/", allowed("manager", "components"), async (req, res) => {
+    const { restaurantId } = req.params;
+
+    const result = await Restaurant(restaurantId).components.getAll({ modified: 1, name: 1, amount: 1, _id: 1, });
+
+    if(!result) {
+        return res.sendStatus(404);
+    }
+
+    const components = [];
+
+    for(let i of result) {
+        components.push({
+            modified: getDate(i.modified!),
+            name: i.name,
+            amount: i.amount,
+            _id: i._id
+        });
+    }
+
+    res.send(components);
 });
 router.post("/", allowed("manager", "components", "add"), async (req, res) => {
     const { restaurantId } = req.params as any;
@@ -73,10 +113,6 @@ router.patch("/", allowed("manager", "components"), async (req, res) => {
     
     if(!searchText || searchText.length == 0) {
         return res.send(components);
-    }
-
-    if(!components) {
-        return res.send([]);
     }
 
     if(!components || components.length == 0) {
@@ -151,7 +187,7 @@ router.patch("/update/:componentId", allowed("manager", "components", "add"), as
 
     res.send(result);
 });
-router.get("/get/:componentId", allowed("manager", "components"), async (req, res) => {
+router.get("/:componentId", allowed("manager", "components"), async (req, res) => {
     const { restaurantId, componentId } = req.params as any;
 
     const result = await Restaurant().aggregate<{ component: Component }>([
@@ -167,24 +203,7 @@ router.get("/get/:componentId", allowed("manager", "components"), async (req, re
 
     res.send(result[0].component);
 });
-router.get("/all", allowed("manager", "components"), async (req, res) => {
-    const { restaurantId } = req.params;
 
-    const result = await Restaurant(restaurantId).components.getAll();
-
-    const components = [];
-
-    for(let i of result) {
-        components.push({
-            modified: getDate(i.modified!),
-            name: i.name,
-            amount: i.amount,
-            _id: i._id
-        });
-    }
-
-    res.send(components);
-})
 
 
 export {

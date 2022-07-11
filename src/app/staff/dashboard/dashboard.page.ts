@@ -20,7 +20,6 @@ export class DashboardPage implements OnInit {
 
   constructor(
     private service: StaffService,
-    private route: ActivatedRoute,
     private router: Router
   ) { };
 
@@ -29,9 +28,7 @@ export class DashboardPage implements OnInit {
   }
 
   async ngOnInit() {
-    const restaurantId = this.route.snapshot.paramMap.get("restaurantId");
-
-    const result = await this.service.get<{ restaurant: any; user: { showKitchen: boolean; showWaiter: boolean; } }>("dashboard", restaurantId);
+    const result = await this.service.get<{ restaurant: any; user: { showKitchen: boolean; showWaiter: boolean; } }>("dashboard");
 
     if(!result) {
       return;

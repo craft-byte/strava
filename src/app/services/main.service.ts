@@ -37,21 +37,15 @@ export class MainService {
     }
     return false;
   }
-  create(go?: { url: string, queryParams?: any }) {
-    this.last = go;
-    this.router.navigate(["user-create"], { replaceUrl: true });
-  }
   async login(data?: LoginData) {
-    const result = await this.http.patch<any>(environment.url + '/user/login', data).toPromise();
-    if(result.hasOwnProperty("error")) {
-      return { error: result.error };
+    try {
+      const result = await this.http.patch<any>(environment.url + '/user/login', data).toPromise(); 
+      this.userInfo = result;
+      this.setUserInfo(result.username);
+      return true;
+    } catch (error) {
+      return false;
     }
-    this.userInfo = result;
-    if(!result.email) {
-      return this.router.navigate(['email-setup']);
-    }
-    this.setUserInfo(result.username);
-    return result.restaurants;
   }
   auth(s: string) {
     return this.http.get(environment.url + "/user/authenticate/" + s);

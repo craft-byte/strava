@@ -37,12 +37,15 @@ interface WaiterSettings {
 
 interface RestaurantSettings {
     customers: {
-        orders: boolean;
-        maxDishes: number;
-        trust: 1 | 2 | 3;
+        maxDishes: number | "unlimited";
+        allowDistanceOrders: boolean;
+        // trust: 1 | 2 | 3;
+        maxCustomers: number | "unlimited";
+        maxPrice: "unlimited" | number;
+        minPrice: number;
     },
     work: {
-        
+        maxOrdersCooking: number;
     },
     dishes: {
         strictIngredients: boolean;

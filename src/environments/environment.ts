@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  url: "http://localhost:3000/api",
-  socketLink: "http://localhost:3000"
+  url: "https://localhost:3000/api",
+  socketLink: "https://localhost:3000",
+  askEmail: true,
 };
 
 /*

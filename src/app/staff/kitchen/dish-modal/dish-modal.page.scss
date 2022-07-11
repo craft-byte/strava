@@ -1,96 +1,148 @@
 .app {
-    position: relative;
-    .top {
-        height: 181px;
-        .image {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 0;
-            img {
-                width: 324px;
-                height: 181px;
-                border-bottom: 2px solid rgb(192, 192, 192);
-                border-left: 2px solid rgb(192, 192, 192);
-                object-fit: cover;
-                border-bottom-left-radius: 12px;
-            }
-        }
-        .name {
-            height: 42px;
-            padding: 16px 24px;
-            font-size: 20px;
-            color: var(--title-color);
-        }
-        .delay { 
-            height: 24px;
-            padding-left: 46px;
+    display: grid;
+    grid-template-columns: 65% 35%;
+
+    .left {
+        .top {
             display: flex;
-            align-items: center;
-            color: var(--text-color);
-            p {
-                margin: 0;
-                margin-left: 3px;
+            
+            .image {
+                .r1 {
+                    width: 164px;
+                    height: 164px;
+                }
+                .r2 {
+                    width: 198px;
+                    height: 149px;
+                }
+                .r3 {
+                    height: 149px;
+                    width: 263px;
+                }
+                img {
+                    border-bottom-right-radius: 8px;
+                    border-right: 2px solid var(--green);
+                    border-bottom: 2px solid var(--green);
+                }
             }
-            .red {
-                color: var(--red);
+            .dish-info {
+                padding: 12px;
+                .name {
+                    font-size: 18px;
+                    color: var(--title-color);
+                }
+                .time {
+                    color: var(--text-color);
+                }
             }
-            .orange {
-                color: var(--orange);
+        }
+        .cooking {
+            padding: 12px;
+            .recipee {
+                display: flex;
+                .title {
+                    font-size: 18px;
+                    color: var(--text-color);
+                    margin-right: 8px;
+                }
+                .content {
+                    margin-top: 2px;
+                }
             }
-            .green {
-                color: var(--green);
+            .components {
+                display: flex;
+                .title {
+                    font-size: 18px;
+                    color: var(--text-color);
+                    margin-right: 8px;
+                }
+                .list {
+                    padding-top: 2px;
+                    .component {
+                        display: flex;
+                        align-items: center;
+                        .name {
+                            cursor: pointer;
+                            &:hover {
+                                color: var(--text-color);
+                            }
+                        }
+                        .amount {
+                            margin-left: 4px;
+                        }
+                        .of {
+                            margin-left: 18px;
+                        }
+                    }
+                }
             }
         }
     }
-    .cooking {
-        .title {
-            width: 100%;
-            height: 42px;
+    .right {
+        padding: 12px;
+
+        .taken {
+            border-bottom: 1px solid rgb(228, 228, 228);
+            padding-bottom: 6px;
+            .user {
+                display: flex;
+                align-items: center;
+                .name {
+                    cursor: pointer;
+                    &:hover {
+                        color: var(--text-color);
+                    }
+                }
+                img {
+                    margin-left: 8px;
+                    border-radius: 100%;
+                }
+            }
+            .time {
+                display: flex;
+            }
+        }
+        .user {
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 20px;
-            color: var(--text-color);
-        }
-        .recipee {
-            .title {
-                display: inline-block;
-                height: auto;
-                font-size: 18px;
-                color: var(--text-color);
-                padding-left: 12px;
+            .name,.avatar {
+                cursor: pointer;
             }
-            .body {
-                padding: 12px 16px;
+            &:hover {
                 color: var(--text-color);
+            }
+            img {
+                width: 32px;
+                height: 32px;
+                border-radius: 100%;
+                margin: 6px;
             }
         }
-        .components {
-            margin-top: 12px;
-            .title {
-                display: inline-block;
-                height: auto;
-                font-size: 18px;
+        .order {
+            .table,.dishes {
                 color: var(--text-color);
-                padding-left: 12px;
+                margin-top: 8px;
             }
-            .body {
-                padding: 12px 16px;
-                .component {
-                    display: grid;
-                    grid-template-columns: 40% 60%;
-                    border-bottom: 1px solid rgb(236, 236, 236);
-                    height: 32px;
-                    .amount {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }
-                    .name {
-                        display: flex;
-                        align-items: center;
-                    }
+            .time {
+                margin-top: 12px;
+                &.red {
+                    color: var(--red);
+                }
+                &.green {
+                    color: var(--gren);
+                }
+                &.orange {
+                    color: var(--orange);
+                }
+            }
+            #full-order {
+                margin-top: 8px;
+                cursor: pointer;
+                ion-icon {
+                    margin-left: 4px;
+                }
+                &:hover {
+                    color: var(--orange);
                 }
             }
         }

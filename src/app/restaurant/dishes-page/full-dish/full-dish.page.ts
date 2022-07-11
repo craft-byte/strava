@@ -35,6 +35,10 @@ export class FullDishPage implements OnInit {
   ) { };
 
   back() {
+    const last = this.route.snapshot.queryParamMap.get("last");
+    if(last) {
+      return this.router.navigate([last], { replaceUrl: true });
+    }
     this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
   }
   edit() {

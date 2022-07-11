@@ -1,7 +1,9 @@
 <div class="header">
   <div class="title">
     <div class="close">
-      <ion-icon (click)="close()" name="close-outline"></ion-icon>
+      <button (click)="close()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
     <div class="text" *ngIf="mode == 'add'">
       Add dish to {{ restaurant.name }}

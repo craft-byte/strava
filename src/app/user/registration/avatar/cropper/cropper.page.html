@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="done()">Done</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <image-cropper 
+    [imageChangedEvent]="event" 
+    [maintainAspectRatio]="true" 
+    [aspectRatio]="1" 
+    format="jpeg"
+    (imageCropped)="imageCropped($event)"
+    (loadImageFailed)="loadImageFailed()"></image-cropper>
+  </div>
+</ion-content>

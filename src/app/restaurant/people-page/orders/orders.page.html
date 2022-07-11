@@ -1,0 +1,46 @@
+<div class="app">
+  <div class="header">
+    <div class="search">
+      <ion-searchbar mode="ios"></ion-searchbar>
+      <button class="orange-button">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </div>
+    <div class="buttons">
+      <button class="orange-button">Filters</button>
+    </div>
+  </div>
+  <div *ngIf="orders && orders.length > 0" class="list">
+    <div class="order" *ngFor="let i of orders">
+      <div class="top">
+        <div class="avatar">
+          <img [src]="i.avatar" alt="">
+        </div>
+        <div class="name" [ngClass]="{ red: i.blacklisted }">
+          <p (click)="goUser(i.user._id)">{{ i.user.name || i.user.username }}</p>
+        </div>
+        <div class="status">
+          <p class="{{i.statusColor}}">{{ i.status }}</p>
+        </div>
+      </div>
+      <div class="dishes">
+        <div *ngFor="let dish of i.dishes" (click)="goDish(dish._id)" class="dish">
+          <div class="name">
+            {{ dish.name }}
+          </div>
+          <div class="price">
+            ${{ dish.price / 100 }}
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="more">
+          <button class="success-button">More</button>
+        </div>
+        <div class="total">
+          <p>Total: ${{ i.total / 100 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

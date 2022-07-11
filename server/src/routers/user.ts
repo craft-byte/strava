@@ -1,34 +1,36 @@
 import { ObjectId } from "bson";
 import { Router } from "express";
-import { db } from "./../environments/server";
-import { client } from "../index";
-import { compare, getDate, id, log, makePassword, sendEmail } from "../utils/functions";
-import { SessionData } from "express-session";
-import { Invitation, ManagerSettings, RestaurantSettings } from "../models/components";
+import { MODE } from "../index";
+import { getDate, id, log, makePassword, sendEmail } from "../utils/functions";
+import { Invitation } from "../models/components";
 import { addUser, byUsername, getUser, getUserPromise, getUsers, updateUser } from "../utils/users";
 import passport from "passport";
 import { logged } from "../middleware/user";
 import { Restaurant } from "../utils/restaurant";
-import { getRestaurantName, isAddToJobs, isAddToRestaurants } from "../utils/other";
+import { bufferFromString, getRestaurantName, isAddToJobs, isAddToRestaurants } from "../utils/other";
 import { UpdateResult } from "mongodb";
+import { AddRestaurantRouter } from "./user/addRestaurant";
+import { allowed } from "../middleware/restaurant";
+import sharp from "sharp";
 
 
 const router = Router();
 
-
-
-let session: SessionData;
+router.use("/add-restaurant", AddRestaurantRouter);
 
 router.post("/create", async (req, res) => {
     const { password, username } = req.body;
 
-    const newPassword = makePassword(password);
-
     const similar = await getUsers({ username }, { projection: { username: 1 } });
 
     if (similar && similar.length > 0) {
-        res.send({ error: "username" });
-        return;
+        return res.send({ acknowledged: false, error: "username" });
+    }
+
+    const newPassword = makePassword(password);
+
+    if(!newPassword) {
+        return res.send({ acknowledged: false, error: "password" });
     }
 
     const newUser = {
@@ -42,46 +44,43 @@ router.post("/create", async (req, res) => {
         restaurants: [] as ObjectId[],
         name: null as unknown as string,
         phone: null as unknown as string,
+        sessions: [],
     };
 
     const result = await addUser(newUser);
 
     if (result.acknowledged) {
-        log('success', "user created");
         req.logIn({ username, _id: newUser._id.toString() }, async err => {
             if (err) { return res.status(501).json(err); }
         });
-    } else {
-        log('failed', "creating user");
     }
 
     res.send({ acknowledged: result.acknowledged, user: { username, restaurants: [], works: [], invitations: [], _id: result.insertedId } });
 });
 router.patch("/login", async (req, res, next) => {
-    passport.authenticate('local', function(err, user, info) {
 
+    const { username, password } = req.body;
 
+    if (!username || !password || typeof (username) != "string" || typeof (password) != "string") {
+        return res.sendStatus(400);
+    }
+    passport.authenticate('local', function (err, user, access) {
         if (err) {
-            console.error(err);
-            throw new Error("at passport.authenticate");
+            return res.sendStatus(403);
         }
 
-        if (info) {
-            const { error } = info;
-            log("failed login", error, "is wrong");
-            if(error == "username") {
-                return res.send({ error: "username" });
-            } else {
-                return res.send({ error: "password" });
-            }
+
+        if(!user) {
+            return res.sendStatus(401);
         }
 
         req.logIn(user, async err => {
-          if (err) { return res.status(501).json(err); }
+            if (err) {
+                console.log(err);
+                return res.status(501).json(err);
+            }
 
-          console.log("LOGGED");
-
-          const user = await byUsername(req.body.username, {
+            const user = await byUsername(req.body.username, {
                 projection: {
                     works: 1,
                     invitations: 1,
@@ -94,21 +93,21 @@ router.patch("/login", async (req, res, next) => {
                     email: 1
                 }
             });
-        
+
             res.send(user);
         });
 
-      })(req, res, next);
+    })(req, res, next);
 });
 router.get("/authenticate/:send", async (req, res) => {
-    if(!req.isAuthenticated()) {
+    if (!req.isAuthenticated()) {
+        console.log("NOT AUTHENTICATED");
         return res.send(false);
     }
     const { send } = req.params;
 
 
-
-    if(send == "true") {
+    if (send == "true") {
         const result = await getUser(req.user as string, {
             projection: {
                 works: 1,
@@ -127,260 +126,187 @@ router.get("/authenticate/:send", async (req, res) => {
         res.send(true);
     }
 });
-router.delete("/logout", async (req, res) => {
+router.delete("/logout", logged, async (req, res) => {
     req.logOut();
     res.send({});
 });
-router.post("/email/setEmail", logged, async (req, res) => {
-    const { email } = req.body;
-
-    try {
-        const inUser = await getUserPromise({ email }, { projection: { _id: 1 } });
-
-        if(inUser) {
-            return res.send({ error: "used" });
-        }
-        
-    } catch (error) {
-        console.error(error);
-        throw new Error("error at /email/setEmail");
-    }
-
-    const result = await sendEmail(email, "verification", req.user as string);
-
-    res.send(result);
-});
-router.post("/email/verify", logged, async (req, res) => {
-    const { code } = req.body;
-
-    const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1 } });
-    if(!user) {
-        return res.sendStatus(404).send({ error: "user" });
-    }
-    if(!user.emailVerificationCode || !user.emailVerify) {
-        return res.send({ error: "code" });
-    }
 
 
-    if(code == user.emailVerificationCode) {
-        const result = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerificationCode: null, emailVerify: null } });
-
-        if(result.modifiedCount > 0) {
-            return res.send({ error: "none" });
-        } else {
-            return res.send({ error: "unknown" });
-        }
-    } else {
-        return res.send({ error: "code" });
-    }
-});
-router.get("/login", async (req, res) => {
-    if(req.isAuthenticated()) {
-        return res.send(
-            await getUser(req.user as string, { projection: {
-                works: 1,
-                invitations: 1,
-                restaurants: 1,
-                _id: 1,
-                username: 1,
-                name: 1,
-                phone: 1,
-                avatar: 1,
-                email: 1
-            }})
-        );
-    } else {
-        return res.send(null);
-    }
-});
-
-router.post("/addRestaurant", logged, async (req, res) => {
-    const { restaurant } = req.body;
-
-    log("info", "adding restaurant ", restaurant.name);
-
-    const settings: RestaurantSettings = {
-        work: {
-            
-        },
-        customers: {
-            maxDishes: 10,
-            orders: true,
-            trust: 1
-        },
-        dishes: {
-            strictIngredients: false,
-            types: 1,
-        },
-        payments: {
-            
-        }
-    }
-
-    const forRestaurant = {
-        ...restaurant,
-        _id: id()!,
-        owner: new ObjectId(req.user as string),
-        staff: [{ _id: new ObjectId(req.user as string), role: "admin", joined: new Date(), prefers: [], settings: {} }],
-        created: new Date(),
-        tables: [],
-        invitations: [],
-        settings,
-        components: [],
-        tutorials: {
-            dishes: true,
-            staff: true,
-            cooking: true,
-        }
-    };
+// router.get("/login", async (req, res) => {
+//     if (req.isAuthenticated()) {
+//         return res.send(
+//             await getUser(req.user as string, {
+//                 projection: {
+//                     works: 1,
+//                     invitations: 1,
+//                     restaurants: 1,
+//                     _id: 1,
+//                     username: 1,
+//                     name: 1,
+//                     phone: 1,
+//                     avatar: 1,
+//                     email: 1
+//                 }
+//             })
+//         );
+//     } else {
+//         return res.send(null);
+//     }
+// });
 
 
-
-    const insertedRestaurant = await client.db(db).collection("restaurants")
-        .insertOne(forRestaurant);
-    client.db(db).createCollection(forRestaurant._id.toString());
-
-
-    const work = { 
-        restaurant: forRestaurant._id, 
-        orders: [], 
-        waiter: [] 
-    };
-    client.db(db).collection("work").insertOne(work);
-
-
-
-
-
-    const result2 = await updateUser(
-        req.user as string,
-        {
-            $push: {
-                restaurants: forRestaurant._id,
-                works: forRestaurant._id
-            }
-        }
-    );
-
-    if (result2.acknowledged && insertedRestaurant.acknowledged) {
-        res.send({ error: "none", insertedId: forRestaurant._id });
-        log("success", "adding restaurant ", restaurant.name);
-        return;
-    }
-
-    log("failed", "adding restaurant ", restaurant.name);
-
-    res.send({ error: "wrong" });
-});
-router.get("/restaurants", logged, async (req, res) => {
-    
-
+router.get("/userInfo", logged, async (req, res) => {
     const user = await getUser(
         req.user as string,
         { projection: {
-            restaurants: 1
+            username: 1,
+            name: 1,
+            restaurants: 1,
+            works: 1,
+            email: 1,
+            avatar: { modified: 1 },
         } }
     );
 
     if(!user) {
-        return res.send({ error: "user" });
+        return res.sendStatus(404);
     }
 
-    const { restaurants: ids } = user;
+    const getRestaurantNameAndId = async (restaurantId: string | ObjectId, type: "works" | "restaurants") => {
+        const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1 } });
 
-    const restaurants = await Restaurant().search(
-        { _id: { $in: ids } },
-        { projection: { name: 1 } }
-    );
+        if(!restaurant) {
+            const $pull: any = {};
+            $pull[type] = id(restaurantId); 
+            const result = await updateUser(req.user as string, { $pull });
+            console.log("WARNING: users has restaurant that has been removed     ", type, " removed from user: ", result.modifiedCount > 0);
+            return null;
+        }
 
-
-    const result = [];
-
-    for(let i of restaurants) {
-        result.push({
-            name: i.name,
-            _id: i._id,
-            status: "OK"
-        });
+        return {
+            name: restaurant!.name,
+            _id: restaurant!._id
+        }
     }
 
 
-    res.send(result);
+    let showRestaurants = false;
+    let showJobs = false;
+    let showInvitations = false;
+    let registrationParagraphs: any = {};
 
-});
-router.get("/works", logged, async (req, res) => {
-    
-    const user = await getUser(
-        req.user as string,
-        { projection: {
-            works: 1
-        } }
-    );
-
-    if(!user) {
-        return res.send({ error: "user" });
+    if(!user.email) {
+        registrationParagraphs.email = "Add email address";
+    }
+    if(!user.avatar) {
+        registrationParagraphs.avatar = "Add avatar image";
     }
 
-    const { works } = user;
+    const restaurantsPromise = [];
+    const worksPromise = [];
 
-    const restaurants = await Restaurant().search(
-        { _id: { $in: works } },
-        { projection: {
-            name: 1
-        } }
-    );
-
-
-    res.send(restaurants);
-});
-
-router.get("/invitations", logged, async (req, res) => {
+    if(user.restaurants!.length > 0) {
+        showRestaurants = true;
+        for(let i of user.restaurants!) {
+            restaurantsPromise.push(getRestaurantNameAndId(i, "restaurants"));
+        }
+    }
+    if(user.works!.length > 0) {
+        showJobs = true;
+        for(let i of user.works!) {
+            worksPromise.push(getRestaurantNameAndId(i, "works"));
+        }
+    }
     
 
-    const user = await getUser(req.user as string, { projeciton: { invitations: 1 } });
-
-    const { invitations } = user;
-
-    const result = [];
-
-    for(let i of invitations!) {
-        result.push({
-            date: getDate(i.date),
-            restaurant: await getRestaurantName(i.restaurantId!),
-            role: i.role,
-            _id: i._id,
-            restaurantId: i.restaurantId,
-        });
+    const restaurants = [];
+    const works = [];
+    
+    for(let i of await Promise.all(restaurantsPromise)) {
+        if(i) {
+            restaurants.push(i);
+        }
+    }
+    for(let i of await Promise.all(worksPromise)) {
+        if(i) {
+            works.push(i);
+        }
     }
 
-    res.send(result);
+    res.send({
+        ui: {
+            showRestaurants,
+            showJobs,
+            showAdd: !showRestaurants && !showJobs,
+            showInvitations,
+            showRegistration: !user.email || !user.avatar,
+            title: "Hi " + (user.name || user.username),
+            registrationParagraphs,
+        },
+        restaurants,
+        works,
+    });
+});
+router.get("/avatar", logged, async (req, res) => {
+    const user = await getUser(req.user as string, { projection: { avatar: 1 } });
+
+    res.send({ avatar: user.avatar?.binary });
 });
 
-router.post("/update", logged, async (req, res) => {
-    const { field, value } = req.body;
 
-    console.log(field, value);
 
-    const $set: any = {};
 
-    $set[field] = value;
+// router.get("/invitations", logged, async (req, res) => {
 
-    const update = await updateUser(
-        req.user as string,
-        { $set },
-    );
 
-    console.log(update);
+//     const user = await getUser(req.user as string, { projeciton: { invitations: 1 } });
 
-    res.send(update);
-});
+//     const { invitations } = user;
 
-router.post("/username/check", logged, async (req, res) => {
+//     const result = [];
+
+//     for (let i of invitations!) {
+//         result.push({
+//             date: getDate(i.date),
+//             restaurant: await getRestaurantName(i.restaurantId!),
+//             role: i.role,
+//             _id: i._id,
+//             restaurantId: i.restaurantId,
+//         });
+//     }
+
+//     res.send(result);
+// });
+
+// router.post("/update", logged, async (req, res) => {
+//     const { field, value } = req.body;
+
+//     console.log(field, value);
+
+//     const $set: any = {};
+
+//     $set[field] = value;
+
+//     const update = await updateUser(
+//         req.user as string,
+//         { $set },
+//     );
+
+//     console.log(update);
+
+//     res.send(update);
+// });
+
+router.post("/username/check", async (req, res) => {
     const { username } = req.body;
+
+    if(!username || username.length < 6) {
+        return res.send(false);
+    }
 
     const format = /[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?" +"]/;
 
-    if(format.test(username) || username.length < 8) {
+    if (format.test(username) || username.length < 6) {
         return res.send(false);
     }
 
@@ -388,7 +314,120 @@ router.post("/username/check", logged, async (req, res) => {
 
     res.send(!result);
 });
+router.get("/email/setup", logged, async (req, res) => {
+    const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1 } });
 
+    res.send({...user, emailVerificationCode: !!user.emailVerificationCode });
+});
+router.post("/email/check", logged, async (req, res) => {
+    const { email } = req.body;
+    
+    const format = /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+
+    if(!format.test(email)) {
+        return res.send(false);
+    }
+
+    const user = await getUserPromise({ email }, { projection: { _id: 1 } });
+
+    if(email == "test@ctraba.com" && MODE == "testing") {
+        return res.send(true);
+    }
+
+    res.send(!user);
+});
+router.post("/email/setEmail", logged, async (req, res) => {
+    const { email } = req.body;
+
+
+    try {
+        const inUser = await getUserPromise({ email }, { projection: { _id: 1 } });
+
+        if (inUser) {
+            if(MODE != "testing" || email != "test@ctraba.com") {
+                return res.send({ acknowledged: false, error: "used" });
+            };
+        }
+    } catch (error) {
+        console.error(error);
+        throw new Error("error at /email/setEmail");
+    }
+
+    const result = await sendEmail(email, "verification", req.user as string); // 1 -- error  2 -- success
+
+    res.send({ acknowledged: result == 2, error: result == 1 ? "wrong" : "none" });
+});
+router.post("/email/verify", logged, async (req, res) => {
+    const { code } = req.body;
+
+    const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1 } });
+    if (!user) {
+        return res.sendStatus(404);
+    }
+    if(!user.emailVerify) {
+        return res.send({ error: "email" });
+    }
+    if(!user.emailVerificationCode) {
+        return res.send({ error: "code1" });
+    }
+    if(user.emailVerificationCode != code) {
+        if(MODE == "testing" && code == "111111") {
+            const update = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerify: null, emailVerificationCode: null } });
+
+            return res.send({ error: update.modifiedCount > 0 ? "none" : "update" });
+        }
+        return res.send({ error: "code2" });
+    }
+
+    if(user.emailVerificationCode === code) {
+        const update = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerify: null, emailVerificationCode: null } });
+
+        return res.send({ error: update.modifiedCount > 0 ? "none" : "update" });
+    }
+});
+router.post("/name/set", logged, async (req, res) => {
+    const { name } = req.body;
+
+    if(!name || name.length < 6 || name.length > 30) {
+        return res.sendStatus(422);
+    }
+
+    const update = await updateUser(req.user as string, { $set: { name } });
+
+    res.send({ success: update.modifiedCount > 0 });
+});
+router.post("/avatar", logged, async (req, res) => {
+    const { avatar } = req.body;
+
+    const buffer = bufferFromString(avatar);
+
+
+    try {
+        const result = await sharp(buffer).resize(1000).png({ quality: 50 }).toBuffer();
+        const update = await updateUser(req.user as string, { $set: { avatar: {
+            binary: result,
+            modified: new Date(),
+        } } })
+    
+        res.send({
+            updated: update.modifiedCount > 0
+        });
+    } catch (e) {
+        console.log(e);
+        return res.sendStatus(500);
+    }
+
+
+});
+
+
+router.get("/restaurant/expanded/:restaurantId", logged, allowed("manager"), async (req, res) => {
+    const { restaurantId } = req.params;
+
+    const result = await Restaurant(restaurantId).get({ projection: { _id: 1 } });
+
+    res.send("Not implemented")
+});
 
 
 router.patch("/invitations/reject/:restaurantId/:userId/:inv", logged, async (req, res) => {
@@ -404,25 +443,25 @@ router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
 
     const foundUser = await getUser(user, { projection: { invitations: 1 } });
 
-    if(!foundUser || !foundUser.invitations) {
+    if (!foundUser || !foundUser.invitations) {
         log("failed invitation accepting", "no user found");
         return res.sendStatus(404);
-    } else if(foundUser.invitations.length == 0) {
+    } else if (foundUser.invitations.length == 0) {
         log("failed invitation accepting", "no invitations found");
         return res.sendStatus(404);
     }
 
     let userI: Invitation = null!;
 
-    
-    
-    for(let i of foundUser.invitations) {
-        if(i._id.toString() == inv) {
+
+
+    for (let i of foundUser.invitations) {
+        if (i._id.toString() == inv) {
             userI = i;
         }
     }
-    
-    if(!userI) {
+
+    if (!userI) {
         log("FAILED", "USER INVITATION DOESNT EXIST");
         return res.sendStatus(404);
     }
@@ -443,26 +482,26 @@ router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
 
     let restaurantI: Invitation = null!;
 
-    for(let i of foundR.invitations) {
-        if(i._id.toString() == inv) {
+    for (let i of foundR.invitations) {
+        if (i._id.toString() == inv) {
             restaurantI = i;
         }
     }
 
-    if(!restaurantI) {
+    if (!restaurantI) {
         log("failed", `invitation doesnt exists in restaurant [${foundR._id.toString()}]`);
         return res.sendStatus(404);
     }
 
     const restaurant = foundR._id;
 
-    const updatedRestaurant = await Restaurant(restaurant).update({ 
-        $push: { 
-                staff: { 
-                _id: id(user), 
-                joined: new Date(), 
-                role: restaurantI!.role, 
-                settings: restaurantI!.settings 
+    const updatedRestaurant = await Restaurant(restaurant).update({
+        $push: {
+            staff: {
+                _id: id(user)!,
+                joined: new Date(),
+                role: restaurantI!.role!,
+                settings: restaurantI!.settings,
             },
         },
         $pull: {
@@ -475,15 +514,15 @@ router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
     let addJob = false;
     let addRestaurant = false;
 
-    if(restaurantI.role == "cook" || restaurantI.role == "waiter") {
+    if (restaurantI.role == "cook" || restaurantI.role == "waiter") {
         addJob = true;
         userUpdate = await updateUser(user, {
             $push: { works: restaurant },
             $pull: { invitations: { _id: id(inv) } },
         });
     }
-    
-    
+
+
     else {
         const $push: any = {};
 
@@ -491,10 +530,10 @@ router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
         addRestaurant = isAddToRestaurants(restaurantI.settings!);
 
 
-        if(addJob) {
+        if (addJob) {
             $push.works = restaurant;
         }
-        if(addRestaurant) {
+        if (addRestaurant) {
             $push.restaurants = restaurant;
         }
 
@@ -511,12 +550,11 @@ router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
     res.send({
         success: result,
         job: addJob ? { name: restaurantName, _id: restaurant } : null,
-        restaurant: addRestaurant ? { name: restaurantName, _id: restaurant} : null
+        restaurant: addRestaurant ? { name: restaurantName, _id: restaurant } : null
     });
 });
 
 
 export {
     router as UserRouter,
-    session
 }

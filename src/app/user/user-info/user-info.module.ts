@@ -8,6 +8,7 @@ import { UserInfoPageRoutingModule } from './user-info-routing.module';
 
 import { UserInfoPage } from './user-info.page';
 import { HttpClientModule } from '@angular/common/http';
+import { RestaurantComponent } from './restaurant/restaurant.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,9 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  declarations: [UserInfoPage]
+  declarations: [
+    UserInfoPage,
+    RestaurantComponent,
+  ]
 })
 export class UserInfoPageModule {}

@@ -80,7 +80,7 @@ async function convertDishes(restaurantId: string | ObjectId) {
         return result;
     }
 
-    const dishes = await Restaurant(restaurantId).dishes.many({ _id: { $in: getIds() } }, { projection: { name: 1, image: 1 } });
+    const dishes = await Restaurant(restaurantId).dishes.many({ _id: { $in: getIds() } }).get({ projection: { name: 1, image: 1 } });
     const table = new DishesHashTable(dishes);
 
     const result = [];

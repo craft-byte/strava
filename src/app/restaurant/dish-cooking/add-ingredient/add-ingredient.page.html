@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+    <ion-title>Select ingredient</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="search">
+      <ion-searchbar (ionInput)="onInput($event)"></ion-searchbar>
+      <button class="orange-button">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </div>
+    <div class="list">
+      <div *ngFor="let i of components" class="component">
+        <div class="name">
+          <p>{{ i.name }}</p>
+        </div>
+        <div class="amount">
+          <p>{{ i.amount }}</p>
+        </div>
+        <div class="buttons">
+          <button (click)="add(i._id)" class="orange-button">
+            <ion-icon name="add"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

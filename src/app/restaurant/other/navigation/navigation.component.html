@@ -4,11 +4,8 @@
       Restaurants:
     </div>
     <div class="list">
-      <div class="one">
-        Restaurant 1
-      </div>
-      <div class="one">
-        Restaurant 2
+      <div class="one" (click)="go(i._id)" *ngFor="let i of restaurants">
+        {{ i.name }}
       </div>
     </div>
   </div>

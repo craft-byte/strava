@@ -6,13 +6,12 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SocketIoModule } from 'ngx-socket-io';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { HashLocationStrategy } from '@angular/common';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
-import { AuthInterceptor } from './other/auth-interceptor';
+import { Interceptor } from './other/interceptor';
 
 
 @NgModule({
@@ -23,12 +22,12 @@ import { AuthInterceptor } from './other/auth-interceptor';
         SocketIoModule.forRoot({ url: environment.socketLink, options: {} }),
         IonicModule.forRoot(),
         AppRoutingModule,
-        HttpClientModule
+        HttpClientModule,
     ],
     providers: [
         { provide: HashLocationStrategy, useClass: IonicRouteStrategy },
         CookieService,
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true }
     ],
     bootstrap: [AppComponent]
 })

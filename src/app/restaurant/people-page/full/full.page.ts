@@ -2,6 +2,7 @@ import { StringMapWithRename } from '@angular/compiler/src/compiler_facade_inter
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
+import { getImage } from 'src/functions';
 import { ManagerSettings } from 'src/models/components';
 import { RestaurantService } from '../../services/restaurant.service';
 import { ModalPage } from './more-modal/modal.page';
@@ -27,6 +28,7 @@ interface Worker {
 export class FullPage implements OnInit {
 
   user: User;
+  avatar: string = "./../../../../assets/images/plain-avatar.jpg";
   worker: Worker;
   restaurant: any;
 
@@ -77,6 +79,7 @@ export class FullPage implements OnInit {
 
     const { user, worker } = result;
 
+    this.avatar = getImage(user.avatar);
 
     this.user = user;
     this.worker = worker;

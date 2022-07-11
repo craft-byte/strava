@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app" *ngIf="component">
+    <div class="info">
+      <div class="name">
+        <p>{{ component.name }}</p>
+      </div>
+      <div class="amount">
+        <p>
+          <span>
+            {{ component.amount }}
+          </span>
+          grams
+        </p>
+      </div>
+      <div class="price">
+        <p>${{ component.price / 100 }}</p>
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="amount">
+        <ion-item>
+          <ion-label>Amount for {{ dishName }}:</ion-label>
+          <ion-input [(ngModel)]="amount" type="number"></ion-input>
+          <ion-label>grams</ion-label>
+        </ion-item>
+      </div>
+      <div class="add">
+        <button (click)="submit()" class="success-button">Submit</button>
+      </div>
+    </div>
+  </div>
+</ion-content>

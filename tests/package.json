@@ -1,0 +1,26 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.app.json",
+    "build:dev": "tsc -p tsconfig.app.json -w",
+    "start": "node build/index.js",
+    "cleaning:users": "node build/scripts/removeUsers.js",
+    "cleaning:restaurants": "node build/scripts/removeRestaurants.js",
+
+    "fast:register": "node build/scripts/browser/fastRegister.js"
+  },
+  "author": "Bazhan Nahnybida",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^4.7.0",
+    "puppeteer": "^14.4.1",
+    "puppeteer-extra": "^3.3.0",
+    "puppeteer-extra-plugin-stealth": "^2.10.1"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^4.0.7"
+  }
+}

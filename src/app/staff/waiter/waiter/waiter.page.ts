@@ -42,7 +42,7 @@ export class WaiterPage implements OnInit {
       this.router.navigate([ "user/info" ], { queryParamsHandling: "preserve", replaceUrl: true });
     }
 
-    const result = await this.service.get<{ dishes: any; orderDishes: any; restaurant: Restaurant; }>("waiter", this.restaurant._id, "init");
+    const result = await this.service.get<{ dishes: any; orderDishes: any; restaurant: Restaurant; }>("waiter", "init");
 
     if(!result) {
       return false;
@@ -77,7 +77,11 @@ export class WaiterPage implements OnInit {
 
 
     this.waiter.connect(this.main.userInfo._id, this.restaurant._id).subscribe(res => {
-      console.log(res);
+      const { type } = res;
+
+      if(type == "waiter/new") {
+        
+      }
     });
   }
 

@@ -1,7 +1,9 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
 import { RestaurantService } from '../services/restaurant.service';
+import { AddIngredientPage } from './add-ingredient/add-ingredient.page';
 import { IngredientModalPage } from './ingredient-modal/ingredient-modal.page';
 
 interface Dish {
@@ -23,19 +25,18 @@ export class DishCookingPage implements OnInit {
 
 
   dish: Dish;
-  components: Ing[];
   recipee: string;
   selected: Ing[] = [];
 
   timeout: any;
 
   ui = {
-    disableSave: false,
+    disableSaveRecipee: true,
   };
 
   constructor(
     private route: ActivatedRoute,
-    private service: RestaurantService,
+    public service: RestaurantService,
     private router: Router,
     private toastCtrl: ToastController,
     private modalCtrl: ModalController,
@@ -45,16 +46,7 @@ export class DishCookingPage implements OnInit {
     this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id], { replaceUrl: true });
   }
 
-  find(event: any) {
-    const { target: { value } } = event;
-    clearTimeout(this.timeout);
-    
-    this.timeout = setTimeout(async () => {
-      this.addComponents(
-        await this.service.patch({ searchText: value }, "components")
-      );
-    }, 1000);
-  }
+
 
   async edit(comp: Ing) {
     const modal = await this.modalCtrl.create({
@@ -84,14 +76,35 @@ export class DishCookingPage implements OnInit {
         }
         for (let i in this.selected) {
           if (this.selected[i]._id == comp._id) {
+            const amount = this.selected[i].amount;
             this.selected[i].amount = d.amount;
+            const result: any = await this.service.patch({ amount: d.amount }, "dishes", this.dish._id, "cooking/component", comp._id);
+
+            if(!result.updated) {
+              this.selected[i].amount = amount;
+              (await this.toastCtrl.create({
+                duration: 2000,
+                color: "red",
+                message: "Couldn't update component amount. Please, try again later.",
+                mode: "ios",
+              })).present();
+            }
           }
         }
       } else if (d.type == 2) {
         for (let i in this.selected) {
           if (this.selected[i]._id == comp._id) {
-            delete this.selected[i].amount;
-            this.components.push(this.selected.splice(+i, 1)[0]);
+            const el = this.selected.splice(+i, 1);
+            const result: any = await this.service.delete("dishes", this.dish._id, "cooking/component", comp._id);
+            if(!result.removed) {
+              this.selected.splice(+i, 0, el[0]);
+              (await this.toastCtrl.create({
+                color: "red",
+                message: "Something went wrong. Try again later.",
+                mode: "ios",
+                duration: 2000
+              })).present();
+            }
             break;
           }
         }
@@ -99,79 +112,92 @@ export class DishCookingPage implements OnInit {
     }
   }
 
-  async onIngredientEmit(data: { _id: string; amount?: number; data?: any }) {
-    if (!data.amount || data.amount < 1) {
-      (await this.toastCtrl.create({
-        message: "Amount should be more than 0 grams :/",
-        color: "red",
-        duration: 3000,
-        mode: "ios"
-      })).present();
-      return;
-    } else {
-      for (let i in this.components) {
-        if (this.components[i]._id) {
-          this.selected.push({ ...this.components[i], amount: data.amount });
-          this.components.splice(+i, 1);
-          break;
-        }
-      }
-    }
-  }
 
+
+  onInput(event: any) {
+    const { target: { value } } = event;
+
+    this.ui.disableSaveRecipee = false;
+    this.recipee = value;
+  }
   async save() {
-    this.ui.disableSave = true;
-    const result: any = await this.service.post({ components: this.selected, recipee: this.recipee }, "dishes", this.dish._id, "cooking");
+    this.ui.disableSaveRecipee = true;
+    const result: any = await this.service.post({ recipee: this.recipee }, "dishes", this.dish._id, "cooking/recipee");
 
     if(result.updated) {
-      this.close();
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 1500,
         message: "Successfuly updated.",
         color: "green",
         mode: "ios",
       })).present();
     } else {
       (await this.toastCtrl.create({
-        duration: 4000,
+        duration: 1500,
         message: "Something went wrong. Try again later.",
         color: "red",
         mode: "ios",
       })).present();
-      this.ui.disableSave = false;
+      this.ui.disableSaveRecipee = false;
     }
   }
 
-  addComponents(comps: Ing[]) {
-    this.components = [];
-    if(!this.selected || this.selected.length == 0) {
-      return this.components.push(...comps);
-    }
-    for(let i of comps) {
-      let add = true;
-      for(let j of this.selected) {
-        if(i._id == j._id) {
-          add = false;
-          break;
+
+  async add() {
+    const modal = await this.modalCtrl.create({
+      component: AddIngredientPage,
+      mode: "ios",
+      cssClass: "modal-width",
+      id: "add",
+      componentProps: {
+        dishName: this.dish.name,
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+
+    if(data) {
+      this.selected.push({ _id: data.id, amount: data.amount, name: data.name });
+
+      const update: any = await this.service.post({ componentId: data.id, amount: data.amount }, "dishes", this.dish._id, "cooking/component");
+
+      if(!update.updated) {
+        for(let i in this.selected) {
+          if(this.selected[i]._id == data.id) {
+            this.selected.splice(+i, 1);
+            break;
+          }
         }
+        (await this.toastCtrl.create({
+          duration: 2000,
+          color: "red",
+          mode: "ios",
+          message: "Couldn't add component. Please, try again later.",
+        })).present();
       }
-      if(add) {
-        this.components.push(i);
-      }
+
     }
   }
+
+
+
+
+
+
 
   async ngOnInit() {
     const dishId = this.route.snapshot.paramMap.get("dishId");
-    const { cooking, dish, components } = await this.service.get("dishes", dishId, "cooking");
+    const { cooking, dish } = await this.service.get("dishes", dishId, "cooking");
 
     if (cooking) {
-      this.selected = cooking.components;
+      this.selected = cooking.components || [];
       this.recipee = cooking.recipee;
     }
 
-    this.addComponents(components);
     this.dish = dish;
+    this.service.currentDish = dish;
   }
 
 }

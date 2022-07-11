@@ -1,55 +1,126 @@
 <ion-header>
-  <ion-toolbar [color]="color">
+  <ion-toolbar color="orange">
     <ion-buttons slot="start">
       <ion-button (click)="close()">Close</ion-button>
     </ion-buttons>
-    <ion-title>
-      {{ title }}
-    </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="handle()">{{ button }}</ion-button>
+      <ion-button *ngIf="!ui.taken" (click)="take()">Take</ion-button>
+      <ion-button *ngIf="ui.taken" color="purple" (click)="done()">Done</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="app">
-    <div class="top" *ngIf="showDish">
-      <div class="image">
-        <img *ngIf="image" [src]="image" alt="">
-      </div>
-      <div class="name">
-        {{ dish.name }}
-      </div>
-      <div class="delay">
-        Delay: <p class="{{ orderDish.time.color }}">{{ orderDish.time.title }}</p>
-      </div>
-    </div>
-    <div class="cooking" *ngIf="cooking">
-      <div class="title">
-        Cooking
-      </div>
-      <div class="recipee">
-        <div class="title">
-          Recipee
+  <div class="app" *ngIf="dish">
+    <div class="left">
+      <div class="top">
+        <div class="image">
+          <img [class]="dish.image.resolution" [src]="dishImage">
         </div>
-        <div class="body">
-          {{ cooking.recipee }}
+        <div class="dish-info">
+          <div class="name">
+            {{ dish.name }}
+          </div>
+          <div class="time">
+            {{ dish.time }} min.
+          </div>
         </div>
       </div>
-      <div class="components">
-        <div class="title">You'll need:</div>
-        <div class="body">
-          <div class="component" *ngFor="let i of cooking.components">
-            <div class="amount">
-              {{ i.amount }} grams 
-            </div>
-            <div class="name">
-              <ion-text [color]="i.color">
-                of {{ i.name }} (you have {{i.has}})
-              </ion-text>
+      <div class="cooking">
+        <div *ngIf="ui.showRecipee" class="recipee">
+          <div class="title">
+            Recipee:
+          </div>
+          <div class="content">
+            {{ cooking.recipee }}
+          </div>
+        </div>
+        <div *ngIf="ui.showComponents" class="components">
+          <div class="title">
+            Ingredients:
+          </div>
+          <div class="list">
+            <div *ngFor="let i of cooking.components" class="component">
+              <div class="name">
+                <span>
+                  {{ i.name }}
+                </span>-
+              </div>
+              <div class="amount">
+                <span>
+                  {{ i.amount }}
+                </span> grams
+              </div>
+              <div class="of">
+                you have <span>
+                  {{ i.of }}
+                </span>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div *ngIf="ui.taken" class="taken">
+        <div class="user">
+          <div class="name">
+            {{ taken.user.name }}
+          </div>
+          <div class="avatar">
+            <img [src]="cookAvatar">
+          </div>
+        </div>
+        <div class="time">
+          Taken
+          <span class="hours" *ngIf="taken.time.hours > 0">
+            &nbsp;<span class="hours-count">{{ taken.time.hours }}</span> hours
+          </span>
+          <span class="minutes">
+            &nbsp;<span class="minutes-count">{{ taken.time.minutes }}</span> min.&nbsp;
+          </span>
+          ago
+        </div>
+      </div>
+      <div class="user">
+        <div class="name">
+          {{ user.name }}
+        </div>
+        <div class="avatar">
+          <img [src]="userAvatar">
+        </div>
+      </div>
+      <div class="order">
+        <div class="table" *ngIf="order.table">
+          <span class="title">
+            Table:
+          </span>
+          <span class="table-number">
+            {{ order.table }}
+          </span>
+        </div>
+        <div class="dishes">
+          <span class="title">
+            Dishes ordered:
+          </span>
+          <span class="dishes-count">
+            {{ order.dishes }}
+          </span>
+        </div>
+        <div class="time {{ order.time.color }}">
+          <span class="hours" *ngIf="order.time.hours > 0">
+            <span class="hours-count">
+              {{ order.time.hours }}
+            </span> hours
+          </span>
+          <span class="minutes">
+            <span class="minutes-count">
+              {{ order.time.minutes }}
+            </span> min.
+          </span>
+        </div>
+        <div class="full-order">
+          <a id="full-order">See full order<ion-icon name="open-outline"></ion-icon></a>
         </div>
       </div>
     </div>

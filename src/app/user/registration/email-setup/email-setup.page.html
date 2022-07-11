@@ -1,0 +1,63 @@
+<ion-content>
+  <div class="app">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">Email set up for {{ ui.username }}</h2>
+      </div>
+      <div class="email-section">
+        <input (input)="emailInput($event)" [(ngModel)]="email" id="email" [ngClass]="{ 'red': ui.emailRed }" type="text"
+          placeholder="Email address">
+        <div *ngIf="ui.sent" class="sent">
+          <div class="title">
+            Code sent to {{ email }}
+          </div>
+          <button [disabled]="ui.countdown > 0" (click)="resend()" id="resend">
+            Resend <span *ngIf="ui.countdown > 0">{{ ui.countdown }}</span>
+          </button>
+        </div>
+        <div class="email-info">
+          <button *ngIf="!ui.sent" [disabled]="ui.disableSend" id="send" (click)="send()">Send</button>
+          <div class="email-message">
+            {{ ui.emailMessage }}
+          </div>
+        </div>
+      </div>
+      <div class="code-section">
+        <div class="code">
+          <code-input [disabled]="ui.disableCode" id="code" [isCodeHidden]="false" [codeLength]="6"
+            (codeCompleted)="onCodeCompleted($event)"></code-input>
+        </div>
+        <div class="code-message">
+          {{ ui.codeMessage }}
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="exit" (click)="exit()">
+          Continue later
+        </button>
+        <button [disabled]="ui.disableSubmit" id="submit" (click)="verify()">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

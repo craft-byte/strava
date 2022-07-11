@@ -1,27 +1,46 @@
-<ion-header>
-  <ion-toolbar color="warning">
-    <div class="header" type="h1">
-      <p class="title">Log in</p>
-    </div>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <div class="app">
-    <div class="title">
-      <h1 class="main">Welcome to Ctraba</h1>
-      <h3 class="error-message" *ngIf="msg.length >= 1">{{ msg }}</h3>
-    </div>
-    <div class="login">
-      <div class="inputs">
-        <input class="i top" type="text" placeholder="Username" [(ngModel)]="username" id="username"><br>
-        <input class="i bottom" type="password" placeholder="Password" [(ngModel)]="password" id="password">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">Log in</h2>
       </div>
-      <small class="small-text">If you don't have account go <a routerLink="/user-create">sign up</a></small><br>
-      <ion-button color="success" id="login-button" (click)="login()">Login</ion-button>
+      <div class="body">
+        <input [(ngModel)]="username" (keydown.ENTER)="onEnter()" (focusout)="checkUsername()" id="username" [ngClass]="{ 'red': ui.usernameRed }" type="text" placeholder="Username">
+        <div class="username-message">
+          {{ ui.usernameMessage }}
+        </div>
+        <input #passwordElement [(ngModel)]="password" (focusout)="checkPassword()" (keydown.ENTER)="login()" id="password" [ngClass]="{ 'red': ui.passwordRed }" type="password" placeholder="Password">
+        <div class="password-message">
+          {{ ui.passwordMessage }}
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="sign-in" (click)="signUp()">
+          Don't have an account?
+        </button>
+        <button [disabled]="ui.disableLogin" [disabled]="ui.disableButtons" id="next" (click)="login()">
+          Login
+        </button>
+      </div>
     </div>
-    <div class="help">
-      <a routerLink="/help" class="dark-link">Need help?</a>
+    <div class="footer">
+      <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div>
     </div>
   </div>
 </ion-content>

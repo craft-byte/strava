@@ -19,11 +19,18 @@
             margin-left: 12px;
         }
         .close {
-            font-size: 32px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
+            #close-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: none;
+                width: 32px;
+                height: 32px;
+                ion-icon {
+                    position: absolute;
+                    font-size: 32px;
+                }
+            }
         }
     }
     .buttons {
@@ -67,6 +74,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             padding-top: 32px;
             textarea {
                 resize: none;
@@ -79,58 +87,79 @@
     .s2 {
         .content {
             .chosen {
-                display: grid;
-                grid-template-columns: 10% 90%;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
                 .subtitle {
-                    padding: 32px 0;
-                    font-size: 18px;
-                    margin: 24px 12px;
-                }
-                .list {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1fr;
-                    gap: 24px;
-                    .one {
-                        height: 124px;
-                        border: 2px solid var(--orange);
-                        position: relative;
-                        border-radius: 12px;
-                        display: flex;
-                        align-items: center;
-                        flex-direction: column;
-                        .name {
-                            font-size: 18px;
-                            .amount {
-                                margin-top: 8px;
-                            }
-                        }
-                        button {
-                            width: 100%;
-                            position: absolute;
-                            bottom: 0;
-                            left: 0;
-                            margin: 0;
-                            border-top-left-radius: 0px;
-                            border-top-right-radius: 0px;
-                            border-bottom-left-radius: 10px;
-                            border-bottom-left-radius: 10px;
-                        }
-                    }
-                }
-            }
-            .list {
-                padding: 32px 0;
-                .subtitle {
-                    font-size: 18px;
-                    margin: 24px 12px;
+                    width: 614px;
+                    height: 52px;
                     display: flex;
                     align-items: center;
-                    .orange-button {
-                        height: 38px;
-                        width: 38px;
+                    h3 {
+                        color: var(--text-color);
                     }
-                    ion-searchbar {
-                        width: 412px;
+                }
+                .list {
+                    width: 614px;
+                    .one {
+                        width: 100%;
+                        height: 48px;
+                        border-bottom: 1px solid var(--border-color);
+                        display: grid;
+                        grid-template-columns: 40% 40% 20%;
+                        P {
+                            margin: 0;
+                        }
+                        .name {
+                            font-size: 18px;
+                            padding-left: 8px;
+                            display: flex;
+                            align-items: center;
+                            a {
+                                color: var(--black);
+                                text-decoration: none;
+                                &:hover {
+                                    color: var(--orange);
+                                }
+                            }
+                        }
+                        .amount {
+                            display: flex;
+                            align-items: center;
+                        }
+                        .edit {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            button {
+                                width: 34px;
+                                height: 34px;
+                            }
+                        }
+                    }
+                    .add {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin-top: 12px;
+                        .body {
+                            width: 60px;
+                            height: 56px;
+                            border-radius: 8px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: rgb(243, 243, 243);
+                            transition: .4s all;
+                            color: rgb(102, 102, 102);
+                            &:hover {    
+                                background-color: rgb(231, 231, 231);
+                                color: var(--black);
+                            }
+                            ion-icon {
+                                font-size: 24px;
+                            }
+                        }
                     }
                 }
             }

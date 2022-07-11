@@ -14,27 +14,19 @@ function getDelay(time: number | Date) {
         number = time;
     } else if(time instanceof Date) {
         number = time.getTime();
-    }
-
-    const d = (Date.now() - number) / 1000;
-
-    var h = Math.floor(d / 3600);
-    var m = Math.floor(d % 3600 / 60);
-
-    if (h > 0) {
-        return { title: `${h}h ${m} min`, color: "red" };
     } else {
-        if(m == 0) {
-            return { title: "just now", color: "green" };
-        }
-        let color = "green";
-        if(m > 25) {
-            color = "red";
-        } else if(m > 15) {
-            color = "orange";
-        }
-        return { title: `${m} min`, color };
+        return null;
     }
+
+
+    const difference = (Date.now() - number) / 1000;
+
+    const hours = Math.floor(difference / 3600);
+    const minutes = difference % 3600 / 60;
+
+    
+
+    return { hours: hours, minutes: Math.floor(minutes), nextMinute: (Math.ceil(minutes) - minutes) * 60000, color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green" };    
 }
 function bufferFromString(a: string) {
     if(typeof a != "string") {
@@ -100,7 +92,7 @@ async function getWorkersForCooking(restaurantId: string, dish: string) {
                 _id: users[i]!._id
             };
             if(staff![i].prefers) {
-                for(let j of staff![i].prefers) {
+                for(let j of staff![i].prefers!) {
                     if(j.toString() == dish){
                         user.choosen = true;
                         break;
@@ -127,7 +119,7 @@ function convertDishes(dishes: any) {
     for(let i of dishes) {
         result.push({
             name: i.name,
-            time: `${i.time} min.`,
+            time: `${i.time} m.`,
             price: `$${i.price / 100}`,
             _id: i._id,
             image: i.image
@@ -172,9 +164,6 @@ async function convertFeedbacks(feedbacks: Feedback[]) {
 
 
     return { feedbacks: result, avg: (ratings / feedbacks.length).toFixed(2) };
-}
-function getImage(data: Buffer) {
-    return "data:image/jpeg;base64," + data.toString("base64");
 }
 
 

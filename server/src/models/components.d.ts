@@ -1,5 +1,19 @@
 import { ObjectId } from "mongodb";
 
+
+type Id = ObjectId | string;
+
+
+
+interface Session {
+    userId?: Id;
+    _id: Id;
+    dishes?: { _id: Id; dishId: Id; comment: string; }[];
+    type?: "order" | "table";
+    number?: number;
+    date: Date;
+}
+
 interface Component {
     name?: string;
     amount?: number; // grams
@@ -15,12 +29,15 @@ interface Cooking {
 }
 interface RestaurantSettings {
     customers: {
-        orders: boolean;
         maxDishes: number;
+        allowDistanceOrders: boolean;
         trust: 1 | 2 | 3;
+        maxCustomers: number;
+        maxPrice: "unlimited" | number;
+        minPrice: number;
     },
     work: {
-        
+        maxOrdersCooking: number;
     },
     dishes: {
         strictIngredients: boolean;
@@ -33,7 +50,7 @@ interface RestaurantSettings {
 interface Worker {
     _id: ObjectId;
     role: string;
-    prefers: ObjectId[];
+    prefers?: ObjectId[];
     joined: Date;
     settings: ManagerSettings | CookSettings | WaiterSettings
 }
@@ -64,9 +81,9 @@ interface Feedback {
 interface Order {
     userId?: ObjectId;
     table?: number;
-    dishes?: { _id: ObjectId; dishId: ObjectId; taken?: { userId: ObjectId; time: number; } }[];
+    dishes?: { _id: ObjectId; dishId: ObjectId; comment?: string; taken?: { userId: ObjectId; time: number; } }[];
     _id?: ObjectId;
-    time?: Date;
+    time?: number;
     socketId?: string;
 }
 interface WaiterOrder {
@@ -79,11 +96,12 @@ interface WaiterOrder {
 }
 interface StatisticsOrder {
     userId: ObjectId;
-    table: number;
+    type: "order" | "table";
+    number: number;
     dishes: { _id: ObjectId; dishId: ObjectId; status: number; cook?: ObjectId; waiter?: ObjectId }[];
     status: number;
     _id: ObjectId;
-    time: Date;
+    time: number;
 }
 interface ManagerSettings {
     dishes: {
@@ -109,6 +127,7 @@ interface ManagerSettings {
         blacklisting: boolean;
         statistics: boolean;
     };
+    settings: boolean;
     restaurant: {
         theme: boolean;
         logo: boolean;
@@ -135,6 +154,8 @@ export {
     WaiterOrder,
     Table,
     Worker,
+    Session,
+    Id,
     Payment,
     Order,
     Cooking,

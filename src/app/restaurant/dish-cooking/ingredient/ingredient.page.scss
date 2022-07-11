@@ -1,0 +1,24 @@
+.app {
+    .info {
+        height: 152px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        .name {
+            margin: 0 32px;
+            font-size: 20px;
+            color: var(--text-color);
+        }
+        .amount,.price {
+            margin: 0 12px;
+            font-size: 18px;
+            color: var(--gray);
+        }
+    }
+    .bottom {
+        display: flex;
+        padding: 0 32px;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

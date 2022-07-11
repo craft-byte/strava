@@ -1,0 +1,54 @@
+<div class="app">
+  <div class="header">
+    <div class="search">
+      <ion-searchbar mode="ios" (ionInput)="find($event)"></ion-searchbar>
+      <button class="orange-button">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="ui.showQrCodes" class="qr-codes">
+    <div class="title">
+      Qr codes
+    </div>
+    <div class="list">
+      
+    </div>
+  </div>
+  <!-- <div *ngIf="ui.showBest" class="best">
+    <div class="title">
+      Best customers
+    </div>
+    <div class="list">
+      
+    </div>
+  </div> -->
+  <div *ngIf="ui.showList" class="list">
+    <div class="example grid">
+      <div class="avatar"></div>
+      <div class="name">Name</div>
+      <div class="total">Total spendings</div>
+      <div class="last-visit">Last visit</div>
+      <div class="buttons"></div>
+    </div>
+    <div *ngFor="let i of customers" (click)="user(i._id)" class="customer grid">
+      <div class="avatar">
+        <img [src]="i.avatar" alt="">
+      </div>
+      <div class="name">
+        <p [ngClass]="{red: i.blacklisted}">{{ i.name }}</p>
+      </div>
+      <div class="total">
+        ${{i.total}}
+      </div>
+      <div class="visit">
+        {{ i.visit }}
+      </div>
+      <div class="buttons" (click)="$event.stopPropagation()">
+        <button (click)="more($event, i._id, i.blacklisted)">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

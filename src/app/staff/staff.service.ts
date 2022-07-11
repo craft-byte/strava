@@ -20,10 +20,14 @@ export class StaffService implements OnInit {
 
 
   post<T>(body: any, ...path: string[]) {
-    return this.http.post<T>(this.url + path.join("/"), body).toPromise();
+    return this.http.post<T>(this.url + this.restaurantId + "/" + path.join("/"), body).toPromise();
   }
   get<T>(...path: string[]) {
-    return this.http.get<T>(this.url + path.join("/")).toPromise();
+    return this.http.get<T>(this.url + this.restaurantId + "/" + path.join("/")).toPromise();
+  }
+
+  init(restaurantId: string) {
+    this.restaurantId = restaurantId;
   }
 
   ngOnInit(): void {

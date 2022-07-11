@@ -15,8 +15,6 @@ router.get("/init", async (req ,res) => {
         return res.sendStatus(404);
     }
 
-
-
     res.send({
         restaurant,
         ...await convertDishes(restaurantId)

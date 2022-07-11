@@ -2,40 +2,65 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LoginGuard } from './login.guard';
-import { RestaurantGuard } from './restaurant.guard';
+import { LoggedGuard } from './guards/logged.guard';
+import { RestaurantGuard } from './guards/restaurant.guard';
+import { LoginGuard } from './guards/login.guard';
+import { loadavg } from 'os';
+import { StaffGuard } from './guards/staff.guard';
 
 
 
 const user: Routes = [
   {
-    path: 'user-create',
-    loadChildren: () => import('./user/user-create/user-create.module').then( m => m.UserCreatePageModule)
-  },
-  {
     path: 'user/info',
     loadChildren: () => import('./user/user-info/user-info.module').then( m => m.UserInfoPageModule),
-    canActivate: [LoginGuard],
+    canActivate: [LoggedGuard],
     runGuardsAndResolvers: "always",
   },
   {
-    path: "login",
-    loadChildren: () => import("./user/login/login.module").then(m => m.LoginPageModule)
+    path: "user/name/:type",
+    loadChildren: () => import("./user/registration/name/name.module").then(m => m.NamePageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: 'user/email',
+    loadChildren: () => import('./user/registration/email-setup/email-setup.module').then( m => m.EmailSetupPageModule),
+    canActivate: [LoggedGuard]
+  },
+  {
+    path: "user/avatar/:type",
+    loadChildren: () => import("./user/registration/avatar/avatar.module").then(m => m.AvatarPageModule),
+    canActivate: [LoggedGuard],
   },
   {
     path: 'user/settings',
     loadChildren: () => import('./user/settings/settings.module').then( m => m.SettingsPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: "user/account",
+    loadChildren: () => import("./user/account/account.module").then( m => m.AccountPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: "login",
+    loadChildren: () => import("./user/login/login.module").then(m => m.LoginPageModule),
     canActivate: [LoginGuard],
   },
   {
-    path: 'add-restaurant',
-    loadChildren: () => import('./user/add-restaurant/add-restaurant.module').then( m => m.AddRestaurantPageModule),
-    canActivate: [LoginGuard]
+    path: 'register',
+    loadChildren: () => import('./user/registration/user-create/user-create.module').then( m => m.UserCreatePageModule),
+    canActivate: [LoginGuard],
   },
   {
-    path: 'email-setup',
-    loadChildren: () => import('./user/email-setup/email-setup.module').then( m => m.EmailSetupPageModule),
-    canActivate: [LoginGuard]
+    path: "add-restaurant/name",
+    loadChildren: () => import("./user/add-restaurant/name/name.module").then(m => m.NamePageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: "add-restaurant/theme/:restaurantId",
+    loadChildren: () => import("./user/add-restaurant/theme/theme.module").then(m => m.ThemePageModule),
+    canActivate: [LoggedGuard],
   },
 ];
 
@@ -44,22 +69,23 @@ const restaurant: Routes = [
   {
     path: "restaurant/:restaurantId",
     loadChildren: () => import("./restaurant/restaurant.module").then(m => m.RestaurantPageModule),
-    canActivate: [LoginGuard, RestaurantGuard]
+    canActivate: [LoggedGuard, RestaurantGuard],
+    runGuardsAndResolvers: "always",
   },
   {
     path: "dish/:restaurantId/:mode",
     loadChildren: () => import("./restaurant/dish/dish.module").then(m => m.DishPageModule),
-    canActivate: [LoginGuard, RestaurantGuard]
+    canActivate: [LoggedGuard, RestaurantGuard]
   },
   {
     path: "dish/:restaurantId/:mode/:dishId",
     loadChildren: () => import("./restaurant/dish/dish.module").then(m => m.DishPageModule),
-    canActivate: [LoginGuard, RestaurantGuard]
+    canActivate: [LoggedGuard, RestaurantGuard]
   },
   {
     path: "cooking/:restaurantId/:dishId",
     loadChildren: () => import("./restaurant/dish-cooking/dish-cooking.module").then(m => m.DishCookingPageModule),
-    canActivate: [LoginGuard, RestaurantGuard],
+    canActivate: [LoggedGuard, RestaurantGuard],
   },
 ];
 
@@ -68,17 +94,17 @@ const staff: Routes = [
   {
     path: "staff/:restaurantId/dashboard",
     loadChildren: () => import("./staff/dashboard/dashboard.module").then(m => m.DashboardPageModule),
-    canActivate: [LoginGuard]
+    canActivate: [LoggedGuard, StaffGuard]
   },
   {
     path: "staff/:restaurantId/kitchen",
-    loadChildren: () => import("./staff/kitchen/kitchen/kitchen.module").then(m => m.KitchenPageModule)
-    , canActivate: [LoginGuard]
+    loadChildren: () => import("./staff/kitchen/main/main.module").then(m => m.MainPageModule),
+    canActivate: [LoggedGuard, StaffGuard],
   },
   {
     path: "staff/:restaurantId/waiter",
     loadChildren: () => import("./staff/waiter/waiter/waiter.module").then(m => m.WaiterPageModule),
-    canActivate: [LoginGuard]
+    canActivate: [LoggedGuard, StaffGuard],
   }
 ];
 
@@ -98,6 +124,22 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./staff/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+  },
+  {
+    path: 'theme',
+    loadChildren: () => import('./user/add-restaurant/theme/theme.module').then( m => m.ThemePageModule)
+  },
+  {
+    path: 'account',
+    loadChildren: () => import('./user/account/account.module').then( m => m.AccountPageModule)
+  },
+  {
+    path: 'name',
+    loadChildren: () => import('./user/registration/name/name.module').then( m => m.NamePageModule)
+  },
+  {
+    path: 'avatar',
+    loadChildren: () => import('./user/registration/avatar/avatar.module').then( m => m.AvatarPageModule)
   },
 ];
   

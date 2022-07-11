@@ -30,9 +30,9 @@
                         border-bottom: 2px solid var(--purple);
                     }
                 }
-                &.blacklist {
+                &.customers {
                     &.active {
-                        border-bottom: 2px solid var(--black);
+                        border-bottom: 2px solid var(--green);
                     }
                 }
                 &.orders.active {

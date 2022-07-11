@@ -31,7 +31,7 @@ export class UserService {
 
 
   createAccount(data: any) {
-    return this.http.post<{ acknowledged: boolean; user: { username: string; restaurants: string[]; works: string[]; invitations: string[] } }>(`${this.url}/create`, data).toPromise();
+    return this.http.post<{ acknowledged: boolean; error: string; user: { username: string; restaurants: string[]; works: string[]; invitations: string[] } }>(`${this.url}/create`, data).toPromise();
   }
   addRestaurant(restaurant: any) {
     return this.http.post<{ error: "none" | "wrong"; insertedId: string; }>(`${this.url}/addRestaurant`, { restaurant }).toPromise();

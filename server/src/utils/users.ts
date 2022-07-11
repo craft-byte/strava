@@ -106,5 +106,5 @@ export {
     byUsername,
     addUser,
     getUserPromise,
-    aggregateUser
+    aggregateUser,
 }

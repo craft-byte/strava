@@ -1,0 +1,76 @@
+<ion-content>
+  <div class="app">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">{{ ui.name }} theme</h2>
+      </div>
+      <div class="body">
+        <div class="colors">
+          <div [ngClass]="{ active: color == 'red' }" (click)="color = 'red'" class="red">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'orange' }" (click)="color = 'orange'" class="orange">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'purple' }" (click)="color = 'purple'" class="purple">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'green' }" (click)="color = 'green'" class="green">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'brown' }" (click)="color = 'brown'" class="brown">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'blue' }" (click)="color = 'blue'" class="blue">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'pink' }" (click)="color = 'pink'" class="pink">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'black' }" (click)="color = 'black'" class="black">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'gray' }" (click)="color = 'gray'" class="gray">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'sea' }" (click)="color = 'sea'" class="sea">
+            <div></div>
+          </div>
+          <div [ngClass]="{ active: color == 'white' }" (click)="color = 'white'" class="white">
+            <div></div>
+          </div>
+        </div>
+        <div class="message">
+          {{ ui.message }}
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="back" (click)="exit()">
+          Skip
+        </button>
+        <button id="next" (click)="submit()">
+          Next
+        </button>
+      </div>
+    </div>
+    <div class="footer">
+      <!-- <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</ion-content>

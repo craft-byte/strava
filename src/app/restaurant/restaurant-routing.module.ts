@@ -27,6 +27,14 @@ const routes: Routes = [
         loadChildren: () => import('./dishes-page/full-dish/full-dish.module').then( m => m.FullDishPageModule),
         canActivate: [FullDishGuard],
       },
+      {
+        path: 'customer/:userId',
+        loadChildren: () => import('./customer/customer.module').then( m => m.CustomerPageModule)
+      },
+      {
+        path: 'settings',
+        loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
+      },
     ]
   },
 ];

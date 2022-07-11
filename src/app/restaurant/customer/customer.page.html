@@ -1,0 +1,36 @@
+<div class="app">
+  <div class="header">
+    <div class="back">
+      <button></button>
+    </div>
+    <div class="buttons">
+      <button class="red-button">Add to blacklist</button>
+    </div>
+  </div>
+  <div class="user">
+    <div class="avatar">
+      <img [src]="image" alt="">
+    </div>
+    <div class="details">
+      <div class="name">
+        {{ user.name }}
+      </div>
+      <div class="username">
+        {{ user.username }}
+      </div>
+    </div>
+  </div>
+  <div class="customer">
+    <div class="top">
+      <div class="visits">
+        
+      </div>
+      <div class="last">
+        {{ details.visited }}
+      </div>
+      <div class="total">
+        ${{ details.total }}
+      </div>
+    </div>
+  </div>
+</div>

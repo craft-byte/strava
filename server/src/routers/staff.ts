@@ -9,10 +9,10 @@ import { WaiterRouter } from "./staff/waiter/waiter";
 const router = Router();
 
 
-router.use("/kitchen/:restaurantId", logged, allowed("cook"), KitchenRouter);
-router.use("/waiter/:restaurantId", logged, allowed("waiter"), WaiterRouter);
+router.use("/:restaurantId/kitchen", logged, allowed("cook"), KitchenRouter);
+router.use("/:restaurantId/waiter", logged, allowed("waiter"), WaiterRouter);
 
-router.get("/dashboard/:restaurantId", logged, allowed("staff"), async (req, res) => {
+router.get("/:restaurantId/dashboard", logged, allowed("staff"), async (req, res) => {
 
     const { restaurantId } = req.params;
 

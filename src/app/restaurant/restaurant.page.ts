@@ -24,10 +24,13 @@ export class RestaurantPage implements OnInit, OnDestroy {
     private service: RestaurantService,
     private popoverCtrl: PopoverController,
     private router: Router,
-  ) { };
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  };
 
-  async more(ev: any) {
+  async navigation(ev: any) {
     this.navClass = "active";
+
     const popover = await this.popoverCtrl.create({
       event: ev,
       component: NavigationComponent,
@@ -37,9 +40,13 @@ export class RestaurantPage implements OnInit, OnDestroy {
 
     await popover.present();
 
-    const { role } = await popover.onDidDismiss();
+    const { role, data } = await popover.onDidDismiss();
 
     this.navClass = "";
+
+    if(data) {
+      return this.router.navigate(["restaurant", data], { replaceUrl: true });
+    }
 
     if(role == "1") {
       this.router.navigate(["user/info"], { replaceUrl: true });

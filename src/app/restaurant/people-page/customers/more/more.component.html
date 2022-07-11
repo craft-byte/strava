@@ -1,0 +1,11 @@
+<div class="app">
+  <div (click)="go('more')" class="link m">
+    More
+  </div>
+  <div (click)="go('blacklist')" *ngIf="!isBlacklisted" class="link b">
+    Add to blacklist
+  </div>
+  <div (click)="go('unblacklist')" *ngIf="isBlacklisted" class="link u">
+    Remove from blacklist
+  </div>
+</div>

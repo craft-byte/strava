@@ -1,0 +1,26 @@
+.app {
+    width: 324px;
+    .link {
+        width: 100%;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        padding-left: 12px;
+        cursor: pointer;
+        font-size: 18px;
+        &:hover {
+            background-color: rgb(245, 245, 245);
+        }
+    }
+    .b {
+        color: var(--red);
+    }
+    .m {
+        color: var(--blue);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .u {
+        color: var(--green);
+        font-weight: 550;
+    }
+}

@@ -12,6 +12,10 @@ const logger = {
 }
 
 function makePassword(password: string) {
+    if(password.length < 8) {
+        return null;
+    }
+
     const salt = randomBytes(32).toString("hex");
 
     const hash = scryptSync(password, salt, 64).toString("hex");
@@ -41,7 +45,7 @@ function id(str?: string | ObjectId) {
     }
     return new ObjectId();
 }
-function getDate(d: Date) {
+function getDate(d: Date | number) {
     if(!d) {
         return "Invalid date";
     }
@@ -78,7 +82,7 @@ function log(status: string, ...ar: (string | ObjectId | number | boolean | unde
 
 async function sendEmail(email: string, type: "verification", user: string) {
     if(!verifyEmail(email)) {
-        return { error: "email" };
+        return 1;
     }
 
     const options: any = {
@@ -87,7 +91,10 @@ async function sendEmail(email: string, type: "verification", user: string) {
     };
 
     if(type == "verification") {
-        const code = Math.floor(Math.random() * 1000000);
+        let code = Math.floor(Math.random() * 1000000).toString();
+        if(code.length == 5) {
+            code += "6";
+        }
         options.subject = "Email Address Verification";
         options.html =
         `
@@ -107,7 +114,7 @@ async function sendEmail(email: string, type: "verification", user: string) {
     try {
         const result = await Email.sendMail(options);
         log('success', "accepted:", result.accepted.toString(), "response:", result.response, "message id:", result.messageId);
-        return { error: "none" };
+        return 2;
     } catch (err) {
         console.error(err);
         throw new Error("sending email");
@@ -117,10 +124,6 @@ async function sendEmail(email: string, type: "verification", user: string) {
 function verifyEmail(email: string) {
     const format = /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
     return format.test(email);
-}
-
-const get = {
-
 }
 
 export {
