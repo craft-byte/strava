@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -9,15 +9,15 @@ import { ModalController } from '@ionic/angular';
 })
 export class AddModalPage implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(
     private modalCtrl: ModalController,
   ) { 
-    this.form = new FormGroup({
-      name: new FormControl("", Validators.required),
-      price: new FormControl(null, Validators.required),
-      amount: new FormControl(null),
+    this.form = new UntypedFormGroup({
+      name: new UntypedFormControl("", Validators.required),
+      price: new UntypedFormControl(null, Validators.required),
+      amount: new UntypedFormControl(null),
     })
   };
 

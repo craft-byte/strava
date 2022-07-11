@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
 import { categories, general, strict } from 'src/assets/consts';
@@ -32,7 +32,7 @@ export class DishPage implements OnInit {
 
   restaurant: Restaurant;
   dish: ConvertedDish;
-  form: FormGroup;
+  form: UntypedFormGroup;
   mode: "edit" | "add";
   resolution: number = 1;
   imageClass: string = "r1";
@@ -187,14 +187,14 @@ export class DishPage implements OnInit {
       return;
     }
     if(this.mode == "add") {
-      this.form = new FormGroup({
-        name: new FormControl("", Validators.required),
-        price: new FormControl(null, Validators.required),
-        time: new FormControl(null, Validators.required),
-        description: new FormControl(""),
-        strict: new FormControl(null),
-        categories: new FormControl(null),
-        general: new FormControl(null, Validators.required)
+      this.form = new UntypedFormGroup({
+        name: new UntypedFormControl("", Validators.required),
+        price: new UntypedFormControl(null, Validators.required),
+        time: new UntypedFormControl(null, Validators.required),
+        description: new UntypedFormControl(""),
+        strict: new UntypedFormControl(null),
+        categories: new UntypedFormControl(null),
+        general: new UntypedFormControl(null, Validators.required)
       });
     } else {
       const dishId = this.route.snapshot.params["dishId"] as any;
@@ -208,14 +208,14 @@ export class DishPage implements OnInit {
       } else {
         this.imageClass = "r3";
       }
-      this.form = new FormGroup({
-        name: new FormControl(this.dish.name, Validators.required),
-        price: new FormControl(this.dish.price, Validators.required),
-        time: new FormControl(this.dish.time, Validators.required),
-        description: new FormControl(this.dish.description),
-        strict: new FormControl(this.dish.strict),
-        categories: new FormControl(this.dish.categories),
-        general: new FormControl(this.dish.general, Validators.required)
+      this.form = new UntypedFormGroup({
+        name: new UntypedFormControl(this.dish.name, Validators.required),
+        price: new UntypedFormControl(this.dish.price, Validators.required),
+        time: new UntypedFormControl(this.dish.time, Validators.required),
+        description: new UntypedFormControl(this.dish.description),
+        strict: new UntypedFormControl(this.dish.strict),
+        categories: new UntypedFormControl(this.dish.categories),
+        general: new UntypedFormControl(this.dish.general, Validators.required)
       });
     }
   }
