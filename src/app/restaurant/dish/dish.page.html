@@ -13,9 +13,9 @@
     </div>
   </div>
   <div class="buttons">
-    <button class="orange-button" [disabled]="ui.disableAdd"  (click)="add(false)" *ngIf="mode == 'add'">Save and add more</button>
-    <button class="white-button"  [disabled]="ui.disableAdd"  (click)="add(true)" *ngIf="mode == 'add'">Add</button>
-    <button class="orange-button" [disabled]="ui.disableSave" (click)="save()" *ngIf="mode == 'edit'">Save</button>
+    <button id="add-continue" class="orange-button" [disabled]="ui.disableAdd"  (click)="add(false)" *ngIf="mode == 'add'">Save and add more</button>
+    <button id="add" class="white-button"  [disabled]="ui.disableAdd"  (click)="add(true)" *ngIf="mode == 'add'">Add</button>
+    <button id="save" class="orange-button" [disabled]="ui.disableSave" (click)="save()" *ngIf="mode == 'edit'">Save</button>
   </div>
 </div>
 
@@ -34,17 +34,17 @@
         <div class="np">
           <ion-item>
             <ion-label position="floating">Name</ion-label>
-            <ion-input formControlName="name"></ion-input>
+            <ion-input id="name" formControlName="name"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Price $</ion-label>
-            <ion-input formControlName="price" type="number"></ion-input>
+            <ion-input id="price" formControlName="price" type="number"></ion-input>
           </ion-item>
         </div>
         <div class="t">
           <ion-item>
             <ion-label position="floating">Time minutes</ion-label>
-            <ion-input formControlName="time" type="number"></ion-input>
+            <ion-input id="time" formControlName="time" type="number"></ion-input>
           </ion-item>
           <div class="link">
             <a class="dark-link" routerLink="/link">Help?</a>
@@ -52,7 +52,7 @@
         </div>
         <ion-item>
           <ion-label position="floating">Description <small>optional</small></ion-label>
-          <ion-textarea cols="50" rows="10" formControlName="description"></ion-textarea>
+          <ion-textarea id="description" cols="50" rows="10" formControlName="description"></ion-textarea>
         </ion-item>
       </div>
       <div class="categories">
@@ -61,20 +61,20 @@
         </div>
         <ion-item>
           <ion-label>Shown to client</ion-label>
-          <ion-select value="brown" formControlName="general" mode="ios" okText="Submit" cancelText="Close">
-            <ion-select-option *ngFor="let i of general" [value]="i.value">{{ i.title }}</ion-select-option>
+          <ion-select id="general" value="brown" formControlName="general" mode="ios" okText="Submit" cancelText="Close">
+            <ion-select-option [class]="i.value" *ngFor="let i of general" [value]="i.value">{{ i.title }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
           <ion-label>Categories</ion-label>
-          <ion-select value="brown" formControlName="categories" mode="ios" okText="Submit" multiple="true" cancelText="Close">
-            <ion-select-option *ngFor="let i of categories" [value]="i.value">{{ i.title }}</ion-select-option>
+          <ion-select id="categories" formControlName="categories" mode="ios" okText="Submit" multiple="true" cancelText="Close">
+            <ion-select-option [class]="i.value" *ngFor="let i of categories" [value]="i.value">{{ i.title }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
           <ion-label>More categories</ion-label>
-          <ion-select value="brown" formControlName="strict" mode="ios" okText="Submit" multiple="true" cancelText="Close">
-            <ion-select-option *ngFor="let i of strict" [value]="i.value">{{ i.title }}</ion-select-option>
+          <ion-select id="strict" formControlName="strict" mode="ios" okText="Submit" multiple="true" cancelText="Close">
+            <ion-select-option [class]="i.value" *ngFor="let i of strict" [value]="i.value">{{ i.title }}</ion-select-option>
           </ion-select>
         </ion-item>
       </div>

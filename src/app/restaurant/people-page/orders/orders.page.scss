@@ -15,120 +15,83 @@
         }
     }
     .list {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
         padding: 8px;
-        gap: 16px;
+        .example {
+            display: grid;
+            grid-template-columns: 5% 25% 20% 20% 20% 10%;
+            height: 46px;
+            border-bottom: 1px solid var(--border-color);
+            div {
+                display: flex;
+                align-items: center;
+                color: var(--text-color);
+            }
+            .total {
+                justify-content: center;
+            }
+        }
         .order {
-            position: relative;
-            height: 248px;
-            -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-            -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-            box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-            border-radius: 12px;
-            .top {
-                height: 48px;
-                width: 100%;
-                position: static;
-                border-bottom: 1px solid var(--border-color);
-
-                display: grid;
-                grid-template-columns: 20% 40% 40%;
-                .avatar {
-                    height: 48px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    img {
-                        width: 38px;
-                        height: 38px;
-                        border-radius: 100%;
-                    }
+            height: 52px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 5% 25% 20% 20% 20% 10%;
+            border-bottom: 1px solid var(--border-color);
+            .avatar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                img {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 100%;
                 }
-                .name {
-                    display: flex;
-                    align-items: center;
-                    padding-left: 12px;
-                    &.red {
-                        color: var(--red);
-                    }
-                    p {
-                        font-size: 17px;
-                        cursor: pointer;
-                        &:hover {
-                            color: var(--orange);
-                        }
-                    }
-                }
-                .status {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    p {
-                        font-size: 18px;
-                        font-weight: 600;
-                        color: var(--green);
-                    }
-                    .red {
-                        color: var(--red);
-                    }
-                    .green {
-                        color: var(--green);
-                    }
-                    .purple {
-                        color: var(--purple);
-                    }
-                }
+            }
+            .name {
+                display: flex;
+                align-items: center;
             }
             .dishes {
-                .dish {
-                    width: 100%;
+                display: flex;
+                align-items: center;
+                font-size: 18px;
+                color: var(--text-color);
+            }
+            .status-box {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .status {
+                    width: 108px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 22px;
+                    border-radius: 6px;
+                }
+            }
+            .total {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: var(--text-color);
+            }
+            .button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                button {
+                    background: none;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 32px;
                     height: 32px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 0 12px;
-                    border-bottom: 1px solid rgb(248, 248, 248);
-                    cursor: pointer;
-                    &:hover {
-                        background-color: rgb(245, 245, 245);
-                    }
-                    .name {
-                        font-size: 18px;
-                    }
-                    .price {
-                        color: var(--text-color);
+                    ion-icon {
+                        position: absolute;
+                        font-size: 24px;
                     }
                 }
             }
-            .bottom {
-                width: 100%;
-                height: 46px;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                display: grid;
-                grid-template-columns: 60% 40%;
-                border-top: 2px solid var(--border-color);
-                .more {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    button {
-                        margin: 0;
-                    }
-                }
-                .total {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    font-size: 18px;
-                    color: var(--green);
-                    p {
-                        margin: 0;
-                    }
-                }
-            }
-        }   
+        }
     }
 }

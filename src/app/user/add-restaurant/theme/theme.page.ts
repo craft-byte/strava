@@ -10,7 +10,7 @@ import { UserService } from '../../user.service';
 })
 export class ThemePage implements OnInit {
 
-  color: "string";
+  color: string;
   restaurantId: string;
 
   ui = {
@@ -57,6 +57,7 @@ export class ThemePage implements OnInit {
     }
 
     this.ui.name = restaurant.name;
+    this.color = restaurant.theme;
   }
 
 }

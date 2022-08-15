@@ -1,5 +1,5 @@
 import * as p from "puppeteer";
-import { config } from "../../config";
+import { config } from "../../../config";
 
 const [ _a, _b, username, password ] = process.argv;
 

@@ -3,6 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
     height: 42px;
     padding: 0 412px;
     .restaurant {
@@ -11,6 +12,7 @@
         color: var(--title-color);
         display: flex;
         justify-content: center;
+        align-items: center;
         cursor: pointer;
     
         .button {
@@ -38,8 +40,8 @@
     .links {
         display: flex;
         justify-content: space-between;
+        gap: 12px;
         align-items: center;
-        width: 400px;
         .link {
             width: 124px;
             height: 28px;
@@ -78,4 +80,136 @@
 }
 .app {
     padding: 12px 412px;
+}
+
+
+@media (min-width: 1500px) and (max-width: 1900px) {
+    .app {
+        padding: 24px 252px;
+    }
+    .header {
+        padding: 0 252px;
+    }
+}
+@media (min-width: 1150px) and (max-width: 1499px) {
+    .app {
+        padding: 24px 108px;
+    }
+    .header {
+        padding: 0 108px;
+    }
+}
+@media (min-width: 700px) and (max-width: 1149px) {
+    .app {
+        padding: 24px 24px;
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    .header {
+        padding: 0 24px;
+        .title {
+            font-size: 20px;
+        }
+        .links {
+            gap: 6px;
+            .link {
+                width: 108px;
+            }
+            .restaurant button:hover {
+                background: transparent;
+                color: var(--text-color);
+            }
+        }
+    }
+}
+@media (min-width: 550px) and (max-width: 699px) {
+    .app {
+        padding: 24px 24px;
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    .header {
+        padding: 0 24px;
+        display: inline-block;
+        height: auto;
+        position: static;
+
+        .restaurant {
+            height: 38px;
+        }
+
+        .user {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+        }
+
+        .links {
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            padding-bottom: 12px;
+            .link {
+                height: 32px;
+            }
+        }
+    }
+}
+@media (min-width: 300px) and (max-width: 549px) {
+    .app {
+        padding: 24px 8px;
+    }
+    .header {
+        padding: 0 24px;
+        display: inline-block;
+        height: auto;
+        position: static;
+
+        .restaurant {
+            height: 38px;
+        }
+
+        .user {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+        }
+
+        .links {
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            padding-bottom: 12px;
+            .link {
+                font-size: 16px;
+                height: 32px;
+            }
+            #add-restaurant:hover {
+                color: var(--text-color);
+                background-color: transparent;
+            }
+        }
+    }
+}
+@media (min-width: 200px) and (max-width: 450px) {
+    .app {
+        padding: 24px 8px;
+        .content {
+            .left {
+                .account-registration {
+                    .title {
+                        h1 {
+                            font-size: 18px;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

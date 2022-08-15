@@ -1,9 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
 import { StaffService } from 'src/app/staff/staff.service';
 import { getImage } from 'src/functions';
 import { Dish } from 'src/models/dish';
-import { DishModalPage } from '../dish-modal/dish-modal.page';
 
 @Component({
   selector: 'app-dish',
@@ -13,42 +11,40 @@ import { DishModalPage } from '../dish-modal/dish-modal.page';
 export class DishComponent implements OnInit {
 
   image: string;
+  interval: any;
+  id: string;
 
   constructor(
-    private modalCtrl: ModalController,
     private service: StaffService
   ) { };
 
   @Input() dish: Dish;
   @Input() orderDish: any;
 
-  @Output() Emitter = new EventEmitter();
-
-  async open() {
-    const modal = await this.modalCtrl.create({
-      component: DishModalPage,
-      cssClass: "modal-width",
-      mode: "ios",
-      componentProps: {
-        name: this.dish.name,
-        type: this.orderDish.table
-      }
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onDidDismiss();
-
-    if(data) {
-      this.Emitter.emit(this.orderDish._id);
-    }
-  }
 
   async ngOnInit() {
     if(!this.dish) {
-      this.dish = await this.service.get("waiter", this.service.restaurantId, "dish", this.orderDish.dishId);
-      console.log(this.dish);
+      this.dish = await this.service.get("waiter", "dish", this.orderDish.dishId);
     }
+
+    this.id = (this.orderDish._id as string).slice(this.orderDish._id.length - 4, this.orderDish._id.length);
+
+    setTimeout(() => {
+      this.orderDish.time.minutes++;
+      if(this.orderDish.time.minutes == 60) {
+        this.orderDish.time.hours++;
+        this.orderDish.time.minutes = 0;
+      }
+      this.interval = setInterval(() => {
+        this.orderDish.time.minutes++;
+        if(this.orderDish.time.minutes == 60) {
+          this.orderDish.time.hours++;
+          this.orderDish.time.minutes = 0;
+        }
+      }, 60000);
+    }, this.orderDish.time.nextMinute);
+
+
     this.image = getImage((this.dish as any).image.binary);
   }
 

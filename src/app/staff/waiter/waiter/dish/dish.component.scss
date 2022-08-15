@@ -1,35 +1,20 @@
 .app {
     width: 324px;
     height: 248px;
-    border-radius: 12px;
+    border-radius: 8px;
     position: relative;
     -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
     -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
     box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
     cursor: pointer;
     &.red {
-        border: 2px solid var(--red);
-        .image {
-            img {
-                border-bottom: 2px solid var(--red);
-            }
-        }
+        border: 1px solid var(--red);
     }
     &.green {
-        border: 2px solid var(--green);
-        .image {
-            img {
-                border-bottom: 2px solid var(--green);
-            }
-        }
+        border: 1px solid var(--green);
     }
     &.orange {
-        border: 2px solid var(--orange);
-        .image {
-            img {
-                border-bottom: 2px solid var(--orange);
-            }
-        }
+        border: 1px solid var(--orange);
     }
     .image {
         img {
@@ -41,16 +26,23 @@
         }
     }
     .name {
+        width: 100%;
         padding-left: 4px;
         font-size: 18px;
         color: var(--title-color);
     }
-    .table {
-        padding-left: 4px;
-    }
-    .time {
-        position: absolute;
-        bottom: 2px;
-        right: 4px;
+    .bottom {
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 8px;
+        padding-right: 8px;
+        .id {
+            font-size: 18px;
+        }
+        .time {
+            
+        }
     }
 }

@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Remove restaurant</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="text">
+      To remove restaurant enter <span id="restaurant-name">{{ name }}</span> in the field below
+    </div>
+    <input [(ngModel)]="result" type="text">
+    <button (click)="submit()" class="red-button">
+      Submit
+    </button>
+  </div>
+</ion-content>

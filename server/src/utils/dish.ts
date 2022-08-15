@@ -1,58 +1,10 @@
 import { ObjectId } from "mongodb";
 import { client } from "..";
-import { db } from "../environments/server";
+import { dishesDBName } from "../environments/server";
 import { Dish } from "../models/general";
 import { id } from "./functions";
 import { Restaurant } from "./restaurant";
 
-
-async function getDish(restaurant: string | ObjectId, dishId: string | ObjectId, options?: any): Promise<Dish> {
-    let result: Dish | null = null;
-
-    try {
-        result = await getDishPromise(restaurant.toString(), { _id: id(dishId) }, options);
-    } catch (e) {
-        console.error(e);
-        throw new Error("at getDish()");
-    }
-
-    return result as Dish;
-}
-
-
-function getDishPromise(restaurant: string, search: any, options?: any): Promise<Dish | null> {
-    return client.db(db).collection(restaurant).findOne<Dish>(search, options);
-}
-
-
-async function getDishes(restaurant: string, search?: any, options?: any): Promise<Dish[]> {
-    let result = [];
-
-    try {
-        result = await client.db(db).collection(restaurant)
-            .find<Dish>(search, options).toArray();
-    } catch (e) {
-        console.error(e);
-        throw new Error("at getDishes()");
-    }
-
-    return result!;
-}
-
-
-async function postDish(restaurant: string, newDish: Dish) {
-    let result = null;
-    
-    try {
-        result = await client.db(db).collection(restaurant)
-            .insertOne(newDish);
-    } catch (e) {
-        console.error(e);
-        throw new Error("at postDish()");
-    }
-
-    return result;
-}
 
 
 async function findDishes(restaurant: string, name: string, options?: any): Promise<Dish[]> {
@@ -60,7 +12,7 @@ async function findDishes(restaurant: string, name: string, options?: any): Prom
     let names = null;
 
     try {
-        names = await client.db(db).collection(restaurant)
+        names = await client.db(dishesDBName).collection(restaurant)
             .find({}, { projection: { name: 1 } }).toArray();
     } catch (e) {
         console.error(e);
@@ -75,7 +27,7 @@ async function findDishes(restaurant: string, name: string, options?: any): Prom
 
     for (let { name: n, _id } of names) {
         if (n.substring(0, name.length).toLowerCase() === name.toLowerCase()) {
-            promises.push(getDishPromise(restaurant, { _id }, options));
+            // promises.push(getDishPromise(restaurant, { _id }, options));
         }
     }
 
@@ -98,32 +50,6 @@ async function findDishes(restaurant: string, name: string, options?: any): Prom
 }
 
 
-async function removeDish(restaurant: string, dishId: string) {
-    let result = null;
-
-    try {
-        result = await client.db(db).collection(restaurant).deleteOne({ _id: id(dishId) })
-    } catch (e) {
-        console.error(e);
-        throw new Error("at removeDish()");
-    }
-
-    return result;
-}
-
-async function updateDish(restaurant: string, dishId: string, update: any) {
-    let result = null;
-
-    try {
-        result = await client.db(db).collection(restaurant)
-            .updateOne({ _id: id(dishId) }, update);
-    } catch (e) {
-        console.error(e);
-        throw new Error("at updateDish()");
-    }
-
-    return result;
-}
 
 class DishesHashTable {
 
@@ -170,13 +96,7 @@ class DishHashTableUltra {
 
 
 export {
-    getDishes,
-    postDish,
     findDishes,
-    getDish,
-    getDishPromise,
     DishesHashTable,
     DishHashTableUltra,
-    removeDish,
-    updateDish
 }

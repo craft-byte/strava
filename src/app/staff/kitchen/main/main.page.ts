@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
 import { Dish } from 'src/models/dish';
 import { StaffService } from '../../staff.service';
@@ -44,14 +46,15 @@ export class MainPage implements OnInit, OnDestroy {
   constructor(
     private service: StaffService,
     private kitchen: KitchenService,
-    private router: Router,
+    private router: RouterService,
+    private loader: LoadService,
     private modalCtrl: ModalController,
     private main: MainService,
     private toastCtrl: ToastController,
   ) { };
 
   back() {
-    this.router.navigate(["staff", this.service.restaurantId, "dashboard"], { replaceUrl: true });
+    this.router.go(["staff", this.service.restaurantId, "dashboard"], { replaceUrl: true });
   }
 
   async onDishClick(orderId: string, orderDishId: string) {
@@ -106,6 +109,7 @@ export class MainPage implements OnInit, OnDestroy {
 
 
   async ngOnInit() {
+    await this.loader.start();
     try {
       const result: any = await this.service.get("kitchen/init");
 
@@ -152,6 +156,7 @@ export class MainPage implements OnInit, OnDestroy {
     } catch (e) {
       throw e;
     }
+    this.loader.end();
   }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

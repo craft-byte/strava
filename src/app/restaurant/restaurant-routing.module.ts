@@ -12,7 +12,11 @@ const routes: Routes = [
       {
         path: "",
         pathMatch: "full",
-        redirectTo: "dishes",
+        redirectTo: "home",
+      },
+      {
+        path: 'home',
+        loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
       },
       {
         path: "dishes",

@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { categories, general, strict } from 'src/assets/consts';
 import { getImage } from 'src/functions';
 import { Restaurant } from 'src/models/general';
+import { threadId } from 'worker_threads';
 import { RestaurantService } from '../services/restaurant.service';
 import { ImagePage } from './image/image.page';
 
@@ -52,7 +55,8 @@ export class DishPage implements OnInit {
   constructor(
     private service: RestaurantService,
     private route: ActivatedRoute,
-    private router: Router,
+    private router: RouterService,
+    private loader: LoadService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
   ) { };
@@ -61,9 +65,9 @@ export class DishPage implements OnInit {
 
   close() {
     if(this.mode == "add") {
-      this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
+      this.router.go(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
     } else {
-      this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id]);
+      this.router.go(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id]);
     }
   }
   async setImage(event: any) {
@@ -100,6 +104,7 @@ export class DishPage implements OnInit {
   async add(r: boolean) {
     this.ui.disableAdd = true;
     if(!this.form.valid) {
+      this.ui.disableAdd = false;
       (await this.toastCtrl.create({
         duration: 2000,
         message: "Fill all given fields.",
@@ -108,6 +113,8 @@ export class DishPage implements OnInit {
       }))
       return;
     }
+
+    await this.loader.start();
 
     const dish = {
       ...this.form.value,
@@ -127,7 +134,7 @@ export class DishPage implements OnInit {
         mode: "ios",
       })).present();
       if(r) {
-        this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
+        this.router.go(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
       }
     } else {
       (await this.toastCtrl.create({
@@ -137,6 +144,8 @@ export class DishPage implements OnInit {
         mode: "ios",
       })).present();
     }
+
+    this.loader.end();
   }
   async save() {
     this.ui.disableSave = true;
@@ -152,16 +161,18 @@ export class DishPage implements OnInit {
       return;
     }
 
+    await this.loader.start();
+
     const body: any = this.form.value;
 
     if(this.imageUpdated) {
       body.image = { data: this.image, resolution: this.resolution };
     }
 
-    const result: any = await this.service.patch(body, "dishes", this.dish._id);
+    const result: any = await this.service.post(body, "dishes", this.dish._id);
 
     if(result.updated) {
-      this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id], { replaceUrl: true });
+      this.router.go(["restaurant", this.service.restaurantId, "dishes", "full", this.dish._id], { replaceUrl: true });
       (await this.toastCtrl.create({
         duration: 2000,
         message: "Successfuly updated.",
@@ -177,13 +188,16 @@ export class DishPage implements OnInit {
         mode: "ios"
       })).present();
     }
+
+    this.loader.end();
   }
 
   async ngOnInit() {
+    await this.loader.start();
     this.restaurant = this.service.restaurant;
     this.mode = this.route.snapshot.params["mode"] as any;
     if(this.mode != "add" && this.mode as any != "edit") {
-      this.router.navigate(["restaurant", this.restaurant._id, "dishes", "list"], { replaceUrl: true });
+      this.router.go(["restaurant", this.restaurant._id, "dishes", "list"], { replaceUrl: true });
       return;
     }
     if(this.mode == "add") {
@@ -218,6 +232,7 @@ export class DishPage implements OnInit {
         general: new UntypedFormControl(this.dish.general, Validators.required)
       });
     }
+    this.loader.end();
   }
 
 }

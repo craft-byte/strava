@@ -3,12 +3,17 @@
     padding: 0 412px;
     border-bottom: 1px solid rgb(226, 226, 226);
     display: grid;
+    grid-template-areas: "exit name links";
     grid-template-columns: 5% 70% 25%;
+    background-color: white;
+    overflow: hidden;
 
     .name {
         display: flex;
         align-items: center;
         padding-left: 20px;
+
+        grid-area: name;
 
         p {
             margin: 0;
@@ -29,6 +34,8 @@
         justify-content: center;
         align-items: center;
 
+        grid-area: exit;
+
         #exit {
             border-radius: 8px;
             background: none;
@@ -37,12 +44,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 32px;
             color: rgb(85, 85, 85);
+
+            ion-icon {
+                font-size: 32px;
+            }
         }
     }
 
     .links {
+        grid-area: links;
         display: grid;
         grid-template-columns: 1fr;
         .link {
@@ -65,8 +76,8 @@
 
     .user-info {
         height: 256px;
-        display: grid;
-        grid-template-columns: 20% 80%;
+        display: flex;
+        // grid-template-columns: 20% 80%;
         border-bottom: 2px var(--border-color) solid;
 
         .avatar {
@@ -94,6 +105,7 @@
                 display: grid;
                 grid-template-columns: 27% 73%;
                 height: 32px;
+                background-color: white;
                 .label {
                     height: 100%;
                     padding-left: 6px;
@@ -140,4 +152,84 @@
             }
         }
     }
+}
+
+
+
+
+@media (min-width: 1500px) and (max-width: 1900px) {
+    .app {
+        padding: 24px 228px;
+    }
+    .header {
+        padding: 0 228px;
+    }
+}
+@media (min-width: 1150px) and (max-width: 1499px) {
+    .app {
+        padding: 24px 108px;
+    }
+    .header {
+        padding: 0 108px;
+    }
+}
+@media (min-width: 700px) and (max-width: 1149px) {
+    .app {
+        padding: 24px 32px;
+    }
+    .header {
+        padding: 0 32px;
+    }
+}
+@media (min-width: 550px) and (max-width: 699px) {
+    .app {
+        padding: 24px 8px;
+    }
+    .header {
+        padding: 0 8px;
+        display: grid;
+        grid-template-columns: 8% 50% 42%;
+    }
+}
+@media (min-width: 300px) and (max-width: 549px) {
+    .app {
+        padding: 24px 8px;
+
+        .user-info {
+            flex-direction: column;
+            align-items: center;
+            border-bottom: none;
+        }
+    }
+    .header {
+        position: relative;
+        padding: 8px;
+        grid-template-areas: 
+                    "name name name"
+                    "links links links";
+
+        height: auto;
+
+
+        .exit {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+        }
+        .name {
+            padding-left: 0;
+            p {
+                padding-left: 0;
+            }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 38px;
+        }
+        
+                    
+    }
+}
+@media (min-width: 200px) and (max-width: 450px) {
+    
 }

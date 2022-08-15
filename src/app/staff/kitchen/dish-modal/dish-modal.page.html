@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-button (click)="close()">Close</ion-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="ui">
       <ion-button *ngIf="!ui.taken" (click)="take()">Take</ion-button>
       <ion-button *ngIf="ui.taken" color="purple" (click)="done()">Done</ion-button>
     </ion-buttons>
@@ -68,7 +68,7 @@
             {{ taken.user.name }}
           </div>
           <div class="avatar">
-            <img [src]="cookAvatar">
+            <img [src]="cookAvatar || './../../../../assets/images/plain-avatar.jpg'">
           </div>
         </div>
         <div class="time">
@@ -87,7 +87,7 @@
           {{ user.name }}
         </div>
         <div class="avatar">
-          <img [src]="userAvatar">
+          <img [src]="userAvatar || './../../../../assets/images/plain-avatar.jpg'">
         </div>
       </div>
       <div class="order">

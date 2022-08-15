@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { allowed } from "../../middleware/restaurant";
+import { Order } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
-import { Restaurant, Stats } from "../../utils/restaurant";
+import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
 
 
@@ -19,15 +20,15 @@ interface ConvertedOrder {
     dishes: {
         name: string;
         price: number;
+        _id: ObjectId;
     }[];
     _id: any;
-    status: string;
+    status: Order["status"];
     date: string;
     total: number;
     blacklisted: boolean;
-    statusColor: "green" | "red" | "purple";
-}
-router.get("/orders", allowed("manager", "staff"), async (req, res) => {
+    statusColor: "green" | "red" | "purple" | "orange";
+} router.get("/orders", allowed("manager", "staff"), async (req, res) => {
     const { restaurantId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { blacklist: 1 } });
@@ -37,7 +38,7 @@ router.get("/orders", allowed("manager", "staff"), async (req, res) => {
     }
 
 
-    const orders = await Stats(restaurantId).getMany(6);
+    const orders = await Orders(restaurantId).history.many({ }, { limit: 12 });
 
     if(!orders || orders.length == 0) {
         return res.send(null);
@@ -62,14 +63,14 @@ router.get("/orders", allowed("manager", "staff"), async (req, res) => {
     for(let i of orders) {
         i.dishes = i.dishes.slice(0, 5);
         const one: ConvertedOrder = {
-            status: i.status == 1 ? "PROGRESS" : i.status == 2 ? "DONE" : "REMOVED",
+            status: i.status,
             _id: i._id,
-            date: getDate(i.time),
-            user: (await getUser(i.userId, { projection: { name: 1, username: 1, avatar: 1, } }))! as any,
+            date: getDate(i.ordered!),
+            user: (await getUser(i.customer, { projection: { name: 1, username: 1, avatar: 1, } }))! as any,
             dishes: [] as any,
             total: 0,
-            statusColor: i.status == 1 ? "purple" : i.status == 2 ? "green" : "red",
-            blacklisted: isBlacklisted(i.userId)
+            statusColor: i.status == "progress" ? "purple" : i.status == "done" ? "green" : i.status == "removed" ? "red" : "orange",
+            blacklisted: isBlacklisted(i.customer)
         };
         for(let j of i.dishes) {
             const dish = await dishes.get(j.dishId) as any;
@@ -79,6 +80,8 @@ router.get("/orders", allowed("manager", "staff"), async (req, res) => {
         result.push(one);
     }
 
+    console.log(result);
+
     res.send(result);
 });
 router.get("/user/:userId", allowed("manager", 'staff'), async (req, res) => {
@@ -86,11 +89,7 @@ router.get("/user/:userId", allowed("manager", 'staff'), async (req, res) => {
 
     const user = await getUser(userId, { projection: { blacklisted: 1, name: 1, username: 1, avatar: 1 } });
 
-    const userOrders: any = (await Stats(restaurantId).aggregate([
-        { $unwind: "$statistics" },
-        { $match: { "statistics.userId": id(userId) } },
-        { $group: { _id: null, orders: { $push: "$statistics" } } }
-    ]))[0];
+    const orders: any = await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { dishes: { dishId: 1 } } });
 
 
     const dishes = new DishHashTableUltra(restaurantId, { price: 1, name: 1, });
@@ -98,7 +97,7 @@ router.get("/user/:userId", allowed("manager", 'staff'), async (req, res) => {
     let total = 0;
     const fav: any = {};
     
-    for(let i of userOrders.orders) {
+    for(let i of orders) {
         for(let j of i.dishes) {
             const dish = await dishes.get(j.dishId);
             if(dish) {

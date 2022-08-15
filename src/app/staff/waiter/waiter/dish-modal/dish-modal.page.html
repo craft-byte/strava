@@ -6,11 +6,11 @@
       </ion-button>
     </ion-buttons>
     <ion-title>
-      {{ name }}
+      {{ title }}
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="done()">
-        Done
+      <ion-button (click)="served()">
+        Served
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -18,7 +18,81 @@
 
 
 <ion-content>
-  <div class="app">
-    {{ type }}
+  <div class="app" *ngIf="dish">
+    <div class="left">
+      <div class="dish">
+        <div class="image">
+          <img [class]="imageClass" [src]="dishImage || './../../../../../assets/images/no-image.jpg'" alt="">
+        </div>
+        <div class="info">
+          <div class="name">
+            {{ dish.name }}
+          </div>
+          <div class="id">
+            ID: {{ id }}
+          </div>
+          <div class="cook">
+            <img [src]="cookAvatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+            <span title="Cook: {{user.name || user.username}}">
+              <div class="name">
+                {{ cookName }}
+                <span *ngIf="userShowDots" class="dots">
+                  ...
+                </span>
+              </div>
+            </span>
+          </div>
+          <div class="time" *ngIf="timeDone">
+            Done
+            <span class="hours">
+              <span class="count">
+                {{ timeDone.hours }}
+              </span> hrs.
+            </span>
+            <span class="minutes">
+              <span class="count">
+                {{ timeDone.minutes}}
+              </span> min.
+            </span>
+            ago
+          </div>
+        </div>
+      </div>
+      <div class="comment">
+        {{ comment }}
+      </div>
+    </div>
+    <div class="right">
+      <div class="user">
+        <img [src]="userAvatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+        <span title="Ordered by: {{user.name || user.username}}">
+          <div class="name">
+            {{ userName }}
+            <span *ngIf="userShowDots" class="dots">
+              ...
+            </span>
+          </div>
+        </span>
+      </div>
+      <div class="time {{ time.color }}">
+        Ordered
+        <span class="hours">
+          <span class="count">
+            {{ time.hours }}
+          </span>
+          hrs.
+        </span>
+        <span class="minutes">
+          <span class="minutes">
+            {{ time.minutes }}
+          </span>
+          min.
+        </span>
+        ago
+      </div>
+      <div class="order">
+        <a>See full order<ion-icon name="open-outline"></ion-icon></a>
+      </div>
+    </div>
   </div>
 </ion-content>

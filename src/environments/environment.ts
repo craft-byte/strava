@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   url: "https://localhost:3000/api",
+  // url: "https://4e8d-76-71-84-216.ngrok.io/api",
   socketLink: "https://localhost:3000",
+  // socketLink: "https://4e8d-76-71-84-216.ngrok.io",
   askEmail: true,
 };
 

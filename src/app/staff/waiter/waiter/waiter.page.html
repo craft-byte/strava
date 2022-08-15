@@ -17,7 +17,7 @@
 <ion-content>
   <div class="app">
     <div class="dishes">
-      <app-dish *ngFor="let i of orderDishes" (Emitter)="done($event)" [dish]="dishes[i.dishId]" [orderDish]="i"></app-dish>
+      <app-dish *ngFor="let i of orderDishes" (click)="open(i)" [dish]="dishes[i.dishId]" [orderDish]="i"></app-dish>
     </div>
   </div>
 </ion-content>

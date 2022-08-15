@@ -1,9 +1,11 @@
-import { StringMapWithRename } from '@angular/compiler/src/compiler_facade_interface';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
 import { environment } from 'src/environments/environment';
+import { threadId } from 'worker_threads';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -31,7 +33,8 @@ export class UserCreatePage implements OnInit {
     private service: UserService,
     private main: MainService,
     private modalCtrl: ModalController,
-    private router: Router
+    private router: RouterService,
+    private loader: LoadService,
   ) { };
 
   checkPassword(event: any) {
@@ -117,7 +120,7 @@ export class UserCreatePage implements OnInit {
 
     if(result.acknowledged) {
       this.main.userInfo = result.user;
-      return this.router.navigate(["user/name/1"], { replaceUrl: true });
+      return this.router.go(["user/name/1"], { replaceUrl: true });
     } else {
       this.ui.disableButtons = false;
       if(result.error == "username") {
@@ -132,11 +135,11 @@ export class UserCreatePage implements OnInit {
   }
 
   signIn() {
-    this.router.navigate(["login"], { replaceUrl: true });
+    this.router.go(["login"], { replaceUrl: true });
   }
 
   ngOnInit() {
-    
+    this.loader.end();
   }
 
 }

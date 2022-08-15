@@ -1,0 +1,69 @@
+<ion-content>
+  <div class="app">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">Card</h2>
+      </div>
+      <div *ngIf="form" [formGroup]="form" class="body">
+        <div class="card">
+          <div class="title">
+            Credit card number
+          </div>
+          <input type="tel" formControlName="card" ccNumber id="card">
+        </div>
+        <div class="other">
+          <div class="exp">
+            <div class="title">
+              Expiry date
+            </div>
+            <div class="inputs">
+              <input id="exp-month" type="number" placeholder="M" formControlName="expMonth">
+              <span>
+                /
+              </span>
+              <input id="exp-year" type="number" placeholder="Y" formControlName="expYear">
+            </div>
+          </div>
+          <div class="cvc">
+            <div class="title">
+              CVC
+            </div>
+            <input id="cvc" formControlName="cvc" type="tel" autocomplete="off" ccCVC>
+          </div>
+        </div>
+        <div class="currencies">
+          <div (click)="curr(i)" [ngClass]="{ a: currency == i }" *ngFor="let i of currencies" class="one">
+            {{ i }}
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="back" (click)="back()">
+          Back
+        </button>
+        <button id="next" (click)="next()">
+          Next
+        </button>
+      </div>
+    </div>
+    <div class="footer">
+      <!-- <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</ion-content>

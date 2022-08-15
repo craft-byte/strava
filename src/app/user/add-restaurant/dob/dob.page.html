@@ -1,0 +1,63 @@
+<ion-content>
+  <div class="app a-page-with-box">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">Your date of birth</h2>
+      </div>
+      <div class="body" *ngIf="form" [formGroup]="form">
+        <div class="input year">
+          <div class="title">
+            Year
+          </div>
+          <!-- <input type="number" maxlength="4" > -->
+          <input formControlName="year" maxlength="4" type="number" id="year">
+        </div>
+        <div class="input month">
+          <div class="title">
+            Month
+          </div>
+          <!-- <input type="number" [(ngModel)]="month" [ngClass]="{ r: ui.month }" maxlength="2" id="month"> -->
+          <!-- <input [(ngModel)]="month" id="month" [ngClass]="{ r: ui.month }" type="text" pattern="\d*" maxlength="2"> -->
+
+          <select [ngClass]="{ r: ui.month }" formControlName="month" id="month">
+            <option [value]="ind" *ngFor="let i of months; let ind = index">{{ i }}</option>
+          </select>
+        </div>
+        <div class="input day">
+          <div class="title">
+            Day
+          </div>
+          <!-- <input type="number" [(ngModel)]="day" [ngClass]="{ r: ui.day }" maxlength="2" id="day"> -->
+          <input formControlName="day" [ngClass]="{ r: ui.day }" id="day" type="number">
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="back" (click)="back()">
+          Back
+        </button>
+        <button id="next" (click)="submit()">
+          Next
+        </button>
+      </div>
+    </div>
+    <div class="footer">
+      <!-- <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</ion-content>

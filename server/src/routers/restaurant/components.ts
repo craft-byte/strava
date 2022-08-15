@@ -76,7 +76,7 @@ router.post("/", allowed("manager", "components", "add"), async (req, res) => {
         {
             _id: id(), 
             modified: new Date(),
-            uses: [],
+            used: [],
             history: [],
             warning: 30,
             created: new Date(),
@@ -190,15 +190,14 @@ router.patch("/update/:componentId", allowed("manager", "components", "add"), as
 router.get("/:componentId", allowed("manager", "components"), async (req, res) => {
     const { restaurantId, componentId } = req.params as any;
 
-    const result = await Restaurant().aggregate<{ component: Component }>([
-        { $match: { _id: id(restaurantId) } },
+    const result = await Restaurant(restaurantId).aggregate<{ component: Component }>([
         { $unwind: "$components" },
         { $match: { "components._id": id(componentId) } },
         { $project: { component: "$components" } }
     ]);
 
     if (!result || !result[0] || !result[0].component) {
-        return res.send(null);
+        return res.sendStatus(404);
     }
 
     res.send(result[0].component);

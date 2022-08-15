@@ -1,14 +1,28 @@
-<div class="app {{ orderDish.time.color }}" (click)="open()">
+<div class="app {{ orderDish.time.color }}">
   <div class="image">
     <img [src]="image" alt="">
   </div>
   <div class="name">
     {{ dish.name }}
   </div>
-  <div class="table">
-    {{ orderDish.table }}
-  </div>
-  <div class="time">
-    Delay: {{ orderDish.time.title }}
+  <div class="bottom">
+    <div class="id">
+      {{ id }}
+    </div>
+    <div class="time">
+      Delay:
+      <span class="hours">
+        <span class="count">
+          {{ orderDish.time.hours }}
+        </span>
+        hrs.
+      </span>
+      <span class="minutes">
+        <span class="count">
+          {{ orderDish.time.minutes }}
+        </span>
+        min.
+      </span>
+    </div>
   </div>
 </div>

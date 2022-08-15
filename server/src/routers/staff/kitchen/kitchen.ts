@@ -21,19 +21,7 @@ interface Dish {
 }; router.get("/init", async (req, res) => {
     const { restaurantId } = req.params as any;
 
-    const allOrderDishes: Dish[] = (await Orders(restaurantId).aggregate([
-        { $unwind: "$orders" },
-        { $unwind: "$orders.dishes" },
-        {
-            $project: {
-                orderId: "$orders._id",
-                dishId: "$orders.dishes.dishId",
-                _id: "$orders.dishes._id",
-                time: "$orders.time",
-                taken: "$orders.dishes.taken",
-            }
-        },
-    ]) as Dish[]);
+    const orders = await Orders(restaurantId).many({}, { projection: { ordered: 1, _id: 1, dishes: { status: 1, dishId: 1, _id: 1 } } });
 
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, }, time: 1, general: 1 });
 
@@ -48,22 +36,30 @@ interface Dish {
         b: [],
     };
 
-    for (let i of allOrderDishes.sort((a, b) => a.time - b.time)) {
-        const dish = await dishes.get(i.dishId);
-
-        if (!dish) {
-            console.log("NO DISH ???????????????????????");
-            continue;
+    for (let i of orders.sort((a, b) => a.ordered! - b.ordered!)) {
+        for(let d of i.dishes) {
+            if(d.status == "cooking" || d.status == "ordered") {
+                const dish = await dishes.get(d.dishId);
+    
+                if (!dish) {
+                    console.log("NO DISH ???????????????????????");
+                    continue;
+                }
+        
+                const converted = {
+                    ...d,
+                    orderId: i._id,
+                    time: getDelay(i.ordered!)
+                };
+        
+                all[dish.general!].push(converted);
+                delayed.push(converted);
+            }
         }
-
-        const converted = {
-            ...i,
-            time: getDelay(i.time)
-        };
-
-        all[dish.general!].push(converted);
-        delayed.push(converted);
     }
+
+    console.log(all);
+    
 
     res.send({ delayed: delayed, allDishes: all, dishes: dishes.table });
 });

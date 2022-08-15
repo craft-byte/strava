@@ -1,0 +1,107 @@
+.app {
+    .box {
+        .header {
+            padding-top: 36px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            h1 {
+                margin: 0;
+                font-size: 22px;
+            }
+
+            h2 {
+                margin: 0;
+                color: var(--text-color);
+                font-size: 20px;
+                font-weight: 500;
+            }
+        }
+
+        .body {
+            padding-top: 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+
+            .input {
+                width: 128px;
+
+                .title {
+                    font-size: 18px;
+                    color: var(--text-color);
+                }
+
+                select {
+                    width: 100%;
+                    height: 42px;
+                    border-radius: 6px;
+                    border: 1px solid var(--border-color);
+                    color: var(--text-color);
+                    font-size: 18px;
+                    outline: 0;
+
+                    &:hover {
+                        border: 2px solid var(--orange);
+                    }
+                }
+
+                input {
+                    width: 100%;
+                    height: 42px;
+                    border-radius: 6px;
+                    border: 1px solid var(--border-color);
+                    color: var(--text-color);
+                    font-size: 18px;
+
+                    &:focus {
+                        border: 2px solid var(--orange);
+                        outline: 0;
+                    }
+
+                    &.ng-touched.ng-invalid {
+                        border: 1px solid var(--red);
+                    }
+
+                }
+                .r {
+                    border: 1px solid var(--red);
+                }
+            }
+            
+
+            .day,
+            .month {
+                width: 64px;
+            }
+        }
+
+        .buttons {
+            padding-top: 40px;
+            margin-bottom: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            #back {
+                color: var(--gray);
+                font-size: 17px;
+                background: none;
+            }
+
+            #next {
+                background-color: var(--orange);
+                width: 82px;
+                height: 36px;
+                border-radius: 8px;
+                font-size: 17px;
+
+                &:hover {
+                    background-color: #f5bd04;
+                }
+            }
+        }
+    }
+}

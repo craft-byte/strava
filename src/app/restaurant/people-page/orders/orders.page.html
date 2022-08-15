@@ -11,8 +11,51 @@
     </div>
   </div>
   <div *ngIf="orders && orders.length > 0" class="list">
+    <div class="example">
+      <div class="avatar">
+      </div>
+      <div class="name">
+        User name
+      </div>
+      <div class="dishes">
+        Dishes
+      </div>
+      <div class="status-box">
+        
+      </div>
+      <div class="total">
+        Total
+      </div>
+      <div class="button">
+        
+      </div>
+    </div>
     <div class="order" *ngFor="let i of orders">
-      <div class="top">
+      <div class="avatar">
+        <img [src]="i.avatar">
+      </div>
+      <div class="name">
+        <span>
+          {{ i.user.name || i.user.username }}
+        </span>
+      </div>
+      <div class="dishes">
+        <span class="count">{{ i.dishes.length }}</span>
+      </div>
+      <div class="status-box">
+        <div class="status status-badge-{{i.statusColor}}">
+          {{i.status}}
+        </div>
+      </div>
+      <div class="total">
+        ${{i.total / 100}}
+      </div>
+      <div class="button">
+        <button>
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </button>
+      </div>
+      <!-- <div class="top">
         <div class="avatar">
           <img [src]="i.avatar" alt="">
         </div>
@@ -40,7 +83,7 @@
         <div class="total">
           <p>Total: ${{ i.total / 100 }}</p>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>

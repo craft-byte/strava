@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, ModalController, PopoverController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
 import { RestaurantService } from '../../services/restaurant.service';
 import { AddModalPage } from './add-modal/add-modal.page';
 import { IngredientPopoverComponent } from './ingredient-popover/ingredient-popover.component';
@@ -27,6 +28,7 @@ export class IngredientsComponent implements OnInit {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private popoverCtrl: PopoverController,
+    private loader: LoadService,
   ) { }
 
   async add() {
@@ -137,7 +139,9 @@ export class IngredientsComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.loader.start();
     this.components = await this.service.get("components");
+    this.loader.end();
   }
 
 }

@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { IonPopover, ModalController, PopoverController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { RestaurantSettings } from 'src/models/components';
+import { threadId } from 'worker_threads';
 import { RestaurantService } from '../services/restaurant.service';
+import { ContinueRegistrationPopoverComponent } from './continue-registration-popover/continue-registration-popover.component';
+import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page';
 
 @Component({
   selector: 'app-settings',
@@ -11,17 +17,62 @@ import { RestaurantService } from '../services/restaurant.service';
 export class SettingsPage implements OnInit {
 
   settings: RestaurantSettings;
+  money: any;
+  bank: any;
   timeout: any;
   timeout2: any;
   timeout3: any;
 
 
+  continuePopover: any;
+
   constructor(
+    private router: RouterService,
+    private loader: LoadService,
     private service: RestaurantService,
     private toastCtrl: ToastController,
+    private modalCtrl: ModalController,
+    private popoverCtrl: PopoverController,
   ) { };
 
-  select(field1: string, field2: string, event: any) {    
+
+  payoutsChange() {
+    this.router.go(["add-restaurant", this.service.restaurantId, "bank-account"]);  
+  }
+
+
+  continueRegistration() {
+    this.router.go(["restaurant", this.service.restaurantId, "home"]);
+  }
+
+  // async showContinue(event: any) {
+  //   console.log("HELLO");
+  //   // if(!this.continuePopover) {
+  //     this.continuePopover = await this.popoverCtrl.create({
+  //       event,
+  //       component: ContinueRegistrationPopoverComponent,
+  //       cssClass: "continue-popover",
+  //       id: "the-id",
+  //       mode: "ios",
+  //       showBackdrop: false,
+  //       componentProps: {
+  //         restaurantId: this.service.restaurantId
+  //       }
+  //     });
+
+  //   await this.continuePopover.present();
+  // }
+
+  // removeContinue() {
+  //   console.log("LEAVE");
+  //   this.popoverCtrl.dismiss(null, null, "the-id");
+  // }
+
+  
+
+
+  async select(field1: string, field2: string, event: any) {   
+    await this.loader.start();
     const { target: { value } } = event;
 
     clearTimeout(this.timeout3);
@@ -34,10 +85,12 @@ export class SettingsPage implements OnInit {
       if(result.updated) {
         this.settings[field1][field2] = value == "true" ? true : false;
       }
+      this.loader.end();
     }, 600);
   }
 
-  check(field1: string, field2: string, event: any) {
+  async check(field1: string, field2: string, event: any) {
+    await this.loader.start();
     clearTimeout(this.timeout2);
 
     this.timeout2 = setTimeout(async () => {
@@ -48,10 +101,12 @@ export class SettingsPage implements OnInit {
       if(result.updated) {
         this.settings[field1][field2] = event.target.checked ? "unlimited" : 0;
       }
+      this.loader.end();
     }, 600);
   }
 
-  input(field1: string, field2: string, event: any) {
+  async input(field1: string, field2: string, event: any) {
+    await this.loader.start();
     const { target: { value } } = event;
 
     clearTimeout(this.timeout);
@@ -64,6 +119,8 @@ export class SettingsPage implements OnInit {
       if(result.updated) {
         this.settings[field1][field2] = value || 0;
       }
+
+      this.loader.end();
     }, 600);
   }
 
@@ -79,10 +136,87 @@ export class SettingsPage implements OnInit {
     toast.present();
   }
 
+  async cashChange(e: any) {
+    this.money.cash = e.target.checked ? "enabled" : "disabled";
+    const result: any = await this.service.post({ value: e.target.checked }, "settings/cash");
+
+    if(!result.updated) {
+      this.money.cash = e.target.checked ? "disabled" : "enabled";
+      await this.toast(false);
+    }
+  }
+
+  async cardChange(e: any) {
+    if(this.money.card == "enabled" || this.money.card == "disabled") {
+      this.money.card = e.target.checked ? "enabled" : "disabled";
+
+      const result: any = await this.service.post({ value: e.target.checked }, "settings/card");
+
+      if(!result.updated) {
+        this.money.card == e.target.checked ? "disabled" : "enabled";
+        this.toast(false);
+      }
+    }
+  }
+
+  async removeRestaurant() {
+    const modal = await this.modalCtrl.create({
+      component: RestaurantRemovePage,
+      mode: "ios",
+      componentProps: {
+        name: this.service.restaurant.name,
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    
+    if(data) {
+      await this.loader.start();
+      try {
+        const result: any = await this.service.delete("");
+        if(result.removed) {
+          this.router.go(["user/info"], { replaceUrl: true });
+          (await this.toastCtrl.create({
+            duration: 2000,
+            color: "green",
+            message: "Restaurant successfuly removed",
+            mode: "ios",
+          })).present();
+        } else {
+          (await this.toastCtrl.create({
+            duration: 2000,
+            color: "green",
+            message: "Something went wrong. Please try again later.",
+            mode: "ios",
+          })).present();
+        }
+      } catch (e) {
+        if(e == 403) {
+          this.router.go(["user/info"], { replaceUrl: true });
+          (await this.toastCtrl.create({
+            duration: 2000,
+            color: "green",
+            message: "You are not allowed to do that.",
+            mode: "ios",
+          })).present();
+        }
+      }
+      this.loader.end();
+    }
+  }
+
   async ngOnInit() {
-    this.settings = await this.service.get("settings");
+    await this.loader.start();
+    const result: any = await this.service.get("settings");
+
+    this.settings = result.settings;
+    this.money = result.money;
+    this.bank = result.payoutDestination;
 
     console.log(this.settings);
+    this.loader.end();
   }
 
 }

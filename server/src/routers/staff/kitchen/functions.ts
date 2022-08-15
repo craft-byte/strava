@@ -1,99 +1,143 @@
-import { ObjectId } from "mongodb";
 import { Subject } from "rxjs";
 import { Socket } from "socket.io";
-import { ManagerSettings, StatisticsOrder } from "../../../models/components";
+import { ManagerSettings } from "../../../models/components";
 import { KitchenResponse } from "../../../models/responses";
-import { createNotificationData } from "../../../utils/client";
-import { id, log } from "../../../utils/functions";
-import { Orders, Restaurant, Stats } from "../../../utils/restaurant";
+import { Restaurant } from "../../../utils/restaurant";
 
-class Session {
+// class Session {
 
-    userId!: ObjectId;
-    restaurantId!: ObjectId;
+//     userId!: ObjectId;
+//     restaurantId!: ObjectId;
 
-    constructor(userId: string, restaurantId: string) {
-        if (userId.length != 24 || restaurantId.length != 24) {
-            return;
-        }
-        this.userId = id(userId)!;
-        this.restaurantId = id(restaurantId)!;
-    }
+//     constructor(userId: string, restaurantId: string) {
+//         if (userId.length != 24 || restaurantId.length != 24) {
+//             return;
+//         }
+//         this.userId = id(userId)!;
+//         this.restaurantId = id(restaurantId)!;
+//     }
 
-    async takeDish(orderId: string, orderDishId: string) {
-        const update1 = await Orders(this.restaurantId).one(orderId).update({ $set: { "orders.$[order].dishes.$[dish].taken": { time: Date.now(), userId: this.userId } } }, { arrayFilters: [ { "dish._id": id(orderDishId) } ] })
+//     async takeDish(orderId: string, orderDishId: string) {
+//         const update1 = await Orders(this.restaurantId)
+//             .one(orderId)
+//             .update({
+//                 $set: {
+//                     "orders.$[order].dishes.$[dish].taken": {
+//                         time: Date.now(),
+//                         userId: this.userId
+//                     }, 
+//                     "statistics.$[order].dishes.$[dish].status": 2
+//                 },
+//             }, {
+//                 arrayFilters: [ { "dish._id": id(orderDishId) } ],
+//                 projection: { orders: 1 }
+//             });
 
-        if (update1.modifiedCount > 0) {
-            log("success", "dish has been taken");
-        } else {
-            log("failed", "taking dish");
-        }
+//         if (update1.ok > 0) {
+//             log("success", "dish has been taken");
+//         } else {
+//             log("failed", "taking dish");
+//         }
 
-        return update1.modifiedCount > 0;
-    }
+//         return update1.order.socketId;
+//     }
 
-    async doneDish({ orderDishId, orderId, dishId }: { dishId: string; orderId: string, orderDishId: string }) {
-        const update1 = await Orders(this.restaurantId).one(orderId).update({ $pull: { "orders.$[order].dishes": { _id: id(orderDishId) } } });
-        const update2 = await Stats(this.restaurantId).order(orderId).updateDishStatus(orderDishId, 2, this.userId);
+//     async doneDish({ orderDishId, orderId, dishId }: { dishId: string; orderId: string, orderDishId: string }) {
 
-        const order = await Orders(this.restaurantId).one(orderId).get();
+//         const update1 = await Orders(this.restaurantId).one(orderId).update({
+//             $pull: { "orders.$[order].dishes": { _id: id(orderDishId)! } },
+//             $set: {
+//                 "statistics.$[order].dishes.$[dish].status": 3,
+//                 "statistics.$[order].dishes.$[dish].cook": this.userId,
+//                 "statistics.$[order].dishes.$[dish].timeDone": Date.now(),
+//             },
+//         }, {
+//             arrayFilters: [ { "dish._id": id(orderDishId) } ],
+//             projection: { orders: 1, statistics: 1 }
+//         });
 
-        const update3 = await Restaurant(this.restaurantId).waiter.dishServe(orderId, orderDishId);
+//         const order = update1.order;
 
-        console.log("removing dish from order: ", update1.modifiedCount > 0);
-        console.log("updating dish status: ", update2.modifiedCount > 0);
-        console.log("adding dish to waiters: ", update3.modifiedCount > 0);
+//         for(let i in order.dishes) {
+//             if(order.dishes[+i] && order.dishes[+i]._id.equals(orderDishId)) {
+//                 order.dishes.splice(+i, 1);
+//                 break;
+//             }
+//         }
 
-        if(update1.modifiedCount == 0) {
-            log("error", "AT DONEDISH");
-            return null;
-        }
+//         const update2 = await Orders(this.restaurantId).update(
+//             { $set: {
+//                 "waiter.$[order].dishes.$[dish].show": true,
+//                 "waiter.$[order].dishes.$[dish].time": Date.now()
+//             } },
+//             { arrayFilters: [{ "order._id": id(orderId) }, { "dish._id": id(orderDishId) }] }
+//         );
+//         // .dishServe(orderId, orderDishId);
 
-        if(order.dishes?.length == 0) {
-            const statsOrder = await Stats(this.restaurantId).order(orderId).get();
-            const status = await getOrderStatus(statsOrder, true);
+//         console.log("updating dish status + removing dish from order: ", update1.ok > 0);
+//         console.log("adding dish to waiters: ", update2.modifiedCount > 0);
+
+//         if(update1.ok == 0) {
+//             log("error", "AT DONEDISH");
+//             return null;
+//         }
+
+//         console.log("ORDER DISHES LENGTH", order.dishes);
 
 
-            const update4 = await Stats(this.restaurantId).order(orderId).updateStatus(status);
-            const update5 = await Orders(this.restaurantId).one(orderId).remove();
-            console.log("updating status: ", update4.modifiedCount > 0)
-            console.log("removing order: ", update5.modifiedCount > 0);
-        }
+//         if(order.dishes?.length == 0) {
+//             const statsOrder = update1.statistics;
+//             const status = await getOrderStatus(statsOrder, true);
+
+
+//             const update3 = await Orders(this.restaurantId).one(orderId)
+//                 .update({
+//                     $set: { "statistics.$[order].status": status },
+//                     $pull: { "orders": { _id: id(orderId) } }
+//                 },
+//                 { projection: { statistics: 1 } });
+            
+//             console.log("updating status + removing order: ", update3.ok > 0);
+
+//             const update4 = await updateUser(
+//                 order.userId!,
+//                 { $push: { orders: {
+//                     $each: [{
+//                         ...update3.statistics,
+//                         restaurantId: id(this.restaurantId)
+//                     }],
+//                     $position: 0
+//                 } } }
+//             );
+
+//             console.log("user history added: ", update4.modifiedCount > 0);
+//         }
         
-        const dish = await Restaurant(this.restaurantId).dishes.one(dishId).get({ projection: { cooking: { components: 1 } } });
+//         const dish = await Restaurant(this.restaurantId).dishes.one(dishId).get({
+//             projection: {
+//                 name: 1,
+//                 cooking: { components: 1 }
+//             }
+//         });
 
-        if(dish?.cooking) {
-            for(let i of dish?.cooking?.components!) {
-                Restaurant(this.restaurantId).components.substract(i._id, i.amount);
-            }
-        }
+//         if(dish) {
+//             if(dish?.cooking) {
+//                 for(let i of dish?.cooking?.components!) {
+//                     Restaurant(this.restaurantId).components.substract(i._id, i.amount);
+//                 }
+//             }
+//             return { socketId: order.socketId, dishName: dish.name };
+//         }
+
+        
+//         return { socketId: order.socketId, dishId };
+//     }
 
 
-        return null;
-    }
+
+// }
 
 
-
-}
-
-async function getOrderStatus(order: StatisticsOrder | null, done: boolean) {
-    if(!order) {
-        return 5;
-    }
-
-    let status = 2;
-
-    for(let i of order.dishes!) {
-        if(i.status > 2) {
-            status = 2;
-            if(done) {
-                status = 32;
-            }
-        }
-    }
-
-    return status;
-}
 async function allowed(userId: string, restaurantId: string) {
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, settings: 1, _id: 1 } } });
@@ -109,45 +153,11 @@ async function allowed(userId: string, restaurantId: string) {
     return false;
 }
 
-// function sortQuantity(dishes: string[]) {
-//     const result = [] as { dishId: string; quantity: number }[];
-
-//     for(let i of dishes) {
-//         let add = true;
-//         for(let j of result) {
-//             if(i == j.dishId) {
-//                 j.quantity++;
-//                 add = false;
-//                 break;
-//             }
-//         }
-//         if(add) {
-//             result.push({ dishId: i, quantity: 1 });
-//         }
-//     }
-
-//     return {
-//         result: result,
-//         ids: (function() {
-//             const ids: ObjectId[] = [];
-
-//             for(let i of result) {
-//                 ids.push(id(i.dishId)!);
-//             }
-
-//             return ids;
-//         })()
-//     };
-// }
-
 
 function KitchenSocket(socket: Socket) {
     const subs = new Subject<KitchenResponse>();
 
-    let session: Session;
-
-
-    // new dishes is in client socket
+    // let session: Session;
 
 
     socket.on("kitchenConnect", ({ restaurantId, userId }: { restaurantId: string; userId: string; }) => {
@@ -156,72 +166,84 @@ function KitchenSocket(socket: Socket) {
             return null;
         }
 
-        session = new Session(userId, restaurantId);
-
         socket.join(`${restaurantId}/kitchen`);
     });
 
-    socket.on("kitchen/dish/take", async data => {
-        if (!session) {
-            return;
-        }
+    // socket.on("kitchen/dish/take", async data => {
+    //     if (!session) {
+    //         return;
+    //     }
 
-        const { orderId, orderDishId } = data;
+    //     const { orderId, orderDishId } = data;
 
-        const result = await session.takeDish(orderId, orderDishId);
+    //     const socketId = await session.takeDish(orderId, orderDishId);
 
-        if (result) {
-            subs.next({
-                type: "kitchen/dish/take",
-                data: {
-                    orderDishId,
-                    orderId
-                },
-                send: [`${session.restaurantId.toString()}/restaurant`]
-            });
-        } else {
-            throw "kitchen/dish/take error";
-        }
-    });
+    //     subs.next({
+    //         type: "kitchen/dish/take",
+    //         data: {
+    //             orderDishId,
+    //             orderId
+    //         },
+    //         send: [`${session.restaurantId.toString()}/kitchen`],
+    //     });
+    //     console.log(socketId);
+    //     if (socketId) {
+    //         subs.next({
+    //             type: "customer/dish/status",
+    //             event: "client",
+    //             data: {
+    //                 orderDishId,
+    //                 orderId,
+    //                 status: 2,
+    //             },
+    //             send: [socketId],
+    //         });
+    //     } else {
+    //         throw "kitchen/dish/take error";
+    //     }
+    // });
 
-    socket.on("kitchen/dish/done", async data => {
-        if(!session) {
-            return;
-        }
+    // socket.on("kitchen/dish/done", async data => {
+    //     if(!session) {
+    //         return;
+    //     }
 
-        const { orderDishId, orderId } = data;
+    //     const { orderDishId, orderId, dishId } = data;
 
-        session.doneDish(data);
+    //     const result = await session.doneDish(data);
 
-        const notification = await createNotificationData(orderDishId, orderId, session.restaurantId);
+    //     subs.next({
+    //         type: "kitchen/dish/done",
+    //         data: {
+    //             orderId,
+    //             orderDishId
+    //         },
+    //         send: [`${session.restaurantId.toString()}/kitchen`],
+    //     });
+    //     subs.next({
+    //         type: "waiter/dish/new",
+    //         event: "waiter",
+    //         data: {
+    //             orderId,
+    //             _id: orderDishId,
+    //             time: { hours: 0, minutes: 0, nextMinute: 59900, color: 'green' },
+    //             dishId,
+    //         },
+    //         send: [`${session.restaurantId.toString()}/waiter`],
+    //     });
 
-        if(notification) {
-            subs.next({
-                type: "customer/notification",
-                event: "client",
-                ...notification,
-            });
-        }
-        subs.next({
-            type: "kitchen/dish/done",
-            data: {
-                orderId,
-                orderDishId
-            },
-            send: [`${session.restaurantId.toString()}/restaurant`],
-        });
-        // subs.next({
-        //     type: "waiter/dish/new",
-        //     event: "waiter",
-        //     data: {
-
-        //     },
-        //     send: [`${session.restaurantId.toString()}/restaurant`]
-        // });
-    });
+    //     if(result && result.socketId) {
+    //         subs.next({
+    //             type: "customer/dish/status",
+    //             event: `client`,
+    //             data: { dishName: result.dishName, orderId, orderDishId, status: 3 },
+    //             send: [result.socketId!]
+    //         });
+    //     }
+    // });
 
     socket.on("disconnect", () => {
-        session = null!;
+        
     });
 
     return subs;

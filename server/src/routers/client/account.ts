@@ -36,7 +36,7 @@ router.post("/update/avatar", async (req, res) => {
             req.user as string,
             {
                 $set: {
-                    avatar: image
+                    avatar: { binary: image as any, modified: new Date() }
                 }
             }
         );

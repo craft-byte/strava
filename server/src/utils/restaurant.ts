@@ -1,10 +1,10 @@
-import { AggregateOptions, AnyBulkWriteOperation, Filter, FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
+import { AggregateOptions, AnyBulkWriteOperation, Filter, FindOneAndUpdateOptions, FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
 import { client } from "..";
-import { db } from "../environments/server";
-import { Component, Order, Session, StatisticsOrder, WaiterOrder } from "../models/components";
-import { Dish, Restaurant, Work } from "../models/general";
-import { id, log } from "./functions";
-import { getUser, updateUser } from "./users";
+import { dishesDBName, historyDBName, mainDBName, ordersDBName } from "../environments/server";
+import { Component, Id } from "../models/components";
+import { Dish, Restaurant, Order } from "../models/general";
+import { id } from "./functions";
+import { updateUser } from "./users";
 
 
 
@@ -19,7 +19,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         }
 
         for (let i of restaurant.staff!) {
-          const result = await updateUser(i._id, { $pull: { works: id(restaurantId) } });
+          const result = await updateUser(i._id, { $pull: { works: id(restaurantId)! } });
 
           console.log("user works deleted: ", result.modifiedCount > 0);
         }
@@ -30,24 +30,26 @@ function Restaurant(restaurantId?: string | ObjectId) {
           console.log("user invitation deleted: ", result.modifiedCount > 0);
         }
 
-        const result1 = await updateUser(restaurant.owner!, { $pull: { restaurants: id(restaurantId) } });
+        const result1 = await updateUser(restaurant.owner!, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
 
         console.log("owner restaurant removed: ", result1.modifiedCount > 0);
 
 
-        const result2 = await client.db(db).collection("restaurants").deleteOne({ _id: id(restaurantId) });
+        const result2 = await client.db(mainDBName).collection("restaurants").deleteOne({ _id: id(restaurantId) });
 
         console.log("restaurant deleted: ", result2.deletedCount > 0);
 
-        const result3 = await client.db(db).collection("work").deleteOne({ restaurant: id(restaurantId) });
+        
+        
+        const result3 = await client.db(ordersDBName).dropCollection(restaurantId!.toString());
+        const result4 = await client.db(dishesDBName).dropCollection(restaurantId!.toString());
+        const result5 = await client.db(historyDBName).dropCollection(restaurantId!.toString());
+        
+        console.log("orders collection removed: ", result3);
+        console.log("dishes collection removed: ", result4);
+        console.log("history collection removed: ", result5);
 
-        console.log("work removed: ", result3.deletedCount > 0);
-
-        const result4 = await client.db(db).dropCollection(restaurantId!.toString());
-
-        console.log("collection removed: ", result4);
-
-        return result1.modifiedCount > 0 && result2.deletedCount > 0 && result4 && result3.deletedCount > 0;
+        return result1.modifiedCount > 0 && result2.deletedCount > 0 && result4 && result3;
 
       } catch (e) {
         throw e;
@@ -55,8 +57,11 @@ function Restaurant(restaurantId?: string | ObjectId) {
     },
     aggregate: async <T>(pipeline: any[]): Promise<T[]> => {
       try {
-        return await client.db(db).collection("restaurants")
-          .aggregate<T>(pipeline).toArray();
+        return await client.db(mainDBName).collection("restaurants")
+          .aggregate<T>([
+            { $match: restaurantId ? { _id: id(restaurantId) } : {} },
+            ...pipeline
+          ]).toArray();
       } catch (e) {
         console.error(e);
         throw new Error("at aggregateRestaurant()");
@@ -64,7 +69,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
     },
     search: async (search: any, options: any = {}): Promise<Restaurant[]> => {
       try {
-        return await client.db(db).collection("restaurants")
+        return await client.db(mainDBName).collection("restaurants")
           .find<Restaurant>(search, options).toArray();
       } catch (err) {
         console.error(err);
@@ -72,11 +77,8 @@ function Restaurant(restaurantId?: string | ObjectId) {
       }
     },
     update: async (update: UpdateFilter<Restaurant>, options: UpdateOptions = {}): Promise<UpdateResult | null> => {
-      if (!restaurantId) {
-        return null;
-      }
       try {
-        return await client.db(db).collection("restaurants")
+        return await client.db(mainDBName).collection("restaurants")
           .updateOne({ _id: id(restaurantId) }, update, options);
       } catch (e) {
         console.error(e);
@@ -85,7 +87,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
     },
     get: async (options: FindOptions<Restaurant> = {}): Promise<Restaurant | null> => {
       try {
-        return await client.db(db).collection("restaurants")
+        return await client.db(mainDBName).collection("restaurants")
           .findOne<Restaurant>({ _id: id(restaurantId) }, options);
       } catch (error) {
         console.error(error);
@@ -97,7 +99,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         return {
           get: async (options: FindOptions = {}): Promise<Dish | null> => {
             try {
-              const result = await client.db(db).collection(restaurantId!.toString())
+              const result = await client.db(dishesDBName).collection(restaurantId!.toString())
                 .findOne<Dish>({ _id: id(dishId) }, options);
 
               return result;
@@ -108,7 +110,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
           },
           update: async (update: UpdateFilter<Dish>, options: UpdateOptions = {}): Promise<UpdateResult> => {
             try {
-              const result = await client.db(db).collection(restaurantId!.toString())
+              const result = await client.db(dishesDBName).collection(restaurantId!.toString())
                 .updateOne({ _id: id(dishId) }, update, options);
 
               return result;
@@ -119,7 +121,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
           },
           remove: async () => {
             try {
-              const result = await client.db(db).collection(restaurantId!.toString())
+              const result = await client.db(dishesDBName).collection(restaurantId!.toString())
                 .deleteOne({ _id: id(dishId) });
 
               return result;
@@ -134,7 +136,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         return {
           get: async (options: FindOptions = {}): Promise<Dish[]> => {
             try {
-              const result = await client.db(db).collection(restaurantId!.toString())
+              const result = await client.db(dishesDBName).collection(restaurantId!.toString())
                 .find<Dish>(search, options).toArray();
 
               return result;
@@ -145,7 +147,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
           },
           update: async (update: UpdateFilter<Dish>, options: UpdateOptions = {}) => {
             try {
-              return await client.db(db).collection<Dish>(restaurantId!.toString())
+              return await client.db(dishesDBName).collection<Dish>(restaurantId!.toString())
                 .updateMany(search, update, options);
             } catch (err) {
               console.log("AT RESTAURANT DISHES MANY UPDATE");
@@ -154,7 +156,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
           },
           bulk: async (update: AnyBulkWriteOperation<Dish>[]) => {
             try {
-              return await client.db(db).collection<Dish>(restaurantId!.toString()).bulkWrite(
+              return await client.db(dishesDBName).collection<Dish>(restaurantId!.toString()).bulkWrite(
                 update
               );
             } catch (err) {
@@ -166,7 +168,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
       },
       add: async (dish: Dish) => {
         try {
-          const result = await client.db(db).collection(restaurantId!.toString())
+          const result = await client.db(dishesDBName).collection(restaurantId!.toString())
             .insertOne(dish);
 
           return result;
@@ -177,7 +179,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
       },
       aggregate: async (pipeline: any, options: AggregateOptions = {}) => {
         try {
-          return client.db(db).collection(restaurantId!.toString()).aggregate(pipeline, options);
+          return client.db(dishesDBName).collection(restaurantId!.toString()).aggregate(pipeline, options);
         } catch (e) {
           throw e;
         }
@@ -186,7 +188,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
     components: {
       getAll: async (projection?: any): Promise<Component[]> => {
         try {
-          const result = await client.db(db).collection("restaurants").findOne<Restaurant>({ _id: id(restaurantId) }, { projection: { components: projection } });
+          const result = await client.db(mainDBName).collection("restaurants").findOne<Restaurant>({ _id: id(restaurantId) }, { projection: { components: projection } });
 
           return result?.components!;
         } catch (err) {
@@ -198,7 +200,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         if (!restaurantId) {
           return null;
         }
-        const result = await client.db(db).collection("restaurants").updateOne(
+        const result = await client.db(mainDBName).collection("restaurants").updateOne(
           { _id: id(restaurantId) },
           { $inc: { "components.$[component].amount": amount } },
           {
@@ -210,7 +212,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
       },
       getMany: async (ids: ObjectId[], projection?: any) => {
         try {
-          const result = await client.db(db).collection("restaurants").aggregate([
+          const result = await client.db(mainDBName).collection("restaurants").aggregate([
             { $match: { _id: id(restaurantId) } },
             { $unwind: "$components" },
             { $match: { "components._id": { $in: ids } } },
@@ -237,39 +239,39 @@ function Restaurant(restaurantId?: string | ObjectId) {
       }
     },
     staff: {
-      remove: async (userId: string | ObjectId, reason: string, stars: number): Promise<null> => {
-        if (!restaurantId) {
-          return null;
-        }
-        const result1 = await client.db(db).collection("restaurants").updateOne(
-          { _id: id(restaurantId) },
-          { $pull: { staff: { _id: id(userId) } } }
-        );
-        const result2 = await updateUser(userId, {
-          $pull: { works: { _id: id(restaurantId) } },
-          $push: { feedbacks: { _id: id(), restaurantId: id(restaurantId), reason, rating: stars } }
-        });
+      // remove: async (userId: string | ObjectId, reason: string, stars: number): Promise<null> => {
+      //   if (!restaurantId) {
+      //     return null;
+      //   }
+      //   const result1 = await client.db(db).collection("restaurants").updateOne(
+      //     { _id: id(restaurantId) },
+      //     { $pull: { staff: { _id: id(userId) } } }
+      //   );
+      //   const result2 = await updateUser(userId, {
+      //     $pull: { works: { _id: id(restaurantId) } },
+      //     $push: { feedbacks: { _id: id()!, restaurantId: id(restaurantId)!, comment: reason, stars, role } }
+      //   });
 
-        if (result1.modifiedCount > 0) {
-          log("success", "user removed from restaurant");
-        } else {
-          log("checking", "user werent removed from restaurant. restaurant found: ", result1.matchedCount > 0);
-        }
-        if (result2.modifiedCount > 0) {
-          log("success", "restaurant removed from user");
-        } else {
-          const user = await getUser(userId, { projection: { username: 1 } });
-          if (user) {
-            log("checking", "user exists");
-          } else {
-            log("checking", "user doesn't exist");
-          }
-        }
-        return null;
-      },
+      //   if (result1.modifiedCount > 0) {
+      //     log("success", "user removed from restaurant");
+      //   } else {
+      //     log("checking", "user werent removed from restaurant. restaurant found: ", result1.matchedCount > 0);
+      //   }
+      //   if (result2.modifiedCount > 0) {
+      //     log("success", "restaurant removed from user");
+      //   } else {
+      //     const user = await getUser(userId, { projection: { username: 1 } });
+      //     if (user) {
+      //       log("checking", "user exists");
+      //     } else {
+      //       log("checking", "user doesn't exist");
+      //     }
+      //   }
+      //   return null;
+      // },
       online: async (userId: string | ObjectId) => {
         try {
-          const result = await client.db(db).collection("restaurants")
+          const result = await client.db(mainDBName).collection("restaurants")
             .updateOne({ _id: id(restaurantId) }, { $set: { "staff.$[user].online": true } }, { arrayFilters: [{ "user._id": id(userId) }] })
 
           return result;
@@ -280,7 +282,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
       },
       offline: async (userId: string | ObjectId) => {
         try {
-          const result = await client.db(db).collection("restaurants")
+          const result = await client.db(mainDBName).collection("restaurants")
             .updateOne({ _id: id(restaurantId) }, { $set: { "staff.$[user].online": false } }, { arrayFilters: [{ "user._id": id(userId) }] })
 
           return result;
@@ -290,229 +292,54 @@ function Restaurant(restaurantId?: string | ObjectId) {
         }
       }
     },
-    waiter: {
-      getAll: async () => {
-        try {
-          const result = await client.db(db).collection("work")
-            .findOne({ restaurant: id(restaurantId) }, { projection: { waiter: 1 } });
-
-          return (result as any).waiter as WaiterOrder[];
-        } catch (e) {
-          console.error(e);
-          throw new Error("at Restaurant().waiter.getAll()");
-        }
-      },
-      remove: async (orderId: string | ObjectId, orderDishId: string | ObjectId) => {
-        try {
-          const result = await client.db(db).collection("work")
-            .updateOne(
-              { restaurant: id(restaurantId) },
-              { $pull: { "waiter.$[order].dishes": { _id: id(orderDishId) } } },
-              { arrayFilters: [{ "order._id": id(orderId) }] }
-            );
-
-          console.log(result);
-
-          return result;
-        } catch (e) {
-          console.error(e);
-          throw new Error("at Restaurant().waiter.remove()");
-        }
-      },
-      // add: async (orderId: string | ObjectId, dish: any) => {
-      //     try {
-      //         const result = await client.db(db).collection("work")
-      //             .updateOne({ restaurant: id(restaurantId) }, { $push: { "waiter.$[order].dishes": dish } }, { arrayFilters: [ { "order._id": id(orderId) } ] });
-
-      //         return result;
-      //     } catch (e) {
-      //         console.error(e);
-      //         throw new Error("at Restaurant().waiter.add()");
-      //     }
-      // },
-      get: async (orderId: string | ObjectId) => {
-        try {
-          const result = await client.db(db).collection("work")
-            .aggregate([
-              { $match: { restaurant: id(restaurantId) } },
-              { $unwind: "$waiter" },
-              { $match: { "waiter._id": id(orderId) } }
-            ]).toArray();
-
-          if (result.length == 0 || !result[0]) {
-            return null;
-          }
-
-          return result[0].waiter as WaiterOrder;
-        } catch (e) {
-          console.error(e);
-          throw new Error("at Restaurant().waiter.get()");
-        }
-      },
-      dishServe: async (orderId: string | ObjectId, orderDishId: string | ObjectId) => {
-        try {
-          const result = await client.db(db).collection("work")
-            .updateOne(
-              { restaurant: id(restaurantId) },
-              {
-                $set: {
-                  "waiter.$[order].dishes.$[dish].show": true,
-                  "waiter.$[order].dishes.$[dish].time": Date.now()
-                }
-              },
-              { arrayFilters: [{ "order._id": id(orderId) }, { "dish._id": id(orderDishId) }] }
-            );
-
-          return result;
-        } catch (e) {
-          console.error(e);
-          throw new Error("at Restaurant().waiter.dishServe()");
-        }
-      },
-      removeOrder: async (orderId: string | ObjectId) => {
-        try {
-          const result = await client.db(db).collection("work")
-            .updateOne(
-              { restaurant: id(restaurantId) },
-              { $pull: { waiter: { _id: id(orderId) } } }
-            );
-
-          return result;
-        } catch (e) {
-          console.error(e);
-          throw new Error("at Restaurant().waiter.removeOrder()");
-        }
-      }
-    },
-    sessions: {
-      create: async (session: Session) => {
-        try {
-          return await client.db(db).collection("restaurants")
-            .updateOne({ _id: id(restaurantId) }, [
-              {
-                $set: {
-                  sessions: {
-                    $cond: [
-                      {
-                        $in: [
-                          id(session.userId),
-                          "$sessions.userId"
-                        ]
-                      },
-                      {
-                        $map: {
-                          input: "$sessions",
-                          as: "session",
-                          in: {
-                            $cond: [
-                              {
-                                $eq: [
-                                  "$$session.userId",
-                                  id(session.userId)
-                                ]
-                              },
-                              {
-                                $mergeObjects: [
-                                  "$$session",
-                                  {
-                                    date: new Date(),
-                                    type: session.type,
-                                    number: session.number
-                                  }
-                                ]
-                              },
-                              "$$session"
-                            ]
-                          }
-                        }
-                      },
-                      {
-                        $concatArrays: [
-                          "$sessions",
-                          [
-                            session
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            ]);
-        } catch (e) {
-          throw e;
-        }
-      },
-      userId: (userId: string | ObjectId) => {
-        return {
-          get: async () => {
-            try {
-              const result = await client.db(db).collection("restaurants")
-                .aggregate([
-                  { $match: { _id: id(restaurantId) } },
-                  { $unwind: "$sessions" },
-                  { $match: { "sessions.userId": id(userId) } },
-                ]).toArray();
-
-              return result[0] as Session || null;
-            } catch (e) {
-              throw e;
-            }
-          }
-        }
-      },
-      sessionId: (sessionId: string | ObjectId) => {
-        return {
-          get: async () => {
-            try {
-              const result = await client.db(db).collection("restaurants")
-                .aggregate([
-                  { $match: { _id: id(restaurantId) } },
-                  { $unwind: "$sessions" },
-                  { $match: { "sessions._id": id(sessionId) } },
-                ]).toArray();
-
-              return result[0] as Session || null;
-            } catch (e) {
-              throw e;
-            }
-          },
-          remove: async () => {
-            try {
-              return await client.db(db).collection("restaurants")
-                .updateOne({ _id: id(restaurantId) }, { $pull: { sessions: { _id: id(sessionId) } } });
-            } catch (e) {
-              throw e;
-            }
-          }
-        }
-      }
-    }
   }
 }
 
 
 function Orders(restaurantId: string | ObjectId) {
   return {
-    all: async (projection?: any) => {
+    update: async (search: Filter<Order>, update: UpdateFilter<Order>, options: UpdateOptions = {}) => {                 /////// check
       try {
-        const result = await client.db(db).collection("work")
-          .findOne<Work>({ restaurant: id(restaurantId) }, { projection: { orders: projection ? projection : 1 } });
-
-        return result?.orders!;
-      } catch (err) {
-        console.error(err);
-        throw new Error("at Orders().all()");
+        return await client.db(ordersDBName).collection<Order>(restaurantId.toString())
+          .updateMany(search, update, options);
+      } catch (e) {
+        console.error("at Orders().update()");
+        throw e;
+      }
+    },
+    deleteMany: async (search: Filter<Order>) => {
+      try {
+        return await client.db(ordersDBName).collection(restaurantId.toString()).deleteMany(search);
+      } catch (e) {
+        console.error("at Orders().deleteMany()");
+        throw e;
       }
     },
     aggregate: async (pipeline: any) => {
       try {
-        const result = await client.db(db).collection("work").aggregate([
-          { $match: { restaurant: id(restaurantId) } },
-          ...pipeline,
-        ]).toArray();
+        const result = await client.db(ordersDBName).collection(restaurantId.toString()).aggregate(pipeline).toArray();
 
         return result;
+      } catch (e) {
+        throw e;
+      }
+    },
+    createSession: async (session: Order) => {
+      try {
+        const exists = await client.db(ordersDBName).collection(restaurantId!.toString())
+          .findOne({ customer: session.customer, status: "ordering" }, { projection: { _id: 1 } });
+
+        if(exists) {
+          const result = await client.db(ordersDBName).collection(restaurantId!.toString())
+            .updateOne({ customer: session }, { $set: { socketId: session.socketId, connected: session.connected } });
+
+          return result.modifiedCount > 0;
+        } else {
+          const result = await client.db(ordersDBName).collection(restaurantId!.toString())
+            .insertOne(session);
+          
+          return result.acknowledged;
+        }
       } catch (e) {
         throw e;
       }
@@ -520,88 +347,36 @@ function Orders(restaurantId: string | ObjectId) {
     create: async (
       userId: string | ObjectId,
       socketId: string,
-      info: { type: "order" | "table", number: number; },
-      dishes: any[]
+      info: { type: "in" | "out", number: string; },
+      dishes: { _id: ObjectId; dishId: ObjectId; comment: string; }[],
+      sessionId: Id,
     ) => {
       try {
-        const convertDishes = () => {
-          const stats = [];
-          const waiter = [];
+        
+        let d: Order["dishes"] = [];
 
-          // STATUS
-          // 1-ok
-          // 2-done
-          // 3-warning
-          //   31-unliked
-          // 4-removed
-          //   41-components
-          //   42-user
-          //   43-admin
-
-          for (let i of dishes) {
-            waiter.push({
-              ...i,
-              show: false,
-            });
-            stats.push({
-              ...i,
-              status: 1
-            })
-          }
-          return { order: dishes, stats, waiter };
+        for(let i of dishes) {
+          d.push({ ...i, status: "ordered" });
         }
 
-        const { order: forOrder, stats, waiter: waiterDishes } = convertDishes();
-        const _id = id()!;
-        const userObjectId = id(userId)!;
-        const time = new Date().getTime();
 
         const order: Order = {
-          _id,
-          dishes: forOrder,
-          userId: userObjectId,
+          customer: id(userId)!,
           socketId,
-          time,
-          ...info
+          type: info.type,
+          id: info.number,
+          _id: id(sessionId)!,
+          status: "progress",
+          dishes: d,
+          ordered: Date.now()
         };
-        const waiter = {
-          _id,
-          dishes: waiterDishes,
-          userId: userObjectId,
-          socketId,
-          ...info
-        };
-        const statistics: StatisticsOrder = {
-          // STATUS
-          // 1-in procces
-          // 2-done
-          // 3-warning
-          //   31-done+warning
-          // 4-removed
-          //   41-user
-          //   42-admin
-          // 5-something wrong
-          _id,
-          status: 1,
-          dishes: stats,
-          userId: userObjectId,
-          ...info,
-          time
+
+
+        const update = await client.db(ordersDBName).collection(restaurantId.toString()).insertOne(order);
+
+        if(!update.acknowledged) {
+          return null;
         }
-
-        const req = await client.db(db).collection("work")
-          .updateOne(
-            { restaurant: id(restaurantId) },
-            { $push: { orders: order, waiter } }
-          );
-        const req2 = await client.db(db).collection("work")
-          .updateOne(
-            { restaurant: id(restaurantId) },
-            { $push: { statistics: statistics } }
-          );
-
-        console.log("ORDER CREATED: ", req.modifiedCount > 0);
-        console.log("STATISTICS CREATED: ", req2.modifiedCount > 0);
 
         return order;
       } catch (e) {
@@ -609,60 +384,40 @@ function Orders(restaurantId: string | ObjectId) {
         throw new Error("ar Orders().create()");
       }
     },
-    updateIds: async (userId: string | ObjectId, socketId: string) => {
+    many: async (search: Filter<Order>, options?: FindOptions<Order>) => {
       try {
-        const result = await client.db(db).collection("work")
-          .updateOne(
-            { restaurant: id(restaurantId) },
-            { $set: { "orders.$[user].socketId": socketId } },
-            { arrayFilters: [{ "user.userId": id(userId) }] }
-          );
+        const result = await client.db(ordersDBName).collection<Order>(restaurantId.toString())
+          .find<Order>(search, options).toArray();
 
         return result;
-      } catch (e) {
-        console.error(e);
-        throw new Error("at Orders().updateIds()");
+      } catch (err) {
+        console.error("at Orders().all()");
+        throw err;
       }
     },
-    one: (orderId: string | ObjectId) => {
+    one: (search: Filter<Order>) => {
       return {
-        get: async (): Promise<Order> => {
+        get: async (options: FindOptions<Order> = {}): Promise<Order> => {
           try {
-            const result = await client.db(db).collection("work")
-              .aggregate([
-                { $match: { restaurant: id(restaurantId) } },
-                { $unwind: "$orders" },
-                { $match: { "orders._id": id(orderId) } },
-                { $project: { order: "$orders" } }
-              ]).toArray();
+            const result = await client.db(ordersDBName).collection(restaurantId.toString())
+              .findOne<Order>(search, options);
 
-            if (result.length == 0 || !result[0]) {
-              return null!;
-            }
-            return result[0].order;
+            return result as any;
           } catch (err) {
             console.error(err);
             throw new Error("at Orders.one().get()");
           }
         },
-        update: async (update: any, options: UpdateOptions = {}): Promise<UpdateResult> => {
+        update: async (update: UpdateFilter<Order>, options: FindOneAndUpdateOptions = {}): Promise<{ order: Order; ok: 1 | 0 }> => {
           try {
-
-            let arrayFilters: any = [{ "order._id": id(orderId) }];
-
-            if (options && options.arrayFilters) {
-              arrayFilters = arrayFilters.concat(options.arrayFilters);
-              delete options.arrayFilters;
-            }
-
-            const result = await client.db(db).collection("work")
-              .updateOne(
-                { restaurant: id(restaurantId) },
+            const result = await client.db(ordersDBName).collection<Order>(restaurantId.toString())
+              .findOneAndUpdate(
+                search,
                 update,
-                { arrayFilters, ...options }
+                { returnDocument: "after", ...options }
               );
 
-            return result;
+            return { order: result.value as any, ok: result.ok };
           } catch (e) {
             console.error(e);
             throw new Error("at Orders().one().update");
@@ -670,12 +425,9 @@ function Orders(restaurantId: string | ObjectId) {
         },
         remove: async () => {
           try {
-            const result = await client.db(db).collection("work")
-              .updateOne(
-                { restaurant: id(restaurantId) },
-                { $pull: { orders: { _id: id(orderId) } } }
-              );
-
+            const result = await client.db(ordersDBName).collection<Order>(restaurantId.toString())
+              .findOneAndDelete(search);
+            
             return result;
           } catch (e) {
             console.error(e);
@@ -684,114 +436,32 @@ function Orders(restaurantId: string | ObjectId) {
         }
       }
     },
-  };
-}
-
-function Stats(restaurantId: string | ObjectId) {
-  return {
-    aggregate: async (pipeline: any[]) => {
-      try {
-        return await client.db(db).collection("work").aggregate([
-          { $match: { restaurant: id(restaurantId) } },
-          ...pipeline
-        ]).toArray();
-      } catch (err) {
-        console.log("AT STATS.aggregate");
-        throw err;
-      }
-    },
-    getMany: async (limit: number) => {
-      try {
-        const result = await client.db(db).collection("work")
-          .findOne({
-            restaurant: id(restaurantId),
-          },
-            { projection: { statistics: { $slice: limit } } });
-
-        if (!result) {
-          return null;
+    history: {
+      insert: async (order: Order) => {
+        try {
+          return await client.db(historyDBName).collection<Order>(restaurantId.toString()).insertOne(order);
+        } catch (e) {
+          console.error("at Orders.hisotry.insert()")
+          throw e;
         }
-
-        return result.statistics as StatisticsOrder[];
-      } catch (e) {
-        console.error(e);
-        throw new Error("at Stats().getMany()");
-      }
-    },
-    order: (orderId: string | ObjectId) => {
-      return {
-        updateStatus: async (status: number) => {
-          try {
-            const result = await client.db(db).collection("work")
-              .updateOne(
-                { restaurant: id(restaurantId) },
-                { $set: { "statistics.$[order].status": status } },
-                { arrayFilters: [{ "order._id": id(orderId) }] }
-              );
-
-            return result;
-          } catch (e) {
-            console.error(e);
-            throw new Error("at Stats().order().updateStatus()");
-          }
-        },
-        get: async (): Promise<StatisticsOrder | null> => {
-          try {
-            const result = await client.db(db).collection("work")
-              .aggregate([
-                { $match: { restaurant: id(restaurantId) } },
-                { $unwind: "$statistics" },
-                { $match: { "statistics._id": id(orderId) } }
-              ]).toArray();
-
-            if (result.length == 0 || !result[0]) {
-              return null;
-            }
-
-            return result[0].statistics;
-          } catch (e) {
-            console.error(e);
-            throw new Error("at Stats().order().get()");
-          }
-        },
-        updateDishStatus: async (dishId: string | ObjectId, status: number, userId: ObjectId | string) => {
-          try {
-            const result = await client.db(db).collection("work")
-              .updateOne(
-                { restaurant: id(restaurantId) },
-                { $set: { "statistics.$[order].dishes.$[dish].status": status, "statistics.$[order].dishes.$[dish].cook": id(userId) } },
-                { arrayFilters: [{ "order._id": id(orderId) }, { "dish._id": id(dishId) }] }
-              );
-
-            return result;
-          } catch (e) {
-            console.error(e);
-            throw new Error("at Stats().order().updateDish()");
-          }
-        },
-        setWaiter: async (orderDishId: string | ObjectId, userId: string | ObjectId) => {
-          try {
-            const result = await client.db(db).collection("work")
-              .updateOne(
-                { restaurant: id(restaurantId) },
-                { $set: { "statistics.$[order].dishes.$[dish].waiter": userId } },
-                { arrayFilters: [{ "order._id": id(orderId) }, { "dish._id": id(orderDishId) }] }
-              );
-
-            return result;
-          } catch (e) {
-            console.error(e);
-            throw new Error("at Stats().order().setWaiter()");
-          }
+      },
+      many: async (search: Filter<Order>, options?: FindOptions<Order>) => {
+        try {
+          const result = await client.db(historyDBName).collection<Order>(restaurantId.toString())
+            .find<Order>(search, options).toArray();
+  
+          return result;
+        } catch (err) {
+          console.error("at Orders().all()");
+          throw err;
         }
-      }
+      },
     }
-  }
+  };
 }
 
 
 export {
   Restaurant,
   Orders,
-  Stats
 }

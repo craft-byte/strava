@@ -25,6 +25,9 @@ export class StaffService implements OnInit {
   get<T>(...path: string[]) {
     return this.http.get<T>(this.url + this.restaurantId + "/" + path.join("/")).toPromise();
   }
+  delete<T>(...path: string[]) {
+    return this.http.delete<T>(this.url + this.restaurantId + "/" + path.join("/")).toPromise();
+  }
 
   init(restaurantId: string) {
     this.restaurantId = restaurantId;

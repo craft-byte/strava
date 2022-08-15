@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { StaffService } from '../staff.service';
 
 @Component({
@@ -20,14 +22,16 @@ export class DashboardPage implements OnInit {
 
   constructor(
     private service: StaffService,
-    private router: Router
+    private router: RouterService,
+    private loader: LoadService,
   ) { };
 
   go(l: "waiter" | "kitchen") {
-    this.router.navigate(["staff", this.restaurantId, l]);
+    this.router.go(["staff", this.restaurantId, l]);
   }
 
   async ngOnInit() {
+    await this.loader.start();
     const result = await this.service.get<{ restaurant: any; user: { showKitchen: boolean; showWaiter: boolean; } }>("dashboard");
 
     if(!result) {
@@ -43,6 +47,7 @@ export class DashboardPage implements OnInit {
     this.ui.title = name;
 
     this.ui.showLocations = true;
+    this.loader.end();
   }
 
 }

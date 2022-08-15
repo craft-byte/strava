@@ -16,6 +16,8 @@ export class KitchenService {
   dishes: { [dishId: string]: Dish } = null;
   convertedDishes = null;
 
+  flow: Observable<KitchenResponse>;
+
   constructor(
     private socket: Socket,
   ) {
@@ -27,15 +29,10 @@ export class KitchenService {
 
   connect(restaurantId: string, userId: string) {
     this.socket.emit("kitchenConnect", { userId, restaurantId });
-    return new Observable<KitchenResponse>(subs => {
+    this.flow = new Observable<KitchenResponse>(subs => {
       this.socket.on("kitchen", (data: any) => subs.next(data));
     });
-  }
-
-  listen() {
-    return new Observable<KitchenResponse>(subs => {
-      this.socket.on("kitchen", (data: any) => subs.next(data));
-    });
+    return this.flow;
   }
 
 

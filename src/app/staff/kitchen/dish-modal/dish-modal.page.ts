@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { getImage } from 'src/functions';
 import { StaffService } from '../../staff.service';
@@ -39,6 +39,7 @@ interface User {
 interface Dish {
   name: string;
   time: number;
+  _id: string;
   image: {
     binary: any;
     resolution: string;
@@ -75,12 +76,7 @@ interface Response {
 })
 export class DishModalPage implements OnInit, OnDestroy {
 
-  ui: UserInterface = {
-    showComponents: false,
-    showRecipee: false,
-    showUser: false,
-    taken: false,
-  };;
+  ui: UserInterface;
   dish: Dish;
   order: Order;
   cooking: Cooking;
@@ -100,6 +96,7 @@ export class DishModalPage implements OnInit, OnDestroy {
     private service: StaffService,
     private modalCtrl: ModalController,
     private kitchen: KitchenService,
+    private toastCtrl: ToastController,
   ) { };
 
   @Input() orderDishId: string;
@@ -108,17 +105,30 @@ export class DishModalPage implements OnInit, OnDestroy {
   close() {
     this.modalCtrl.dismiss();
   }
-  done() {
-    this.kitchen.emit("kitchen/dish/done", { orderId: this.orderId, orderDishId: this.orderDishId });
+  async done() {
+    // this.kitchen.emit("kitchen/dish/done", { orderId: this.orderId, dishId: this.dish._id, orderDishId: this.orderDishId });
 
-    this.modalCtrl.dismiss(null, "done");
+    const result: any = await this.service.delete("kitchen", this.orderId, "dish", this.orderDishId, "done");
+
+    this.modalCtrl.dismiss(null, result.success ? "done" : null);
   }
 
 
-  take() {
-    this.kitchen.emit("kitchen/dish/take", { orderId: this.orderId, orderDishId: this.orderDishId });
+  async take() {
+    // this.kitchen.emit("kitchen/dish/take", { orderId: this.orderId, orderDishId: this.orderDishId });
+
+    const result: any = await this.service.post({}, "kitchen", this.orderId, "dish", this.orderDishId, "take");
     
-    this.getTakenInfo();
+    if(result.success) {
+      this.getTakenInfo();
+    } else {
+      (await this.toastCtrl.create({
+        duration: 1500,
+        color: "red",
+        mode: "ios",
+        message: "Something went wrong. Please try again.",
+      })).present();
+    }
   }
   async getTakenInfo() {
     const result: Taken = await this.service.get("kitchen/taken");
@@ -174,7 +184,7 @@ export class DishModalPage implements OnInit, OnDestroy {
       }
       
 
-      this.subscription = this.kitchen.listen().subscribe(res => {
+      this.subscription = this.kitchen.flow.subscribe(res => {
         if(res.type == "kitchen/dish/take") {
           if((res.data as any).orderDishId == this.orderDishId) {
             this.getTakenInfo();
@@ -231,7 +241,9 @@ export class DishModalPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearInterval(this.takenInterval);
     clearInterval(this.orderedInterval);
-    this.subscription.unsubscribe();
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }

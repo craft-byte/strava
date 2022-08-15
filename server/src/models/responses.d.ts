@@ -19,7 +19,10 @@ interface ClientResponse {
         | "kitchen/order/new"
         | "notification"
         | "connection/error"
-        | "connection/success",
+        | "connection/success"
+        | "customer/order/submited"
+        | "customer/dish/error"
+        | "customer/connection",
     data?: any;
     send: string[];
     event?: "kitchen" | "waiter";
@@ -69,7 +72,7 @@ interface KitchenResponse {
         "kitchen/dish/remove" |
         "kitchen/dish/done" |
         "kitchen/dish/take" |
-        "customer/notification" |
+        "customer/dish/status" |
         "waiter/dish/new"
     ,
     send: string[];
@@ -78,7 +81,7 @@ interface KitchenResponse {
 }
 interface WaiterResponse {
     type: 
-        "waiter/new"
+        "waiter/dish/new"
     ,
     send: string[];
     data: any;

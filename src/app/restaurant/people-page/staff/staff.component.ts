@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController, PopoverController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
 import { MoreComponent } from '../../other/more/more.component';
 import { RestaurantService } from '../../services/restaurant.service';
@@ -26,14 +28,15 @@ export class StaffComponent implements OnInit {
 
   constructor(
     private service: RestaurantService,
-    private router: Router,
+    private router: RouterService,
+    private loader: LoadService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
   ) { };
 
 
   add() {
-    this.router.navigate(["restaurant", this.service.restaurantId, "people", "worker", "invite"], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "people", "worker", "invite"], { replaceUrl: true });
   }
   async invitations() {
     const modal = await this.modalCtrl.create({
@@ -46,7 +49,7 @@ export class StaffComponent implements OnInit {
     await modal.present();
   }
   full(id: string) {
-    this.router.navigate(["restaurant", this.service.restaurantId, "people", "full", id], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "people", "full", id], { replaceUrl: true });
   }
   async open(event: any, id: string) {
     const popover = await this.popoverCtrl.create({
@@ -72,6 +75,7 @@ export class StaffComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.loader.start();
     const staff: any = await this.service.get("staff");
 
     for(let i of staff) {
@@ -81,7 +85,7 @@ export class StaffComponent implements OnInit {
       });
     }
 
-    console.log(this.staff);
+    this.loader.end();
   }
 
 }

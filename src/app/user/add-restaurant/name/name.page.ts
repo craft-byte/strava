@@ -1,7 +1,9 @@
 import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -11,34 +13,47 @@ import { UserService } from '../../user.service';
 })
 export class NamePage implements OnInit {
 
-  name: string;
+  firstName: string;
+  lastName: string;
+
+  restaurantId: string;
 
   ui = {
     redMessage: "",
-    message: "Name for your restaurant. This name people will see on the map and when searching."
+    message: "Your full name"
   }
 
   constructor(
     private service: UserService,
-    private router: Router,
+    private router: RouterService,
+    private route: ActivatedRoute,
     private toastCtrl: ToastController,
+    private loader: LoadService,
   ) { };
 
-  exit() {
-    this.router.navigate(["user/info"], { replaceUrl: true });
+  back() {
+    this.router.go(["restaurant", this.restaurantId], { replaceUrl: true });
   }
 
-  async add() {
-    if(!this.name || this.name.length < 4) {
-      return this.ui.redMessage = "Your name can't be less than 4 characters";
+
+
+  async submit() {
+    if(!this.firstName || !this.lastName) {
+      this.ui.redMessage = "Your name is not completed";
+      return;
     }
 
-    const result: any = await this.service.post({ name: this.name }, "add-restaurant/name");
+  
+    await this.loader.start();
+  
 
-    if(result.added) {
-      this.router.navigate(["add-restaurant/theme", result.insertedId], { replaceUrl: true });
+    const result: any = await this.service.post({ firstName: this.firstName, lastName: this.lastName }, "add-restaurant/name", this.restaurantId);
+
+    if(result.updated) {
+
+      this.router.go(["add-restaurant", this.restaurantId, "dob"], {});
+      
     } else {
-      this.router.navigate(["user/info"], { replaceUrl: true });
       (await this.toastCtrl.create({
         duration: 3000,
         message: "Sorry, something went wrong. Please, try again.",
@@ -46,9 +61,21 @@ export class NamePage implements OnInit {
         mode: "ios",
       })).present();
     }
+
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.loader.start();
+    this.restaurantId = this.route.snapshot.paramMap.get('restaurantId');
+
+    const result: any = await this.service.get("name");
+
+    if(result) {
+      this.firstName = result.firstName;
+      this.lastName = result.lastName;
+    }
+
+    this.loader.end();
   }
 
 }

@@ -1,9 +1,11 @@
-import { StringMapWithRename } from '@angular/compiler/src/compiler_facade_interface';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
 import { ManagerSettings } from 'src/models/components';
+import { threadId } from 'worker_threads';
 import { RestaurantService } from '../../services/restaurant.service';
 import { ModalPage } from './more-modal/modal.page';
 
@@ -33,15 +35,16 @@ export class FullPage implements OnInit {
   restaurant: any;
 
   constructor(
-    private router: Router,
+    private router: RouterService,
     private route: ActivatedRoute,
     private service: RestaurantService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
+    private loader: LoadService,
   ) { };
 
   back() {
-    this.router.navigate(["restaurant", this.service.restaurantId, "people", "staff"], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "people", "staff"], { replaceUrl: true });
   }
 
   async more() {
@@ -63,6 +66,7 @@ export class FullPage implements OnInit {
   }
 
   async ngOnInit() {
+    await this.loader.start();
     const userId = this.route.snapshot.paramMap.get("userId");
     const result: any = await this.service.get("staff", userId);
     this.restaurant = this.service.restaurant;
@@ -83,6 +87,8 @@ export class FullPage implements OnInit {
 
     this.user = user;
     this.worker = worker;
+    
+    this.loader.end();
   }
 
 }

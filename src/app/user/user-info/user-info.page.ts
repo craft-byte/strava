@@ -1,6 +1,8 @@
 import { ThisReceiver } from '@angular/compiler';
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
 import { getImage } from 'src/functions';
 import { UserInvitation } from 'src/models/user';
@@ -40,29 +42,30 @@ export class UserInfoPage implements OnInit {
   constructor(
     private service: UserService, 
     private main: MainService,
-    private router: Router
+    private router: RouterService,
+    private loader: LoadService,
   ) {
   }
 
   objectKeys = Object.keys;
-  registration(type: "continue" | "email" | "avatar" | "food") {
+  registration(type: string) {
     if(type == "continue") {
       if(!this.main.userInfo.email) {
-        this.router.navigate(["user/email"], { replaceUrl: true });
+        this.router.go(["user/email"], { replaceUrl: true });
       } else if(!this.main.userInfo.avatar) {
-        this.router.navigate(["user/avatar/2"], { replaceUrl: true });
+        this.router.go(["user/avatar/2"], { replaceUrl: true });
       }
     } else if(type == "email") {
-      this.router.navigate(["user/email"], { replaceUrl: true });
+      this.router.go(["user/email"], { replaceUrl: true });
     } else if(type == "avatar") {
-      this.router.navigate(["user/avatar/2"], { replaceUrl: true });
+      this.router.go(["user/avatar/2"], { replaceUrl: true });
     }
   }
   goWork(restaurantId: string) {
-    this.router.navigate(["staff", restaurantId, "dashboard"], { replaceUrl: true });
+    this.router.go(["staff", restaurantId, "dashboard"], { replaceUrl: true });
   }
   addRestaurant() {
-    this.router.navigate(["add-restaurant/name"], { replaceUrl: true });
+    this.router.go(["add-restaurant/start"], { replaceUrl: true });
   }
   async invitation(id: string, type: "accept" | "reject", restaurant?: string) {
     let result = null;
@@ -113,10 +116,12 @@ export class UserInfoPage implements OnInit {
     this.ui = ui;
   }
   findJob() {
-    this.router.navigate(["jobs"], { queryParams: { role: this.role }, queryParamsHandling: "merge", replaceUrl: true });
+    this.router.go(["jobs"], { queryParams: { role: this.role }, queryParamsHandling: "merge", replaceUrl: true });
   }
   async ngOnInit() {
-    this.router.navigate([], { queryParams: { last: null } });
-    this.getUser();
+    await this.loader.start();
+    this.router.go([], { queryParams: { last: null } }, false);
+    await this.getUser();
+    this.loader.end();
   }
 }

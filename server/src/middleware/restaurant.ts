@@ -68,11 +68,11 @@ function allowed(
         if (restaurantId) {
             const restaurant = await Restaurant(restaurantId).get({ projection: { owner: 1, staff: { _id: 1, settings: 1, role: 1 } } });
             if (!restaurant) {
-                log("failed", "middleware - allowed - no restaurant");
-                return res.sendStatus(422);
+                console.log("no restaurant");
+                return res.sendStatus(404);
             } else if (!restaurant.owner) {
-                log("failed", "middleware - allowed - no owner");
-                return res.sendStatus(422);
+                console.log("no owner?");
+                return res.sendStatus(404);
             }
 
             const { owner, staff } = restaurant;

@@ -20,6 +20,7 @@ export class IngredientPage implements OnInit {
   ) { };
 
   @Input() id: string;
+  @Input() dishName: string;
 
   close() {
     this.modalCtrl.dismiss();
@@ -30,7 +31,14 @@ export class IngredientPage implements OnInit {
 
 
   async ngOnInit() {
-    this.component = await this.service.get("components", this.id);
+    try {
+      this.component = await this.service.get("components", this.id);
+    } catch (e) {
+      if(e == 404) {
+        this.modalCtrl.dismiss();
+      }
+    }
+    console.log(this.component);
   }
 
 }

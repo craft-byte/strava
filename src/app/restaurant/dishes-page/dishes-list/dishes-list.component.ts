@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, PopoverController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { MoreComponent } from '../../other/more/more.component';
 import { RestaurantService } from '../../services/restaurant.service';
 
@@ -35,12 +37,13 @@ export class DishesListComponent implements OnInit {
   }
 
   constructor(
-    private router: Router,
+    private router: RouterService,
     private service: RestaurantService,
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
+    private loader: LoadService,
   ) { };
 
   cancel() {
@@ -62,11 +65,11 @@ export class DishesListComponent implements OnInit {
   }
 
   addDish() {
-    this.router.navigate(['dish', this.service.restaurantId, "add"], { replaceUrl: true });
+    this.router.go(['dish', this.service.restaurantId, "add"], { replaceUrl: true });
   }
 
   goDish(id: string) {
-    this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", id], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "dishes", "full", id], { replaceUrl: true });
   }
 
   async more(e: any, id: string) {
@@ -87,9 +90,9 @@ export class DishesListComponent implements OnInit {
 
     if(data) {
       if(data == 1) {
-        this.router.navigate(["restaurant", this.service.restaurantId, "dishes", "full", id], { replaceUrl: true });
+        this.router.go(["restaurant", this.service.restaurantId, "dishes", "full", id], { replaceUrl: true });
       } else if(data == 2) {
-        this.router.navigate(["dish", this.service.restaurantId, "edit", id], { replaceUrl: true });
+        this.router.go(["dish", this.service.restaurantId, "edit", id], { replaceUrl: true });
       } else {
         this.remove(id);
       }
@@ -116,6 +119,7 @@ export class DishesListComponent implements OnInit {
     const { role } = await alert.onDidDismiss();
 
     if(role == "remove") {
+      await this.loader.start();
       const result: any = await this.service.delete("dishes", id);
 
       if(result.removed) {
@@ -139,14 +143,18 @@ export class DishesListComponent implements OnInit {
           mode: "ios"
         })).present();
       }
+
+      this.loader.end();
     }
   }
 
   async ngOnInit() {
+    await this.loader.start();
     this.dishes = await this.service.get('dishes');
     if(this.dishes.length == 0) {
       this.ui.showAdd = true;
     }
+    this.loader.end();
   }
 
 

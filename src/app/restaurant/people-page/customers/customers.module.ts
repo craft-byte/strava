@@ -8,13 +8,15 @@ import { CustomersPageRoutingModule } from './customers-routing.module';
 
 import { CustomersPage } from './customers.page';
 import { MoreComponent } from './more/more.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CustomersPageRoutingModule
+    CustomersPageRoutingModule,
+    QRCodeModule
   ],
   declarations: [CustomersPage, MoreComponent]
 })

@@ -24,7 +24,7 @@ async function email(req: Request, res: Response, next: NextFunction) {
     const user = await getUser(req.user as string, { projection: { email: 1 } });
 
     if(!user.email) {
-        return res.sendStatus(403);
+        return res.status(403).send({ reason: "email" });
     }
 
     next();

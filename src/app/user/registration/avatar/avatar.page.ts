@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
 import { UserService } from '../../user.service';
 import { CropperPage } from './cropper/cropper.page';
@@ -18,18 +20,22 @@ export class AvatarPage implements OnInit {
   ui = {
     backTitle: "",
     imageClass: "",
+    disableButton: false,
   }
 
   constructor(
-    private router: Router,
+    private router: RouterService,
     private route: ActivatedRoute,
     private service: UserService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
+    private loader: LoadService,
   ) { };
 
 
   async submit() {
+    this.loader.start();
+    this.ui.disableButton = true;
     const result: any = await this.service.post({ avatar: this.avatar }, "avatar");
 
     if (result.updated) {
@@ -42,6 +48,8 @@ export class AvatarPage implements OnInit {
         message: "Sorry, something went wrong updating your image. Please, try again later."
       })).present();
     }
+
+    this.loader.end();
   }
 
   async setAvatar(event: any) {
@@ -75,13 +83,13 @@ export class AvatarPage implements OnInit {
 
   skip() {
     if (this.type == "1") {
-      this.router.navigate(["user/info"], { replaceUrl: true });
+      this.router.go(["user/info"], { replaceUrl: true });
     } else {
       const last = this.route.snapshot.queryParamMap.get("last");
       if (last) {
-        return this.router.navigate([last], { replaceUrl: true });
+        return this.router.go([last], { replaceUrl: true });
       }
-      this.router.navigate(["user/info"], { replaceUrl: true });
+      this.router.go(["user/info"], { replaceUrl: true });
     }
   }
 
@@ -92,6 +100,7 @@ export class AvatarPage implements OnInit {
       this.ui.backTitle = ""
       this.avatar = getImage(avatar) || "./../../../../assets/images/no-image.jpg";
     }
+    this.loader.end();
   }
 
 }

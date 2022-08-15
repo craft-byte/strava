@@ -1,51 +1,32 @@
-<div class="header">
-  <div class="title">
-    {{ ui.title }}
-  </div>
-  <div class="links">
-    <div class="link restaurant">
-      <button (click)="addRestaurant()" id="add-restaurant">
-        Add restaurant
-      </button>
-    </div>
-    <div class="link job">
-      <a routerLink="/jobs" id="job">
-        Find job
-      </a>
-    </div>
-    <div class="link account" id="account">
-      <a routerLink="/user/account" [replaceUrl]="true">Account</a>
-    </div>
-  </div>
-</div>
-
 <ion-content>
-  <div class="app">
-    <!-- <div class="user-info">
-      <div class="avatar">
-        <img [src]="avatar" alt="">
-      </div>
-      <div class="other">
-        <div class="name">
-          {{ ui.name }}
-        </div>
-        <div class="username">
-          {{ ui.username }}
-        </div>
-        <div class="email">
-          {{ ui.email }}
-        </div>
-        <button class="edit">
-          <ion-icon name="pencil-outline"></ion-icon> Edit profile
+  <div class="header">
+    <div class="title">
+      <p>{{ ui.title }}</p>
+    </div>
+    <div class="links">
+      <div class="link restaurant">
+        <button (click)="addRestaurant()" id="add-restaurant">
+          Add restaurant
         </button>
       </div>
-    </div> -->
+      <div class="link job">
+        <a routerLink="/jobs" id="job">
+          Find job
+        </a>
+      </div>
+      <div class="link account" id="account">
+        <a routerLink="/user/account" [replaceUrl]="true">Account</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
     <div class="content">
       <div class="left">
 
         <div class="account-registration" *ngIf="ui.showRegistration">
           <div class="title">
-            <h1>Continue your account registration</h1>
+            <h1>Finish your account registration</h1>
           </div>
           <div class="text">
             <ul>
@@ -55,10 +36,9 @@
             </ul>
           </div>
           <button class="orange-button" (click)="registration('continue')" id="continue-registration">
-            Continue<ion-icon name="chevron-forward-outline"></ion-icon>
+            Finish<ion-icon name="chevron-forward-outline"></ion-icon>
           </button>
         </div>
-
 
         <div class="add-restaurant" *ngIf="ui.showAdd">
           <div class="title">
@@ -153,6 +133,7 @@
                 </div>
                 <div class="button">
                   <button class="go">
+                    <!-- fsdafasd -->
                     <ion-icon name="chevron-forward-outline"></ion-icon>
                   </button>
                 </div>

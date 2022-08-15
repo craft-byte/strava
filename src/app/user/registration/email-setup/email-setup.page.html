@@ -1,5 +1,5 @@
 <ion-content>
-  <div class="app">
+  <div class="app a-page-with-box">
     <div class="box">
       <div class="header">
         <h1 id="title">
@@ -20,7 +20,7 @@
         </div>
         <div class="email-info">
           <button *ngIf="!ui.sent" [disabled]="ui.disableSend" id="send" (click)="send()">Send</button>
-          <div class="email-message">
+          <div class="email-message" *ngIf="ui.emailMessage.length > 0">
             {{ ui.emailMessage }}
           </div>
         </div>

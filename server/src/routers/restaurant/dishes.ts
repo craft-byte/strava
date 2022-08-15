@@ -34,6 +34,7 @@ router.get("/", allowed("manager", "dishes"), async (req, res) => {
     res.send(result);
 });
 router.post("/", allowed("manager", "dishes", "add"), async (req, res) => {
+    console.log("HELLO?");
     const { restaurantId } = req.params;
     const { dish } = req.body;
 
@@ -91,33 +92,6 @@ router.get("/overview/:time", allowed("manager", "dishes"), async (req, res) => 
     }
 
     res.send(dishes);
-});
-router.post("/", allowed("manager", "dishes", "add"), async (req, res) => {
-    const { restaurantId } = req.params;
-
-    req.body.image.date = new Date();
-
-    req.body.image.data = bufferFromString(req.body.image.data);
-
-    const newDish: Dish = {
-        ...req.body,
-        bought: 0,
-        liked: 0,
-        choosen: false,
-        dates: [],
-        sale: null,
-        created: new Date(),
-        sales: [],
-        prices: [],
-        _id: id()
-    };
-
-
-    const result = await Restaurant(restaurantId).dishes.add(newDish);
-
-    console.log("added dish: ", result.acknowledged);
-
-    res.send(result);
 });
 router.patch("/find", allowed("manager", "dishes"), async (req, res) => {
     const { restaurantId } = req.params as any;

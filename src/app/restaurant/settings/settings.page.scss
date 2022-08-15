@@ -1,4 +1,6 @@
 .app {
+    margin-bottom: 200px;
+    
     .block {
         margin-top: 24px;
         & > .title {
@@ -6,7 +8,6 @@
             color: var(--text-color);
         }
         .content {
-            width: 512px;
             .setting {
                 border-bottom: 1px solid rgb(245, 245, 245);
                 height: 84px;
@@ -23,6 +24,185 @@
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                }
+            }
+        }
+        .payments {
+            .method {
+                width: 100%;
+                margin-top: 12px;
+                height: 82px;
+                border-radius: 8px;
+                border-left: 4px solid var(--orange);
+                display: flex;
+                .icon {
+                    width: 82px;
+                    font-size: 32px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: var(--text-color);
+                }
+                .name-status {
+                    display: flex;
+                    flex-direction: column;
+                    .status {
+                        border-radius: 8px;
+                        width: 82px;
+                        height: 22px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .name {
+                        margin-top: 8px;
+                        font-size: 18px;
+                        color: var(--text-color);
+                    }
+                }
+                .switch {
+                    margin-left: 112px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+            .card {
+                border-left: 4px solid var(--purple);
+                .restricted {
+                    padding-left: 32px;
+                    width: 228px;
+                    color: var(--text-color);
+                    font-size: 14px;
+                    a {
+                        color: var(--black);
+                        cursor: pointer;
+                        &:hover {
+                            color: var(--orange);
+                        }
+                    }
+                }
+            }
+            .payouts {
+                width: 100%;
+                margin-top: 12px;
+                height: 124px;
+                border-radius: 8px;
+                border-left: 4px solid var(--blue);
+                display: flex;
+                .icon {
+                    width: 82px;
+                    font-size: 32px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: var(--text-color);
+                }
+                .name-status {
+                    display: flex;
+                    flex-direction: column;
+                    .status {
+                        border-radius: 8px;
+                        width: 82px;
+                        height: 22px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .name {
+                        margin-top: 8px;
+                        font-size: 18px;
+                        color: var(--text-color);
+                    }
+                }
+                .bank {
+                    margin-left: 42px;
+                    padding: 8px;
+                    border-radius: 8px;
+                    border: 2px solid var(--blue);
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    cursor: pointer;
+                    transition: .4s all;
+
+                    &:hover {
+                        -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                        -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                        box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+                    }
+                    .name {
+                        font-size: 15px;
+                        color: var(--text-color);
+                    }
+                    .line {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        .last4 {
+                            display: flex;
+                            align-items: center;
+                            .circles {
+                                font-size: 14px;
+                                color: var(--text-color);
+                            }
+                            .numbers {
+                                margin-left: 6px;
+                            }
+                        }
+                        .currency {
+                            width: 42px;
+                            height: 24px;
+                            color: var(--blue-dark);
+                            background-color: var(--blue-back);
+                            border-radius: 8px;
+                            text-transform: uppercase;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                    }
+                    .status {
+                        width: 96px;
+                        border-radius: 6px;
+                        height: 20px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .payedout {
+                        color: var(--text-color);
+                        .currency,.amount {
+                            text-transform: uppercase;
+                            color: var(--black);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .red {
+        margin-top: 32px;
+        .title {
+            font-size: 20px;
+            font-weight: 550;
+        }
+        .body {
+            border-radius: 8px;
+            border: 1px solid var(--red);
+            .remove {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                padding: 12px;
+                align-items: center;
+                .info {
+                    .big {
+                        font-weight: 550;
+                    }
+                    .small {
+                        margin-top: 4px;
+                    }
                 }
             }
         }

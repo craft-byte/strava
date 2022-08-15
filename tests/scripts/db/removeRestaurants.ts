@@ -12,8 +12,9 @@ export async function restaurantCleaning(dbName: string, strict: boolean) {
         }
 
         const result = await client.db(dbName).collection("restaurants").deleteMany({});
+        const result2 = await client.db(dbName).collection("work").deleteMany({});
 
-        console.log("RESTAURANTS CLEANING RESULT: ", result.deletedCount);
+        console.log("RESTAURANTS CLEANING RESULT: ", result.deletedCount, result2.deletedCount);
     } catch (e) {
         if(strict) {
             console.log("RESTAURANTS CLEANING ERROR");

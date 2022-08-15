@@ -1,8 +1,8 @@
-import { ThisReceiver } from '@angular/compiler';
-import { StringMapWithRename } from '@angular/compiler/src/compiler_facade_interface';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
 import { UserService } from '../../user.service';
 
@@ -25,11 +25,12 @@ export class NamePage implements OnInit {
   name: string;
 
   constructor(
-    private router: Router,
+    private router: RouterService,
     private service: UserService,
     private main: MainService,
     private route: ActivatedRoute,
     private toastCtrl: ToastController,
+    private loader: LoadService,
   ) { };
 
   checkName() {
@@ -77,13 +78,13 @@ export class NamePage implements OnInit {
   
   skip() {
     if(this.type == "1") {
-      this.router.navigate(["user/email"], { replaceUrl: true });
+      this.router.go(["user/email"], { replaceUrl: true });
     } else {
       const last = this.route.snapshot.queryParamMap.get("last");
       if(last) {
-        return this.router.navigate([last], { replaceUrl: true });
+        return this.router.go([last], { replaceUrl: true });
       }
-      this.router.navigate(["user/info"], { replaceUrl: true });
+      this.router.go(["user/info"], { replaceUrl: true });
     }
   }
 
@@ -97,6 +98,7 @@ export class NamePage implements OnInit {
       this.ui.buttonTitle = "Submit";
       this.name = this.main.userInfo.name;
     }
+    this.loader.end();
   }
 
 }

@@ -52,7 +52,7 @@ router.get("/", allowed("manager", "dishes"), async (req, res) => {
 
     res.send(result);
 });
-router.patch("/", allowed("manager", "dishes", "add"), async (req, res) => {
+router.post("/", allowed("manager", "dishes", "add"), async (req, res) => {
     const { restaurantId, dishId } = req.params;
 
     const update: any = {

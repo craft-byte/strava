@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb";
 import { categories } from "../assets/consts";
-import { Component, Feedback, ManagerSettings } from "../models/components";
+import { Component, Feedback, ManagerSettings, Time } from "../models/components";
 import { getDate, id } from "./functions";
 import { Restaurant } from "./restaurant";
 import { getUserPromise } from "./users";
 
 
-function getDelay(time: number | Date) {
+function getDelay(time: number | Date): Time {
 
     let number: number = null!;
 
@@ -15,7 +15,7 @@ function getDelay(time: number | Date) {
     } else if(time instanceof Date) {
         number = time.getTime();
     } else {
-        return null;
+        return null!;
     }
 
 
@@ -26,7 +26,12 @@ function getDelay(time: number | Date) {
 
     
 
-    return { hours: hours, minutes: Math.floor(minutes), nextMinute: (Math.ceil(minutes) - minutes) * 60000, color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green" };    
+    return {
+        hours: hours,
+        minutes: Math.floor(minutes),
+        nextMinute: Math.floor((Math.ceil(minutes) - minutes) * 60000),
+        color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green"
+    };    
 }
 function bufferFromString(a: string) {
     if(typeof a != "string") {
@@ -152,12 +157,12 @@ async function convertFeedbacks(feedbacks: Feedback[]) {
 
 
     for(let i of feedbacks) {
-        ratings += i.feedback.stars;
+        ratings += i.stars;
         result.push({
             time: getWorked(i.worked),
-            restaurant: await getRestaurantName(i.restaurant),
-            stars: i.feedback.stars,
-            text: i.feedback.comment,
+            restaurant: await getRestaurantName(i.restaurantId),
+            stars: i.stars,
+            text: i.comment,
             role: i.role
         });
     }

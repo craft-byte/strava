@@ -1,6 +1,6 @@
-import { ObjectId, UpdateResult } from "mongodb";
+import { FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
 import { client } from "..";
-import { db } from "../environments/server";
+import { mainDBName } from "../environments/server";
 import { User } from "../models/general";
 import { id } from "./functions";
 
@@ -8,14 +8,14 @@ import { id } from "./functions";
 
 
 function getUserPromise(search: Object, options?: Object): Promise<User | null> {
-    return client.db(db).collection("users").findOne<User>(search, options);
+    return client.db(mainDBName).collection("users").findOne<User>(search, options);
 }
 
 async function getUsers(search: any, options?: Object): Promise<User[]> {
     let result = null;
 
     try {
-        result = await client.db(db).collection("users")
+        result = await client.db(mainDBName).collection("users")
             .find<User>(search, options).toArray();
     } catch (e) {
         console.error(e);
@@ -26,30 +26,26 @@ async function getUsers(search: any, options?: Object): Promise<User[]> {
     return result;
 }
 
-async function getUser(userId: string | ObjectId, options?: Object): Promise<User> {
-    let result = null;
+async function getUser(userId: string | ObjectId, options?: FindOptions<User>): Promise<User> {
 
     try {
-        result = await getUserPromise({ _id: id(userId) }, options);
+        return (await client.db(mainDBName).collection("users").findOne<User>({ _id: id(userId) }, options))!;
     } catch (e) {
         console.error(e);
         throw new Error("at getUser()")
     }
-
-
-    return result as User;
 }
 
-async function updateUser(userId: string | ObjectId, update: any, options?: Object): Promise<UpdateResult> {
+async function updateUser(userId: string | ObjectId, update: UpdateFilter<User>, options?: UpdateOptions): Promise<UpdateResult> {
 
     let result = null;
 
     try {
         if(options) {
-            result = await client.db(db).collection("users")
+            result = await client.db(mainDBName).collection("users")
                 .updateOne({ _id: id(userId) }, update, options);
         } else {
-            result = await client.db(db).collection("users")
+            result = await client.db(mainDBName).collection("users")
                 .updateOne({ _id: id(userId) }, update);
         }
     } catch (e) {
@@ -64,7 +60,7 @@ async function addUser(newUser: User) {
     let result = null;
 
     try {
-        result = await client.db(db).collection("users")
+        result = await client.db(mainDBName).collection("users")
             .insertOne(newUser);
     } catch (e) {
         console.error(e);
@@ -90,7 +86,7 @@ async function byUsername(username: string, options?: Object): Promise<User> {
 
 async function aggregateUser(pipeline: any[]) {
     try {
-        return await client.db(db).collection("users")
+        return await client.db(mainDBName).collection("users")
             .aggregate(pipeline).toArray();
     } catch (e) {
         console.error(e);

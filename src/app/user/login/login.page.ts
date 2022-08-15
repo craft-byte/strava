@@ -4,6 +4,9 @@ import { CookieService } from 'ngx-cookie-service';
 import { User } from 'src/models/user';
 import { UserService } from '../user.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoadService } from 'src/app/other/load.service';
+import { threadId } from 'worker_threads';
+import { RouterService } from 'src/app/other/router.service';
 
 @Component({
   selector: 'app-login',
@@ -28,8 +31,9 @@ export class LoginPage implements OnInit {
   constructor(
     private main: MainService,
     private cookieservice: CookieService,
-    private router: Router,
+    private router: RouterService,
     private route: ActivatedRoute,
+    private loader: LoadService,
   ) {
     this.username = this.cookieservice.get("CTRABAUSERID");
   };
@@ -79,6 +83,8 @@ export class LoginPage implements OnInit {
       return;
     }
 
+    await this.loader.start();
+
     this.ui.disableLogin = true;
 
 
@@ -88,58 +94,24 @@ export class LoginPage implements OnInit {
 
     if(result) {
       if(last) {
-        this.router.navigate([last], { replaceUrl: true });
+        this.router.go([last], { replaceUrl: true });
       } else {
-        this.router.navigate(["user/info"], { replaceUrl: true });
+        this.router.go(["user/info"], { replaceUrl: true });
       }
     } else {
       this.ui.passwordMessage = "Please, check your data again";
       this.passwordInput.nativeElement.focus();
       this.ui.disableLogin = false;
+      this.loader.end();
     }
   }
 
 
   signUp() {
-    this.router.navigate(["register"], { replaceUrl: true });
+    this.router.go(["register"], { replaceUrl: true });
   }
 
-  // async login() {
-  //   this.disableButton = true;
-  //   if(!this.password || this.password.length < 3) {
-  //     this.msg = "Please provide the correct password.";
-  //     this.disableButton = false;
-  //     return; 
-  //   }
-  
-  // const result = await this.main.login({ username: this.username, password: this.password });
-    
-  //   if(!result) {
-  //     this.msg = "Check your data again.";
-  //     this.disableButton = false;
-  //     return;
-  //   }
-    
-  //   if(result) {
-  //     const last = this.route.snapshot.queryParams.last;
-  //     if(last) {
-  //       this.router.navigate([last], { replaceUrl: true, queryParams: { last: null } });
-  //       return;
-  //     }
-  //     this.router.navigate(["user/info"], { replaceUrl: true, queryParams: { last: null }, queryParamsHandling: "merge" });
-  //   } else {
-  //     this.msg = "Something went wrong.";
-  //   }
-  // }
   async ngOnInit() {
-    // const authorized = await this.service.get("login");
-
-    // if(authorized) {
-    //   this.main.userInfo = authorized as any;
-    //   if(!(authorized as any).email) {
-    //     return this.router.navigate(["email-setup"], { replaceUrl: true, queryParamsHandling: "merge", queryParams: { last: null } });
-    //   }
-    //   return this.router.navigate(["user/info"], { replaceUrl: true, queryParamsHandling: "merge", queryParams: { last: null } });
-    // }
+    this.loader.end();
   }
 }

@@ -1,0 +1,77 @@
+<ion-content>
+  <div class="app">
+    <div class="box">
+      <div class="header">
+        <h1 id="title">
+          Ctraba
+        </h1>
+        <h2 id="subtitle">Bank account</h2>
+      </div>
+      <div *ngIf="ui.show && form" [formGroup]="form" class="body">
+        <div class="number">
+          <div class="title">
+            Bank account number
+          </div>
+          <input type="text" formControlName="number" id="number">
+        </div>
+        <div class="routing">
+          <div class="branch">
+            <div class="title">
+              Branch transit number
+            </div>
+            <input type="text" formControlName="branch" id="branch">
+          </div>
+          <div class="institution">
+            <div class="title">
+              Financial institution number
+            </div>
+            <input type="text" formControlName="institution" id="institution">
+          </div>
+        </div>
+        <div class="country">
+          <div class="title">
+            Bank country
+          </div>
+          <select (change)="countryChange($event)" formControlName="country" id="country">
+            <option *ngFor="let i of countries" [value]="i.code">{{i.name}}</option>
+          </select>
+        </div>
+        <div class="name">
+          <div class="title">
+            Holder's name
+          </div>
+          <input formControlName="name" type="text">
+        </div>
+        <div class="currencies">
+          <div (click)="curr(i)" [ngClass]="{ a: currency == i }" *ngFor="let i of currencies" class="one">
+            {{ i }}
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="back" (click)="back()">
+          Back
+        </button>
+        <button id="next" (click)="next()">
+          Next
+        </button>
+      </div>
+    </div>
+    <div class="footer">
+      <!-- <div class="language" id="language">
+        <p id="language-title">English (Canada)</p>
+        <div class="icon">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="links">
+        <div class="link">
+          <a href="">Main</a>
+        </div>
+        <div class="link">
+          <a href="">Help</a>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</ion-content>

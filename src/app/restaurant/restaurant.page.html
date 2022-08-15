@@ -8,6 +8,9 @@
     </div>
   </div>
   <div class="links">
+    <div (click)="go('home')" class="link home" [ngClass]="{ active: page == 'home' }">
+      <a>Home</a>
+    </div>
     <div (click)="go('dishes')" class="link dishes" [ngClass]="{ active: page == 'dishes' }">
       <a>Dishes</a>
     </div>

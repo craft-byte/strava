@@ -62,7 +62,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
     this.restaurant = this.service.restaurant;
     this.routerSubs = this.router.events.subscribe(e => {
       if(e instanceof NavigationEnd) {
-        this.page = e.url.split("/")[3] || "dishes";
+        this.page = e.url.split("/")[3] || "home";
       }
     })
   }

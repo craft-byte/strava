@@ -8,11 +8,32 @@
     </div>
   </div>
   <div *ngIf="ui.showQrCodes" class="qr-codes">
-    <div class="title">
-      Qr codes
+    <div class="top">
+      <div class="title">
+        QR codes
+      </div>
+      <div class="buttons">
+        <button (click)="removeTable()" id="remove">
+          <ion-icon name="remove"></ion-icon>
+        </button>
+        <button (click)="addTable()" id="add">
+          <ion-icon name="add"></ion-icon>
+        </button>
+      </div>
     </div>
-    <div class="list">
-      
+    <div class="list" *ngIf="qrCodes && qrCodes.length > 0">
+      <div *ngFor="let i of qrCodes" class="table">
+          <div class="title">
+            {{i.table}}
+          </div>
+          <div class="image">
+            <span title="Download QR code">
+              <a [href]="i.downloadUrl" download="{{restaurantName}}-qrcode-for-table-{{i.table}}">
+                <qrcode (qrCodeURL)="onChangeURL($event, i.table - 1)" [qrdata]="i.link" [width]="154" [errorCorrectionLevel]="'M'"></qrcode>
+              </a>
+            </span>
+        </div>
+      </div>
     </div>
   </div>
   <!-- <div *ngIf="ui.showBest" class="best">

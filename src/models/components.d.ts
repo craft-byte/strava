@@ -45,7 +45,7 @@ interface RestaurantSettings {
         minPrice: number;
     },
     work: {
-        maxOrdersCooking: number;
+        maxOrdersCooking: number | "unlimited";
     },
     dishes: {
         strictIngredients: boolean;

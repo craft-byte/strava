@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AlertController, PopoverController, ToastController } from '@ionic/angular';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
+import { threadId } from 'worker_threads';
 import { RestaurantService } from '../../services/restaurant.service';
 import { MoreComponent } from './more/more.component';
 
@@ -23,10 +27,13 @@ interface Customer {
 export class CustomersPage implements OnInit {
 
   customers: Customer[];
+  qrCodes: { table: number; downloadUrl: any; link: string; }[];
+  restaurantName: string;
 
   ui = {
     showBest: false,
     showList: false,
+    showQrCodes: true,
   };
 
   constructor(
@@ -34,11 +41,58 @@ export class CustomersPage implements OnInit {
     private popoverCtrl: PopoverController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
-    private router: Router,
-  ) { };
+    private router: RouterService,
+    private loader: LoadService,
+  ) {
+    this.restaurantName = this.service.restaurant.name;
+  };
 
+
+  find(e) {
+    return e;
+  }
+
+  async addTable() {
+    const result: any = await this.service.post({}, "customers", "table");
+
+    this.qrCodes.push({
+      table: this.qrCodes.length + 1,
+      link: `https://localhost:8101/order/${this.service.restaurantId}?table=${this.qrCodes.length + 1}`,
+      downloadUrl: null
+    });
+
+    if(!result.updated) {
+      this.qrCodes.pop();
+      (await this.toastCtrl.create({
+        duration: 1500,
+        color: "red",
+        message: "Table is not added. Please, try again later.",
+        mode: "ios"
+      })).present();
+    }
+
+  }
+  async removeTable() {
+    const result: any = await this.service.delete("customers", "table");
+
+    const last = this.qrCodes.pop();
+
+    if(!result.updated) {
+      this.qrCodes.push(last);
+      (await this.toastCtrl.create({
+        duration: 1500,
+        color: "red",
+        message: "Table is not removed. Please, try again later.",
+        mode: "ios"
+      })).present();
+    }
+  }
+
+  onChangeURL(event: SafeUrl, table: number) {
+    this.qrCodes[table].downloadUrl = event;
+  }
   user(id: string) {
-    this.router.navigate(["restaurant", this.service.restaurantId, "customer", id], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "customer", id], { replaceUrl: true });
   }
   async more(event: any, id: string, isBlacklisted: boolean) {
     const popover = await this.popoverCtrl.create({
@@ -78,6 +132,7 @@ export class CustomersPage implements OnInit {
         const { role } = await alert.onDidDismiss();
 
         if(role == "submit") {
+          await this.loader.start();
           const result: any = await this.service.delete("customers/blacklist", id);
 
           if(result.done) {
@@ -95,14 +150,24 @@ export class CustomersPage implements OnInit {
               mode: "ios",
             })).present();
           }
+          this.loader.end();
         }
       }
     }
   }
 
   async updateCustomers() {
-    const result: { customers: Customer[]; qrCodes: string[]; } = await this.service.get("customers");
+    await this.loader.start();
+    
+    const result: { customers: Customer[]; qrCodes: { table: number; downloadUrl: string; }[]; } = await this.service.get("customers");
 
+    this.qrCodes = [];
+    for(let i of result.qrCodes) {
+      this.qrCodes.push({
+        ...i,
+        link: `https://localhost:8101/order/${this.service.restaurantId}?table=${i.table}`
+      });
+    }
     if(!result) {
       console.error("NO RESULT WTF");
       return;
@@ -115,6 +180,8 @@ export class CustomersPage implements OnInit {
       }
       this.ui.showList = true;
     }
+
+    await this.loader.end();
   }
 
 

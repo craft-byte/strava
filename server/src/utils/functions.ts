@@ -33,13 +33,13 @@ function compare(currentPassword: string, oldPassword: string) {
         return false;
     }
 }
-function id(str?: string | ObjectId) {
+function id(str?: string | ObjectId): ObjectId {
     if(str) {
         if(typeof str == "object") {
             return str;
         }
         if(str.length != 24) {
-            return null;
+            return null!;
         }
         return new ObjectId(str);
     }
@@ -102,7 +102,7 @@ async function sendEmail(email: string, type: "verification", user: string) {
             <p>To verify your email address enter this code.</p>
             <h2>${code}</h2>
         `
-        const update = await updateUser(user, { $set: { emailVerificationCode: code.toString(), emailVerify: email } });
+        const update = await updateUser(user, { $set: { emailVerificationCode: Number(code), emailVerify: email } });
 
         if(update.modifiedCount > 0) {
             log("success", "settings email to an user");

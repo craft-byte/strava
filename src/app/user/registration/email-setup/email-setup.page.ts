@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
 import { UserService } from '../../user.service';
 
@@ -11,6 +13,7 @@ import { UserService } from '../../user.service';
 export class EmailSetupPage implements OnInit {
 
   email: string;
+  code: string;
 
   ui = {
     emailRed: false,
@@ -27,28 +30,38 @@ export class EmailSetupPage implements OnInit {
   constructor(
     private main: MainService,
     private service: UserService,
-    private router: Router,
+    private router: RouterService,
     private route: ActivatedRoute,
+    private loader: LoadService,
   ) { };
 
   exit() {
     const last = this.route.snapshot.queryParamMap.get("last");
     if(last) {
-      this.router.navigate([last], { replaceUrl: true });
+      this.router.go([last], { replaceUrl: true });
     } else {
-      this.router.navigate(["user/info"], { replaceUrl: true });
+      this.router.go(["user/info"], { replaceUrl: true });
     }
   }
 
-  async onCodeCompleted(code: number) {
-    this.ui.disableCode = true;
+  async onCodeCompleted(code: string) {
+    this.code = code;
 
-    const result = await this.service.post<{ error: "email" | "code1" | "code2" | "none" }>({ code }, "email/verify");
+    this.verify();
+  }
+
+  async verify() {
+    this.ui.disableCode = true;
+    const result = await this.service.post<{ error: "email" | "email2" | "code1" | "code2" | "none" }>({ code: this.code }, "email/verify");
 
     if(result.error == "email") {
       this.ui.disableCode = true;
       this.ui.emailRed = true;
       this.ui.emailMessage = "Your email was not set yet";
+    } else if(result.error == "email2") {
+      this.ui.disableCode = false;
+      this.ui.emailRed = true;
+      this.ui.emailMessage = "Your email is taken. If you are sure it is not contact us.";
     } else if(result.error == "code1") {
       this.ui.disableSend = false;
       this.ui.sent = false;
@@ -60,12 +73,11 @@ export class EmailSetupPage implements OnInit {
       this.main.userInfo.email = this.email;
       const last = this.route.snapshot.queryParamMap.get("last");
       if(last) {
-        this.router.navigate([last], { replaceUrl: true });
+        this.router.go([last], { replaceUrl: true });
       } else {
-        this.router.navigate(["user/avatar/1"], { replaceUrl: true });
+        this.router.go(["user/avatar/1"], { replaceUrl: true });
       }
     }
-
   }
 
   emailInput(event: any) {
@@ -107,8 +119,10 @@ export class EmailSetupPage implements OnInit {
       this.ui.disableCode = true;
       this.ui.disableSend = false;
       if(result.error == "used") {
-        this.ui.emailRed = true;
-        this.ui.emailMessage = "Your email is already taken";
+        if(this.email != "test@ctraba.com") {
+          this.ui.emailRed = true;
+          this.ui.emailMessage = "Your email is already taken";
+        }
       } else if(result.error == "wrong") {
         this.ui.emailRed = true;
         this.ui.emailMessage = "Your email is not correct";
@@ -150,6 +164,7 @@ export class EmailSetupPage implements OnInit {
         }
       }
     }
+    this.loader.end();
   }
 
 }

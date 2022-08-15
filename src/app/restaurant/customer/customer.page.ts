@@ -1,6 +1,8 @@
 import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
 import { User } from 'src/models/user';
 import { RestaurantService } from '../services/restaurant.service';
@@ -32,17 +34,19 @@ export class CustomerPage implements OnInit {
 
   constructor(
     private service: RestaurantService,
-    private router: Router,
+    private router: RouterService,
     private route: ActivatedRoute,
+    private loader: LoadService,
   ) { };
 
   async ngOnInit() {
+    await this.loader.start();
     const userId = this.route.snapshot.paramMap.get("userId");
 
     const result: any = await this.service.get("customers", userId);
 
     if(!result) {
-      return this.router.navigate(["restaurant", this.service.restaurantId, "people", "customers"], { replaceUrl: true });
+      return this.router.go(["restaurant", this.service.restaurantId, "people", "customers"], { replaceUrl: true });
     }
 
     const { orders, blacklisted, user, details } = result;
@@ -54,6 +58,8 @@ export class CustomerPage implements OnInit {
 
 
     this.image = getImage(this.user.avatar) || "./../../../assets/images/plain-avatar.jpg";
+
+    this.loader.end();
   }
 
 }

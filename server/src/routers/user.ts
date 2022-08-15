@@ -1,6 +1,6 @@
 import { ObjectId } from "bson";
 import { Router } from "express";
-import { MODE } from "../index";
+import { MODE, stripe } from "../index";
 import { getDate, id, log, makePassword, sendEmail } from "../utils/functions";
 import { Invitation } from "../models/components";
 import { addUser, byUsername, getUser, getUserPromise, getUsers, updateUser } from "../utils/users";
@@ -29,7 +29,7 @@ router.post("/create", async (req, res) => {
 
     const newPassword = makePassword(password);
 
-    if(!newPassword) {
+    if (!newPassword) {
         return res.send({ acknowledged: false, error: "password" });
     }
 
@@ -41,10 +41,17 @@ router.post("/create", async (req, res) => {
         username: username as string,
         invitations: [] as Invitation[],
         works: [] as ObjectId[],
-        restaurants: [] as ObjectId[],
+        restaurants: [] as any[],
         name: null as unknown as string,
         phone: null as unknown as string,
         sessions: [],
+        info: {
+            country: null!,
+            dob: null!,
+            city: null!,
+            state: null!,
+        },
+        fullName: null!,
     };
 
     const result = await addUser(newUser);
@@ -70,7 +77,7 @@ router.patch("/login", async (req, res, next) => {
         }
 
 
-        if(!user) {
+        if (!user) {
             return res.sendStatus(401);
         }
 
@@ -101,7 +108,6 @@ router.patch("/login", async (req, res, next) => {
 });
 router.get("/authenticate/:send", async (req, res) => {
     if (!req.isAuthenticated()) {
-        console.log("NOT AUTHENTICATED");
         return res.send(false);
     }
     const { send } = req.params;
@@ -132,52 +138,35 @@ router.delete("/logout", logged, async (req, res) => {
 });
 
 
-// router.get("/login", async (req, res) => {
-//     if (req.isAuthenticated()) {
-//         return res.send(
-//             await getUser(req.user as string, {
-//                 projection: {
-//                     works: 1,
-//                     invitations: 1,
-//                     restaurants: 1,
-//                     _id: 1,
-//                     username: 1,
-//                     name: 1,
-//                     phone: 1,
-//                     avatar: 1,
-//                     email: 1
-//                 }
-//             })
-//         );
-//     } else {
-//         return res.send(null);
-//     }
-// });
-
-
 router.get("/userInfo", logged, async (req, res) => {
     const user = await getUser(
         req.user as string,
-        { projection: {
-            username: 1,
-            name: 1,
-            restaurants: 1,
-            works: 1,
-            email: 1,
-            avatar: { modified: 1 },
-        } }
+        {
+            projection: {
+                username: 1,
+                name: 1,
+                restaurants: 1,
+                works: 1,
+                email: 1,
+                avatar: { modified: 1 },
+            }
+        }
     );
 
-    if(!user) {
+
+
+
+
+    if (!user) {
         return res.sendStatus(404);
     }
 
     const getRestaurantNameAndId = async (restaurantId: string | ObjectId, type: "works" | "restaurants") => {
         const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1 } });
 
-        if(!restaurant) {
+        if (!restaurant) {
             const $pull: any = {};
-            $pull[type] = id(restaurantId); 
+            $pull[type] = id(restaurantId);
             const result = await updateUser(req.user as string, { $pull });
             console.log("WARNING: users has restaurant that has been removed     ", type, " removed from user: ", result.modifiedCount > 0);
             return null;
@@ -195,40 +184,40 @@ router.get("/userInfo", logged, async (req, res) => {
     let showInvitations = false;
     let registrationParagraphs: any = {};
 
-    if(!user.email) {
+    if (!user.email) {
         registrationParagraphs.email = "Add email address";
     }
-    if(!user.avatar) {
+    if (!user.avatar) {
         registrationParagraphs.avatar = "Add avatar image";
     }
 
     const restaurantsPromise = [];
     const worksPromise = [];
 
-    if(user.restaurants!.length > 0) {
+    if (user.restaurants!.length > 0) {
         showRestaurants = true;
-        for(let i of user.restaurants!) {
-            restaurantsPromise.push(getRestaurantNameAndId(i, "restaurants"));
+        for (let i of user.restaurants!) {
+            restaurantsPromise.push(getRestaurantNameAndId(i.restaurantId, "restaurants"));
         }
     }
-    if(user.works!.length > 0) {
+    if (user.works!.length > 0) {
         showJobs = true;
-        for(let i of user.works!) {
+        for (let i of user.works!) {
             worksPromise.push(getRestaurantNameAndId(i, "works"));
         }
     }
-    
+
 
     const restaurants = [];
     const works = [];
-    
-    for(let i of await Promise.all(restaurantsPromise)) {
-        if(i) {
+
+    for (let i of await Promise.all(restaurantsPromise)) {
+        if (i) {
             restaurants.push(i);
         }
     }
-    for(let i of await Promise.all(worksPromise)) {
-        if(i) {
+    for (let i of await Promise.all(worksPromise)) {
+        if (i) {
             works.push(i);
         }
     }
@@ -255,6 +244,16 @@ router.get("/avatar", logged, async (req, res) => {
 
 
 
+router.get("/name", logged, async (req, res) => {
+    const user = await getUser(req.user as string, { projection: { fullName: 1 } });
+
+    res.send(user.fullName);
+});
+
+
+
+
+
 
 // router.get("/invitations", logged, async (req, res) => {
 
@@ -278,29 +277,10 @@ router.get("/avatar", logged, async (req, res) => {
 //     res.send(result);
 // });
 
-// router.post("/update", logged, async (req, res) => {
-//     const { field, value } = req.body;
-
-//     console.log(field, value);
-
-//     const $set: any = {};
-
-//     $set[field] = value;
-
-//     const update = await updateUser(
-//         req.user as string,
-//         { $set },
-//     );
-
-//     console.log(update);
-
-//     res.send(update);
-// });
-
 router.post("/username/check", async (req, res) => {
     const { username } = req.body;
 
-    if(!username || username.length < 6) {
+    if (!username || username.length < 6) {
         return res.send(false);
     }
 
@@ -317,20 +297,20 @@ router.post("/username/check", async (req, res) => {
 router.get("/email/setup", logged, async (req, res) => {
     const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1 } });
 
-    res.send({...user, emailVerificationCode: !!user.emailVerificationCode });
+    res.send({ ...user, emailVerificationCode: !!user.emailVerificationCode });
 });
 router.post("/email/check", logged, async (req, res) => {
     const { email } = req.body;
-    
+
     const format = /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
 
-    if(!format.test(email)) {
+    if (!format.test(email)) {
         return res.send(false);
     }
 
     const user = await getUserPromise({ email }, { projection: { _id: 1 } });
 
-    if(email == "test@ctraba.com" && MODE == "testing") {
+    if (email == "test@ctraba.com" && MODE == "testing") {
         return res.send(true);
     }
 
@@ -344,7 +324,7 @@ router.post("/email/setEmail", logged, async (req, res) => {
         const inUser = await getUserPromise({ email }, { projection: { _id: 1 } });
 
         if (inUser) {
-            if(MODE != "testing" || email != "test@ctraba.com") {
+            if (MODE != "testing" || email != "test@ctraba.com") {
                 return res.send({ acknowledged: false, error: "used" });
             };
         }
@@ -360,27 +340,60 @@ router.post("/email/setEmail", logged, async (req, res) => {
 router.post("/email/verify", logged, async (req, res) => {
     const { code } = req.body;
 
-    const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1 } });
+    const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1, stripeId: 1 } });
+
+    console.log(user);
+
     if (!user) {
         return res.sendStatus(404);
     }
-    if(!user.emailVerify) {
+    if (!user.emailVerify) {
         return res.send({ error: "email" });
     }
-    if(!user.emailVerificationCode) {
+    if (!user.emailVerificationCode) {
         return res.send({ error: "code1" });
     }
-    if(user.emailVerificationCode != code) {
-        if(MODE == "testing" && code == "111111") {
-            const update = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerify: null, emailVerificationCode: null } });
+    if (user.emailVerificationCode != Number(code)) {
+        if (MODE == "testing" && code == "111111") {
+            const update = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerify: null!, emailVerificationCode: null! } });
 
             return res.send({ error: update.modifiedCount > 0 ? "none" : "update" });
         }
         return res.send({ error: "code2" });
     }
 
-    if(user.emailVerificationCode === code) {
-        const update = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerify: null, emailVerificationCode: null } });
+    if (user.emailVerificationCode == Number(code)) {
+
+        const customers = await stripe.customers.list({ email: user.emailVerify });
+
+        if(customers.data.length > 0) {
+            return res.send({ error: "email2" });
+        }
+
+        try {
+            const customer = await stripe.customers.create({
+                name: user.username,
+                email: user.emailVerify,
+                description: "Ctraba customer",
+                metadata: {
+                    userId: user._id!.toString()
+                }
+            });
+            const userUpdate = await updateUser(user._id!, {
+                $set: { stripeCustomerId: customer.id },
+            });
+
+            console.log("stripe id is set to user: ", userUpdate.modifiedCount > 0);
+        } catch (e) {
+            console.error(e);
+            return res.sendStatus(500);
+        }
+
+
+
+
+        const update = await updateUser(req.user as string, { $set: { email: user.emailVerify, emailVerify: null!, emailVerificationCode: null! } });
+
 
         return res.send({ error: update.modifiedCount > 0 ? "none" : "update" });
     }
@@ -388,7 +401,7 @@ router.post("/email/verify", logged, async (req, res) => {
 router.post("/name/set", logged, async (req, res) => {
     const { name } = req.body;
 
-    if(!name || name.length < 6 || name.length > 30) {
+    if (!name || name.length < 6 || name.length > 30) {
         return res.sendStatus(422);
     }
 
@@ -404,11 +417,15 @@ router.post("/avatar", logged, async (req, res) => {
 
     try {
         const result = await sharp(buffer).resize(1000).png({ quality: 50 }).toBuffer();
-        const update = await updateUser(req.user as string, { $set: { avatar: {
-            binary: result,
-            modified: new Date(),
-        } } })
-    
+        const update = await updateUser(req.user as string, {
+            $set: {
+                avatar: {
+                    binary: result,
+                    modified: new Date(),
+                }
+            }
+        })
+
         res.send({
             updated: update.modifiedCount > 0
         });
@@ -467,7 +484,7 @@ router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
     }
 
 
-    const foundR = await Restaurant(userI!.restaurantId).get({ projection: { invitations: 1 } });
+    const foundR = await Restaurant(userI!.restaurantId!).get({ projection: { invitations: 1 } });
 
 
     if (!foundR || !foundR.invitations || foundR.invitations.length == 0) {

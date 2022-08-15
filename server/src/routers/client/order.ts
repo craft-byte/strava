@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
-import { BoolEnum } from "sharp";
-import { checkServerIdentity } from "tls";
+import Stripe from "stripe";
+import { resourceLimits } from "worker_threads";
 import { stripe } from "../..";
-import { Id } from "../../models/components";
-import { DishHashTableUltra, getDishPromise } from "../../utils/dish";
-import { getDate, id, log } from "../../utils/functions";
-import { convertDishes } from "../../utils/other";
+import { Order } from "../../models/general";
+import { DishHashTableUltra } from "../../utils/dish";
+import { id, log } from "../../utils/functions";
+import { sendMessage } from "../../utils/io";
+import { convertDishes, getDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
-import { aggregateUser, updateUser } from "../../utils/users";
+import { getUser } from "../../utils/users";
 import { checkSession } from "./functions";
 
 
@@ -25,83 +26,27 @@ router.get("/authenticate", async (req, res) => {
 
 
 
-
-// user comes
-// user scans
-// user didn't order anything
-// user leaves
-// user comes back immediately
-// user doesn't have to scan nothin again
-
-
-// 1 save session id in the url
-// 2 if user reloads page he just continues shoping
-// 3 if no session id in the url search for session in db
-// 3 if session is found offer to user to continue and ask to scan qr code or make order.
-// 3 if session not found ask to do stuff and create new session.
-
-// 2.2 check if another user's using the first user's session's table
-// 2.2 if so then check if the new table's user has dishes COOKING if does then ask first user to scan another's table qr code
-// 2.2 if no then ask the first user if he sure about sitting on the table cus there are other user's session.
-
-
-
-
-
-// how it goes:
-
-// 1 user1 comes to the restaurant
-// 2 user1 choses to stay in restaurant and scans table's qr code
-// 3 user1 sent socket request and created session
-// 4 user1's is changed. Added session id
-// 5 user1 goes to the washroom
-// 6 user2 comes to the restaurant
-// 7 user2 decides to stay in restaurant and scans user1's table's qr code
-// 8 user2 is informed that this table is in use but he doesn't see anybody so choses to stay at this table
-
-// option 1
-// 1 user2 goes to the washroom too
-// 2 user1 comes back and doesn't see anybody so sits and started shoping.
-// 3 user2 comes back and sees user1 so he has to change his table
-// end
-
-// option 2
-// 1 user2 ordered dishes and they're cooking
-// 2 user2 goes to the washroom
-// 3 user1 comes back
-// 4 user1 is not allowed to continue shoping on the table because user2's dishes are already cooking
-// 5 user1 has to choose another table
-// end
-
-// options 3
-// 1 user1 before going to the washroom ordered dishes and the dishes are cooking
-// 2 user2 can't use the user1's table
-// end
-
-
 router.post("/init", async (req, res) => {
     const { restaurantId } = req.params as any;
-    const { sessionId } = req.body;
-
-    const types = ["b", "e", "so", "sa", "a", "si", "d"];
+    const { table } = req.body;
 
     const result: {
         dishes: { [category: string]: any };
-        session?: {
-            dishes: any[];
-            date: string;
-            type: "order" | "table";
-            number: number;
-            hasToChange: boolean;
-            askToChange: boolean;
-        };
+        check?: any;
+        type: "in" | "out";
+        sessionExists: boolean;
+        restaurantId: string;
         ui: {
             title: string;
             showTypes: boolean;
             showDishes: boolean;
-        }
+            theme?: string;
+        };
     } = {
+        type: table ? "in" : "out",
         dishes: {},
+        sessionExists: false,
+        restaurantId,
         ui: {
             showTypes: false,
             showDishes: true,
@@ -109,65 +54,33 @@ router.post("/init", async (req, res) => {
         }
     };
 
+    if (table && typeof table != "number") {
+        return res.sendStatus(422);
+    }
 
-    const sessions = await Restaurant(restaurantId).aggregate([
-        { $unwind: "$sessions" },
-        { $match: sessionId ? { "sessions._id": id(sessionId) } : { "sessions.userId": id(req.user as string) } },
-        { $project: { date: "$sessions.date", _id: "$sessions._id", number: "$sessions.number", type: "$sessions.type", dishes: "$sessions.dishes" } },
-    ]);
-    if (sessions[0]) {
-        const { date, dishes, type, number, _id } = sessions[0] as { _id: Id; number: number; type: "order" | "table", date: Date, dishes: { _id: ObjectId, dishId: ObjectId, comment: string; }[] };
 
-        const ids = new Set<string>();
 
-        for (let i of dishes) {
-            ids.add(i.dishId.toString());
+    const types = ["b", "e", "so", "sa", "a", "si", "d"];
+
+    result.check = await checkSession(restaurantId, result.type, table, req.user as string);
+
+
+    const sessions = await Orders(restaurantId).many(
+        { status: "ordering", customer: id(req.user as string) },
+        { projection: { _id: 1 } }
+    );
+
+    console.log(sessions);
+
+    if (sessions && sessions.length > 0) {
+        result.sessionExists = true
+        if(sessions.length > 1) {
+            console.log("LEAVE ONLY ONE SESSION -------------------------------------------=-=-=-=-=-=");
         }
-
-        const convertDishes = await Restaurant(restaurantId).dishes
-            .many({ _id: { $in: Array.from(ids).map(a => id(a)) } })
-            .get({ projection: { name: 1, price: 1 } });
-
-        const convertedDishes = [];
-
-        for (let i of convertDishes) {
-            if (i) {
-                let count = 0;
-                for (let i of dishes) {
-                    if (i.dishId.equals(i._id)) {
-                        count++;
-                    }
-                }
-                convertedDishes.push({
-                    ...i,
-                    count,
-                });
-            }
-        }
+    }
 
 
-        result.session = {
-            dishes: convertDishes,
-            date: getDate(date),
-            type,
-            number,
-            hasToChange: false,
-            askToChange: false,
-        }
-
-        if (type == "table" && sessionId) {
-            const check = await checkSession(restaurantId, type, number);
-
-            result.session.askToChange = check.askToChange;
-            result.session.hasToChange = check.hasToChange;
-        }
-        if (!sessionId) {
-            result.session.hasToChange = true;
-        }
-    };
-
-
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, settings: 1, components: { amount: 1, _id: 1 } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, theme: 1, settings: 1, components: { amount: 1, _id: 1 } } });
     if (!restaurant) {
         return res.sendStatus(404);
     }
@@ -228,6 +141,7 @@ router.post("/init", async (req, res) => {
     }
     result.ui.showTypes = true;
     result.ui.showDishes = true;
+    result.ui.theme = restaurant.theme;
 
     res.send(result);
 });
@@ -281,16 +195,19 @@ router.get("/dish/:dishId", async (req, res) => {
         description: convert.description,
     };
 
-    const user = await aggregateUser([
-        { $match: { _id: id(req.user as string) } },
-        { $unwind: "$sessions" },
-        { $match: { "sessions.restaurantId": id(restaurantId) } },
-        { $project: { session: "$sessions" } }
-    ]);
 
-    if (user && user[0]) {
+    // const sessions = await Restaurant(restaurantId).aggregate([
+    //     { $unwind: "$sessions" },
+    //     { $match: { "sessions.customer": id(req.user as string) } },
+    //     { $project: { session: "$sessions" } },
+    // ]);
+
+    const session = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string) }).get({ projection: { dishes: { dishId: 1, _id: 1 } } });
+
+
+    if (session) {
         result.quantity = 0;
-        for (let i of user[0].session.dishes) {
+        for (let i of session.dishes) {
             if (i.dishId.equals(dishId)) {
                 result.quantity++;
             }
@@ -328,18 +245,13 @@ router.post("/convertDishes", async (req, res) => {
 
     for (let { dishId } of dishesQuantity) {
         dishesPromises
-            .push(getDishPromise(
-                restaurantId,
-                { _id: id(dishId) },
-                {
-                    projection: {
-                        name: 1,
-                        price: 1,
-                        image: 1,
-                        description: 1
-                    }
+            .push(Restaurant(restaurantId).dishes.one(dishId).get({ projection: {
+                    name: 1,
+                    price: 1,
+                    image: 1,
+                    description: 1
                 }
-            ));
+            }));
     }
 
     const foundDishes = await Promise.all(dishesPromises);
@@ -372,22 +284,21 @@ router.post("/convertDishes", async (req, res) => {
 router.get("/session/dishes", async (req, res) => {
     const { restaurantId } = req.params as any;
 
-    const result = await aggregateUser([
-        { $match: { _id: id(req.user as string) } },
-        { $unwind: "$sessions" },
-        { $match: { "sessions.restaurantId": id(restaurantId) } },
-        { $project: { session: "$sessions" } }
-    ]);
+    // const result = await Restaurant(restaurantId).aggregate([
+    //     { $unwind: "$sessions" },
+    //     { $match: { "sessions.customer": id(req.user as string) } },
+    //     { $project: { session: "$sessions" } },
+    // ]);
 
-    if (!result || !result[0]) {
-        return res.send(null);
+    const session = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string) }).get({ projection: { dishes: 1 } });
+
+    if (!session) {
+        return res.sendStatus(404);
     }
-
-    const s = result[0].session as { dishes: { dishId: ObjectId; _id: ObjectId; comment: string }[]; restaurantId: ObjectId };
 
     const ids = () => {
         const arr: { dishId: string; quantity: number }[] = [];
-        for (let i of s.dishes) {
+        for (let i of session.dishes) {
             let add = true;
             for (let j of arr) {
                 if (i.dishId.equals(j.dishId)) {
@@ -405,39 +316,34 @@ router.get("/session/dishes", async (req, res) => {
         return arr;
     }
 
+
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, price: 1, image: { resolution: 1, binary: 1 } });
 
     let total = 0;
-    for (let i of s.dishes) {
+    for (let i of session.dishes) {
         total += (await dishes.get(i.dishId))?.price! / 100;
     }
 
     res.send({
         total: total.toFixed(2),
         dishes: dishes.table,
-        sessionDishes: s.dishes,
+        sessionDishes: session.dishes,
         ids: ids(),
+        sessionId: session._id,
     });
 });
 router.get("/session/dish/:dishId", async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
-    const result = await aggregateUser([
-        { $match: { _id: id(req.user as string) } },
-        { $unwind: "$sessions" },
-        { $match: { "sessions.restaurantId": id(restaurantId) } },
-        { $project: { session: "$sessions" } }
-    ]);
+    const session = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string) }).get({ projection: { dishes: { comment: 1, _id: 1, dishId: 1 } } });
 
-    if (!result || !result[0]) {
+    if (!session) {
         return res.send(null);
     }
 
-    const s = result[0].session as { dishes: { dishId: ObjectId; _id: ObjectId; comment: string }[]; restaurantId: ObjectId };
-
     const ids = [];
 
-    for (let i of s.dishes) {
+    for (let i of session.dishes) {
         if (i.dishId.equals(dishId)) {
             ids.push(i);
         }
@@ -445,86 +351,290 @@ router.get("/session/dish/:dishId", async (req, res) => {
 
     res.send(ids);
 });
-// router.delete("/session/dish/:sessionDishId", async (req, res) => {
-//     const { restaurantId, sessionDishId } = req.params as any;
-
-//     const result = await updateUser(req.user as string, {
-//         $pull: { "sessions.$[restaurantId].dishes": { _id: id(sessionDishId) } }
-//     }, { arrayFilters: [{ 'restaurantId.restaurantId': id(restaurantId) }] });
+router.delete("/session/dish/:sessionDishId", async (req, res) => {
+    const { restaurantId, sessionDishId } = req.params as any;
 
 
-//     console.log("session dish removed: ", result.modifiedCount > 0);
+    const result = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string) })
+        .update({
+            $pull: { dishes: { _id: id(sessionDishId) } },
+        }, { projection: { _id: 1 } });
+
+    console.log("session dish removed: ", result.ok == 1);
 
 
-//     res.send({
-//         removed: result.modifiedCount > 0
-//     });
-// });
-// router.post("/session/dish/:sessionDishId/comment", async (req, res) => {
-//     const { restaurantId, sessionDishId } = req.params as any;
-//     const { comment } = req.body;
+    res.send({
+        removed: result.ok == 1
+    });
+});
+router.post("/session/dish/:sessionDishId/comment", async (req, res) => {
+    const { restaurantId, sessionDishId } = req.params as any;
+    const { comment } = req.body;
 
-//     const result = await updateUser(req.user as string, {
-//         $set: { "sessions.$[restaurantId].dishes.$[id].comment": comment }
-//     }, { arrayFilters: [{ "restaurantId.restaurantId": id(restaurantId) }, { "id._id": id(sessionDishId) }] })
+    const result = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string )})
+        .update({ $set: { "dishes.$[dishId].comment": comment } }, { arrayFilters: [{ "dishId._id": id(sessionDishId) }], projection: { _id: 1 } })
 
-//     console.log("session dish comment updated: ", result.modifiedCount > 0);
+    console.log("session dish comment updated: ", result.ok == 1);
 
-//     res.send({ updated: result.modifiedCount > 0 });
-// });
+    res.send({ updated: result.ok == 1 });
+});
+router.post("/session/confirm", async (req, res) => {
+    const { restaurantId } = req.params as any;
+
+    const session = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string) }).get({ projection: { _id: 1 } });
+
+    if (!session) {
+        console.log("NO SESSIOn");
+        return res.sendStatus(404);
+    }
+
+    const result = await Orders(restaurantId).one({ _id: session._id }).update(
+        { $set: {
+            connected: undefined,
+            status: "progress",
+            ordered: Date.now(),
+        } },
+        { returnDocument: "after", projection: { dishes: 1 } }
+    );
+
+    if(result.ok == 0) {
+        return res.sendStatus(500);
+    }
+
+
+    // const sessionUpdate = await Restaurant(restaurantId).update(
+    //     { $set: { "sessions.$[sessionId]._id": id()!, "sessions.$[sessionId].dishes": [] } },
+    //     { arrayFilters: [{ "sessionId._id": session._id }] }
+    // );
+
+    // if (sessionUpdate?.modifiedCount == 0) {
+    //     console.log("SESSION IS NOT UPDATED!!!!!!!!!");
+    //     return res.sendStatus(500);
+    // }
+
+    res.send({ success: true });
+
+    const order = result.order;
+
+    const ids = new Set<string>();
+
+    for (let i of order.dishes!) {
+      ids.add(i.dishId.toString());
+    }
+
+    const dishes = await Restaurant(restaurantId).dishes.many({ _id: { $in: Array.from(ids).map(a => id(a)) } }).get({ projection: { general: 1, } });
+
+    const forKitchen = [];
+    const time = getDelay(order.ordered!);
+    for (let i in order.dishes!) {
+      for (let { general, _id } of dishes) {
+        if (_id.equals(order.dishes[i].dishId)) {
+        forKitchen.push({
+            orderId: order._id,
+            ...order.dishes![i],
+            time,
+            general: general
+          });
+        }
+      }
+    }
+
+
+    sendMessage([`${restaurantId}/kitchen`], "kitchen", {
+        type: "kitchen/order/new",
+        event: "kitchen",
+        data: result,
+    });
+});
+router.post("/session/dish", async (req, res) => {
+    const { restaurantId } = req.params as any;
+    const { dishId, comment } = req.body;
+
+    if (!dishId || dishId.length != 24) {
+        return res.sendStatus(422);
+    }
+
+    const newDish: Order["dishes"][0] = {
+        dishId: id(dishId)!,
+        comment: comment,
+        _id: id()!,
+        status: "ordered",
+    }
+
+    // const result = await Restaurant(restaurantId)
+    //     .update(
+    //         { $push: { "sessions.$[sessionId].dishes": newDish } },
+    //         { arrayFilters: [{ "sessionId.customer": id(req.user as string) }] }
+    //     );
+
+    const result = await Orders(restaurantId).one({ status: "ordering", customer: id(req.user as string) })
+        .update({ $push: { dishes: newDish } }, { projection: { _id: 1 } });
+
+
+    console.log("dish added: ", result!.ok == 1);
+
+    res.send({ updated: result!.ok == 1 });
+});
 
 
 router.get("/session/payment-intent", async (req, res) => {
     const { restaurantId } = req.params as any;
 
+    const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1, settings: 1, stripeAccountId: 1 } });
 
-    console.log("CREATING PAYMENT INTENT");
-
-
-    const user = await aggregateUser([
-        { $match: { _id: id(req.user as string) } },
-        { $unwind: "$sessions" },
-        { $match: { "sessions.restaurantId": id(restaurantId) } },
-        { $project: { session: "$sessions" } }
-    ]);
-
-    if (!user || !user[0] || !user[0].session) {
+    if(!restaurant) {
         return res.sendStatus(404);
     }
+
+    if(restaurant.money.card != "enabled") {
+        return res.status(403).send({ reason: "card" });
+    }
+
+    const user = await getUser(req.user as string, { projection: { stripeCustomerId: 1 } });
+
+    if (!user) {
+        return res.sendStatus(404);
+    }
+
+    
+    const session = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).get({ projection: { dishes: { dishId: 1, _id: 1 } } });
+    
+    if (!session) {
+        return res.sendStatus(404);
+    };
+    
+    if(!restaurant.stripeAccountId) {
+        return res.sendStatus(500);
+    }
+
+    const result: {
+        amount: number;
+        intent?: Stripe.PaymentIntent;
+        cards?: any[];
+    } = {
+        amount: 0,
+    };
 
     const dishes = new DishHashTableUltra(restaurantId, { price: 1 });
 
 
-    let amount = 0;
-    for (let i of user[0].session.dishes) {
+    for (let i of session.dishes) {
         const dish = (await dishes.get(i.dishId));
-        console.log(dish);
         if (dish) {
-            amount += dish.price!;
+            result.amount += dish.price!;
         }
     }
 
-    console.log(amount);
-
+    if(restaurant.settings?.customers.maxPrice != "unlimited" && result.amount > restaurant.settings?.customers.maxPrice!) {
+        return res.status(403).send({ reason: "amount" });
+    }
 
     try {
-        const result = await stripe.paymentIntents.create(
-            {
-                amount,
-                currency: "usd",
-                payment_method_types: ["card"],
-            }
-        );
+        try {
+            const externalAccounts = await stripe.customers.listPaymentMethods(user.stripeCustomerId!, { type: "card" });
 
-        console.log(result);
+            if(externalAccounts.data.length > 0) {
+                result.cards = [];
+                for(let i of externalAccounts.data) {
+                    // if(i.status != "verification_failed" && i.status != "errored") {
+                        result.cards.push({
+                            id: i.id,
+                            brand: i.card?.brand,
+                            last4: i.card?.last4,
+                            name: i.billing_details.address?.postal_code
+                        });
+                    // }
+                }
+            }
+        } catch (e) {
+            throw e;
+        }
+        try {
+            result.intent = await stripe.paymentIntents.create(
+                {
+                    amount: result.amount,
+                    customer: user.stripeCustomerId,
+                    currency: "usd",
+                    payment_method_types: ["card"],
+                    setup_future_usage: "off_session",
+                    metadata: {
+                        restaurantId: restaurantId,
+                        customerId: user._id!.toString(),
+                        orderId: session._id.toString(),
+                    },
+                    transfer_data: {
+                        destination: restaurant.stripeAccountId,
+                    },
+                    payment_method_options: {
+                        card: {
+                            setup_future_usage: "off_session"
+                        }
+                    }
+                },
+            );
+        } catch (e: any) {
+            console.log(e.type);
+            if (e.type == "StripeInvalidRequestError") {
+                result.intent = await stripe.paymentIntents.create(
+                    {
+                        amount: result.amount,
+                        currency: "usd",
+                        payment_method_types: ["card"],
+                        transfer_data: {
+                            destination: restaurant.stripeAccountId,
+                        },
+                    },
+                );
+            } else {
+                throw e;
+            }
+        }
+
+        result.amount /= 100;
 
         res.send(result);
     } catch (err) {
-        res.sendStatus(500);
-        throw err;
+        console.error(err);
+        return res.sendStatus(500);
+        // throw err;
+    }
+});
+
+
+router.get("/live", async (req, res) => {
+    const { restaurantId } = req.params as any;
+
+    const found = await Orders(restaurantId).many({ customer: id(req.user as string) });
+
+    if (!found || found.length == 0) {
+        return res.send([]);
     }
 
+    const result = [];
 
+    for (let order of found.sort((a, b) => a.ordered! - b.ordered!)) {
+        const converted = [];
+
+        const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, } });
+
+        for (let i of order.dishes) {
+            converted.push({
+                ...await dishes.get(i.dishId),
+                _id: i._id,
+                status: i.status,
+            });
+        }
+
+        result.push({
+            time: getDelay(order.ordered!),
+            type: order.type,
+            number: order.id,
+            dishes: converted,
+            _id: order._id,
+        });
+    }
+
+    res.send(result);
 });
 
 

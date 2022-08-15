@@ -1,25 +1,35 @@
 import { ObjectId } from "mongodb";
-import { Component, Cooking, Order, Feedback, Invitation, Payment, RestaurantSettings, Table, Worker, Session } from "./components";
+import { Component, Cooking, Order, Feedback, Invitation, RestaurantSettings, Table, Worker, Id } from "./components";
 
 interface Restaurant {
     _id: ObjectId;
     name?: string;
+    theme: string;
     created: Date;
     owner?: ObjectId;
-    tables?: Table[];
+    tables?: number;
     staff?: Worker[];
     settings?: RestaurantSettings;
-    payments?: Payment[];
     components?: Component[];
     invitations?: Invitation[];
     blacklist?: ObjectId[];
-    sessions?: Session[];
+    stripeAccountId: string;
+    money: {
+        card: "enabled" | "disabled" | "rejected" | "restricted" | "pending";
+        cash: "enabled" | "disabled";
+        payouts: "enabled" | "restricted" | "rejected" | "pending";
+    }
+    status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
+    info?: {
+        country?: string;
+        city?: string;
+        state?: string;
+        line1?: string;
+        line2?: string;
+        postal_code?: string;
+    }
 }
 
-interface Work {
-    orders?: Order[];
-    restaurant?: ObjectId;
-}
 
 interface Dish {
     name?: string;
@@ -52,17 +62,87 @@ interface User {
     feedbacks?: Feedback[];
     invitations?: Invitation[];
     works?: ObjectId[];
-    restaurants?: ObjectId[];
+    restaurants?: { restaurantId: ObjectId; stripeAccountId: string; }[];
     password?: string;
     phone?: string;
+    orders?: any[];
     created?: Date;
-    emailVerificationCode?: string;
+    emailVerificationCode?: number;
     emailVerify?: string;
+    stripeCustomerId?: string;
+    fullName: {
+        firstName: string;
+        lastName: string;
+    }
+    info?: {
+        country?: string;
+        city?: string;
+        year?: number;
+        month?: number;
+        day?: number;
+        state?: string;
+        line1?: string;
+        line2?: string;
+        postalCode?: string;
+    }
 }
+
+
+interface Order {
+    _id: ObjectId;
+    status: "ordering" | "progress" | "done" | "removed";
+    customer: ObjectId;
+    socketId: string;
+    method?: "card" | "cash";
+    type: "in" | "out";
+    id: string;
+    ordered?: number;
+    connected?: number;
+
+    done?: {
+        time: number;
+        feedback?: {
+            text?: string;
+            rating?: number;
+        };
+    }
+    removed?: {
+        time: number;
+        reason: string | "dishes";
+        userId: ObjectId;
+        userRole?: "owner" | "manager" | "admin" | null;
+    };
+    dishes: {
+        _id: ObjectId;
+        dishId: ObjectId;
+        comment: string;
+        status: "ordered" | "cooking" | "cooked" | "served" | "removed";
+
+        name?: string;
+        price?: number;
+
+    
+        cook?: ObjectId;
+        waiter?: ObjectId;
+
+        taken?: number;
+        cooked?: number;
+        served?: number;
+    
+        removed?: {
+            time: number;
+            userId: ObjectId;
+            userRole: "admin" | "cook" | "waiter" | "manager.cook" | "manager.waiter" | "manager" | "admin";
+            reason: "components" | "other" | string;
+        }
+    }[];
+}
+
+
 
 export {
     Restaurant,
     Dish,
     User,
-    Work
+    Order,
 }

@@ -53,12 +53,42 @@ const user: Routes = [
     canActivate: [LoginGuard],
   },
   {
-    path: "add-restaurant/name",
+    path: "add-restaurant/start",
+    loadChildren: () => import('./user/add-restaurant/country/country.module').then( m => m.CountryPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: "add-restaurant/:restaurantId/name",
     loadChildren: () => import("./user/add-restaurant/name/name.module").then(m => m.NamePageModule),
     canActivate: [LoggedGuard],
   },
   {
-    path: "add-restaurant/theme/:restaurantId",
+    path: 'add-restaurant/:restaurantId/dob',
+    loadChildren: () => import('./user/add-restaurant/dob/dob.module').then( m => m.DobPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: 'add-restaurant/:restaurantId/address',
+    loadChildren: () => import('./user/add-restaurant/address/address.module').then( m => m.AddressPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: 'add-restaurant/:restaurantId/choose-method',
+    loadChildren: () => import('./user/add-restaurant/choose-method/choose-method.module').then( m => m.ChooseMethodPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: 'add-restaurant/:restaurantId/card',
+    loadChildren: () => import('./user/add-restaurant/card/card.module').then( m => m.CardPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: 'add-restaurant/:restaurantId/bank-account',
+    loadChildren: () => import('./user/add-restaurant/bank-account/bank-account.module').then( m => m.BankAccountPageModule),
+    canActivate: [LoggedGuard],
+  },
+  {
+    path: "add-restaurant/:restaurantId/theme",
     loadChildren: () => import("./user/add-restaurant/theme/theme.module").then(m => m.ThemePageModule),
     canActivate: [LoggedGuard],
   },
@@ -114,6 +144,11 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import("./ctraba/main/main.module").then(m => m.MainPageModule)
   },
+  // {
+  //   path: 'stripe-account',
+  //   loadChildren: () => import('./user/add-restaurant/stripe-account/stripe-account.module').then( m => m.StripeAccountPageModule),
+  //   canActivate: [LoggedGuard]
+  // },
   ...staff,
   ...user,
   ...restaurant,
@@ -121,26 +156,30 @@ const routes: Routes = [
     path: "**",
     redirectTo: "user/info"
   },
-  {
-    path: 'dashboard',
-    loadChildren: () => import('./staff/dashboard/dashboard.module').then( m => m.DashboardPageModule)
-  },
-  {
-    path: 'theme',
-    loadChildren: () => import('./user/add-restaurant/theme/theme.module').then( m => m.ThemePageModule)
-  },
-  {
-    path: 'account',
-    loadChildren: () => import('./user/account/account.module').then( m => m.AccountPageModule)
-  },
-  {
-    path: 'name',
-    loadChildren: () => import('./user/registration/name/name.module').then( m => m.NamePageModule)
-  },
-  {
-    path: 'avatar',
-    loadChildren: () => import('./user/registration/avatar/avatar.module').then( m => m.AvatarPageModule)
-  },
+  // {
+  //   path: 'dashboard',
+  //   loadChildren: () => import('./staff/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+  // },
+  // {
+  //   path: 'theme',
+  //   loadChildren: () => import('./user/add-restaurant/theme/theme.module').then( m => m.ThemePageModule)
+  // },
+  // {
+  //   path: 'account',
+  //   loadChildren: () => import('./user/account/account.module').then( m => m.AccountPageModule)
+  // },
+  // {
+  //   path: 'name',
+  //   loadChildren: () => import('./user/registration/name/name.module').then( m => m.NamePageModule)
+  // },
+  // {
+  //   path: 'avatar',
+  //   loadChildren: () => import('./user/registration/avatar/avatar.module').then( m => m.AvatarPageModule)
+  // },
+  // {
+  //   path: 'bank-account',
+  //   loadChildren: () => import('./user/add-restaurant/bank-account/bank-account.module').then( m => m.BankAccountPageModule)
+  // },
 ];
   
 @NgModule({

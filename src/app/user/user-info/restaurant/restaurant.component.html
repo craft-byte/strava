@@ -1,20 +1,10 @@
-<div class="app">
-  <div class="top" (click)="expand()">
-    <div class="name">
-      {{ data.name }}
-    </div>
-    <div class="expand">
-      <button id="expand">
-        <ion-icon name="chevron-down-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="button" (click)="$event.stopPropagation()">
-      <button id="open-restaurant-dashboard"  (click)="goRestaurant()">
-        <ion-icon name="chevron-forward-outline"></ion-icon>
-      </button>
-    </div>
+<div class="app" (click)="goRestaurant()">
+  <div class="name">
+    {{ data.name }}
   </div>
-  <div *ngIf="ui.expand" class="more">
-    Not implemented
+  <div class="button">
+    <button id="open-restaurant-dashboard">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
   </div>
 </div>

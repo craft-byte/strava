@@ -15,8 +15,8 @@ router.post("/", allowed("manager", "staff", "hire"), async (req, res) => {
     const { restaurantId } = req.params;
     const { role, userId, settings } = req.body;
 
-    const isWorks = await Restaurant().aggregate([
-        { $match: { _id: id(restaurantId) } },
+    const isWorks = await Restaurant(restaurantId).aggregate([
+        // { $match: { _id: id(restaurantId) } },
         { $unwind: "$staff" },
         { $match: { "staff._id": id(userId) } },
         { $project: { found: "hello" } }
@@ -77,7 +77,7 @@ router.get("/", allowed("manager", "staff"), async (req, res) => {
             ...users[i],
             date: getDate(restaurant.staff[i].joined),
             role: restaurant.staff[i].role,
-            avatar: users[i].avatar!.binary,
+            avatar: users[i].avatar?.binary,
         });
     }
 
@@ -89,8 +89,8 @@ router.get("/:userId", allowed("manager", "staff"), async (req, res) => {
 
     const result1 = await getUser(userId, { projection: { avatar: 1, name: 1, username: 1, email: 1, } });
 
-    let result2 = await Restaurant().aggregate<{ worker: any }>([
-        { $match: { _id: id(restaurantId) } },
+    let result2 = await Restaurant(restaurantId).aggregate<{ worker: any }>([
+        // { $match: { _id: id(restaurantId) } },
         { $unwind: "$staff" },
         { $match: { "staff._id": id(userId) } },
         { $project: { worker: "$staff" } }
@@ -114,13 +114,9 @@ router.patch("/:userId/fire", allowed("manager", "staff", "fire"), async (req, r
     const { userId, restaurantId } = req.params;
     const { text: comment, rating: stars } = req.body;
 
-    const feedback = {
-        comment, stars
-    };
 
-
-    const foundWorker = await Restaurant().aggregate<{ worker: any, owner: ObjectId }>([
-        { $match: { _id: id(restaurantId) } },
+    const foundWorker = await Restaurant(restaurantId).aggregate<{ worker: any, owner: ObjectId }>([
+        // { $match: { _id: id(restaurantId) } },
         { $unwind: "$staff" },
         { $match: { "staff._id": id(userId) } },
         { $project: { worker: "$staff", owner: "$owner" } }
@@ -143,15 +139,17 @@ router.patch("/:userId/fire", allowed("manager", "staff", "fire"), async (req, r
 
 
     const newFeedback = {
-        restaurant: id(restaurantId),
-        feedback,
-        role: worker.role,
-        worked: getWorked(worker.joined)
+        _id: id()!,
+        restaurantId: id(restaurantId)!,
+        comment: comment as string,
+        stars: stars as number,
+        role: worker.role as string,
+        worked: Date.now() - worker.joined
     };
 
 
     const result2 = await updateUser(userId, {
-        $pull: { works: id(restaurantId), restaurants: id(restaurantId) },
+        $pull: { works: id(restaurantId)!, restaurants: { restaurantId: id(restaurantId)! } },
         $push: { feedbacks: newFeedback }
     });
 

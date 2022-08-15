@@ -1,0 +1,137 @@
+.app {
+    .info-box {
+        width: 100%;
+        border-radius: 8px;
+        background-color: rgb(236, 236, 236);
+        margin-top: 12px;
+        border: 1px solid var(--orange);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        min-height: 106px;
+        
+        .title {
+            font-size: 18px;
+            color: var(--black);
+            font-size: 550;
+        }
+    }
+    .payments {
+        display: flex;
+        gap: 16px;
+        margin-top: 24px;
+
+        .payouts {
+            width: 164px;
+            height: 88px;
+            border-radius: 8px;
+            cursor: pointer;
+            -webkit-box-shadow: 0px 5px 10px 0px rgba(34, 60, 80, 0.2);
+            -moz-box-shadow: 0px 5px 10px 0px rgba(34, 60, 80, 0.2);
+            box-shadow: 0px 5px 10px 0px rgba(34, 60, 80, 0.2);
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+
+            .status {
+                height: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+            .bank {
+                height: 32px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                .currency {
+                    text-transform: uppercase;
+                    width: 36px;
+                    height: 20px;
+                    background-color: var(--purple-back);
+                    font-size: 14px;
+                    border-radius: 5px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: var(--text-color);
+                    margin-left: 8px;
+                }
+                .last4 {
+                    display: flex;
+                    align-items: center;
+                    .circles {
+                        font-size: 12px;
+                        color: var(--text-color);
+                    }
+                    .numbers {
+                        margin-left: 4px;
+                        color: var(--text-color);
+                    }
+                }
+            }
+            .title {
+                font-size: 18px;
+                color: var(--text-color);
+            }
+        }
+        .one {
+            width: 108px;
+            height: 88px;
+            border-radius: 8px;
+            cursor: pointer;
+            // border: 1px solid var(--border-color);
+            -webkit-box-shadow: 0px 5px 10px 0px rgba(34, 60, 80, 0.2);
+            -moz-box-shadow: 0px 5px 10px 0px rgba(34, 60, 80, 0.2);
+            box-shadow: 0px 5px 10px 0px rgba(34, 60, 80, 0.2);
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            .title {
+                margin-top: 6px;
+                font-size: 18px;
+                color: var(--text-color);
+            }
+            .icon {
+                font-size: 22px;
+                color: var(--text-color);
+                margin-top: 6px;
+            }
+            .status {
+                width: 100%;
+                height: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+        }
+    }
+    .stats {
+        .money {
+            width: 50%;
+            height: auto;
+            border: 1px solid var(--border-color);
+            display: flex;
+            .chart {
+                width: 65%
+            }
+            .info {
+                width: 35%;
+                .title {
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 18px;
+                    font-weight: 550;
+                }
+            }
+        }
+    }
+}
