@@ -37,5 +37,5 @@ npm-debug.log*
 /server/uploads
 /tests/node_modules
 /tests/build
-/fakedata/node_modules
-/fakedata/build
+
+/fakedata
