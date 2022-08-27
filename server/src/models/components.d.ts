@@ -49,7 +49,7 @@ interface Feedback {
     role: string;
     restaurantId: ObjectId;
     comment: string;
-    stars: number;
+    rating: number;
 }
 
 

@@ -5,6 +5,7 @@ import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantService } from 'src/app/restaurant/services/restaurant.service';
 import { getImage } from 'src/functions';
+import { ManagerSettings } from 'src/models/components';
 import { FirePage } from './fire/fire.page';
 
 @Component({
@@ -18,7 +19,7 @@ export class SettingsPage implements OnInit {
   userAvatar: string;
 
   user: any;
-  settings: any;
+  settings: ManagerSettings;
   role: string;
 
   ui = {
@@ -92,11 +93,30 @@ export class SettingsPage implements OnInit {
   }
 
 
+  checkSettings() {
+    return this.settings.customers || this.settings.dishes || this.settings.ingredients || this.settings.settings || this.settings.staff || (this.settings.work.cook && this.settings.work.waiter);
+  }
+
+
   async set(field: string, e: any) {
     const { target: { checked } } = e;
 
-
     this.settings[field] = checked;
+
+    if(!this.checkSettings()) {
+      this.settings[field] = !checked;
+      e.target.checked = !checked;
+      (await this.toastCtrl.create({
+        duration: 1000,
+        color: "red",
+        mode: "ios",
+        message: "The settings are invalid."
+      })).present();
+      return;
+    }
+
+
+    
 
     const update: any = await this.service.post({ field, value: checked }, "staff", this.userId, "settings");
 
@@ -161,12 +181,43 @@ export class SettingsPage implements OnInit {
 
     if(r == "submit") {
       console.log(data);
-      
+      const result: any = await this.service.patch(data, "staff", this.userId, "fire");
+
+      if(result.fired) {
+        this.router.go(["restaurant", this.service.restaurantId, "people","staff"]);
+        (await this.toastCtrl.create({
+          duration: 2000,
+          color: "green",
+          message: "Worker fired",
+          mode: "ios"
+        })).present();
+      } else {
+        (await this.toastCtrl.create({
+          duration: 2000,
+          color: "red",
+          message: "Something went wrong",
+          mode: "ios"
+        })).present();
+      }
     }
   }
 
   async setWork(field: string, e: any) {
     const { target: { checked } } = e;
+
+    this.settings.work[field] = checked;
+
+    if(!this.checkSettings()) {
+      this.settings.work[field] = !checked;
+      e.target.checked = !checked;
+      (await this.toastCtrl.create({
+        duration: 1000,
+        color: "red",
+        mode: "ios",
+        message: "The settings are invalid."
+      })).present();
+      return;
+    }
 
     try {
       const update: any = await this.service.post({ field, value: checked }, "staff", this.userId, "settings", "work");
@@ -181,6 +232,7 @@ export class SettingsPage implements OnInit {
         })).present();
       }
     } catch (e) {
+      this.settings.work[field] = !checked;
       if (e.status == 422) {
         (await this.toastCtrl.create({
           duration: 1500,

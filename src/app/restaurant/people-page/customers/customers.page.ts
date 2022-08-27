@@ -38,9 +38,7 @@ export class CustomersPage implements OnInit {
 
   constructor(
     private service: RestaurantService,
-    private popoverCtrl: PopoverController,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController,
     private router: RouterService,
     private loader: LoadService,
   ) {
@@ -48,8 +46,12 @@ export class CustomersPage implements OnInit {
   };
 
 
-  find(e) {
+  find(e: any) {
     return e;
+  }
+
+  fullCustomer(id: string) {
+    this.router.go(["restaurant", this.service.restaurantId, "people", "customer", id]);
   }
 
   async addTable() {

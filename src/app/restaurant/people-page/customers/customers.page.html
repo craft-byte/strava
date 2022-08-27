@@ -48,7 +48,7 @@
         <div class="last-visit">Last ordered</div>
         <div class="total">Total spendings</div>
       </div>
-      <div *ngFor="let i of customers" class="customer">
+      <div *ngFor="let i of customers" (click)="fullCustomer(i._id)" class="customer">
         <div class="avatar">
           <img [src]="i.avatar" alt="">
         </div>

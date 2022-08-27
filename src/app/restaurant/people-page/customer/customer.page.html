@@ -1,35 +1,69 @@
-<div class="app">
+<div class="app" *ngIf="user">
   <div class="header">
     <div class="back">
-      <button></button>
+      <button (click)="back()"><ion-icon name="arrow-back-outline"></ion-icon> <span class="text">BACK</span></button>
     </div>
     <div class="buttons">
-      <button class="red-button">Add to blacklist</button>
+      <button class="red-button" *ngIf="!info.blacklisted" (click)="addToBlacklist()">Add to blacklist</button>
+      <button class="orange-button" *ngIf="info.blacklisted" (click)="removeFromBlacklist()">Remove from blacklist</button>
     </div>
   </div>
-  <div class="user">
-    <div class="avatar">
-      <img [src]="image" alt="">
-    </div>
-    <div class="details">
-      <div class="name">
-        {{ user.name }}
+  <div class="top">
+    <div class="user">
+      <div class="avatar">
+        <img [src]="userAvatar" alt="">
       </div>
-      <div class="username">
-        {{ user.username }}
+      <div class="details">
+        <div class="name">
+          {{ user.name }}
+        </div>
+        <div class="email">
+          {{ user.email }}
+        </div>
       </div>
     </div>
-  </div>
-  <div class="customer">
-    <div class="top">
+    <div class="customer">
       <div class="visits">
-        
+        Orders ordered: <span class="count">{{ info.orders }}</span>
       </div>
       <div class="last">
-        {{ details.visited }}
+        Last visits: <span class="date">{{ info.lastVisit }}</span>
       </div>
       <div class="total">
-        ${{ details.total }}
+        Total spendings: <span class="amount">${{ info.total / 100 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="orders">
+    <div class="title">
+      Orders
+    </div>
+    <div class="list">
+      <div class="example">
+        <div class="date"></div>
+        <div class="total">Total</div>
+        <div class="dishes">Dishes</div>
+        <div class="status"></div>
+      </div>
+      <div *ngFor="let i of orders" (click)="fullOrder(i._id)" class="order">
+        <div class="date">
+          {{ i.date }}
+        </div>
+        <div class="total">
+          ${{ i.total / 100 }}
+        </div>
+        <div class="dishes">
+          {{ i.dishes }}
+        </div>
+        <div class="status">
+          <div
+            [class.status-badge-green]="i.status == 'done'"
+            [class.status-badge-red]="i.status == 'removed'"
+            [class.status-badge-orange]="i.status == 'done:removed'">
+            {{ i.status }}
+          </div>
+        </div>
       </div>
     </div>
   </div>

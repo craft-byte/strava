@@ -141,7 +141,7 @@ router.delete("/blacklist/:userId", allowed("manager", "staff"), async (req, res
     console.log("user added to blacklist: ", restaurant!.modifiedCount > 0);
     console.log("restaurant added to banned: ", user!.modifiedCount > 0);
 
-    res.send({ done: restaurant!.modifiedCount > 0 && user.modifiedCount > 0 });
+    res.send({ updated: restaurant!.modifiedCount > 0 && user.modifiedCount > 0 });
 });
 router.delete("/unblacklist/:userId", allowed("manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
@@ -152,75 +152,103 @@ router.delete("/unblacklist/:userId", allowed("manager", "staff"), async (req, r
 
     console.log("removed from blacklist: ", restaurant!.modifiedCount > 0 && user!.modifiedCount > 0);
 
-    res.send({ done: restaurant!.modifiedCount > 0 && user!.modifiedCount > 0 });
+    res.send({ updated: restaurant!.modifiedCount > 0 && user!.modifiedCount > 0 });
 });
-// router.get("/:userId", allowed("manager", "customers"), async (req, res) => {
-//     const { restaurantId, userId } = req.params as any;
 
-//     const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, blacklisted: 1 } });
+interface Result {
+    user: {
+        name: string;
+        email: string;
+        avatar: any;
+        _id: ObjectId;
+    };
+    orders?: {
+        dishes: number;
+        total: number;
+        date: string;
+        status: string;
+        _id: ObjectId;
+    }[];
+    info?: {
+        total: number;
+        orders: number;
+        lastVisit: string;
+        blacklisted: boolean;
+    }
+}; router.get("/:userId", allowed("manager", "customers"), async (req, res) => {
+    const { restaurantId, userId } = req.params as any;
+
+    const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, email: 1, blacklisted: 1 } });
 
 
-//     const ordersArr: any[] = await Stats(restaurantId).aggregate([
-//         { $unwind: "$statistics" },
-//         { $match: { "statistics.userId": id(userId) } },
-//         { $group: { _id: null, orders: { $push: "$statistics" } } }
-//     ]) as any;
+    const orders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { ordered: 1, status: 1, _id: 1, dishes: { dishId: 1, price: 1 } }})).limit(7).toArray();
+    const allOrders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { _id: 1 } })).toArray();
 
-//     if(!ordersArr || !ordersArr[0]) {
-//         return res.send({ user });
-//     }
+    const blacklisted = () => {
+        if(!user) {
+            return false;
+        }
+        if(!user.blacklisted) {
+            return false;
+        }
+        for(let i of user?.blacklisted!) {
+            if(i.equals(restaurantId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-//     const orders = ordersArr[0].orders as [];
-
-//     const convertedOrders = [];
-//     const userDetails: { total: number; last: number; } = {
-//         total: 0, last: null!,
-//     };
-//     const dishes = new DishHashTableUltra(restaurantId, { price: 1, name: 1});
+    const result: Result = {
+        user: {
+            name: user?.name || user?.username || "User deletd",
+            avatar: user?.avatar?.binary,
+            email: user?.email!,
+            _id: user?._id!
+        },
+        orders: [],
+        info: {
+            total: 0,
+            lastVisit: null!,
+            orders: allOrders.length,
+            blacklisted: blacklisted(),
+        }
+    }
 
     
-//     for(let i of orders) {
-//         if(!userDetails.last) {
-//             userDetails.last = i.time;
-//         }
-//         if(userDetails.last < i.time) {
-//             userDetails.last = i.time;
-//         }
-//         const index = convertedOrders.push({
-//             date: getDate(i.time),
-//             _id: i._id,
-//             dishes: [] as any,
-//             status: i.status == 1 ? "PROGRESS" : i.status == 2 ? "DONE" : "REMOVED",
-//             color: i.status == 1 ? "purple" : i.status == 2 ? "green" : "red",
-//         }) - 1;
-//         for(let j of i.dishes) {
-//             const dish = await dishes.get(j.dishId);
-//             if(dish) {
-//                 convertedOrders[index].dishes.push(dish);
-//                 userDetails.total += dish.price!;
-//             }
-//         }
-//     }
+    
+    const dishes = new DishHashTableUltra(restaurantId, { price: 1 });
+    let lastVisit = 0;
+    
+    for(let i of orders) {
+        if(lastVisit < i.ordered!) {
+            lastVisit = i.ordered!;
+        }
+        const index = result.orders!.push({
+            date: getDate(i.ordered!)!,
+            _id: i._id,
+            dishes: i.dishes.length,
+            status: i.status,
+            total: 0,
+        }) - 1;
+        for(let { dishId, price } of i.dishes) {
+            const dish = await dishes.get(dishId);
+            if(dish) {
+                result.orders![index].total += dish.price!;
+                result.info!.total += dish.price!;
+            } else {
+                result.orders![index].total += price!;
+                result.info!.total += price!;
+            }
+        }
+    }
 
-//     const isBlacklisted = () => {
-//         for(let i of user.blacklisted!) {
-//             if(i.equals(restaurantId)) {
-//                 return true;
-//             }
-//         }
-//         return false;
-//     }
+    result.info!.lastVisit = getDate(lastVisit);
 
-//     res.send({
-//         user,
-//         details: {
-//             total: userDetails.total / 100,
-//             visited: getDate(userDetails.last),
-//         },
-//         blacklisted: isBlacklisted(),
-//         orders: convertedOrders,
-//     });
-// });
+
+
+    res.send(result);
+});
 
 
 router.delete("/table", allowed("manager", "customers"), async (req, res) => {

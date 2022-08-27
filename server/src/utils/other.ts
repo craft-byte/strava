@@ -221,11 +221,11 @@ async function convertFeedbacks(feedbacks: Feedback[]) {
 
 
     for(let i of feedbacks) {
-        ratings += i.stars;
+        ratings += i.rating;
         result.push({
             time: getWorked(i.worked),
             restaurant: await getRestaurantName(i.restaurantId),
-            stars: i.stars,
+            stars: i.rating,
             text: i.comment,
             role: i.role
         });

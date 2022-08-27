@@ -1,6 +1,6 @@
 interface ManagerSettings {
     dishes: boolean;
-    components: boolean;
+    ingredients: boolean;
     staff: boolean;
     customers: boolean;
     settings: boolean;

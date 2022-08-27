@@ -143,6 +143,10 @@
                 grid-template-columns: 10% 25% 20% 25% 20%;
                 height: 52px;
                 border-bottom: 1px solid var(--border-color);
+                cursor: pointer;
+                &:hover {
+                    background-color: rgb(247, 247, 247);
+                }
                 .avatar {
                     display: flex;
                     justify-content: center;

@@ -20,7 +20,7 @@ router.post("/", allowed("manager", "staff"), async (req, res) => {
     const isWorks = await Restaurant(restaurantId).aggregate([
         // { $match: { _id: id(restaurantId) } },
         { $unwind: "$staff" },
-        { $match: { "staff._id": id(userId) } },
+        { $match: { "staff.userId": id(userId) } },
         { $project: { found: "hello" } }
     ]);
 
@@ -401,49 +401,66 @@ router.post("/:userId/role", allowed("manager", "staff"), async (req, res) => {
 
 router.patch("/:userId/fire", allowed("manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
-    const { text: comment, rating: stars } = req.body;
+    const { comment, rating: stars } = req.body;
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1, } } });
 
 
-    const foundWorker = await Restaurant(restaurantId).aggregate<{ worker: any, owner: ObjectId }>([
-        // { $match: { _id: id(restaurantId) } },
-        { $unwind: "$staff" },
-        { $match: { "staff._id": id(userId) } },
-        { $project: { worker: "$staff", owner: "$owner" } }
-    ]);
-
-    if (!foundWorker || foundWorker.length == 0) {
-        console.log("no worker found");
-        return res.sendStatus(404);
+    if(!stars || typeof stars != "number") {
+        return res.sendStatus(422);
     }
 
-    const { worker, owner } = foundWorker[0];
+    let worker: Worker | undefined;
+    
 
-    if ((worker._id as ObjectId).equals(req.user as string) || (worker._id as ObjectId).equals(owner)) {
-        return res.sendStatus(405);
+    for(let i of restaurant!.staff!) {
+        if(i.userId.equals(userId)) {
+            worker = i;
+            break;
+        }
     }
 
+    if(!worker) {
+        return res.status(404).send({ reason: "staff" });
+    }
 
-    const result = await Restaurant(restaurantId).update({ $pull: { staff: { _id: id(userId) } } });
+    if(worker.role == "admin") {
+        return res.sendStatus(403);
+    }
 
+    const userUpdate = await updateUser(
+        userId,
+        {
+            $pull: {
+                restaurants: { restaurantId: id(restaurantId) },
+            },
+            $push: {
+                feedbacks: {
+                    _id: id()!,
+                    restaurantId: id(restaurantId),
+                    comment: comment.trim(),
+                    rating: stars,
+                    role: worker.role,
+                    worked: Date.now() - worker.joined
+                }
+            }
+        }
+    );
 
-
-    const newFeedback = {
-        _id: id()!,
-        restaurantId: id(restaurantId)!,
-        comment: comment as string,
-        stars: stars as number,
-        role: worker.role as string,
-        worked: Date.now() - worker.joined
-    };
-
-
-    const result2 = await updateUser(userId, {
-        $pull: { restaurants: { restaurantId: id(restaurantId)! } },
-        $push: { feedbacks: newFeedback }
+    const restaurantUpdate = await Restaurant(restaurantId).update({
+        $pull: {
+            staff: {
+                userId: id(userId)
+            }
+        }
     });
 
-    console.log("user fired: ", result!.modifiedCount > 0 && result2.modifiedCount > 0);
-    res.send({ updated: result!.modifiedCount > 0 && result2.modifiedCount > 0 });
+
+    console.log("firing user update: ", userUpdate.modifiedCount > 0);
+    console.log("firing restaurant update: ", restaurantUpdate.modifiedCount > 0);
+
+
+    res.send({ fired: userUpdate.modifiedCount > 0 && restaurantUpdate.modifiedCount > 0 });
 });
 
 

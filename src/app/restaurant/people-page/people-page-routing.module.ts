@@ -38,6 +38,10 @@ const routes: Routes = [
         loadChildren: () => import('./full-order/full-order.module').then( m => m.FullOrderPageModule)
       },
       {
+        path: "customer/:userId",
+        loadChildren: () => import("./customer/customer.module").then(m => m.CustomerPageModule)
+      },
+      {
         path: 'worker/:userId',
         loadChildren: () => import('./worker/full/full.module').then( m => m.FullPageModule)
       },

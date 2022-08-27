@@ -51,6 +51,7 @@ router.post("/create", async (req, res) => {
             state: null!,
         },
         fullName: null!,
+        blacklisted: [],
         status: "enabled" as "enabled",
     };
 

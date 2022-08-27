@@ -31,7 +31,7 @@ export class SetUpPage implements OnInit {
     customers: false,
     staff: false,
     settings: false,
-    components: false,
+    ingredients: false,
   }
   ui = {
     showAll: false,

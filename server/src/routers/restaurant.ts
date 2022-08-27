@@ -300,7 +300,7 @@ router.get("/user/:userId", allowed("manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
 
     const user = await getUser(userId, { projection: { name: 1, username: 1 } });
-    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { _id: 1 } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1 } } });
     
 
     if(user!._id!.equals(req.user as any)) {

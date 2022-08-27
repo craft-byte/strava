@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { Time } from 'server/src/models/components';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
@@ -68,11 +69,22 @@ export class FullOrderPage implements OnInit {
     private route: ActivatedRoute,
     private service: RestaurantService,
     private loader: LoadService,
+    private alertCtrl: AlertController,
   ) { };
 
   back() {
-    this.router.go(["restaurant", this.service.restaurantId, "people", "orders"], { replaceUrl: false });
+    const last = this.route.snapshot.queryParamMap.get("last");
+    if(last) {
+      this.router.go([last]);
+    } else {
+      this.router.go(["restaurant", this.service.restaurantId, "people", "orders"], { replaceUrl: false });
+    }
   }
+
+  fullCustomer() {
+    this.router.go(["restaurant", this.service.restaurantId, "people", "customer", this.order.customer.userId], { queryParams: { last: this.router.url } });
+  }
+
 
   async ngOnInit() {
     await this.loader.start();

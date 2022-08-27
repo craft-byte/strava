@@ -1,0 +1,120 @@
+.app {
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .back {
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+    
+            button {
+                display: flex;
+                align-items: center;
+                background: none;
+    
+                .text {
+                    color: var(--title-color);
+                    font-size: 18px;
+                }
+                ion-icon {
+                    font-size: 22px;
+                }
+            }
+        }
+        .buttons {
+            .red-button {
+                width: 136px;
+            }
+            .orange-button {
+                width: 196px;
+            }
+        }
+    }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        height: 82px;
+        margin-top: 24px;
+
+        .user {
+            display: flex;
+            .avatar {
+                padding: 8px;
+                img {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 100%;
+                }
+            }
+            .details {
+                padding: 8px;
+                .name {
+                    font-size: 18px;
+                }
+                .email {
+                    color: var(--text-color);
+                }
+            }
+        }
+        .customer {
+            div {
+                height: 26px;
+                // font-size: 18px;
+                color: var(--text-color);
+                span {
+                    margin-left: 6px;
+                    color: var(--black);
+                }
+            }
+        }
+    }
+
+    .orders {
+        margin-top: 24px;
+        .title {
+            font-size: 20px;
+        }
+        .list {
+            .example {
+                height: 42px;
+                border-bottom: 1px solid var(--border-color);
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                div {
+                    display: flex;
+                    align-items: center;
+                    font-size: 18px;
+                    color: var(--text-color);
+                }
+            }
+            .order {
+                height: 42px;
+                border-bottom: 1px solid var(--border-color);
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                cursor: pointer;
+                
+                &:hover { 
+                    background-color: rgb(247, 247, 247);
+                }
+                div {
+                    display: flex;
+                    align-items: center;
+                }
+                .date {
+                    padding-left: 12px;
+                    color: var(--text-color);
+                }
+                .status {
+                    justify-content: center;
+                    & > div {
+                        padding: 4px 10px;
+                        border-radius: 6px;
+                    }
+                }
+            }
+        }
+    }
+}
