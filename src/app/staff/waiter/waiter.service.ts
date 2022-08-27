@@ -8,20 +8,21 @@ import { WaiterResponse } from 'server/src/models/responses';
 })
 export class WaiterService {
 
+  socketId: string;
+  flow: Observable<WaiterResponse>;
+
   constructor(
-    private socket: Socket
+    public socket: Socket
   ) { };
 
   emit(str: string, data: any) {
     this.socket.emit(str, data);
   }
 
-  connect(userId: string, restaurantId: string) {
-    this.socket.emit("waiterConnect", { userId, restaurantId });
-    return new Observable<WaiterResponse>(subs => {
-      this.socket.on("waiter", (data: any) => {
-        subs.next(data);
-      });
+  connect() {
+    this.flow = new Observable<WaiterResponse>(subs => {
+      this.socket.on("waiter", (data: any) => subs.next(data));
     });
+    return this.flow;
   }
 }

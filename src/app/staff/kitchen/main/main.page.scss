@@ -57,7 +57,7 @@
             overflow-x: scroll;
             white-space: nowrap;
             scrollbar-width: auto;
-            scrollbar-color: var(--orange) transparent;
+            scrollbar-color: var(--gray) transparent;
             padding-bottom: 18px;
 
 
@@ -72,9 +72,8 @@
             }
 
             &::-webkit-scrollbar-thumb {
-                background-color: var(--orange);
+                background-color: var(--gray);
                 border-radius: 10px;
-                // border: 3px solid #ffffff;
             }
         }
     }
@@ -103,7 +102,7 @@
                 overflow-x: scroll;
                 white-space: nowrap;
                 scrollbar-width: auto;
-                scrollbar-color: var(--orange) transparent;
+                scrollbar-color: var(--gray) transparent;
                 position: relative;
 
 
@@ -118,7 +117,7 @@
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background-color: var(--orange);
+                    background-color: var(--gray);
                     border-radius: 6px;
                 }
 
@@ -134,4 +133,47 @@
             }
         }
     }
+}
+
+
+
+@media (min-width: 1500px) and (max-width: 1900px) {
+    
+}
+@media (min-width: 1150px) and (max-width: 1499px) {
+    .app {
+        .delayed,.all {
+            padding: 24px 256px;
+        }
+    }
+}
+@media (min-width: 700px) and (max-width: 1149px) {
+    .app {
+        .delayed,.all {
+            padding: 24px 108px;
+        }
+    }
+}
+@media (min-width: 550px) and (max-width: 699px) {
+    .app {
+        .delayed,.all {
+            padding: 24px 48px;
+        }
+    }
+}
+@media (min-width: 300px) and (max-width: 549px) {
+    .app {
+        .delayed,.all {
+            padding: 24px 8px;
+            .block .dishes {
+                height: 218px;
+            }
+            .dishes {
+                height: 218px;
+            }
+        }
+    }
+}
+@media (min-width: 200px) and (max-width: 450px) {
+
 }

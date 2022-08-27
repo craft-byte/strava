@@ -1,0 +1,51 @@
+<div class="app">
+  <div class="header" *ngIf="order">
+    <div class="back">
+      <button (click)="back()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span class="text">
+          BACK
+        </span>
+      </button>
+    </div>
+    <div class="order">
+      <h1 id="order-type">
+        {{ order.type }}
+      </h1>
+      <div class="order-id">
+        #<span class="id">{{order.id}}</span>
+      </div>
+    </div>
+    <div class="status">
+      <div
+        [class.status-badge-green]="order.status == 'done'"
+        [class.status-badge-red]="order.status == 'removed'"
+        [class.status-badge-orange]="order.status == 'done:removed'">
+        {{ order.status}}
+      </div>
+    </div>
+
+  </div>
+  
+  <div *ngIf="order" class="order">
+    <div class="customer">
+      <img [src]="customerAvatar" alt="">
+      <span class="username">
+        {{ order.customer.username }}
+      </span>
+    </div>
+    <div class="date-total">
+      <div class="date">
+        {{ order.ordered }}
+      </div>
+      <div class="total">
+        <span class="label">Total:</span> <span class="amount-and-sign">${{ order.total / 100 }} </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dishes" *ngIf="order">
+    <app-dish *ngFor="let i of order.dishes" [dish]="i"></app-dish>
+  </div>
+
+</div>

@@ -16,10 +16,12 @@ interface KitchenResponse {
     type: 
         "kitchen/order/new" |
         "kitchen/order/done" |
+        "kitchen/dish/quitted" |
         "kitchen/order/remove" |
         "kitchen/dish/remove" |
         "kitchen/dish/done" |
-        "kitchen/dish/take"
+        "kitchen/dish/take" |
+        "userIdRequired"
     ,
     send: string[];
     data: KitchenDish[];

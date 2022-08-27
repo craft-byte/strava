@@ -193,7 +193,7 @@ export class DishCookingPage implements OnInit {
   async ngOnInit() {
     await this.loader.start();
     const dishId = this.route.snapshot.paramMap.get("dishId");
-    const { cooking, dish } = await this.service.get("dishes", dishId, "cooking");
+    const { cooking, dish } = await this.service.get({}, "dishes", dishId, "cooking");
 
     if (cooking) {
       this.selected = cooking.components || [];

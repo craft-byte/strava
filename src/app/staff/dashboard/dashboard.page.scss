@@ -1,73 +1,10 @@
-.header {
-    padding: 0 412px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    height: 64px;
-    border-bottom: 1px solid var(--gray);
-
-    .title {
-        display: flex;
-        align-items: center;
-        .text {
-            padding-left: 16px;
-            font-size: 24px;
-            font-weight: 600;
-            background: var(--orange);
-            background: -webkit-linear-gradient(to right, var(--purple) 0%, var(--orange) 100%);
-            background: -moz-linear-gradient(to right, var(--purple) 0%, var(--orange) 100%);
-            background: linear-gradient(to right, var(--purple) 0%, var(--orange) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    }
-
-    .links {
-        display: grid;
-        grid-template-columns: 1fr;
-
-        .settings {
-            a {
-                &:hover {
-                    color: var(--purple);
-                }
-            }
-        }
-
-        .restaurant {
-            a {
-                &:hover {
-                    color: var(--orange);
-                }
-            }
-        }
-
-        .job {
-            a {
-                &:hover {
-                    color: var(--red);
-                }
-            }
-        }
-
-        .link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            a {
-                font-size: 18px;
-                color: var(--gray);
-                text-decoration: none;
-                transition: 0.4s all;
-            }
-        }
-    }
-}
-
 .app {
-    padding: 0 412px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     .location {
         height: 96px;
+        margin-top: 24px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         .waiter {

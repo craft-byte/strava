@@ -1,0 +1,98 @@
+.app {
+    margin-top: 24px;
+    .top {
+        display: flex;
+        align-items: center;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--border-color);
+        .name {
+            color: var(--text-color);
+            font-size: 18px;
+        }
+        .status {
+            margin-left: 12px;
+            padding: 4px 6px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .timeline {
+        .the {
+            // padding: 8px 12px;
+            display: grid;
+            grid-template-columns: 5% 20% 75%;
+            height: 64px;
+            .left {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                .line {
+                    width: 2px;
+                    height: 50%;
+                    background-color: var(--border-color);
+                }
+                .dot {
+                    font-size: 18px;
+                    color: var(--border-color);
+                    &.red {
+                        color: var(--red);
+                    }
+                    &.green {
+                        color: var(--green);
+                    }
+                    &.orange {
+                        color: var(--orange);
+                    }
+                }
+            }
+            .time {
+                display: flex;
+                align-items: center;
+                .hours {
+                    margin-left: 4px;
+                }
+                .minutes {
+                    margin-left: 4px;
+                }
+            }
+            .info {
+                display: flex;
+                align-items: center;
+                .user {
+                    margin-left: 12px;
+                    display: flex;
+                    align-items: center;
+                    img {
+                        border-radius: 100%;
+                        width: 32px;
+                        height: 32px;
+                    }
+                    .username {
+                        margin-left: 6px;
+                    }
+                }
+            }
+        }
+        .taken .left .line:first-of-type {
+            background-color: transparent;
+        }
+        .served .left .line:last-of-type {
+            background-color: transparent;
+        }
+    }
+}
+
+
+@media screen and (min-width: 680px) and (max-width: 1150px) {
+    .app .timeline .the .left .dot {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 679px) {
+    .app .timeline .the .left .dot {
+        font-size: 14px;
+    }
+}

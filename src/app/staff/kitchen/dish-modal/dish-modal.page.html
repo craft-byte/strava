@@ -4,8 +4,10 @@
       <ion-button (click)="close()">Close</ion-button>
     </ion-buttons>
     <ion-buttons slot="end" *ngIf="ui">
+      <ion-button *ngIf="ui.taken && taken.user._id != userId" (click)="doneTaken()" color="red">Taken</ion-button>
       <ion-button *ngIf="!ui.taken" (click)="take()">Take</ion-button>
-      <ion-button *ngIf="ui.taken" color="purple" (click)="done()">Done</ion-button>
+      <ion-button *ngIf="ui.taken && taken.user._id == userId" (click)="quit()">Quit</ion-button>
+      <ion-button *ngIf="ui.taken && taken.user._id == userId" color="purple" (click)="done()">Done</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -63,14 +65,6 @@
     </div>
     <div class="right">
       <div *ngIf="ui.taken" class="taken">
-        <div class="user">
-          <div class="name">
-            {{ taken.user.name }}
-          </div>
-          <div class="avatar">
-            <img [src]="cookAvatar || './../../../../assets/images/plain-avatar.jpg'">
-          </div>
-        </div>
         <div class="time">
           Taken
           <span class="hours" *ngIf="taken.time.hours > 0">
@@ -80,6 +74,15 @@
             &nbsp;<span class="minutes-count">{{ taken.time.minutes }}</span> min.&nbsp;
           </span>
           ago
+        </div>
+        <div class="user">
+          By
+          <div class="name">
+            {{ taken.user.name }}
+          </div>
+          <div class="avatar">
+            <img [src]="cookAvatar || './../../../../assets/images/plain-avatar.jpg'">
+          </div>
         </div>
       </div>
       <div class="user">
@@ -120,7 +123,7 @@
           </span>
         </div>
         <div class="full-order">
-          <a id="full-order">See full order<ion-icon name="open-outline"></ion-icon></a>
+          <a (click)="fullOrder()" id="full-order">See full order</a>
         </div>
       </div>
     </div>

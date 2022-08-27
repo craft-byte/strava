@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
 import { Socket } from "socket.io";
-import { ManagerSettings } from "../../../models/components";
+import { Settings } from "../../../models/components";
 import { KitchenResponse } from "../../../models/responses";
 import { Restaurant } from "../../../utils/restaurant";
 
@@ -142,9 +142,9 @@ async function allowed(userId: string, restaurantId: string) {
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, settings: 1, _id: 1 } } });
 
-    for (let { role, _id, settings } of restaurant?.staff!) {
-        if (_id.toString() == userId) {
-            if (role == "cook" || (role == "manager" && (settings as ManagerSettings).work.cook)) {
+    for (let { role, userId: workerId, settings } of restaurant?.staff!) {
+        if (workerId.toString() == userId) {
+            if (role == "cook" || (role == "manager" && (settings as Settings.ManagerSettings).work.cook)) {
                 return true;
             }
         }
@@ -155,7 +155,7 @@ async function allowed(userId: string, restaurantId: string) {
 
 
 function KitchenSocket(socket: Socket) {
-    const subs = new Subject<KitchenResponse>();
+    // const subs = new Subject<KitchenResponse>();
 
     // let session: Session;
 
@@ -165,6 +165,8 @@ function KitchenSocket(socket: Socket) {
             socket.disconnect();
             return null;
         }
+
+        console.log('CONNTECTED KITCHEN');
 
         socket.join(`${restaurantId}/kitchen`);
     });
@@ -243,10 +245,10 @@ function KitchenSocket(socket: Socket) {
     // });
 
     socket.on("disconnect", () => {
-        
+        console.log("DISCONNECTED");
     });
 
-    return subs;
+    // return subs;
 }
 
 export {

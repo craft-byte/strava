@@ -1,0 +1,107 @@
+<div class="app">
+  <div class="top">
+    <div class="name">
+      {{ dish.name }}
+    </div>
+    <div class="status"
+      [class.status-badge-green]="dish.status == 'served'"
+      [class.status-bagde-red]="dish.status == 'removed'">
+      <ion-icon *ngIf="dish.status == 'served'" name="checkmark-outline"></ion-icon>
+      {{ dish.status }}
+    </div>
+  </div>
+  <div *ngIf="dish.status == 'removed'" class="removed">
+    REMOVED
+  </div>
+  <div class="timeline">
+    <div *ngIf="dish.taken" class="taken the">
+      <div class="left">
+        <span class="line"></span>
+        <span class="dot {{dish.taken.color}}">
+          &#9679;
+        </span>
+        <span class="line"></span>
+      </div>
+      <div class="time">
+        <span *ngIf="dish.taken.hours" class="hours">
+          {{ dish.taken.hours}} hrs
+        </span>
+        <span class="minutes">
+          {{ dish.taken.minutes }} min
+        </span>
+      </div>
+
+      <div class="info">
+        <span class="label">
+          Taken by
+        </span>
+        <div *ngIf="dish.takenBy" class="user">
+          <img [src]="takenByAvatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+          <span class="username">
+            {{ dish.takenBy.username }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="cooked the">
+      <div class="left">
+        <span class="line"></span>
+        <span class="dot {{dish.cooked.color}}">
+          &#9679;
+        </span>
+        <span class="line"></span>
+      </div>
+      <div class="time">
+        <div class="time">
+          <span *ngIf="dish.cooked.hours" class="hours">
+            {{ dish.cooked.hours}} hrs
+          </span>
+          <span class="minutes">
+            {{ dish.cooked.minutes }} min
+          </span>
+        </div>
+      </div>
+      <div class="info">
+        <span class="lable">
+          Cooked by
+        </span>
+        <div *ngIf="dish.cook" class="user">
+          <img [src]="cookAvatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+          <span class="username">
+            {{ dish.cook.username }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="served the">
+      <div class="left">
+        <span class="line"></span>
+        <span class="dot {{dish.served.color}}">
+          &#9679;
+        </span>
+        <span class="line"></span>
+      </div>
+      <div class="time">
+        <div class="time">
+          <span *ngIf="dish.served.hours" class="hours">
+            {{ dish.served.hours}} hrs
+          </span>
+          <span class="minutes">
+            {{ dish.served.minutes }} min
+          </span>
+        </div>
+      </div>
+      <div class="info">
+        <span class="label">
+          Served by
+        </span>
+        <div *ngIf="dish.waiter" class="user">
+          <img [src]="waiterAvatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+          <span class="username">
+            {{ dish.waiter.username }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

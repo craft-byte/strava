@@ -32,10 +32,6 @@ const routes: Routes = [
         canActivate: [FullDishGuard],
       },
       {
-        path: 'customer/:userId',
-        loadChildren: () => import('./customer/customer.module').then( m => m.CustomerPageModule)
-      },
-      {
         path: 'settings',
         loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
       },

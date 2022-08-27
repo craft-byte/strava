@@ -50,7 +50,7 @@
         Card
       </div>
     </div>
-    <div class="payouts" [class.one]="!data.payouts">
+    <div class="payouts" [class.one]="!data.money.payouts">
       <!-- [class.status-badge-orange]="data.money.payouts == 'disabled'" -->
       <div class="status"
         [class.status-badge-green]="data.money.payouts == 'enabled'"
@@ -58,8 +58,8 @@
         [class.status-badge-purple]="data.money.payouts == 'pending'"
       >
         <ion-icon name="checkmark-outline" *ngIf="data.money.payouts == 'enabled'"></ion-icon>
-        <ion-icon name="close-outline" *ngIf="data.money.payouts == 'disabled'"></ion-icon>
-        <ion-icon name="ban-outline" *ngIf="data.money.payouts == 'restricted'"></ion-icon>
+        <ion-icon name="close-outline" *ngIf="data.money.payouts == 'pending'"></ion-icon>
+        <ion-icon name="ban-outline" *ngIf="data.money.payouts == 'rejected' || data.money.payouts == 'restricted'"></ion-icon>
         {{ data.money.payouts }}
       </div>
       <div class="bank" *ngIf="data.payouts">
@@ -81,36 +81,14 @@
       </div>
     </div>
   </div>
-  <div class="stats">
-    <!-- [xAxis]="chart.xAxis"
-    [yAxis]="chart.yAxis" -->
-    <div class="money">
+  <div class="charts">
+    <app-charts></app-charts>
+    <!-- <div class="money">
       <div class="chart">
-        <ngx-charts-line-chart
-          [view]="chart.view"
-          [scheme]="chart.colorScheme"
-          [legend]="chart.legend"
-          [showXAxisLabel]="chart.showXAxisLabel"
-          [showYAxisLabel]="chart.showYAxisLabel"
-          [showGridLines]="chart.showGridLines"
-          [xAxisLabel]="chart.xAxisLabel"
-          [yAxisLabel]="chart.yAxisLabel"
-          [timeline]="chart.timeline"
-          [results]="chart.multi"
-          >
-        </ngx-charts-line-chart>
-      </div>
-      <div class="info">
-        <div class="title">
-          Today earned
-        </div>
-        <div class="currency">
-          USD
-        </div>
-        <div class="amount">
-          123
+        <div class="ch">
+        
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>

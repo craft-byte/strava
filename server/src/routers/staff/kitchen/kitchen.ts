@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { io } from "../../..";
 import { DishHashTableUltra } from "../../../utils/dish";
 import { getDelay } from "../../../utils/other";
 import { Orders, Restaurant } from "../../../utils/restaurant";
@@ -18,10 +19,17 @@ interface Dish {
     orderId: string;
     time: number;
     dishId: string;
-}; router.get("/init", async (req, res) => {
+}; router.post("/init", async (req, res) => {
     const { restaurantId } = req.params as any;
+    const { socketId } = req.body;
 
-    const orders = await Orders(restaurantId).many({}, { projection: { ordered: 1, _id: 1, dishes: { status: 1, dishId: 1, _id: 1 } } });
+    if(!socketId) {
+        console.log("NO SOCKET ID: DANGER");
+    } else {
+        io.in(socketId).socketsJoin(`${restaurantId}/kitchen`);
+    }
+
+    const orders = await Orders(restaurantId).many({}, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1 } } });
 
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, }, time: 1, general: 1 });
 
@@ -49,49 +57,50 @@ interface Dish {
                 const converted = {
                     ...d,
                     orderId: i._id,
-                    time: getDelay(i.ordered!)
+                    time: getDelay(i.ordered!),
+                    taken: d.takenBy,
                 };
         
                 all[dish.general!].push(converted);
-                delayed.push(converted);
+                if(d.status == "ordered") {
+                    delayed.push(converted);
+                }
             }
         }
     }
-
-    console.log(all);
     
 
     res.send({ delayed: delayed, allDishes: all, dishes: dishes.table });
 });
 
-interface Taken {
-    time: {
-        hours: number;
-        minutes: number;
-        nextMinute: number;
-        color: string;
-    };
-    user: {
-        avatar: any;
-        name: string;
-        _id: string;
-    }
-}; router.get("/taken", async (req, res) => {
+// interface Taken {
+//     time: {
+//         hours: number;
+//         minutes: number;
+//         nextMinute: number;
+//         color: string;
+//     };
+//     user: {
+//         avatar: any;
+//         name: string;
+//         _id: string;
+//     }
+// }; router.get("/taken", async (req, res) => {
 
-    const user = await getUser(req.user as string, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
+//     const user = await getUser(req.user as string, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
     
-    const result: Taken = {
-        time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
-        user: {
-            name: user.name! || user.username!,
-            avatar: user.avatar?.binary,
-            _id: req.user as string,
-        }
-    };
+//     const result: Taken = {
+//         time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
+//         user: {
+//             name: user.name! || user.username!,
+//             avatar: user.avatar?.binary,
+//             _id: req.user as string,
+//         }
+//     };
 
 
-    res.send(result);
-});
+//     res.send(result);
+// });
 
 router.get("/delayed", async (req, res) => {
     const { restaurantId } = req.params as any;

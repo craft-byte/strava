@@ -40,9 +40,9 @@ export class MainService {
   async login(data?: LoginData) {
     try {
       const result = await this.http.patch<any>(environment.url + '/user/login', data).toPromise(); 
-      this.userInfo = result;
-      this.setUserInfo(result.username);
-      return true;
+      this.userInfo = result.user;
+      this.setUserInfo(result.user.username);
+      return result.redirectTo;
     } catch (error) {
       return false;
     }

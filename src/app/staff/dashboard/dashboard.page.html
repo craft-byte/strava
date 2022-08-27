@@ -1,13 +1,15 @@
-<div class="header">
+<div class="the-header-with-close-icon">
   <div class="title">
+    <div class="close">
+      <button [routerLink]="closeLink" id="close">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
     <div class="text">
       {{ ui.title }}
     </div>
   </div>
-  <div class="links">
-    <div class="link">
-      <a routerLink="/user/info">Account</a>
-    </div>
+  <div class="buttons">
   </div>
 </div>
 
@@ -15,10 +17,10 @@
   <div class="app">
     <div class="location" *ngIf="ui.showLocations">
       <div class="kitchen">
-        <button class="gradient-button" [disabled]="!restaurantId" *ngIf="ui.showKitchen" (click)="go('kitchen')">Kitchen<ion-icon name="chevron-forward-outline"></ion-icon></button>
+        <button class="gradient-button" *ngIf="ui.showKitchen" (click)="go('kitchen')">Kitchen<ion-icon name="chevron-forward-outline"></ion-icon></button>
       </div>
       <div class="waiter">
-        <button class="gradient-button" [disabled]="!restaurantId" *ngIf="ui.showWaiter" (click)="go('waiter')">Waiter<ion-icon name="chevron-forward-outline"></ion-icon></button>
+        <button class="gradient-button" *ngIf="ui.showWaiter" (click)="go('waiter')">Waiter<ion-icon name="chevron-forward-outline"></ion-icon></button>
       </div>
     </div>
   </div>

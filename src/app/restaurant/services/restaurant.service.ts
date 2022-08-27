@@ -15,6 +15,7 @@ export class RestaurantService {
   restaurant: Restaurant;
   restaurants: { _id: string; name: string; }[];
   currentDish: Dish;
+  showGoWork: boolean;
 
   constructor(
     private http: HttpClient,
@@ -33,11 +34,11 @@ export class RestaurantService {
     }
     return this.http.delete<T>(this.url + this.restaurantId + "/" + args.join("/")).toPromise();
   }
-  get<T>(...args: string[]) {
+  get<T>(params: { [key: string]: string | boolean | number }, ...args: string[]) {
     if(!this.restaurantId) {
       return null;
     }
-    return this.http.get<T>(this.url + this.restaurantId + "/" + args.join("/")).toPromise();
+    return this.http.get<T>(this.url + this.restaurantId + "/" + args.join("/"), { params }).toPromise();
   }
   post<T>(body: any, ...args: string[]) {
     if(!this.restaurantId) {

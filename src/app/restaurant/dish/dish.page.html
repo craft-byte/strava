@@ -1,19 +1,19 @@
-<div class="header">
+<div class="the-header-with-close-icon {{mode}}">
   <div class="title">
     <div class="close">
-      <button (click)="close()">
+      <button id="close" (click)="close()">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
     <div class="text" *ngIf="mode == 'add'">
-      Add dish to {{ restaurant.name }}
+      Add dish
     </div>
     <div class="text" *ngIf="mode == 'edit' && dish">
       Edit {{ dish.name }}
     </div>
   </div>
   <div class="buttons">
-    <button id="add-continue" class="orange-button" [disabled]="ui.disableAdd"  (click)="add(false)" *ngIf="mode == 'add'">Save and add more</button>
+    <button id="add-continue" class="orange-button long" [disabled]="ui.disableAdd"  (click)="add(false)" *ngIf="mode == 'add'">Save and add more</button>
     <button id="add" class="white-button"  [disabled]="ui.disableAdd"  (click)="add(true)" *ngIf="mode == 'add'">Add</button>
     <button id="save" class="orange-button" [disabled]="ui.disableSave" (click)="save()" *ngIf="mode == 'edit'">Save</button>
   </div>

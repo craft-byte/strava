@@ -8,7 +8,7 @@ import { Restaurant } from "../../utils/restaurant";
 
 const router = Router({ mergeParams: true });
 
-router.get("/all/:dishId", allowed("manager", "components"), async (req, res) => {
+router.get("/all/:dishId", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId, dishId } = req.params;
 
     const result = await Restaurant(restaurantId).components.getAll({ modified: 1, name: 1, amount: 1, _id: 1, });
@@ -45,7 +45,7 @@ router.get("/all/:dishId", allowed("manager", "components"), async (req, res) =>
 
     res.send(components);
 });
-router.get("/", allowed("manager", "components"), async (req, res) => {
+router.get("/", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId } = req.params;
 
     const result = await Restaurant(restaurantId).components.getAll({ modified: 1, name: 1, amount: 1, _id: 1, });
@@ -67,7 +67,7 @@ router.get("/", allowed("manager", "components"), async (req, res) => {
 
     res.send(components);
 });
-router.post("/", allowed("manager", "components", "add"), async (req, res) => {
+router.post("/", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { component } = req.body;
 
@@ -95,7 +95,7 @@ router.post("/", allowed("manager", "components", "add"), async (req, res) => {
         modified: getDate(newComponent.modified)
     } });
 });
-router.delete("/:componentId", allowed("manager", "components", "remove"), async (req, res) => {
+router.delete("/:componentId", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId, componentId } = req.params as any;
 
     const result = await Restaurant(restaurantId).update({ $pull: { components: { _id: id(componentId) } } });
@@ -104,7 +104,7 @@ router.delete("/:componentId", allowed("manager", "components", "remove"), async
 
     res.send({ removed: result!.modifiedCount > 0 });
 });
-router.patch("/", allowed("manager", "components"), async (req, res) => {
+router.patch("/", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { searchText } = req.body;
 
@@ -132,7 +132,7 @@ router.patch("/", allowed("manager", "components"), async (req, res) => {
 
 
 
-router.patch("/edit/:componentId", allowed("manager", "components", "add"), async (req, res) => {
+router.patch("/edit/:componentId", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId, componentId } = req.params as any;
     const { updated } = req.body;
 
@@ -158,10 +158,11 @@ router.patch("/edit/:componentId", allowed("manager", "components", "add"), asyn
 
     res.send(result);
 });
-router.patch("/update/:componentId", allowed("manager", "components", "add"), async (req, res) => {
+router.patch("/update/:componentId", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId, componentId } = req.params;
     const { amount, warning } = req.body;
 
+    
     if((amount && amount < 1) || (warning && warning < 0)) {
         return res.sendStatus(422);
     }
@@ -187,7 +188,7 @@ router.patch("/update/:componentId", allowed("manager", "components", "add"), as
 
     res.send(result);
 });
-router.get("/:componentId", allowed("manager", "components"), async (req, res) => {
+router.get("/:componentId", allowed("manager", "ingredients"), async (req, res) => {
     const { restaurantId, componentId } = req.params as any;
 
     const result = await Restaurant(restaurantId).aggregate<{ component: Component }>([

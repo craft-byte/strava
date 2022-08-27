@@ -1,11 +1,16 @@
-<div class="close-header">
-  <div class="close">
-    <button id="close" (click)="back()">
-      <ion-icon name="close"></ion-icon>
-    </button>
-  </div>
+<div class="the-header-with-close-icon">
   <div class="title">
-    {{ ui.title }}
+    <div class="close">
+      <button id="close" (click)="back()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
+    <div class="text">
+      {{ ui.title }}
+    </div>
+  </div>
+  <div class="buttons">
+
   </div>
 </div>
 

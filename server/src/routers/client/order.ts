@@ -445,6 +445,11 @@ router.post("/session/confirm", async (req, res) => {
         event: "kitchen",
         data: result,
     });
+
+
+    for(let i of session.dishes) {
+        await Restaurant(restaurantId).dishes.one(i.dishId).update({ $inc: { bought: 1 } });
+    }
 });
 router.post("/session/dish", async (req, res) => {
     const { restaurantId } = req.params as any;
@@ -474,6 +479,8 @@ router.post("/session/dish", async (req, res) => {
     console.log("dish added: ", result!.ok == 1);
 
     res.send({ updated: result!.ok == 1 });
+
+
 });
 
 

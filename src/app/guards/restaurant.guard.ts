@@ -51,6 +51,7 @@ export class RestaurantGuard implements CanActivate {
 
         this.service.restaurant = res.restaurant;
         this.service.restaurants = res.restaurants;
+        this.service.showGoWork = res.showGoWork;
 
         return subs.next(true);
       });

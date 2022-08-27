@@ -1,0 +1,92 @@
+<div class="app">
+  <div class="header">
+    <div class="back">
+      <button (click)="back()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span class="text">BACK</span>
+      </button>
+    </div>
+    <div class="buttons">
+      <button (click)="fire()" *ngIf="ui.showFire" class="red-button">Fire</button>
+    </div>
+  </div>
+  <div class="top" *ngIf="user">
+    <div class="user">
+      <div class="avatar">
+        <img [src]="userAvatar" alt="">
+      </div>
+      <div class="name">
+        {{ user.name }}
+      </div>
+    </div>
+    <div class="role">
+      <div (click)="setRole('manager')" class="option manager" [class.a]="role == 'manager'">
+        Manager
+      </div>
+      <div (click)="setRole('cook')" class="option cook" [class.a]="role == 'cook'">
+        Cook
+      </div>
+      <div (click)="setRole('waiter')" class="option waiter" [class.a]="role == 'waiter'">
+        Waiter
+      </div>
+    </div>
+  </div>
+  <div class="settings">
+    <div *ngIf="role == 'manager'" class="manager">
+      <div class="work">
+        <div class="title">
+          Work as
+        </div>
+        <div class="padding">
+          <div class="cook">
+            <div class="title">Cook</div>
+            <div class="value">
+              <ion-toggle (ionChange)="setWork('cook', $event)" [checked]="settings.work.cook" mode="ios" color="orange"></ion-toggle>
+            </div>
+          </div>
+          <div class="waiter">
+            <div class="title">Waiter</div>
+            <div class="value">
+              <ion-toggle (ionChange)="setWork('waiter', $event)" [checked]="settings.work.waiter" mode="ios" color="orange"></ion-toggle>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dishes the-block">
+        <div class="title">Dishes</div>
+        <div class="info">The manager can change & delete dishes</div>
+        <div class="value">
+          <ion-toggle (ionChange)="set('dishes', $event)" [checked]="settings.dishes" mode="ios" color="orange"></ion-toggle>
+        </div>
+      </div>
+      <div class="staff the-block">
+        <div class="title">Staff</div>
+        <div class="info">The manager can hire & fire workers and change their settings</div>
+        <div class="value">
+          <ion-toggle (ionChange)="set('staff', $event)" [checked]="settings.staff" mode="ios" color="orange"></ion-toggle>
+        </div>
+      </div>
+      <div class="customers the-block">
+        <div class="title">Customers</div>
+        <div class="info">The manager can add customers to blacklist</div>
+        <div class="value">
+          <ion-toggle (ionChange)="set('customers', $event)" [checked]="settings.customers" mode="ios" color="orange"></ion-toggle>
+        </div>
+      </div>
+      <div class="ingredients the-block">
+        <div class="title">Ingredients</div>
+        <div class="info">The manager can manage restaurant's ingredients</div>
+        <div class="value">
+          <ion-toggle (ionChange)="set('ingredients', $event)" [checked]="settings.ingredients" mode="ios" color="orange"></ion-toggle>
+        </div>
+      </div>
+      <div class="restaurant-settings the-block">
+        <div class="title">Restaurant's settings</div>
+        <div class="info">The manager can change restauran's settings</div>
+        <div class="value">
+          <ion-toggle (ionChange)="set('settings', $event)" [checked]="settings.settings" mode="ios" color="orange"></ion-toggle>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

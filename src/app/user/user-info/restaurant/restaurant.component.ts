@@ -21,7 +21,12 @@ export class RestaurantComponent implements OnInit {
   @Input() data: any;
 
   goRestaurant() {
-    this.router.go(["restaurant", this.data._id], { replaceUrl: true });
+    console.log(this.data);
+    if(this.data.url) {
+      this.router.go([this.data.url]);
+    } else {
+      this.router.go(["restaurant", this.data._id]);
+    }
   }
 
 

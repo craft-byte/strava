@@ -30,6 +30,13 @@
         align-items: center;
     }
 
+    .error-message {
+        font-size: 18px;
+        color: var(--red);
+        text-align: center;
+        margin-top: 12px;
+    }
+
     .content {
         display: flex;
         justify-content: center;
@@ -41,6 +48,8 @@
             position: absolute;
             right: 0;
             top: 12px;
+            width: 196px;
+            height: 42px;
         }
 
         .role {
@@ -79,6 +88,18 @@
 
             .manager {
                 .block {
+                    height: 64px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid rgb(243, 243, 243);
+
+                    .title {
+                        color: var(--text-color);
+                        font-size: 18px;
+                    }
+                }
+                .work-block {
                     margin-top: 32px;
 
                     .title {

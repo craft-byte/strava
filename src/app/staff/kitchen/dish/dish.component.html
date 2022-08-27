@@ -1,4 +1,4 @@
-<div class="app">
+<div class="app" [class.taken]="orderDish.taken" [class.taken-me]="orderDish.taken == userId">
   <div class="image">
     <img [src]="image" alt="">
   </div>

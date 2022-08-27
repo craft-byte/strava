@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
 import { RestaurantService } from '../../services/restaurant.service';
-import { UserModalPage } from './user-modal/user-modal.page';
 
 interface Order {
   user: {
@@ -41,44 +38,26 @@ export class OrdersPage implements OnInit {
     private service: RestaurantService,
     private router: RouterService,
     private loader: LoadService,
-    private modalCtrl: ModalController,
   ) { };
 
-  goDish(id: string) {
-    this.router.go(["restaurant", this.service.restaurantId, "dishes", "full", id], { replaceUrl: true, queryParams: { last: this.router.url } });
+  async fullOrder(id: string) {
+    this.router.go(["restaurant", this.service.restaurantId, "people", "order", id], { replaceUrl: false });
   }
-  async goUser(id: string) {
-    const modal = await this.modalCtrl.create({
-      component: UserModalPage,
-      mode: "ios",
-      cssClass: "modal-width",
-      componentProps: {
-        userId: id,
-      }
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onDidDismiss();
-
-    if(data) {
-      this.updateOrders();
-    }
-  }
+  
 
   async updateOrders() {
     await this.loader.start();
-    this.orders = await this.service.get("people", "orders");
-    console.log(this.orders);
+    this.orders = await this.service.get({}, "people", "orders");
 
     for(let i of this.orders) {
-      i.avatar = getImage(i.user.avatar) || "./../../../../assets/images/plain-avatar.jpg";
+      i.avatar = getImage(i.user.avatar.binary) || "./../../../../assets/images/plain-avatar.jpg";
     }
     this.loader.end();
   }
 
   ngOnInit() {
-    this.updateOrders();  
+    this.updateOrders();
+
   }
 
 }

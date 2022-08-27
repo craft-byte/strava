@@ -21,6 +21,10 @@ export class CardPage implements OnInit {
 
   currency: string;
 
+  ui = {
+    errorMessage: ""
+  }
+
   constructor(
     private loader: LoadService,
     private service: UserService,
@@ -38,7 +42,11 @@ export class CardPage implements OnInit {
   }
 
   async next() {
-    if (!this.form.valid || !this.currency) {
+    if (!this.form.valid) {
+      return;
+    }
+    if(!this.currency) {
+      this.ui.errorMessage = "Please, select currency";
       return;
     }
 
@@ -66,7 +74,14 @@ export class CardPage implements OnInit {
           mode: "ios",
           message: "Filled data is incorrect."
         })).present();
+      } else if(e.status == 400) {
+        if(e.body.reason == "card") {
+          this.ui.errorMessage = "Card is unsupported, \n please choose another one or add bank account.";
+        } else if(e.body.reason == "type") {
+          this.ui.errorMessage = e.body.message || "Invalid card type.";
+        }
       }
+      this.loader.end();
     }
   }
 

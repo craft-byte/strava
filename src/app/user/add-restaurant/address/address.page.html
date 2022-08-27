@@ -7,6 +7,9 @@
         </h1>
         <h2 id="subtitle">Restaurant address</h2>
       </div>
+      <div *ngIf="ui.errorMessage.length > 0" class="error-message">
+        {{ ui.errorMessage }}
+      </div>
       <div class="body" *ngIf="data" [formGroup]="form">
         <div class="select-title">
           State

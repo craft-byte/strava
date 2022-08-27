@@ -8,6 +8,9 @@
       <button class="orange-button" (click)="back()">Back</button>
     </div>
   </div>
+  <div *ngIf="ui.errorMessage.length > 0" class="error-message">
+    {{ui.errorMessage}}
+  </div>
   <div class="content" *ngIf="ui.showAll">
     <div class="role">
       <div (click)="role = 'manager'" [ngClass]="{ active: role == 'manager' }" class="one manager">
@@ -20,11 +23,11 @@
         Cook
       </div>
     </div>
-    <button class="success-button" (click)="submit()">Submit</button>
+    <button class="green-button" (click)="submit()">Add user to restaurant</button>
     <div class="body">
       <div *ngIf="role == 'manager'" class="manager">
-        <div class="block">
-          <div class="title">Waiter / Cook</div>
+        <div class="work-block">
+          <div class="title">Let the manager work as</div>
           <div class="body">
             <div class="option">
               <div class="label">Waiter</div>
@@ -41,88 +44,35 @@
           </div>
         </div>
         <div class="block">
-          <div class="title">Dishes</div>
-          <div class="body">
-            <div class="option">
-              <div class="label">Add & Change</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('dishes', 'add')" color="orange"></ion-toggle>
-              </div>
-            </div>
-            <div class="option">
-              <div class="label">Remove</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('dishes', 'remove')" color="orange"></ion-toggle>
-              </div>
-            </div>
+          <div class="title">
+            Let the manager add/change/remove dishes
+          </div>
+          <div class="value">
+            <ion-toggle mode="ios" (ionChange)="set('dishes')" color="orange"></ion-toggle>
           </div>
         </div>
         <div class="block">
-          <div class="title">Components</div>
-          <div class="body">
-            <div class="option">
-              <div class="label">Add & Change</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('components', 'add')" color="orange"></ion-toggle>
-              </div>
-            </div>
-            <div class="option">
-              <div class="label">Remove</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('components', 'remove')" color="orange"></ion-toggle>
-              </div>
-            </div>
+          <div class="title">Let the manager add/change/remove components</div>
+          <div class="value">
+            <ion-toggle mode="ios" (ionChange)="set('components')" color="orange"></ion-toggle>
           </div>
         </div>
         <div class="block">
-          <div class="title">Customers</div>
-          <div class="body">
-            <div class="option">
-              <div class="label">Blacklisting</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('customers', 'blacklisting')" color="orange"></ion-toggle>
-              </div>
-            </div>
+          <div class="title">Let the manager blacklist customers/remove customers' orders</div>
+          <div class="value">
+            <ion-toggle mode="ios" (ionChange)="set('customers')" color="orange"></ion-toggle>
           </div>
         </div>
         <div class="block">
-          <div class="title">Staff</div>
-          <div class="body">
-            <div class="option">
-              <div class="label">Hire</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('staff', 'hire')" color="orange"></ion-toggle>
-              </div>
-            </div>
-            <div class="option">
-              <div class="label">Change abilities</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('staff', 'settings')" color="orange"></ion-toggle>
-              </div>
-            </div>
-            <div class="option">
-              <div class="label">Fire</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('staff', 'fire')" color="orange"></ion-toggle>
-              </div>
-            </div>
+          <div class="title">Let the manager hire/fire/change staff</div>
+          <div class="value">
+            <ion-toggle mode="ios" (ionChange)="set('staff')" color="orange"></ion-toggle>
           </div>
         </div>
         <div class="block">
-          <div class="title">Restaurant</div>
-          <div class="body">
-            <div class="option">
-              <div class="label">Theme</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('restaurant', 'theme')" color="orange"></ion-toggle>
-              </div>
-            </div>
-            <div class="option">
-              <div class="label">Logo</div>
-              <div class="value">
-                <ion-toggle mode="ios" (ionChange)="set('restaurant', 'logo')" color="orange"></ion-toggle>
-              </div>
-            </div>
+          <div class="title">Let the manager change restaurant's settings</div>
+          <div class="value">
+            <ion-toggle mode="ios" (ionChange)="set('settings')" color="orange"></ion-toggle>
           </div>
         </div>
       </div>

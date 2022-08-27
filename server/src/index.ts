@@ -6,7 +6,7 @@ import session from "express-session";
 import cookieparser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "https";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { UserRouter } from "./routers/user";
 import { RadminRouter } from "./routers/restaurant";
 import { serverEnvinroment } from "./environments/server";
@@ -25,6 +25,8 @@ import { logged } from "./middleware/user";
 import Stripe from "stripe";
 import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
+import { Restaurant } from "./utils/restaurant";
+import { SocketIO } from "./utils/io";
 
 export const MODE = process.argv[2] as "testing" | "prod" | "dev";
 
@@ -182,23 +184,7 @@ async function main(client: MongoClient) {
             res.sendFile(splitted.join("/") + "/www/index.html");
         });
 
-        io.on("connection", socket => {
-            ClientSocket(socket).subscribe((res: ClientResponse) => {
-                for (let id of res.send) {
-                    io.to(id).emit(res.event ? res.event : "client", res);
-                }
-            });
-            KitchenSocket(socket).subscribe((res: KitchenResponse) => {
-                for (let id of res.send) {
-                    io.to(id).emit(res.event ? res.event : "kitchen", res);
-                }
-            });
-            WaiterSocket(socket).subscribe((res: WaiterResponse) => {
-                for (let id of res.send) {
-                    io.to(id).emit(res.event ? res.event : "waiter", res);
-                }
-            });
-        });
+        io.on("connection", SocketIO);
     } catch (e) {
         console.error(e);
         throw new Error("Mongo Connection");

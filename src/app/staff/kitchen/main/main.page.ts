@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
-import { Subscription } from 'rxjs';
+import { ArgumentOutOfRangeError, Subscription } from 'rxjs';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
@@ -15,6 +15,7 @@ interface OrderDish { // dish from order
   _id: string;
   dishId: string;
   orderId: string;
+  taken: string;
   time: {
     hours: number;
     minutes: number;
@@ -98,6 +99,8 @@ export class MainPage implements OnInit, OnDestroy {
       }
     }
 
+    console.log(this.kitchen.dishes);
+
     (await this.toastCtrl.create({
       message: `${this.kitchen.dishes[dishId].name} is done`,
       color: "green",
@@ -111,7 +114,7 @@ export class MainPage implements OnInit, OnDestroy {
   async ngOnInit() {
     await this.loader.start();
     try {
-      const result: any = await this.service.get("kitchen/init");
+      const result: any = await this.service.post({ socketId: this.kitchen.socketId }, "kitchen/init");
 
       const { delayed, dishes, allDishes } = result;
 
@@ -120,18 +123,26 @@ export class MainPage implements OnInit, OnDestroy {
       this.delayed = delayed;
       this.allDishes = allDishes;
 
-      this.subscription = this.kitchen.connect(this.service.restaurantId, this.main.userInfo._id).subscribe(async res => {
+      this.subscription = this.kitchen.connect().subscribe(async res => {
         
         const { type } = res;
 
 
         if(type == "kitchen/dish/take") {
-          const { orderDishId } = res.data as any;
+          const { orderDishId, taken: { user } } = res.data as any;
           for(let i in this.delayed) {
             if(this.delayed[i]._id == orderDishId) {
               console.log("MATCH");
               this.delayed.splice(+i, 1);
               break;
+            }
+          }
+          for(let key of Object.keys(this.allDishes)) {
+            for(let i of this.allDishes[key]) {
+              if(i._id == orderDishId) {
+                i.taken = user._id;
+                return;
+              }
             }
           }
         } else if(type == "kitchen/order/new") {
@@ -150,6 +161,20 @@ export class MainPage implements OnInit, OnDestroy {
           const { orderDishId } = res.data as any;
 
           this.doneDish(orderDishId);
+        } else if(type == "userIdRequired") {
+          console.log("HELLO?");
+          this.kitchen.emit("connectWithUserId", { restaurantId: this.service.restaurantId, userId: this.main.userInfo._id, joinTo: "kitchen", })
+        } else if(type == "kitchen/dish/quitted") {
+          const { orderDishId } = res.data as any;
+
+          for(let c of Object.keys(this.allDishes)) {
+            for(let i in this.allDishes[c]) {
+              if(this.allDishes[c][i]._id == orderDishId) {
+                this.allDishes[c][i].taken = null;
+                break;
+              }
+            }
+          }
         }
       });
 
@@ -159,7 +184,9 @@ export class MainPage implements OnInit, OnDestroy {
     this.loader.end();
   }
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }

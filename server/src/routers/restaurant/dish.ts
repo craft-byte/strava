@@ -10,7 +10,7 @@ const router = Router({ mergeParams: true });
 
 
 
-router.delete("/", allowed("manager", "dishes", "remove"), async (req, res) => {
+router.delete("/", allowed("manager", "dishes"), async (req, res) => {
     const { dishId, restaurantId } = req.params as any;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).remove();
@@ -52,7 +52,7 @@ router.get("/", allowed("manager", "dishes"), async (req, res) => {
 
     res.send(result);
 });
-router.post("/", allowed("manager", "dishes", "add"), async (req, res) => {
+router.post("/", allowed("manager", "dishes"), async (req, res) => {
     const { restaurantId, dishId } = req.params;
 
     const update: any = {
@@ -102,7 +102,7 @@ router.post("/", allowed("manager", "dishes", "add"), async (req, res) => {
 
     res.send({ updated: result.modifiedCount > 0 });
 });
-router.get("/cooking", allowed("manager", "dishes", "cooking"), async (req, res) => {
+router.get("/cooking", allowed("manager", "dishes"), async (req, res) => {
     const { restaurantId, dishId } = req.params;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { cooking: 1, name: 1 } });
@@ -141,7 +141,7 @@ router.get("/cooking", allowed("manager", "dishes", "cooking"), async (req, res)
 
 
 
-router.post("/cooking/component", allowed("manager", "dishes", "cooking"), async (req, res) => {
+router.post("/cooking/component", allowed("manager", "dishes"), async (req, res) => {
     const { dishId, restaurantId } = req.params;
     const { amount, componentId } = req.body;
 
@@ -149,14 +149,14 @@ router.post("/cooking/component", allowed("manager", "dishes", "cooking"), async
 
     res.send({ updated: result.modifiedCount > 0 });
 });
-router.delete("/cooking/component/:componentId", allowed("manager", "dishes", "cooking"), async (req, res) => {
+router.delete("/cooking/component/:componentId", allowed("manager", "dishes"), async (req, res) => {
     const { restaurantId, dishId, componentId } = req.params;
 
     const update = await Restaurant(restaurantId).dishes.one(dishId).update({ $pull: { "cooking.components": { _id: id(componentId) } } });
 
     res.send({ removed: update.modifiedCount > 0 });
 });
-router.patch("/cooking/component/:componentId", allowed("manager", "dishes", "cooking"), async (req, res) => {
+router.patch("/cooking/component/:componentId", allowed("manager", "dishes"), async (req, res) => {
     const { dishId, restaurantId, componentId } = req.params;
     const { amount } = req.body;
 
@@ -169,7 +169,7 @@ router.patch("/cooking/component/:componentId", allowed("manager", "dishes", "co
 });
 
 
-router.post("/cooking/recipee", allowed("manager", "dishes", "cooking"), async (req, res) => {
+router.post("/cooking/recipee", allowed("manager", "dishes"), async (req, res) => {
     const { recipee } = req.body;
     const { dishId, restaurantId } = req.params;
 

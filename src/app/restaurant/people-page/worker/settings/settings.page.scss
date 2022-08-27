@@ -1,0 +1,118 @@
+.app {
+    .header {
+        height: 52px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .back {
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+    
+            button {
+                display: flex;
+                align-items: center;
+                background: none;
+    
+                .text {
+                    color: var(--title-color);
+                    font-size: 18px;
+                }
+                ion-icon {
+                    font-size: 22px;
+                }
+            }
+        }
+    }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        .user {
+            width: 40%;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            .avatar {
+                img {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 100%;
+                }
+            }
+            .name {
+                display: flex;
+                font-size: 18px;
+                padding: 8px;
+            }
+        }
+        .role {
+            .option {
+                width: 124px;
+                height: 26px;
+                display: flex;
+                align-items: center;
+                padding-left: 8px;
+                cursor: pointer;
+                &:hover {
+                    background-color: rgb(247, 247, 247);
+                }
+            }
+            .manager.a {
+                border-left: 2px solid var(--purple);
+            }
+            .waiter.a {
+                border-left: 2px solid var(--red);
+            }
+            .cook.a {
+                border-left: 2px solid var(--orange);
+            }
+        }
+    }
+
+    .settings {
+        margin-top: 42px;
+        .work {
+            .title {
+                font-size: 18px;
+            }
+            .padding {
+                padding-left: 24px;
+                .cook,.waiter {
+                    padding: 0 8px;
+                    width: 100%;
+                    height: 46px;
+                    border-bottom: 1px solid var(--border-color);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    &:hover {
+                        background-color: rgb(247, 247, 247);
+                    }
+                }
+            }
+        }
+        .the-block {
+            width: 100%;
+            height: 46px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+
+            .title {
+                font-size: 18px;
+            }
+            .info {
+                color: var(--text-color);
+            }
+            &:hover {
+                background-color: rgb(247, 247, 247);
+            }
+        }
+        .dishes {
+            margin-top: 24px;
+        }
+    }
+}

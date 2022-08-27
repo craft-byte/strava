@@ -5,9 +5,6 @@
     cursor: pointer;
     border: 2px solid transparent;
     transition: border .4s;
-    &:hover {
-        border: 2px solid var(--orange);
-    }
     img {
         width: 228px;
         height: 152px;
@@ -15,15 +12,41 @@
         border-radius: 8px;
     }
     .top {
-        margin-top: 8px;
+        margin-top: 6px;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
     .delay {
-        margin-top: 8px;
+        margin-top: 6px;
         &.red {
             color: var(--red);
         }
     }
+}
+.taken {
+    border: 2px solid var(--gray);
+}
+
+@media screen and(min-width: 1200px) {
+    .app:hover {
+        border: 2px solid var(--orange);
+    }
+}
+@media (min-width: 300px) and (max-width: 549px) {
+    .app {
+        width: 196px;
+        padding: 4px;
+        img {
+            width: 182px;
+            height: 137px;
+        }
+    }
+    .taken {
+        border: 2px solid var(--gray);
+    }
+}
+
+.taken-me {
+    border: 2px solid var(--green);
 }

@@ -209,7 +209,7 @@ export class SettingsPage implements OnInit {
 
   async ngOnInit() {
     await this.loader.start();
-    const result: any = await this.service.get("settings");
+    const result: any = await this.service.get({}, "settings");
 
     this.settings = result.settings;
     this.money = result.money;

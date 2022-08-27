@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { CustomersPageRoutingModule } from './customers-routing.module';
 
 import { CustomersPage } from './customers.page';
-import { MoreComponent } from './more/more.component';
 import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
@@ -18,6 +17,6 @@ import { QRCodeModule } from 'angularx-qrcode';
     CustomersPageRoutingModule,
     QRCodeModule
   ],
-  declarations: [CustomersPage, MoreComponent]
+  declarations: [CustomersPage]
 })
 export class CustomersPageModule {}

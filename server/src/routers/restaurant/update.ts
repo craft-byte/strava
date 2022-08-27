@@ -7,7 +7,7 @@ const router = Router({ mergeParams: true });
 
 
 
-router.patch("/name", allowed("manager", "restaurant", "name"),  async (req, res) => {
+router.patch("/name", allowed("manager", "settings"),  async (req, res) => {
     const { restaurantId } = req.params;
     const { name } = req.body;
 

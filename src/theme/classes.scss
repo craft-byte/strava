@@ -1,47 +1,3 @@
-.close-header {
-    height: 56px;
-    padding: 0 412px;
-    display: flex;
-    border-bottom: 1px solid var(--border-color);
-
-    .close {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        #close {
-            height: 42px;
-            width: 42px;
-            position: relative;
-            border-radius: 100%;
-            background: none;
-
-            &:hover {
-                color: var(--title-color);
-            }
-
-            ion-icon {
-                position: absolute;
-                font-size: 36px;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
-        }
-    }
-
-    .title {
-        display: flex;
-        align-items: center;
-        padding-left: 24px;
-        font-size: 22px;
-        font-weight: 550;
-        color: var(--title-color);
-    }
-}
-
-
-
 .status-badge-green {
     background-color: var(--green-back);
     color: var(--green-dark);
@@ -204,13 +160,7 @@ ion-loading.loading {
 }
 
 
-.modal-width {
-    --width: 624px;
 
-    .modal-wrapper {
-        --width: 624px;
-    }
-}
 
 
 .gradient-button {
@@ -231,7 +181,7 @@ ion-loading.loading {
 
 
 
-.success-button {
+.green-button {
     width: 120px;
     height: 32px;
     display: flex;
@@ -243,8 +193,12 @@ ion-loading.loading {
     background-color: var(--green);
     color: white;
 
+    ion-icon {
+        font-size: 22px;
+    }
+
     &:disabled {
-        background-color: rgb(26, 196, 26);
+        background-color: var(--green-back);
         color: var(--light-gray);
     }
 }
@@ -312,6 +266,13 @@ input[type=number] {
         border: 1px solid var(--border-color);
         border-radius: 8px;
         height: auto;
+        
+        .error-message {
+            color: var(--red);
+            text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
+        }
     }
 
     .footer {
@@ -374,5 +335,24 @@ input[type=number] {
         .footer {
             width: 95vw;
         }
+    }
+}
+
+.modal-width {
+    
+}
+
+@media screen and(min-width: 624px) {
+    .modal-width {
+        --width: 624px;
+
+        .modal-wrapper {
+            --width: 624px;
+        }
+    }
+}
+@media (max-width: 600) {
+    .orange-button {
+        font-size: 15px;
     }
 }

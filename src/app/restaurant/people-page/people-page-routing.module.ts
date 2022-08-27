@@ -26,16 +26,24 @@ const routes: Routes = [
         loadChildren: () => import("./worker/set-up/set-up.module").then(m => m.SetUpPageModule)
       },
       {
-        path: 'full/:userId',
-        loadChildren: () => import('./full/full.module').then( m => m.FullPageModule)
-      },
-      {
         path: "orders",
         loadChildren: () => import("./orders/orders.module").then(m => m.OrdersPageModule)
       },
       {
         path: 'customers',
         loadChildren: () => import('./customers/customers.module').then( m => m.CustomersPageModule)
+      },
+      {
+        path: 'order/:orderId',
+        loadChildren: () => import('./full-order/full-order.module').then( m => m.FullOrderPageModule)
+      },
+      {
+        path: 'worker/:userId',
+        loadChildren: () => import('./worker/full/full.module').then( m => m.FullPageModule)
+      },
+      {
+        path: 'worker/:userId/settings',
+        loadChildren: () => import('./worker/settings/settings.module').then( m => m.SettingsPageModule)
       },
     ]
   },

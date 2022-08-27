@@ -68,7 +68,7 @@ export class AddIngredientPage implements OnInit {
 
   async ngOnInit() {
     try {
-      this.components = await this.service.get("components/all", this.service.currentDish._id);
+      this.components = await this.service.get({}, "components/all", this.service.currentDish._id);
     } catch (e) {
       console.error(e);
     }

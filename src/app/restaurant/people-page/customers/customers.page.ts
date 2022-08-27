@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { AlertController, PopoverController, ToastController } from '@ionic/angular';
+import { StringOrNumberOrDate } from '@swimlane/ngx-charts';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
-import { threadId } from 'worker_threads';
 import { RestaurantService } from '../../services/restaurant.service';
-import { MoreComponent } from './more/more.component';
 
 
 interface Customer {
   name: string;
   avatar: any;
-  visit: any;
+  orders: number;
+  lastOrdered: string;
   total: number;
   _id: string;
   blacklisted: boolean;
@@ -29,10 +28,11 @@ export class CustomersPage implements OnInit {
   customers: Customer[];
   qrCodes: { table: number; downloadUrl: any; link: string; }[];
   restaurantName: string;
+  lastUpdate: string;
 
   ui = {
     showBest: false,
-    showList: false,
+    showCustomers: false,
     showQrCodes: true,
   };
 
@@ -94,72 +94,23 @@ export class CustomersPage implements OnInit {
   user(id: string) {
     this.router.go(["restaurant", this.service.restaurantId, "customer", id], { replaceUrl: true });
   }
-  async more(event: any, id: string, isBlacklisted: boolean) {
-    const popover = await this.popoverCtrl.create({
-      component: MoreComponent,
-      event,
-      mode: "ios",
-      componentProps: {
-        isBlacklisted
-      }
-    });
+  
 
-    await popover.present();
-
-    const { data } = await popover.onDidDismiss();
-
-    if(data) {
-      if(data == "more") {
-        this.user(id);
-      } else if(data == "blacklist") {
-        const alert = await this.alertCtrl.create({
-          mode: "ios",
-          header: "Please, be certain.",
-          subHeader: "Are you sure you want to add the user to blacklist?",
-          buttons: [
-            {
-              text: "Cancel"
-            },
-            {
-              text: "Submit",
-              role: "submit"
-            }
-          ]
-        });
-
-        await alert.present();
-
-        const { role } = await alert.onDidDismiss();
-
-        if(role == "submit") {
-          await this.loader.start();
-          const result: any = await this.service.delete("customers/blacklist", id);
-
-          if(result.done) {
-            (await this.toastCtrl.create({
-              duration: 3000,
-              message: "The user is now in blacklisted.",
-              color: "green",
-              mode: "ios"
-            })).present();
-          } else {
-            (await this.toastCtrl.create({
-              duration: 3000,
-              color: "red",
-              message: "Something went wrong. Try again later.",
-              mode: "ios",
-            })).present();
-          }
-          this.loader.end();
-        }
-      }
-    }
-  }
-
-  async updateCustomers() {
+  async updateCustomers(calculate: boolean) {
     await this.loader.start();
     
-    const result: { customers: Customer[]; qrCodes: { table: number; downloadUrl: string; }[]; } = await this.service.get("customers");
+    const result: {
+      customers: Customer[];
+      lastUpdate: string;
+      qrCodes: {
+        table: number;
+        downloadUrl: string;
+      }[];
+    } = await this.service.get({ calculate }, "customers");
+
+    console.log(result);
+
+    this.lastUpdate = result.lastUpdate;
 
     this.qrCodes = [];
     for(let i of result.qrCodes) {
@@ -178,15 +129,15 @@ export class CustomersPage implements OnInit {
       for(let i of this.customers) {
         i.avatar = getImage(i.avatar) || "./../../../../assets/images/plain-avatar.jpg";
       }
-      this.ui.showList = true;
+      this.ui.showCustomers = true;
     }
 
-    await this.loader.end();
+    this.loader.end();
   }
 
 
   ngOnInit() {
-    this.updateCustomers();
+    this.updateCustomers(false);
   }
 
 }

@@ -9,6 +9,8 @@
     "prod:build": "tsc -p tsconfig.prod.json",
     "dev:build": "tsc -p tsconfig.dev.json -w",
     "dev:start": "nodemon dev/index.js dev",
+    "dev:build:npx": "npx tsc -p tsconfig.dev.json -w",
+    "dev:start:npx": "npx nodemon dev/index.js dev",
     "dev:testing": "nodemon dev/index.js testing"
   },
   "author": "Bazhan Nagnybida",
@@ -46,6 +48,7 @@
     "@types/sharp": "^0.30.4",
     "@types/socket.io": "^3.0.2",
     "@types/stripe": "^8.0.417",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.19"
   }
 }

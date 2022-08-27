@@ -38,18 +38,18 @@ export class StaffComponent implements OnInit {
   add() {
     this.router.go(["restaurant", this.service.restaurantId, "people", "worker", "invite"], { replaceUrl: true });
   }
-  async invitations() {
-    const modal = await this.modalCtrl.create({
-      component: InvitationsPage,
-      mode: "ios",
-      cssClass: "modal-width",
-      swipeToClose: true,
-    });
+  // async invitations() {
+  //   const modal = await this.modalCtrl.create({
+  //     component: InvitationsPage,
+  //     mode: "ios",
+  //     cssClass: "modal-width",
+  //     swipeToClose: true,
+  //   });
 
-    await modal.present();
-  }
+  //   await modal.present();
+  // }
   full(id: string) {
-    this.router.go(["restaurant", this.service.restaurantId, "people", "full", id], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "people", "worker", id], { replaceUrl: true });
   }
   async open(event: any, id: string) {
     const popover = await this.popoverCtrl.create({
@@ -76,7 +76,7 @@ export class StaffComponent implements OnInit {
 
   async ngOnInit() {
     await this.loader.start();
-    const staff: any = await this.service.get("staff");
+    const staff: any = await this.service.get({}, "staff");
 
     for(let i of staff) {
       this.staff.push({

@@ -14,14 +14,14 @@ export class LoginGuard implements CanActivate {
 
   }
 
-  async canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  async canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) {
 
     console.log("LOGIN GUARD NOT LOGGED");
 
     if (this.main.userInfo) {
       const result = await this.main.auth("false").toPromise();
       if (result) {
-        this.router.navigate(["user/info"], { replaceUrl: true, queryParams: { last: state.url } });
+        this.router.navigate(["user/info"], { replaceUrl: true });
         return false;
       }
       return true;
@@ -29,7 +29,7 @@ export class LoginGuard implements CanActivate {
       const result = await this.main.auth("true").toPromise();
       if (result) {
         this.main.userInfo = result as any;
-        this.router.navigate(["user/info"], { replaceUrl: true, queryParams: { last: state.url } });
+        this.router.navigate(["user/info"], { replaceUrl: true });
         return false;
       } else {
         return true;

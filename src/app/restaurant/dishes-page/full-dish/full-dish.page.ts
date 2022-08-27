@@ -101,7 +101,7 @@ export class FullDishPage implements OnInit {
   async ngOnInit() {
     await this.loader.start();
     const id = this.route.snapshot.paramMap.get("dishId");
-    this.dish = await this.service.get("dishes", id);
+    this.dish = await this.service.get({}, "dishes", id);
     this.image = getImage(this.dish.image.binary);
 
     if(this.dish.image.resolution == 1) {

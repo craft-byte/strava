@@ -7,6 +7,8 @@ import { RestaurantGuard } from './guards/restaurant.guard';
 import { LoginGuard } from './guards/login.guard';
 import { loadavg } from 'os';
 import { StaffGuard } from './guards/staff.guard';
+import { KitchenSocketIdGuard } from './guards/kitchen-socket-id.guard';
+import { WaiterSocketIdGuard } from './guards/waiter-socket-id.guard';
 
 
 
@@ -129,12 +131,12 @@ const staff: Routes = [
   {
     path: "staff/:restaurantId/kitchen",
     loadChildren: () => import("./staff/kitchen/main/main.module").then(m => m.MainPageModule),
-    canActivate: [LoggedGuard, StaffGuard],
+    canActivate: [LoggedGuard, StaffGuard, KitchenSocketIdGuard],
   },
   {
     path: "staff/:restaurantId/waiter",
     loadChildren: () => import("./staff/waiter/waiter/waiter.module").then(m => m.WaiterPageModule),
-    canActivate: [LoggedGuard, StaffGuard],
+    canActivate: [LoggedGuard, StaffGuard, WaiterSocketIdGuard],
   }
 ];
 
@@ -155,7 +157,11 @@ const routes: Routes = [
   {
     path: "**",
     redirectTo: "user/info"
+  },  {
+    path: 'full-order',
+    loadChildren: () => import('./staff/full-order/full-order.module').then( m => m.FullOrderPageModule)
   },
+
   // {
   //   path: 'dashboard',
   //   loadChildren: () => import('./staff/dashboard/dashboard.module').then( m => m.DashboardPageModule)

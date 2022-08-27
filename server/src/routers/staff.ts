@@ -1,7 +1,8 @@
 import { Router } from "express";
+import { io } from "..";
 import { allowed } from "../middleware/restaurant";
 import { logged } from "../middleware/user";
-import { ManagerSettings } from "../models/components";
+import { Settings } from "../models/components";
 import { Restaurant } from "../utils/restaurant";
 import { KitchenRouter } from "./staff/kitchen/kitchen";
 import { WaiterRouter } from "./staff/waiter/waiter";
@@ -18,19 +19,32 @@ router.get("/:restaurantId/dashboard", logged, allowed("staff"), async (req, res
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, staff: 1 } });
 
-    const user = {
+    const user: any = {
         showWaiter: false,
-        showKitchen: false
+        showKitchen: false,
+        role: null
     };
 
     for(let i of restaurant?.staff!) {
-        if(i._id.toString() == req.user) {
-            user.showKitchen = i.role == "cook" || i.role == "admin" || (i.role == "manager" ? (i.settings as ManagerSettings).work.cook : false);
-            user.showWaiter = i.role == "waiter" || i.role == "admin" || (i.role == "manager" ? (i.settings as ManagerSettings).work.waiter : false);
+        if(i.userId.toString() == req.user) {
+            user.showKitchen = i.role == "cook" || i.role == "admin" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.cook : false);
+            user.showWaiter = i.role == "waiter" || i.role == "admin" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.waiter : false);
+            user.role = i.role;
         }
     }
 
     res.send({ restaurant, user });
+});
+
+router.post("/:restaurantId/socketReconnect", logged, allowed("staff"), async (req, res) => {
+    const { id, joinTo } = req.body;
+    const { restaurantId } = req.params;
+
+    if(joinTo == "kitchen" || joinTo == "waiter") {
+        io.in(id).socketsJoin(`${restaurantId}/${joinTo}`);
+    }
+
+    res.send(null);
 });
 
 

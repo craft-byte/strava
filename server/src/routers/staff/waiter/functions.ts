@@ -9,7 +9,7 @@ import { getDelay } from "../../../utils/other";
 import { Orders, Restaurant } from "../../../utils/restaurant";
 
 function WaiterSocket(socket: Socket) {
-    const subs = new Subject<WaiterResponse>();
+    // const subs = new Subject<WaiterResponse>();
 
     // let session: Session = null!;
 
@@ -51,7 +51,7 @@ function WaiterSocket(socket: Socket) {
         // console.log("waiter disconnected: ", change.modifiedCount > 0);
     });
 
-    return subs;
+    // return subs;
 }
 
 // class Session {
@@ -95,7 +95,8 @@ async function convertDishes(restaurantId: string | ObjectId) {
     //     } }
     // ]);
 
-    const orders = await Orders(restaurantId).many({}, { projection: { _id: 1, ordered: 1, dishes: { status: 1, dishId: 1, _id: 1 } } });
+    const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { _id: 1, ordered: 1, dishes: { status: 1, dishId: 1, _id: 1 } } });
+    console.log(orders);
 
     console.log("WAITER CONVERT DISHES CONVERTDISHES FUNCTION WAITER/FUNCTIONS.ts");
 

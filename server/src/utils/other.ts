@@ -1,9 +1,8 @@
 import { ObjectId } from "mongodb";
 import { categories } from "../assets/consts";
-import { Component, Feedback, ManagerSettings, Time } from "../models/components";
+import { Component, Feedback, Settings, Time } from "../models/components";
 import { getDate, id } from "./functions";
 import { Restaurant } from "./restaurant";
-import { getUserPromise } from "./users";
 
 
 function getDelay(time: number | Date): Time {
@@ -33,6 +32,71 @@ function getDelay(time: number | Date): Time {
         color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green"
     };    
 }
+async function getRelativeDelay(relativeTo: number | Date, time: number | Date, d?: { dishId: string | ObjectId; restaurantId: string | ObjectId }): Promise<any> {
+    let number: number = null!;
+
+    if(typeof time == "number") {
+        number = time;
+    } else if(time instanceof Date) {
+        number = time.getTime();
+    } else {
+        return null!;
+    }
+
+
+    const difference = (number - (typeof relativeTo == "number" ? relativeTo : new Date(relativeTo).getTime())) / 1000;
+
+    const hours = Math.floor(difference / 3600);
+    const minutes = difference % 3600 / 60;
+    
+
+    if(d) {
+        const { restaurantId, dishId } = d;
+        const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { time: 1 } });
+
+        if(!dish) {
+            return {
+                hours: hours,
+                minutes: Math.floor(minutes),
+                color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green"
+            };
+        }
+
+        const hrs = Math.ceil(dish.time! / 60);
+        const mins = dish.time!;
+
+
+        let color: string;
+
+        if(hours > hrs) {
+            color = "red";
+        } else {
+            const mind = Math.ceil(minutes - mins);
+            if(mind > 5) {
+                color = "orange";
+            } else if (mind > 15) {
+                color = "red";
+            } else {
+                color = "green";
+            }
+        }
+
+        return {
+            hours: hours,
+            minutes: Math.floor(minutes),
+            color
+            // color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green"
+        }; 
+    }
+
+    return {
+        hours: hours,
+        minutes: Math.floor(minutes),
+        color: hours > 0 || minutes > 15 ? "red" : minutes > 7 ? "orange" : "green"
+    }; 
+}
+
+
 function bufferFromString(a: string) {
     if(typeof a != "string") {
         console.log("bufferFromString type is not string");
@@ -56,61 +120,61 @@ async function getRestaurantName(restaurantId: string | ObjectId) {
         return found.name;
     }
 }
-async function getWorkersForCooking(restaurantId: string, dish: string) {
-    const found = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, _id: 1, prefers: 1 } } });
+// async function getWorkersForCooking(restaurantId: string, dish: string) {
+//     const found = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, _id: 1, prefers: 1 } } });
 
-    const staff = found?.staff;
+//     const staff = found?.staff;
 
-    const userPromises = [];
+//     const userPromises = [];
 
-    for(let i = 0; i < staff!.length; i++) {
-        if(staff![i].role == "cook") {
-            userPromises.push(getUserPromise({ _id: staff![i]._id }, {projection: { avatar: 1, name: 1, username: 1 }}));
-        } else {
-            staff!.splice(i, 1);
-            i--;
-        }
-    }
+//     for(let i = 0; i < staff!.length; i++) {
+//         if(staff![i].role == "cook") {
+//             userPromises.push(getUserPromise({ _id: staff![i]._id }, {projection: { avatar: 1, name: 1, username: 1 }}));
+//         } else {
+//             staff!.splice(i, 1);
+//             i--;
+//         }
+//     }
 
-    let users = null;
+//     let users = null;
 
-    try {
-        users = await Promise.all(userPromises);
-    } catch (e) {
-        console.error(e);
-        throw new Error("at getWorkersForCooking() getting users");
-    }
+//     try {
+//         users = await Promise.all(userPromises);
+//     } catch (e) {
+//         console.error(e);
+//         throw new Error("at getWorkersForCooking() getting users");
+//     }
 
-    const result = [];
+//     const result = [];
 
-    if(users.length == 0) {
-        return [];
-    }
+//     if(users.length == 0) {
+//         return [];
+//     }
 
-    for(let i in users) {
-        if(i) {
-            console.log(staff![i].prefers);
-            const user = {
-                name: users[i]!.name || users[i]!.username,
-                avatar: users[i]!.avatar || null,
-                choosen: false,
-                _id: users[i]!._id
-            };
-            if(staff![i].prefers) {
-                for(let j of staff![i].prefers!) {
-                    if(j.toString() == dish){
-                        user.choosen = true;
-                        break;
-                    }
-                }
-            }
+//     for(let i in users) {
+//         if(i) {
+//             console.log(staff![i].prefers);
+//             const user = {
+//                 name: users[i]!.name || users[i]!.username,
+//                 avatar: users[i]!.avatar || null,
+//                 choosen: false,
+//                 _id: users[i]!._id
+//             };
+//             if(staff![i].prefers) {
+//                 for(let j of staff![i].prefers!) {
+//                     if(j.toString() == dish){
+//                         user.choosen = true;
+//                         break;
+//                     }
+//                 }
+//             }
     
-            result.push(user);
-        }
-    }
+//             result.push(user);
+//         }
+//     }
 
-    return result;
-}
+//     return result;
+// }
 function getCategory(c: string) {
     for(let { value, title, img } of categories) {
         if(value == c) {
@@ -133,18 +197,18 @@ function convertDishes(dishes: any) {
 
     return result;
 }
-function convertManagerSettings(settings: ManagerSettings) {
+// function convertManagerSettings(settings: ManagerSettings) {
     
-    const result: any = settings;
+//     const result: any = settings;
 
-    result.dishes.overview = settings.dishes.add || settings.dishes.remove;
-    result.staff.overview = settings.staff.fire || settings.staff.settings || settings.staff.settings || settings.staff.statistics;
-    result.components.overview = settings.components.add;
-    result.restaurant.overview = settings.restaurant.logo || settings.restaurant.name || settings.restaurant.theme;
+//     result.dishes.overview = settings.dishes.add || settings.dishes.remove;
+//     result.staff.overview = settings.staff.fire || settings.staff.settings || settings.staff.settings || settings.staff.statistics;
+//     result.components.overview = settings.components.add;
+//     result.restaurant.overview = settings.restaurant.logo || settings.restaurant.name || settings.restaurant.theme;
 
 
-    return result;
-}
+//     return result;
+// }
 async function convertFeedbacks(feedbacks: Feedback[]) {
 
     if(!feedbacks || feedbacks.length == 0) {
@@ -172,23 +236,16 @@ async function convertFeedbacks(feedbacks: Feedback[]) {
 }
 
 
-function isAddToJobs(settings: ManagerSettings) {
+function isAddToJobs(settings: Settings.ManagerSettings) {
     return settings.work.cook || settings.work.waiter;
 }
 
-function isAddToRestaurants(settings: ManagerSettings) {
-    return  settings.components.add ||
-            settings.components.remove ||
-            settings.customers.blacklisting ||
-            settings.customers.statistics ||
-            settings.dishes.add ||
-            settings.dishes.remove ||
-            settings.restaurant.logo ||
-            settings.restaurant.theme ||
-            settings.staff.fire ||
-            settings.staff.hire ||
-            settings.staff.settings ||
-            settings.staff.statistics;
+function checkManagerSettings(settings: Settings.ManagerSettings) {
+    return  settings.ingredients ||
+            settings.dishes ||
+            settings.staff ||
+            settings.customers ||
+            settings.settings;
 }
 
 
@@ -223,14 +280,15 @@ export {
     getWorked,
     getIds,
     isAddToJobs,
-    isAddToRestaurants,
+    checkManagerSettings,
     getRestaurantName,
     convertDishes,
     convertComponents,
     getCategory,
+    getRelativeDelay,
     convertFeedbacks,
-    convertManagerSettings,
-    getWorkersForCooking,
+    // convertManagerSettings,
+    // getWorkersForCooking,
     getDelay,
     bufferFromString,
 }

@@ -4,8 +4,13 @@
     align-items: center;
     justify-content: space-between;
     position: relative;
-    height: 42px;
+    height: 48px;
+    width: 100%;
     padding: 0 412px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999999999;
     .restaurant {
         font-size: 20px;
         font-weight: 550;
@@ -66,14 +71,50 @@
         }
     }
     .user {
-        width: 52px;
         a {
+            border: 1px solid var(--black);
+            padding: 6px;
+            height: 28px;
+            border-radius: 14px;
+            width: auto;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: black;
+            font-size: 14px;
+            // background-color: var(--orange-back);
             &:hover {
-                color: rgb(85, 85, 85);
+                // color: rgb(85, 85, 85);
+                background-color: rgb(229, 229, 229);
             }
             ion-icon {
-                font-size: 28px;
+                font-size: 24px;
+            }
+        }
+    }
+    .work {
+        a {
+            border: 1px solid var(--purple);
+            background-color: var(--purple-back);
+            color: var(--purple-dark);
+            padding: 6px;
+            height: 28px;
+            border-radius: 14px;
+            width: auto;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            .show {
+                display: none;
+            }
+            &:hover {
+                color: var(--purple);
+            }
+            ion-icon {
+                font-size: 20px;
             }
         }
     }
@@ -85,7 +126,7 @@
 
 @media (min-width: 1500px) and (max-width: 1900px) {
     .app {
-        padding: 24px 252px;
+        padding: 52px 252px;
     }
     .header {
         padding: 0 252px;
@@ -93,7 +134,7 @@
 }
 @media (min-width: 1150px) and (max-width: 1499px) {
     .app {
-        padding: 24px 108px;
+        padding: 52px 108px;
     }
     .header {
         padding: 0 108px;
@@ -101,7 +142,7 @@
 }
 @media (min-width: 700px) and (max-width: 1149px) {
     .app {
-        padding: 24px 24px;
+        padding: 52px 24px;
         .content {
             display: flex;
             flex-direction: column;
@@ -122,32 +163,53 @@
                 color: var(--text-color);
             }
         }
+        .user a {
+            border: none;
+            ion-icon {
+                font-size: 28px;
+            }
+            .username {
+                display: none;
+            }
+        }
+        .work a {
+            border: none;
+            height: 36px;
+            width: 36px;
+            .hide {
+                display: none;
+            }
+            .show {
+                display: inline;
+            }
+            ion-icon {
+                font-size: 28px;
+            }
+            .title {
+                display: none;
+            }
+        }
     }
 }
 @media (min-width: 550px) and (max-width: 699px) {
     .app {
-        padding: 24px 24px;
+        padding: 24px 12px;
         .content {
             display: flex;
             flex-direction: column;
         }
     }
     .header {
+        position: static;
         padding: 0 24px;
         display: inline-block;
         height: auto;
-        position: static;
 
         .restaurant {
             height: 38px;
         }
 
-        .user {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-        }
-
+        
         .links {
             width: 100%;
             display: flex;
@@ -158,11 +220,48 @@
                 height: 32px;
             }
         }
+
+        .user {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            a {
+                border: none;
+                ion-icon {
+                    font-size: 28px;
+                }
+                .username {
+                    display: none;
+                }
+            }
+        }
+        .work {
+            position: absolute;
+            top: 6px;
+            right: 46px;
+            height: 36px;
+            width: 36px;
+            a {
+                border: none;
+                .hide {
+                    display: none;
+                }
+                .show {
+                    display: inline;
+                }
+                ion-icon {
+                    font-size: 28px;
+                }
+                .title {
+                    display: none;
+                }
+            }
+        }
     }
 }
 @media (min-width: 300px) and (max-width: 549px) {
     .app {
-        padding: 24px 8px;
+        padding: 24px 4px;
     }
     .header {
         padding: 0 24px;
@@ -178,6 +277,38 @@
             position: absolute;
             top: 6px;
             right: 6px;
+            a {
+                border: none;
+                ion-icon {
+                    font-size: 28px;
+                }
+                .username {
+                    display: none;
+                }
+            }
+        }
+        .work {
+            position: absolute;
+            top: 6px;
+            right: 46px;
+            height: 36px;
+            width: 36px;
+            a {
+                border: none;
+                .hide {
+                    display: none;
+                }
+                .show {
+                    display: inline;
+                }
+                ion-icon {
+                    font-size: 28px;
+                }
+
+                .title {
+                    display: none;
+                }
+            }
         }
 
         .links {
@@ -200,16 +331,5 @@
 @media (min-width: 200px) and (max-width: 450px) {
     .app {
         padding: 24px 8px;
-        .content {
-            .left {
-                .account-registration {
-                    .title {
-                        h1 {
-                            font-size: 18px;
-                        }
-                    }
-                }
-            }
-        }
     }
 }

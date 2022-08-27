@@ -1,0 +1,99 @@
+.app {
+    padding-top: 32px;
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .back {
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+    
+            button {
+                display: flex;
+                align-items: center;
+                background: none;
+    
+                .text {
+                    color: var(--title-color);
+                    font-size: 18px;
+                }
+                ion-icon {
+                    font-size: 22px;
+                }
+            }
+        }
+        .date {
+            font-size: 18px;
+            color: var(--gray);
+        }
+        .order {
+            display: flex;
+            align-items: flex-end;
+            h1 {
+                margin: 0;
+                // font-weight: 550;
+            }
+            .order-id {
+                color: var(--text-color);
+            }
+        }
+        .status > div {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            text-transform: uppercase;
+            border: 1px solid var(--green);
+        }
+    }
+
+    .order {
+        margin-top: 24px;
+        .customer {
+            display: flex;
+            align-items: center;
+            height: 58px;
+            border-bottom: 1px solid var(--border-color);
+            img {
+                width: 42px;
+                height: 42px;
+                border-radius: 100%;
+            }
+            .username {
+                margin-left: 12px;
+                font-size: 20px;
+                color: var(--text-color);
+            }
+        }
+        .date-total {
+            display: grid;
+            grid-template-columns: 35% 65%;
+            height: 64px;
+            .date {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 18px;
+                color: var(--text-color);
+                border-right: 1px solid var(--border-color);
+            }
+            .total {
+                display: flex;
+                align-items: center;
+                padding-left: 32px;
+                color: var(--black);
+                font-size: 18px;
+                .label {
+                    color: var(--text-color);
+                }
+                .amount-and-sign {
+                    color: var(--black);
+                    margin-left: 6px;
+                }
+            }
+        }
+        
+    }
+}

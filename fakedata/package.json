@@ -1,0 +1,19 @@
+{
+  "name": "fakedata",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "create:kitchen": "(npm run build || false) && node ./build/kitchen.js",
+    "build": "npx tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mongodb": "^4.0.7",
+    "mongodb": "^4.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}

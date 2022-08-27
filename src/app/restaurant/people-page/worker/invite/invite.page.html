@@ -6,10 +6,13 @@
   </div>
   <div class="content">
     <div class="search">
-      <ion-searchbar mode="ios" (ionInput)="find($event)"></ion-searchbar>
+      <ion-searchbar placeholder="User email / username / name" mode="ios" (ionInput)="find($event)"></ion-searchbar>
       <button class="orange-button">
         <ion-icon name="search"></ion-icon>
       </button>
+    </div>
+    <div *ngIf="!users || users.length == 0" class="no-users">
+      <ion-icon name="arrow-up-outline"></ion-icon>Search for users
     </div>
     <div class="list" *ngIf="users && users.length > 0">
       <div *ngFor="let i of users" class="one">
@@ -20,7 +23,7 @@
           {{ i.name }}
         </div>
         <div class="buttons">
-          <button class="success-button" (click)="invite(i._id)">Invite</button>
+          <button class="green-button" (click)="invite(i._id)">Invite<ion-icon name="chevron-forward-outline"></ion-icon></button>
           <button class="more" (click)="more()">
             <ion-icon name="ellipsis-vertical"></ion-icon>
           </button>

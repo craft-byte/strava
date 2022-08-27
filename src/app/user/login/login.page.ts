@@ -77,15 +77,16 @@ export class LoginPage implements OnInit {
 
 
   async login() {
+    this.ui.disableLogin = true;
     const p = !this.checkPassword();
     const u = !this.checkUsername();
     if(p || u) {
+      this.ui.disableLogin = false;
       return;
     }
 
     await this.loader.start();
 
-    this.ui.disableLogin = true;
 
 
     const result = await this.main.login({ username: this.username, password: this.password });
@@ -95,8 +96,10 @@ export class LoginPage implements OnInit {
     if(result) {
       if(last) {
         this.router.go([last], { replaceUrl: true });
+      } else if(result) {
+        this.router.go([result], { replaceUrl: true });
       } else {
-        this.router.go(["user/info"], { replaceUrl: true });
+        this.router.go(["user/info"]);
       }
     } else {
       this.ui.passwordMessage = "Please, check your data again";

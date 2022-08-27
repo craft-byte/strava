@@ -39,28 +39,10 @@ interface RestaurantSettings {
 
     }
 }
-interface Worker {
-    _id: ObjectId;
-    role: string;
-    prefers?: ObjectId[];
-    joined: Date;
-    settings: ManagerSettings | CookSettings | WaiterSettings
-}
 
-interface Table {
-    number: number;
-    taken?: boolean;
-    userId?: string;
-    _id: string | ObjectId;
-}
-interface Invitation {
-    _id: ObjectId;
-    userId?: ObjectId;
-    restaurantId?: ObjectId;
-    role?: string;
-    settings?: any;
-    date: Date;
-}
+
+
+
 interface Feedback {
     _id: ObjectId;
     worked: number;
@@ -69,49 +51,28 @@ interface Feedback {
     comment: string;
     stars: number;
 }
-interface ManagerSettings {
-    dishes: {
-        add: boolean;
-        remove: boolean;
-        cooking: boolean;
-    };
-    work: {
-        cook: boolean;
-        waiter: boolean;
-    };
-    components: {
-        add: boolean;
-        remove: boolean;
-    };
-    staff: {
-        hire: boolean;
-        fire: boolean;
+
+
+namespace Settings {
+    interface ManagerSettings {
+        dishes: boolean;
+        ingredients: boolean;
+        staff: boolean;
+        customers: boolean;
         settings: boolean;
-        statistics: boolean;
-    };
-    customers: {
-        blacklisting: boolean;
-        statistics: boolean;
-    };
-    settings: boolean;
-    restaurant: {
-        theme: boolean;
-        logo: boolean;
-        name: boolean;
-    };
+        work: {
+            cook: boolean;
+            waiter: boolean;
+        };
+    }
+    interface CookSettings {
+    
+    }
+    interface WaiterSettings {
+    
+    }
 }
-interface CookSettings {
 
-}
-interface WaiterSettings {
-
-}
-interface WaiterDish {
-    _id: ObjectId;
-    dishId: ObjectId;
-    show: boolean;
-    time?: number;
-}
 
 interface Time {
     hours: number;
@@ -121,16 +82,11 @@ interface Time {
 }
 
 export {
-    ManagerSettings,
-    CookSettings,
-    WaiterSettings,
-    Table,
-    Worker,
+    Settings,
     Id,
     Time,
     Cooking,
     Feedback,
     Component,
-    Invitation,
     RestaurantSettings
 }

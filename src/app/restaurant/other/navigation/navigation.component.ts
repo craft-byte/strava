@@ -16,13 +16,6 @@ export class NavigationComponent implements OnInit {
     private service: RestaurantService,
   ) { };
 
-  tutorials() {
-    this.popoverCtrl.dismiss(null, '2')
-  }
-  user() {
-    this.popoverCtrl.dismiss(null, "1");
-  }
-
   go(id: string) {
     this.popoverCtrl.dismiss(id);
   }

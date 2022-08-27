@@ -1,9 +1,12 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
+import { dishesDBName } from "../../environments/server";
 import { allowed } from "../../middleware/restaurant";
+import { Time } from "../../models/components";
 import { Order } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
+import { getRelativeDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
 
@@ -28,7 +31,7 @@ interface ConvertedOrder {
     total: number;
     blacklisted: boolean;
     statusColor: "green" | "red" | "purple" | "orange";
-} router.get("/orders", allowed("manager", "staff"), async (req, res) => {
+} router.get("/orders", allowed("manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { blacklist: 1 } });
@@ -38,7 +41,7 @@ interface ConvertedOrder {
     }
 
 
-    const orders = await Orders(restaurantId).history.many({ }, { limit: 12 });
+    const orders = await (await Orders(restaurantId).history.many({ }, { limit: 12 })).sort({ ordered: -1 }).toArray();
 
     if(!orders || orders.length == 0) {
         return res.send(null);
@@ -80,14 +83,147 @@ interface ConvertedOrder {
         result.push(one);
     }
 
-    console.log(result);
 
     res.send(result);
 });
-router.get("/user/:userId", allowed("manager", 'staff'), async (req, res) => {
+
+interface FullOrder {
+    ordered: string;
+    total: number;
+    type: "ORDER" | "TABLE";
+    id: string;
+    status: string;
+
+    customer: {
+        userId: any;
+        username: string;
+        avatar: any;
+    }
+
+
+    dishes: {
+        name: string;
+        status: string;
+        dishId: string;
+        _id: string;
+
+        taken?: Time;
+        cooked?: Time;
+        served?: Time;
+
+
+        cook?: {
+            username: string;
+            avatar: any;
+            userId: string;
+        };
+        waiter?: {
+            username: string;
+            avatar: any;
+            userId: string;
+        }
+        takenBy?: {
+            username: string;
+            avatar: any;
+            userId: string;
+        }
+
+        removed?: {
+            username: string;
+            avatar: any;
+            time: Time;
+            role: string;
+        };
+    }[];
+}; router.get("/order/:orderId", allowed("manager", "customers"), async (req, res) => {
+    const { restaurantId, orderId } = req.params;
+
+    const order = await Orders(restaurantId).history.one({ _id: id(orderId) });
+    const user = await getUser(order.customer, { projection: { username: 1, name: 1, avatar: { binary: 1, }}})
+
+    const result: FullOrder = {
+        ordered: getDate(order.ordered!),
+        dishes: [],
+        total: 0,
+        type: order.type == "in" ? "TABLE" : "ORDER",
+        id: order.id,
+        status: order.status,
+        customer: {
+            username: user?.name || user?.username || "User deleted",
+            avatar: user?.avatar?.binary!,
+            userId: user?._id!.toString()
+        }
+    };
+
+
+    const dishes = new DishHashTableUltra(restaurantId, { name: 1, price: 1 });
+
+
+    for(let dish of order.dishes) {
+        const restaurantDish = await dishes.get(dish.dishId);
+        result.total += restaurantDish?.price || dish.price!;
+
+        const one: FullOrder["dishes"][0] = {
+            name: restaurantDish?.name || dish.name!,
+            _id: dish._id.toString(),
+            dishId: dish.dishId.toString(),
+            status: dish.status,
+        };
+
+        if(dish.status == "removed") {
+            const user = await getUser(dish.removed!.userId, { projection: { name: 1, username: 1, avatar: { binary: 1, } } });
+            one.removed = {
+                avatar: user?.avatar?.binary!,
+                username: user?.name || user?.username! || "User deleted",
+                role: dish.removed!.userRole || "other",
+                time: await getRelativeDelay(order.ordered!, dish.removed!.time!),
+            }
+        }
+        if(dish.taken) {
+            one.taken = await getRelativeDelay(order.ordered!, dish.taken!);
+            const user = await getUser(dish.takenBy!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
+            one.takenBy = {
+                username: user?.name || user?.username || "User deleted",
+                avatar: user?.avatar?.binary!,
+                userId: user?._id!.toString() || null!,
+            }
+        }
+        if(dish.cooked) {
+            one.cooked = await getRelativeDelay(dish.taken!, dish.cooked!, { dishId: dish.dishId, restaurantId });
+            const user = await getUser(dish.cook!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
+            one.cook = {
+                username: user?.name || user?.username || "User deleted",
+                avatar: user?.avatar?.binary!,
+                userId: user?._id!.toString() || null!,
+            }
+        }
+        if(dish.served) {
+            one.served = await getRelativeDelay(dish.cooked!, dish.served!);
+            const user = await getUser(dish.waiter!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
+            one.waiter = {
+                username: user?.name || user?.username || "User deleted",
+                avatar: user?.avatar?.binary!,
+                userId: user?._id!.toString() || null!,
+            }
+        }
+
+        result.dishes.push(one);
+    }
+
+
+
+    res.send(result);
+});
+
+
+router.get("/user/:userId", allowed("manager", 'customers'), async (req, res) => {
     const { userId, restaurantId } = req.params as any;
 
     const user = await getUser(userId, { projection: { blacklisted: 1, name: 1, username: 1, avatar: 1 } });
+
+    if(!user) {
+        return res.status(404).send({ reason: "user" });
+    }
 
     const orders: any = await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { dishes: { dishId: 1 } } });
 
@@ -122,10 +258,10 @@ router.get("/user/:userId", allowed("manager", 'staff'), async (req, res) => {
     }
 
     const isBlacklisted = (id: string | ObjectId) => {
-        if(!user.blacklisted) {
+        if(!user?.blacklisted) {
             return false;
         }
-        for(let i of user.blacklisted!) {
+        for(let i of user?.blacklisted!) {
             if(i.equals(id)) {
                 return true;
             }

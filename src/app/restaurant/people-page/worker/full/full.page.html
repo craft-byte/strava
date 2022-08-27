@@ -1,0 +1,71 @@
+<div class="app" *ngIf="user">
+  <div class="header">
+    <div class="back">
+      <button (click)="back()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span class="text">
+          BACK
+        </span>
+      </button>
+    </div>
+    <div class="button">
+      <button class="orange-button" *ngIf="worker.role != 'admin'" (click)="settings()">Settings</button>
+    </div>
+  </div>
+  <div class="user">
+    <div class="avatar">
+      <img [src]="userAvatar || './../../../../../assets/images/plain-avatar.jpg'">
+    </div>
+    <div class="name-email">
+      <div class="name">
+        {{ user.name }}
+      </div>
+      <div class="email">
+        {{ user.email }}
+      </div>
+    </div>
+  </div>
+  <div class="worker">
+    <div class="title">
+      {{ restaurantName }} worker
+    </div>
+    <div class="role">
+      {{ worker.role }}
+    </div>
+    <div class="joined">
+      {{ worker.joined }}
+    </div>
+  </div>
+  <div class="cook" *ngIf="worker.cooked">
+    <div class="title">
+      Cook
+    </div>
+    <div class="content">
+      <div class="dishes">
+        Dishes cooked:
+        <span class="count">
+          {{ worker.cooked }}
+        </span>
+      </div>
+      <div class="fav">
+        Favorite dish:
+        <span class="dish-name">
+          {{ worker.favoriteDish.name }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="waiter" *ngIf="worker.served || worker.served == 0">
+    <div class="title">
+      Waiter
+    </div>
+    <div class="content">
+      <div class="dishes">
+        Dishes served:
+        <span class="count">
+          {{ worker.served}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

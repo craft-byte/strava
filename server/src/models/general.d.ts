@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
-import { Component, Cooking, Order, Feedback, Invitation, RestaurantSettings, Table, Worker, Id } from "./components";
+import { Component, Cooking, Order, Feedback, Invitation, RestaurantSettings, Table, Id } from "./components";
+import { Worker } from "./worker";
 
 interface Restaurant {
     _id: ObjectId;
@@ -14,12 +15,16 @@ interface Restaurant {
     invitations?: Invitation[];
     blacklist?: ObjectId[];
     stripeAccountId: string;
+    customersCache?: {
+        lastUpdate: number;
+        data: any[];
+    };
+    status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
     money: {
         card: "enabled" | "disabled" | "rejected" | "restricted" | "pending";
         cash: "enabled" | "disabled";
         payouts: "enabled" | "restricted" | "rejected" | "pending";
     }
-    status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
     info?: {
         country?: string;
         city?: string;
@@ -42,9 +47,38 @@ interface Dish {
     strict?: string[];
     general?: string;
     image?: { binary?: Buffer; date?: Date; resolution?: 1.33 | 1.77 | 1 };
-    bought?: number;
     _id: ObjectId;
     cooking?: Cooking;
+    bought?: number;
+
+    
+    /* 
+        new
+
+    replace bought?: { time: number; }[];
+
+    add categories
+    add categories.general
+    add categories.cooking
+    add categories.allergies
+    add categories.time
+    add categories.ingredients
+
+    general: "entrees" | "beverages" | "sides" ...
+    cooking: "baked" | "fried" ...
+    allergies: "nuts" ...
+    time: "breakfast" | "diner" | "after workout" ...
+    ingredients: "caffeine" | "alcohol" | "meat" | "milk" ...
+
+
+    add nutritionalValue
+    add nutritionalValue.proteins
+    add nutritionalValue.carbohydrates
+    add nutritionalValue.minerals
+    add nutritionalValue.vitamins
+    
+    */
+
 }
 
 
@@ -54,7 +88,7 @@ interface User {
     email?: string;
     blacklisted?: ObjectId[];
     _id?: ObjectId;
-    works?: ObjectId[];
+    status: "enabled" | "deleted";
     avatar?: {
         binary: Buffer;
         modified: Date;
@@ -62,7 +96,7 @@ interface User {
     feedbacks?: Feedback[];
     invitations?: Invitation[];
     works?: ObjectId[];
-    restaurants?: { restaurantId: ObjectId; stripeAccountId: string; }[];
+    restaurants?: { restaurantId: ObjectId; stripeAccountId?: string; role: "manager" | "staff" | "owner" | "manager:working"; }[];
     password?: string;
     phone?: string;
     orders?: any[];
@@ -90,7 +124,7 @@ interface User {
 
 interface Order {
     _id: ObjectId;
-    status: "ordering" | "progress" | "done" | "removed";
+    status: "ordering" | "progress" | "done" | "removed" | "done:removed";
     customer: ObjectId;
     socketId: string;
     method?: "card" | "cash";
@@ -100,7 +134,6 @@ interface Order {
     connected?: number;
 
     done?: {
-        time: number;
         feedback?: {
             text?: string;
             rating?: number;
@@ -121,7 +154,7 @@ interface Order {
         name?: string;
         price?: number;
 
-    
+        takenBy?: ObjectId;
         cook?: ObjectId;
         waiter?: ObjectId;
 
@@ -132,7 +165,7 @@ interface Order {
         removed?: {
             time: number;
             userId: ObjectId;
-            userRole: "admin" | "cook" | "waiter" | "manager.cook" | "manager.waiter" | "manager" | "admin";
+            userRole: "admin" | "cook" | "waiter" | "manager.cook" | "manager.waiter" | "manager" | null;
             reason: "components" | "other" | string;
         }
     }[];

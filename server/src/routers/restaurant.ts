@@ -1,17 +1,16 @@
 import { Router } from "express";
 import { allowed } from "../middleware/restaurant";
-import { Restaurant } from "../utils/restaurant";
+import { Orders, Restaurant } from "../utils/restaurant";
 import { ComponentsRouter } from "./restaurant/components";
 import { StaffRouter } from "./restaurant/staff";
 import { DishesRouter } from "./restaurant/dishes";
 import { UpdateRouter } from "./restaurant/update";
-import { getUser, getUsers, updateUser } from "../utils/users";
+import { getUser, getUsers } from "../utils/users";
 import { PeopleRouter } from "./restaurant/people";
 import { CustomersRouter } from "./restaurant/customers";
-import { userInfo } from "os";
 import { SettingsRouter } from "./restaurant/settings";
-import { MODE, stripe } from "..";
-import { id } from "../utils/functions";
+import { stripe } from "..";
+import { DishHashTableUltra } from "../utils/dish";
 
 
 const router = Router({ mergeParams: true });
@@ -31,21 +30,22 @@ router.get("/init", allowed("manager"), async (req, res) => {
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, status: 1 } });
 
 
-    if(!restaurant) {
-        return res.sendStatus(404);
-    }
-
-    const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
+    const user = await getUser(req.user as string, { projection: { restaurants: { restaurantId: 1, role: 1 } } });
 
     const promises = [];
 
+    let showGoWork = false;
     for(let i of user!.restaurants!) {
         if(!i.restaurantId.equals(restaurantId)) {
             promises.push(Restaurant(i.restaurantId).get({ projection: { name: 1 } } ));
+        } else {
+            if(i.role == "manager:working" || i.role == "owner") {
+                showGoWork = true;
+                break;
+            }
         }
     }
-
-    res.send({ restaurant, restaurants: await Promise.all(promises) });
+    res.send({ showGoWork, restaurant, restaurants: await Promise.all(promises) });
 });
 
 
@@ -59,15 +59,14 @@ interface ReviewResult {
         last4?: string;
         currency?: string;
         status?: string;
-    }
+    };
     money?: {
         card: "rejected" | "enabled" | "pending" | "disabled" | "restricted";
         cash: "enabled" | "disabled";
         payouts: "enabled" | "restricted" | "pending" | "rejected";
-    }
-} router.get("/home", async (req, res) => {
+    };
+}; router.get("/home", allowed("manager"), async (req, res) => {
     const { restaurantId } = req.params as any;
-
     
     const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1 } });
     
@@ -88,14 +87,14 @@ interface ReviewResult {
     const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
 
 
-    if (!user.restaurants) {
+    if (!user!.restaurants) {
         return res.sendStatus(404);
     }
 
-    for (let i of user.restaurants) {
-        if (i.restaurantId.equals(restaurantId)) {
+    for (let i of user!.restaurants) {
+        if (i.role == "owner" && i.restaurantId.equals(restaurantId)) {
 
-            const account = await stripe.accounts.retrieve(i.stripeAccountId);
+            const account = await stripe.accounts.retrieve(i.stripeAccountId!);
             
             if(!account) {
                 break;
@@ -187,10 +186,79 @@ interface ReviewResult {
     }
 
 
+    if(restaurant.status == "enabled") {
+
+    }
 
     res.send(result);
 });
 
+
+
+interface Chart {
+    name: string;
+    series: {
+        value: number;
+        name: string;
+    }[];
+}; router.get("/charts", allowed("manager"), async (req, res) => {
+    const { restaurantId } = req.params;
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { status: 1 } });
+
+    if(restaurant!.status != "disabled" && restaurant!.status != "enabled") {
+        return res.status(403).send({ reason: "status" });
+    }
+
+    const weekAgo = Date.now() - 604800000;
+
+    const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: weekAgo } }, { projection: { ordered: 1, dishes: { dishId: 1 } } })).toArray();
+
+    if(orders.length == 0) {
+        return res.send([]);
+    }
+
+    const dishes = new DishHashTableUltra(restaurantId, { price: 1 });
+
+    const result: any = {};
+
+    const firstWeekDay = new Date().getDate();
+    for(let i = 0; i < 7; i++) {
+        result[firstWeekDay - i] = null;
+    }
+
+    for(let order of orders.reverse()) {
+        const day = new Date(order.ordered!).getDate();
+        if(!result[day]) {
+            result[day] = 0;
+        }
+        for(let { dishId, price } of order.dishes) {
+            if(price) {
+                result[day] += price;
+            } else {
+                const dish = await dishes.get(dishId);
+                if(dish) {
+                    result[day] += dish.price!;
+                }
+            }
+        }
+    }
+
+
+    const converted: Chart = {
+        name: "This week",
+        series: [],
+    };
+
+    for(let i of Object.keys(result)) {
+        converted.series.push({
+            name: i,
+            value: result[i] / 100,
+        });
+    }
+
+    return res.send(converted);
+});
 
 
 
@@ -231,23 +299,23 @@ router.patch("/findUsers", async (req, res) => {
 router.get("/user/:userId", allowed("manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
 
-    const result = await getUser(userId, { projection: { name: 1, username: 1 } });
+    const user = await getUser(userId, { projection: { name: 1, username: 1 } });
     const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { _id: 1 } } });
     
 
-    if(result._id!.equals(req.user as any)) {
+    if(user!._id!.equals(req.user as any)) {
         return res.send({ works: true });
     }
     for(let i of restaurant!.staff!) {
-        if(i._id.equals(userId)) {
+        if(i.userId.equals(userId)) {
             return res.send({ works: true });
         }
     }
 
     res.send({
-        name: result.name || result.username,
-        username: result.username,
-        _id: result._id,
+        name: user!.name || user!.username,
+        username: user!.username,
+        _id: user!._id,
     });
 });
 

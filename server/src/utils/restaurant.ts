@@ -19,7 +19,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         }
 
         for (let i of restaurant.staff!) {
-          const result = await updateUser(i._id, { $pull: { works: id(restaurantId)! } });
+          const result = await updateUser(i.userId, { $pull: { works: id(restaurantId)! } });
 
           console.log("user works deleted: ", result.modifiedCount > 0);
         }
@@ -76,7 +76,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         throw new Error("at getRestaurants()");
       }
     },
-    update: async (update: UpdateFilter<Restaurant>, options: UpdateOptions = {}): Promise<UpdateResult | null> => {
+    update: async (update: UpdateFilter<Restaurant>, options: UpdateOptions = {}): Promise<UpdateResult> => {
       try {
         return await client.db(mainDBName).collection("restaurants")
           .updateOne({ _id: id(restaurantId) }, update, options);
@@ -447,13 +447,24 @@ function Orders(restaurantId: string | ObjectId) {
       },
       many: async (search: Filter<Order>, options?: FindOptions<Order>) => {
         try {
-          const result = await client.db(historyDBName).collection<Order>(restaurantId.toString())
-            .find<Order>(search, options).toArray();
+          const result = client.db(historyDBName).collection<Order>(restaurantId.toString())
+            .find<Order>(search, options);
   
           return result;
         } catch (err) {
           console.error("at Orders().all()");
           throw err;
+        }
+      },
+      one: async (search: Filter<Order>, options: FindOptions<Order> = {}): Promise<Order> => {
+        try {
+          const result = await client.db(historyDBName).collection(restaurantId.toString())
+            .findOne<Order>(search, options);
+
+          return result as any;
+        } catch (err) {
+          console.error(err);
+          throw new Error("at Orders.one().get()");
         }
       },
     }

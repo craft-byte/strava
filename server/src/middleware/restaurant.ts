@@ -1,5 +1,5 @@
 import { NextFunction, Request, response, Response } from "express";
-import { ManagerSettings } from "../models/components";
+import { Settings } from "../models/components";
 import { log } from "../utils/functions";
 import { Restaurant } from "../utils/restaurant";
 import { getUser } from "../utils/users";
@@ -48,13 +48,9 @@ async function owner(req: Request, res: Response, next: NextFunction) {
 
 function allowed(
     role: "owner" | "cook" | "waiter" | "manager" | "staff",
-    option1?: keyof ManagerSettings,
+    option1?: keyof Settings.ManagerSettings,
     option2?:
-        keyof ManagerSettings["work"] |
-        keyof ManagerSettings["staff"] |
-        keyof ManagerSettings["dishes"] |
-        keyof ManagerSettings["customers"] |
-        keyof ManagerSettings["restaurant"]
+        keyof Settings.ManagerSettings["work"]
 ) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const restaurantId = req.params.restaurant || req.params.restaurantId || req.body.restaurant || req.body.restaurantId;
@@ -66,7 +62,7 @@ function allowed(
 
 
         if (restaurantId) {
-            const restaurant = await Restaurant(restaurantId).get({ projection: { owner: 1, staff: { _id: 1, settings: 1, role: 1 } } });
+            const restaurant = await Restaurant(restaurantId).get({ projection: { owner: 1, staff: { userId: 1, settings: 1, role: 1 } } });
             if (!restaurant) {
                 console.log("no restaurant");
                 return res.sendStatus(404);
@@ -82,7 +78,7 @@ function allowed(
             }
 
             for (let i of staff!) {
-                if (i._id.toString() == req.user as string) {
+                if (i.userId.toString() == req.user as string) {
                     if(i.role == role && !option1) { // if role == user.role but not manager settings provided
                         return next();
                     } else if(role == "staff") { // if role == cook | waiter | manager.cook | manager.waiter
@@ -94,22 +90,20 @@ function allowed(
                             return next();
                         }
                     } else if((role == "cook" || role == "waiter") && i.role == "manager") { // if role == cook | manager then should let manager.cook & manager.waiter
-                        if((i.settings as ManagerSettings).work[role]) {
+                        if((i.settings as Settings.ManagerSettings).work[role]) {
                             return next();
                         }
                     } else if (role == "manager" && option1) { // if role == manager allowed to do an action
 
-                        if (!option2) { // if no option2 provided user passes if any of settings[option1] == true
-                            for(let s of Object.keys((i.settings as ManagerSettings)[option1])) {
-                                if(((i.settings as ManagerSettings)[option1] as any)[s]) {
-                                    return next();
-                                }
+                        if (!option2) {
+                            if((i.settings as Settings.ManagerSettings)[option1]) {
+                                return next();
                             }
-                            
 
-                            return res.sendStatus(403);
+                            return res.status(403).send({ redirect: true });
                         }
-                        const result = ((i.settings as ManagerSettings)[option1] as { [key: string]: boolean })[option2];
+                        
+                        const result = ((i.settings as Settings.ManagerSettings)[option1] as { [key: string]: boolean })[option2];
 
                         if (result) {
                             return next();
@@ -122,12 +116,12 @@ function allowed(
 
 
 
-            return res.sendStatus(403);
+            return res.status(403).send({ redirect: true });
         }
 
         log("ERROR", 'no restaurant at allowed middleware');
 
-        return res.sendStatus(403);
+        return res.status(403).send({ redirect: true });
     }
 }
 

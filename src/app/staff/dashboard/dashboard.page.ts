@@ -11,8 +11,8 @@ import { StaffService } from '../staff.service';
 })
 export class DashboardPage implements OnInit {
 
-  restaurantId: string;
 
+  closeLink: string;
   ui = {
     title: "Wait...",
     showKitchen: false,
@@ -27,26 +27,32 @@ export class DashboardPage implements OnInit {
   ) { };
 
   go(l: "waiter" | "kitchen") {
-    this.router.go(["staff", this.restaurantId, l]);
+    this.router.go(["staff", this.service.restaurantId, l]);
   }
 
   async ngOnInit() {
     await this.loader.start();
-    const result = await this.service.get<{ restaurant: any; user: { showKitchen: boolean; showWaiter: boolean; } }>("dashboard");
+    const result = await this.service.get<{ restaurant: any; user: { role: string; showKitchen: boolean; showWaiter: boolean; } }>("dashboard");
 
     if(!result) {
+      this.loader.end();
       return;
     }
 
-    const { restaurant: { name, _id }, user: { showKitchen, showWaiter } } = result;
-
-    this.restaurantId = _id;
+    const { restaurant: { name, _id }, user: { showKitchen, showWaiter, role } } = result;
 
     this.ui.showKitchen = showKitchen;
     this.ui.showWaiter = showWaiter;
     this.ui.title = name;
 
     this.ui.showLocations = true;
+
+    if(role == "admin" || role == "manager") {
+      this.closeLink = `/restaurant/${_id}`;
+    } else {
+      this.closeLink = `/user/info`;
+    }
+
     this.loader.end();
   }
 

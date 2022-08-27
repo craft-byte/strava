@@ -135,6 +135,12 @@ export class DishPage implements OnInit {
       })).present();
       if(r) {
         this.router.go(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
+      } else {
+        this.form.reset();
+        this.image = null;
+        this.imageFile = null;
+        this.imageClass = "r1";
+        this.ui.disableAdd = false;
       }
     } else {
       (await this.toastCtrl.create({
@@ -212,7 +218,7 @@ export class DishPage implements OnInit {
       });
     } else {
       const dishId = this.route.snapshot.params["dishId"] as any;
-      this.dish = await this.service.get("dishes", dishId);
+      this.dish = await this.service.get({}, "dishes", dishId);
       this.image = getImage(this.dish.image.binary);
       this.resolution = this.dish.image.resolution;
       if(this.resolution == 1) {

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { io } from "../../..";
 import { Time } from "../../../models/components";
 import { Order } from "../../../models/general";
 import { id } from "../../../utils/functions";
@@ -12,8 +13,15 @@ import { convertDishes } from "./functions";
 const router = Router({ mergeParams: true });
 
 
-router.get("/init", async (req ,res) => {
+router.post("/init", async (req ,res) => {
     const { restaurantId } = req.params as any;
+    const { socketId } = req.body;
+
+    if(!socketId) {
+        console.log("NO SOCKET ID WAITER: DANGER");
+    } else {
+        io.in(socketId).socketsJoin(`${restaurantId}/waiter`);
+    }
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1  } });
 
@@ -74,7 +82,7 @@ interface Dish {
     }
 
 
-    const order = await Orders(restaurantId).one(orderId).get({
+    const order = await Orders(restaurantId).one({ _id: id(orderId) }).get({
         projection: {
             customer: 1,
             id: 1,
@@ -121,7 +129,7 @@ router.delete("/:orderId/dish/:orderDishId/served", async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
 
 
-    const result = await Orders(restaurantId).one(orderId).update(
+    const result = await Orders(restaurantId).one({ _id: id(orderId) }).update(
         { $set: {
             "dishes.$[dish].status": "served",
             "dishes.$[dish].waiter": id(req.user as string),
@@ -145,13 +153,13 @@ router.delete("/:orderId/dish/:orderDishId/served", async (req, res) => {
     }
 
     if(result.order.status != newStatus) {
-        const statusUpdate = await Orders(restaurantId).one(orderId).update({ $set: { status: newStatus } }, { projection: { _id: 1, } });
+        const statusUpdate = await Orders(restaurantId).one({ _id: id(orderId)}).update({ $set: { status: newStatus } }, { projection: { _id: 1, } });
 
         if(statusUpdate.ok == 0) {
             console.log("ERROR order status is not updated --order done--");
         }
         if(newStatus == "done") {
-            const remove = await Orders(restaurantId).one(orderId).remove();
+            const remove = await Orders(restaurantId).one({_id: id(orderId)}).remove();
             const update = await Orders(restaurantId).history.insert(remove.value as Order);
             console.log("order moved to history:", update.acknowledged);
         }
@@ -159,6 +167,14 @@ router.delete("/:orderId/dish/:orderDishId/served", async (req, res) => {
 
 
     res.send({ success: result.ok == 1 });
+
+    sendMessage([`${restaurantId}/waiter`], "waiter", {
+        type: "waiter/dish/served",
+        data: {
+            orderDishId,
+            orderId,
+        }
+    });
     
     if(result.order.socketId) {
         sendMessage([result.order.socketId], "client", {
@@ -168,7 +184,7 @@ router.delete("/:orderId/dish/:orderDishId/served", async (req, res) => {
                 orderId,
                 status: 4
             }
-        })
+        });
     }
 });
 

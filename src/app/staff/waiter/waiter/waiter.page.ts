@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
@@ -41,6 +41,7 @@ export class WaiterPage implements OnInit {
     private waiter: WaiterService,
     private main: MainService,
     private modalCtrl: ModalController,
+    private toastCtrl: ToastController,
   ) { };
 
 
@@ -55,7 +56,7 @@ export class WaiterPage implements OnInit {
       this.router.go([ "user/info" ], { queryParamsHandling: "preserve", replaceUrl: true });
     }
 
-    const result = await this.service.get<{ dishes: any; orderDishes: any; restaurant: Restaurant; }>("waiter", "init");
+    const result = await this.service.post<{ dishes: any; orderDishes: any; restaurant: Restaurant; }>({ socketId: this.waiter.socketId }, "waiter", "init");
 
     console.log(result);
 
@@ -117,7 +118,7 @@ export class WaiterPage implements OnInit {
     }
 
 
-    this.waiter.connect(this.main.userInfo._id, this.restaurant._id).subscribe(res => {
+    this.waiter.connect().subscribe(async res => {
       const { type } = res;
 
       console.log(res);
@@ -126,6 +127,21 @@ export class WaiterPage implements OnInit {
         const dish = res.data as any;
 
         this.orderDishes.push(dish);
+      } else if(type == "waiter/dish/served") {
+        const { orderDishId, dishId } = res.data as any;
+
+        for(let i in this.orderDishes) {
+          if(this.orderDishes[i]._id == orderDishId) {
+            this.orderDishes.splice(+i, 1);
+            (await this.toastCtrl.create({
+              mode: "ios",
+              color: "green",
+              message: `${this.dishes[dishId].name} is served!`,
+              duration: 1200,
+            }));
+            break;
+          }
+        }
       }
     });
     this.loader.end();

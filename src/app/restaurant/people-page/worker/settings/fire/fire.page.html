@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar color="orange">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Fire {{ username }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="stars">
+      <ionic-rating-component
+        activeIcon = "star"
+        defaultIcon = "star-outline"
+        activeColor = "#FFC409" 
+        defaultColor = "#AAAAAA"
+        readonly="false"
+        rating="3"
+        fontSize = "32px"
+        (ratingChanged)="onRatingChange($event)">
+    </ionic-rating-component>
+    </div>
+    <div class="comment">
+      <ion-item>
+        <ion-label position="floating">Comment</ion-label>
+        <ion-textarea rows="7" cols="26" [(ngModel)]="comment"></ion-textarea>
+      </ion-item>
+    </div>
+    <div class="buttons">
+      <button (click)="submit()" class="red-button">Submit</button>
+    </div>
+  </div>
+</ion-content>

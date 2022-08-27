@@ -15,10 +15,9 @@
         }
     }
     .list {
-        padding: 8px;
         .example {
             display: grid;
-            grid-template-columns: 5% 25% 20% 20% 20% 10%;
+            grid-template-columns: 10% 30% 20% 20% 20%;
             height: 46px;
             border-bottom: 1px solid var(--border-color);
             div {
@@ -34,8 +33,12 @@
             height: 52px;
             width: 100%;
             display: grid;
-            grid-template-columns: 5% 25% 20% 20% 20% 10%;
+            grid-template-columns: 10% 30% 20% 20% 20%;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            &:hover {
+                background-color: rgb(252, 252, 252);
+            }
             .avatar {
                 display: flex;
                 align-items: center;
@@ -92,6 +95,22 @@
                     }
                 }
             }
+        }
+    }
+}
+
+
+@media screen and (max-width: 800px) {
+    .app .list .order {
+        grid-template-columns: 30% 20% 20% 20% 10%;
+        .avatar {
+            display: none !important;
+        }
+    }
+    .app .list .example {
+        grid-template-columns: 30% 20% 20% 20% 10%;
+        .avatar {
+            display: none !important;
         }
     }
 }

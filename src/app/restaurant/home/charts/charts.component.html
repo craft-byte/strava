@@ -1,0 +1,16 @@
+<div class="app">
+  <!-- [view]="chart.view" -->
+  <ngx-charts-line-chart
+    *ngIf="chart.showChart"
+    [scheme]="chart.colorScheme"
+    [legend]="chart.legend"
+    [yAxis]="chart.yAxis"
+    [xAxis]="chart.xAxis"
+    [showGridLines]="chart.showGridLines"
+    [timeline]="chart.timeline"
+    [results]="chart.multi"
+    [legendPosition]="chart.legendPosition"
+    [yAxisTickFormatting]="addDollarSign"
+    [legendTitle]="chart.legendTitle">
+  </ngx-charts-line-chart>
+</div>

@@ -1,5 +1,6 @@
 export const serverEnvinroment = {
     ioOptions: {
+        withCredentials: true,
         upgradeTimeout: 10000,
         cors: {
             origin: (_o: string, cb: Function) => {

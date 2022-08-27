@@ -30,18 +30,31 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
     }
 
 
-    const order = (await Orders(restaurantId).one(orderId).get({ projection: { customer: 1, id: 1, type: 1, ordered: 1, dishes: { _id: 1, dishId: 1 } } }));
+    const order = (await Orders(restaurantId).one({ _id: id(orderId) }).get({ projection: {
+        customer: 1,
+        id: 1,
+        type: 1,
+        ordered: 1,
+        dishes: {
+            _id: 1,
+            dishId: 1,
+            status: 1,
+            cook: 1,
+            taken: 1,
+            takenBy: 1,
+        } 
+    } }));
 
 
     if (!order) {
         return res.sendStatus(404);
     }
-    const { customer, dishes, id, type, ordered } = order;
+    const { customer, dishes, id: Id, type, ordered } = order;
     const user = await getUser(customer, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
 
     result.order = {
         time: getDelay(ordered!),
-        number: id,
+        number: Id,
         type,
         dishes: dishes.length,
         _id: orderId,
@@ -49,8 +62,8 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
     result.ui.showUser = true;
     if (user) {
         result.user = {
-            name: user.name || user.username,
-            avatar: user.avatar?.binary,
+            name: user?.name || user?.username,
+            avatar: user?.avatar?.binary,
             _id: customer,
         }
     } else {
@@ -135,14 +148,14 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
     for (let i of dishes!) {
         if (i._id.equals(orderDishId)) {
             if (i.status == "cooking") {
-                const user = await getUser(i.cook!, { projection: { name: 1, username: 1, avatar: 1, } });
+                const user = await getUser(i.takenBy!, { projection: { name: 1, username: 1, avatar: 1, } });
                 result.ui.taken = true;
                 result.taken = {
                     time: getDelay(i.taken!),
                     user: {
-                        name: user.name || user.username,
-                        avatar: user.avatar?.binary,
-                        _id: user._id,
+                        name: user?.name || user?.username || "User deleted",
+                        avatar: user?.avatar?.binary,
+                        _id: user?._id,
                     }
                 }
             }
@@ -159,31 +172,57 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
 router.post("/dish/:orderDishId/take", async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
 
+    const order = await Orders(restaurantId).one({ _id: id(orderId), dishes: { $elemMatch: { _id: id(orderDishId) } }})
+        .get({ projection: { dishes: { _id: 1, status: 1, } } });
+
+    for(let i of order.dishes) {
+        if(i._id.equals(orderDishId) && i.status == "cooking" && !i.takenBy!.equals(req.user as string)) {
+            return res.status(403).send({ reason: "taken" });
+        }
+    }
+
     const update = await Orders(restaurantId)
-        .one(orderId)
+        .one({_id: id(orderId) })
         .update({
             $set: {
                 "dishes.$[dish].taken": Date.now(),
-                "dishes.$[dish].cook": id(req.user as string),
+                "dishes.$[dish].takenBy": id(req.user as string),
                 "dishes.$[dish].status": "cooking"
-                // "dishes.$[dish].taken": {
-                //     time: Date.now(),
-                //     userId: id(req.user as string)
-                // },
-                // "statistics.$[order].dishes.$[dish].status": 2
             },
         }, {
             arrayFilters: [{ "dish._id": id(orderDishId) }],
             projection: { socketId: 1 }
         });
+    
+    const user = await getUser(req.user as string, { projection: { name: 1, username: 1, avatar: 1, _id: 1 } });
 
-    res.send({ success: update.ok > 0 });
+        
+    res.send({
+        success: update.ok > 0,
+        taken: {
+            time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
+            user: {
+                name: user?.name! || user?.username! || "User deleted",
+                avatar: user?.avatar?.binary,
+                _id: req.user as string,
+            }
+        },
+    });
+
 
     sendMessage([`${restaurantId}/kitchen`], "kitchen", {
         type: "kitchen/dish/take",
         data: {
             orderDishId,
-            orderId
+            orderId,
+            taken: {
+                time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
+                user: {
+                    name: user?.name! || user?.username! || "User deleted",
+                    avatar: user?.avatar?.binary,
+                    _id: req.user as string,
+                }
+            }
         },
     });
 
@@ -204,36 +243,24 @@ router.delete("/dish/:orderDishId/done", async (req, res) => {
     const update1 = await Orders(restaurantId).one({ status: "progress", _id: id(orderId) }).update({
         $set: {
             "dishes.$[dish].cooked": Date.now(),
-            "dishes.$[dish].status": "cooked"
+            "dishes.$[dish].cook": id(req.user as string),
+            "dishes.$[dish].status": "cooked",
         },
     }, {
         arrayFilters: [ { "dish._id": id(orderDishId) } ],
-        projection: { dishes: { status: 1, dishId: 1, _id: 1, } }
+        projection: { dishes: { status: 1, dishId: 1, _id: 1, } },
+        returnDocument: "before",
     });
 
     const order = update1.order;
     let dishId: ObjectId = null!;
-    
 
-    // if(order.dishes!.length == 0) {
-    //     const update2 = await Orders(restaurantId).update(
-    //         { $pull: { "orders": { _id: id(orderId) } } },
-    //         {  }
-    //     );
-    //     const update3 = await updateUser(
-    //         order.customer!,
-    //         { $push: { orders: {
-    //             $each: [{
-    //                 ...update1.statistics,
-    //                 restaurantId: id(restaurantId)
-    //             }],
-    //             $position: 0
-    //         } } }
-    //     );
-
-    //     console.log("order removed: ", update2.modifiedCount > 0);
-    //     console.log("user history added: ", update3.modifiedCount > 0);
-    // }
+    for(let i of order.dishes) {
+        if(i._id.equals(orderDishId)) {
+            dishId = i.dishId;
+            break;
+        }
+    }
 
     if(dishId) {
         const dish = await Restaurant(restaurantId).dishes.one(dishId).get({
@@ -283,6 +310,32 @@ router.delete("/dish/:orderDishId/done", async (req, res) => {
             time: { hours: 0, minutes: 0, nextMinute: 59900, color: 'green' },
             dishId,
         }
+    });
+});
+router.delete("/dish/:orderDishId/quit", async (req, res) => {
+    const { restaurantId, orderId, orderDishId } = req.params as any;
+
+    const update1 = await Orders(restaurantId).one({ status: "progress", _id: id(orderId) }).update({
+        $set: {
+            "dishes.$[dish].taken": null,
+            "dishes.$[dish].takenBy": null,
+            "dishes.$[dish].status": "ordered",
+        },
+    }, {
+        arrayFilters: [ { "dish._id": id(orderDishId) } ],
+        projection: { _id: 1, },
+    });
+
+
+    res.send({ success: update1.ok == 1 });
+
+
+    sendMessage([`${restaurantId}/kitchen`], "kitchen", {
+        type: "kitchen/dish/quitted",
+        data: {
+            orderId,
+            orderDishId
+        },
     });
 });
 

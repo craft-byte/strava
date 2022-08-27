@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { client, stripe } from "../..";
-import { owner } from "../../middleware/restaurant";
 import { email, logged } from "../../middleware/user";
 import { RestaurantSettings } from "../../models/components";
 import { id } from "../../utils/functions";
-import { Orders, Restaurant } from "../../utils/restaurant";
+import { Restaurant } from "../../utils/restaurant";
 import { getUser, updateUser } from "../../utils/users";
-import * as https from "https";
 import * as axios from "axios";
 import { Restaurant as RestaurantType } from "../../models/general";
 import { months } from "../../assets/consts";
@@ -22,11 +20,13 @@ function can(projection: any) {
 
         res.locals.user = user;
 
-        if (!user.restaurants) {
+        console.log("HELLO CAN");
+
+        if (!user!.restaurants) {
             return res.status(404).send({ reason: "wrong" });
         }
 
-        for (let i of user.restaurants) {
+        for (let i of user!.restaurants) {
             if (i.restaurantId.equals(restaurantId)) {
                 res.locals.stripeAccountId = i.stripeAccountId;
                 return next();
@@ -55,9 +55,8 @@ async function getCities(country: string, state: string) {
             headers: {
                 "X-CSCAPI-KEY": "RDIzRFJMR2w4UkxrRHBxYXI2Y2xWekNzVnE0REVVZGpPV2IzWWl3Mg=="
             }
-        })
+        });
     } catch (e) {
-        console.log("GET STATES ERROR");
         console.log(e);
         throw e;
     }
@@ -112,10 +111,10 @@ router.post("/create", logged, email, async (req, res) => {
         const account = await stripe.accounts.create({
             type: "custom",
             metadata: {
-                userId: user._id!.toString(),
+                userId: user!._id!.toString(),
                 restaurantId: restaurantId.toString(),
             },
-            email: user.email,
+            email: user!.email,
             capabilities: {
                 card_payments: {
                     requested: true,
@@ -212,7 +211,7 @@ router.post("/create", logged, email, async (req, res) => {
         _id: restaurantId,
         name,
         owner: id(req.user as string)!,
-        staff: [{ _id: id(req.user as string)!, role: "admin", joined: new Date(), prefers: [], settings: {} }],
+        staff: [{ userId: id(req.user as string)!, role: "admin", joined: Date.now(), settings: {} }],
         created: new Date(),
         theme: "orange",
         invitations: [],
@@ -247,8 +246,7 @@ router.post("/create", logged, email, async (req, res) => {
             req.user as string,
             {
                 $push: {
-                    restaurants: { restaurantId: newRestaurant._id!, stripeAccountId },
-                    works: newRestaurant._id
+                    restaurants: { restaurantId: newRestaurant._id!, stripeAccountId, role: "owner" },
                 },
                 $set: {
                     "info.country": country,
@@ -298,6 +296,8 @@ router.post("/set/state/:restaurantId", logged, can({}), async (req, res) => {
         // const update = await Restaurant(restaurantId).update({ $set: { "info.state": state, "info.city": result.data[0].name } });
 
         console.log("state updated: ", update!.modifiedCount > 0);
+
+        res.send(result.data);
     } catch (e) {
         console.error("ERROR GETTING CITIES");
         throw e;
@@ -366,7 +366,10 @@ router.post("/set/all/:restaurantId", logged, can({}), async (req, res) => {
 
         res.send({ updated: restaurantUpdate!.modifiedCount > 0 });
 
-    } catch (e) {
+    } catch (e: any) {
+        if(e.raw.code == "postal_code_invalid") {
+            return res.status(400).send({ reason: "postal_code" });
+        }
         console.log("UPDATING ACCOUNT");
         throw e;
     }
@@ -374,6 +377,8 @@ router.post("/set/all/:restaurantId", logged, can({}), async (req, res) => {
 router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
     const { stripeAccountId } = res.locals; 
     const { year, month, day } = req.body;
+
+    console.log(req.body);
 
     if(
         !year ||
@@ -396,6 +401,8 @@ router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
         return res.sendStatus(422);
     }
 
+    console.log("HELLO");
+
 
     await updateUser(req.user as string, {
         $set: {
@@ -406,12 +413,12 @@ router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
     });
 
     try {
-        const account = await stripe.accounts.update(
+        await stripe.accounts.update(
             stripeAccountId,
             { "individual": { "dob": { year, month: month, day } } }
         );
 
-        res.send({ updated: !!account });
+        res.send({ updated: true });
     } catch (e) {
         console.log("UPDATIN DATE");
         throw e;
@@ -420,7 +427,6 @@ router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
 
 });
 router.post("/set/card/:restaurantId", logged, can({}), async (req, res) => {
-    const { restaurantId } = req.params;
     const { card, expYear, expMonth, cvc, currency } = req.body;
     const { stripeAccountId } = res.locals;
 
@@ -446,21 +452,6 @@ router.post("/set/card/:restaurantId", logged, can({}), async (req, res) => {
     }
 
     try {
-        try {
-            if(card == "4000000000004202") {
-                const account = await stripe.accounts.createExternalAccount(stripeAccountId, { "external_account": "tok_visa_triggerNextRequirements" });
-                return res.send({ updated: !!account });
-            } else if(card == "4000000000004210") {
-                const account = await stripe.accounts.createExternalAccount(stripeAccountId, { "external_account": "tok_visa_triggerChargeBlock" });
-                return res.send({ updated: !!account });
-            } else if(card == "4000000000004236") {
-                const account = await stripe.accounts.createExternalAccount(stripeAccountId, { "external_account": "tok_visa_triggerPayoutBlock" });
-                return res.send({ updated: !!account });
-            }
-        } catch (e) {
-            console.log("THOSE 3");
-            throw e;
-        }
         const token = await stripe.tokens.create({
             "card": {
                 number: card as string,
@@ -474,7 +465,12 @@ router.post("/set/card/:restaurantId", logged, can({}), async (req, res) => {
         const account = await stripe.accounts.createExternalAccount(stripeAccountId, { "external_account": token.id });
         
         res.send({ updated: !!account });
-    } catch (error) {
+    } catch (error: any) {
+        if(error.raw.code == "instant_payouts_unsupported") {
+            return res.status(400).send({ reason: "card" });
+        } else if(error.raw.code == "invalid_card_type") {
+            return res.status(400).send({ reason: "type", message: error.raw.message });
+        };
         console.log("SETTING CARD");
         throw error;
     }
@@ -525,7 +521,11 @@ router.post("/set/bank-account/:restaurantId", logged, can({}), async (req, res)
         } else {
             return res.sendStatus(500);
         }
-    } catch (e) {
+    } catch (e: any) {
+        if(e.raw.type == "invalid_request_error") {
+            return res.status(400).send({ reason: "no" });
+        }
+
         console.log("SETTING BANK ACCOUNT");
         throw e;
     }
@@ -683,8 +683,12 @@ router.get("/country", logged, async (req, res) => {
 
     const user = await getUser(req.user as string, { projection: { info: { country: 1 } } });
 
-    if (user.info?.country) {
-        return res.send({ code: user.info.country });
+    if(!user) {
+        return res.sendStatus(404);
+    }
+
+    if (user!.info?.country) {
+        return res.send({ code: user!.info.country });
     }
 
     try {

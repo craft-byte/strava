@@ -1,5 +1,5 @@
 <ion-content>
-  <div class="app">
+  <div class="app a-page-with-box">
     <div class="box">
       <div class="header">
         <h1 id="title">
@@ -7,10 +7,13 @@
         </h1>
         <h2 id="subtitle">Card</h2>
       </div>
+      <div *ngIf="ui.errorMessage.length > 0" class="error-message">
+        {{ ui.errorMessage }}
+      </div>
       <div *ngIf="form" [formGroup]="form" class="body">
         <div class="card">
           <div class="title">
-            Credit card number
+            Debit card number
           </div>
           <input type="tel" formControlName="card" ccNumber id="card">
         </div>

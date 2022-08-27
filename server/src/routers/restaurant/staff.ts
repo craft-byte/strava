@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
+import { inflateRaw } from "zlib";
 import { allowed } from "../../middleware/restaurant";
-import { Invitation } from "../../models/components";
-import { getDate, id, log } from "../../utils/functions";
-import { getWorked } from "../../utils/other";
-import { Restaurant } from "../../utils/restaurant";
+import { Settings } from "../../models/components";
+import { Worker } from "../../models/worker";
+import { getDate, id } from "../../utils/functions";
+import { checkManagerSettings } from "../../utils/other";
+import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser, getUsers, updateUser } from "../../utils/users";
 
 
 const router = Router({ mergeParams: true });
 
 
-router.post("/", allowed("manager", "staff", "hire"), async (req, res) => {
+router.post("/", allowed("manager", "staff"), async (req, res) => {
     const { restaurantId } = req.params;
     const { role, userId, settings } = req.body;
 
@@ -23,94 +25,381 @@ router.post("/", allowed("manager", "staff", "hire"), async (req, res) => {
     ]);
 
     if (isWorks.length > 0) {
-        return res.send({ error: "user", acknowledged: false });
+        return res.status(403).send({ reason: "works" });
     }
 
-
-    const invitationId = id();
-
-    const restaurantInviting: Invitation = {
-        _id: invitationId!,
-        userId: id(userId)!,
-        date: new Date(),
-        role: role,
-        settings: settings || null
-    }
-    const userInviting: Invitation = {
-        _id: invitationId!,
-        restaurantId: id(restaurantId)!,
-        date: new Date(),
-        role: role,
+    if(role == "manager" && !checkManagerSettings(settings)) {
+        return res.status(422).send({ reason: "settings" });
     }
 
+    
 
-    const changes = await Restaurant(restaurantId).update({ $push: { invitations: restaurantInviting } });
-    const changes2 = await updateUser(userId, { $push: { invitations: userInviting } });
 
-    console.log("user invited: ", changes!.modifiedCount > 0, changes2.modifiedCount > 0);
+    const userUpdate = await updateUser(userId, { $push: { restaurants: { restaurantId: id(restaurantId), role: role == "cook" || role == "waiter" ? "staff" : role == "manager" ? ((settings as Settings.ManagerSettings).work.cook || (settings as Settings.ManagerSettings).work.waiter) ? "waiter:working" : "waiter" : role } } });
+    const restaurantUpdate = await Restaurant(restaurantId)
+        .update({ $push: {
+            staff: {
+                userId: id(userId),
+                joined: Date.now(),
+                role,
+                settings
+            }
+        }
+    });
 
-    res.send({ done: changes!.modifiedCount > 0 });
+    console.log("user updated: ", userUpdate!.modifiedCount > 0);
+    console.log("restaurant updated: ", restaurantUpdate!.modifiedCount > 0);
+
+    res.send({ done: restaurantUpdate!.modifiedCount > 0 && userUpdate!.modifiedCount > 0 });
 });
 router.get("/", allowed("manager", "staff"), async (req, res) => {
     const { restaurantId } = req.params as any;
 
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { joined: 1, _id: 1, role: 1 } } })
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { joined: 1, userId: 1, role: 1 } } })
 
     const ids: ObjectId[] = [];
 
     for (let i of restaurant?.staff!) {
-        ids.push(i._id);
+        ids.push(i.userId);
     }
 
     const users = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, avatar: 1, username: 1 } });
 
 
+
     const result = [];
 
-    if (restaurant?.staff?.length != users.length) {
-        return res.sendStatus(404);
+    for (let i in restaurant!.staff!) {
+        if(users[i]) {
+            result.push({
+                name: users[i].name || users[i].username,
+                _id: users[i]._id,
+                date: getDate(restaurant?.staff![i].joined!),
+                role: restaurant?.staff![i].role,
+                avatar: users[i].avatar?.binary,
+            });    
+        } else {
+            result.push({
+                name: "User deleted",
+                avatar: null,
+                _id: restaurant?.staff![i].userId,
+                date: getDate(restaurant?.staff![i].joined!),
+                role: restaurant?.staff![i].role,
+            });
+        }
     }
 
-    for (let i in users) {
-        result.push({
-            ...users[i],
-            date: getDate(restaurant.staff[i].joined),
-            role: restaurant.staff[i].role,
-            avatar: users[i].avatar?.binary,
-        });
-    }
 
 
     res.send(result);
 });
-router.get("/:userId", allowed("manager", "staff"), async (req, res) => {
+
+interface WorkerResult {
+    restaurantName?: string;
+    user?: {
+        avatar: any;
+        name: string;
+        email?: string;
+        _id: ObjectId;
+    };
+    worker?: {
+        role: string;
+        cooked?: number;
+        joined: string;
+        served?: number;
+        lastUpdate?: string;
+        favoriteDish?: {
+            name: string;
+            _id: string | ObjectId;
+        }
+    }
+}; router.get("/:userId", allowed("manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
+    const { calculate } = req.query;
+    
+    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, staff: 1 } });
 
-    const result1 = await getUser(userId, { projection: { avatar: 1, name: 1, username: 1, email: 1, } });
+    
+    let worker: Worker | undefined;
 
-    let result2 = await Restaurant(restaurantId).aggregate<{ worker: any }>([
-        // { $match: { _id: id(restaurantId) } },
-        { $unwind: "$staff" },
-        { $match: { "staff._id": id(userId) } },
-        { $project: { worker: "$staff" } }
-    ]);
-
-    let worker;
-
-    if (!result2 || result2.length == 0) {
-        worker = null;
-        return res.send(null);
-    } else {
-        worker = result2[0].worker;
+    for(let i of restaurant!.staff!) {
+        if(i.userId.equals(userId)) {
+            worker = i;
+            break;
+        }
     }
 
-    worker.joined = getDate(worker.joined);
-    worker.role = worker.role[0].toUpperCase() + worker.role.slice(1, worker.role.length);
+    if(!worker) {
+        return res.status(404).send({ reason: "worker" });
+    }
 
-    res.send({ user: worker ? { ...result1, avatar: result1.avatar?.binary} : null, worker });
+    const user = await getUser(userId, { projection: { avatar: 1, username: 1, name: 1, email: 1 } });
+
+    const result: WorkerResult = {
+        restaurantName: restaurant!.name,
+        user: {
+            avatar: user?.avatar?.binary,
+            name: user?.name || user?.username || "User deleted",
+            _id: user?._id || worker.userId,
+            email: user?.email || undefined,
+        },
+        worker: {
+            role: worker.role,
+            joined: getDate(worker.joined),
+        }
+    };
+
+
+    if(
+        !(
+            worker.role == "manager" &&
+            (
+                !(worker.settings as Settings.ManagerSettings).work.cook ||
+                !(worker.settings as Settings.ManagerSettings).work.waiter
+            )
+        )
+    ) {
+        if(
+            worker.workerCache &&
+            (calculate == "false" ) &&
+            Date.now() - (worker.workerCache.lastUpdate) < 86400000)
+        {
+            const { lastUpdate, data } = worker.workerCache;
+    
+            result.worker = {
+                lastUpdate: getDate(lastUpdate),
+                cooked: data.cooked,
+                served: data.served,
+                role: worker.role,
+                joined: getDate(worker.joined),
+            };
+        } else {
+            const or: any = [];
+            if(worker.role == "admin" || worker.role == "cook" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.cook)) {
+                or.push({ cook: id(userId) });
+            }
+            if(worker.role == "admin" || worker.role == "waiter" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.waiter)) {
+                or.push({ waiter: id(userId) });
+            }
+            
+            let cooked = 0;
+            let served = 0;
+    
+            let fav: { [dishId: string]: number } = {};
+    
+            let stop = false;
+            let index = 1;
+            while(!stop) {
+                const orders = await (await Orders(restaurantId).history
+                    .many(
+                        { dishes: { $elemMatch: { $or: or } } },
+                        { projection: { dishes: { cook: 1, waiter: 1, dishId: 1, } } }
+                    )).skip((index - 1) * 10).limit(10 * index).toArray();
+                index++;
+    
+                for(let order of orders) {
+                    for(let dish of order.dishes) {
+                        if((worker.role == "cook" || worker.role == "admin" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.cook)) && dish.cook!.equals(userId)) {
+                            cooked++;
+                            if(fav[dish.dishId.toString()]) {
+                                fav[dish.dishId.toString()]++;
+                            } else {
+                                fav[dish.dishId.toString()] = 1;
+                            }
+                        }
+                        if((worker.role == "waiter" || worker.role == "admin" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.waiter)) && dish.waiter!.equals(userId)) {
+                            served++;
+                        }
+                    }
+                }
+    
+                if(orders.length < 10) {
+                    stop = true;
+                }
+            }
+    
+    
+            result.worker!.cooked = cooked;
+            result.worker!.served = served;
+            result.worker!.lastUpdate = getDate(Date.now());
+    
+            let dishId: string | undefined;
+            let most = 1;
+    
+            for(let i of Object.keys(fav)) {
+                if(most < fav[i]) {
+                    dishId = i;
+                    most = fav[i];
+                }
+            }
+    
+            if(dishId) {
+                const dish = await Restaurant(restaurantId).dishes.one(dishId!).get({ projection: { name: 1 } });
+                if(dish) {
+                    result.worker!.favoriteDish = {
+                        _id: dishId || null!,
+                        name: dish.name!
+                    }
+                }
+            }
+        }
+    }
+
+    
+
+    res.send(result);
 });
-router.patch("/:userId/fire", allowed("manager", "staff", "fire"), async (req, res) => {
+
+router.get("/:userId/settings", allowed("manager", "staff"), async (req, res) => {
+    const { userId, restaurantId } = req.params;
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, userId: 1, settings: 1 } } });
+
+    const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, } });
+
+    if(!user) {
+        return res.status(404).send({ reason: "deleted" });
+    }
+
+    for(let i of restaurant!.staff!) {
+        if(i.userId.equals(userId)) {
+            return res.send({
+                role: i.role,
+                settings: i.settings,
+                showFire: true,
+                user: {
+                    name: user.name || user.username,
+                    avatar: user.avatar?.binary
+                },
+            });
+        }
+    }
+
+
+    return res.status(404).send({ reason: "staff" });
+
+});
+router.post("/:userId/settings", allowed("manager", "staff"), async (req, res) => {
+    const { restaurantId, userId } = req.params;
+    const { field, value } = req.body;
+
+    if(!field || !["settings", "customers", "dishes", "ingredients", "staff"].includes(field) || typeof value != "boolean") {
+        return res.sendStatus(422);
+    }
+
+    const query: any = {};
+
+    query[`staff.$[user].settings.${field}`] = value;
+    query[`staff.$[user].lastUpdate.time`] = Date.now();
+    query[`staff.$[user].lastUpdate.userId`] = id(req.user as string);
+
+    const update = await Restaurant(restaurantId).update(
+        { $set: query },
+        { arrayFilters: [ { "user.userId": id(userId) } ] },
+    );
+
+    res.send({updated: update.modifiedCount > 0});
+});
+router.post("/:userId/settings/work", allowed("manager", "staff"), async (req, res) => {
+    const { restaurantId, userId } = req.params;
+    const { field, value } = req.body;
+
+    if(!field || !["waiter", "cook"].includes(field) || typeof value != "boolean") {
+        return res.sendStatus(422);
+    }
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { settings: 1, userId: 1, } } });
+
+    let worker: Worker | undefined;
+
+    for(let i of restaurant!.staff!) {
+        if(i.userId.equals(userId)) {
+            worker = i;
+            break;
+        }
+    }
+
+    if(!worker) {
+        return res.status(404).send({ reason: "staff" });
+    }
+
+    (worker.settings as Settings.ManagerSettings).work[field as keyof Settings.ManagerSettings["work"]] = value as boolean;
+
+    const working = (worker.settings as Settings.ManagerSettings).work.cook || (worker.settings as Settings.ManagerSettings).work.waiter;
+
+    const userUpdate = await updateUser(userId, { $set: { "restaurants.$[restaurant].role": working ? "manager:working" : "manager" } }, { arrayFilters: [ { "restaurant.restaurantId": id(restaurantId) } ] })
+
+    console.log("user role updated: ", userUpdate.modifiedCount > 0);
+
+
+    const query: any = {};
+
+    query[`staff.$[user].settings.work.${field}`] = value;
+    query["staff.$[user].lastUpdate.user"] = id(req.user as string);
+    query["staff.$[user].lastUpdate.time"] = Date.now();
+
+    const restaurantUpdate = await Restaurant(restaurantId).update(
+        { $set: query },
+        { arrayFilters: [ { "user.userId": id(userId) } ] }
+    );
+
+    res.send({ updated: restaurantUpdate.modifiedCount > 0 });
+});
+router.post("/:userId/role", allowed("manager", "staff"), async (req, res) => {
+    const { restaurantId, userId } = req.params;
+    const { role } = req.body;
+
+    if(!role || !["cook", "manager", "waiter"].includes(role)) {
+        return res.sendStatus(422);
+    }
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1, settings: 1, role: 1, lastManagerSettings: role == "manager" ? 1 : undefined } } });
+
+    let worker: Worker | undefined;
+
+    for(let i of restaurant!.staff!) {
+        if(i.userId.equals(userId)) {
+            worker = i;
+            break;
+        }
+    }
+
+    if(!worker) {
+        return res.status(404).send({ reason: "staff" });
+    }
+    if(worker.role == role) {
+        return res.status(422).send({ reason: "role" });
+    }
+
+
+    const query: any = {};
+
+    query["staff.$[user].role"] = role;
+
+    if(worker.role == "manager") {
+        query["staff.$[user].lastManagerSettings"] = worker.settings;
+    }
+    if(role == "manager") {
+        query["staff.$[user].settings"] = worker.lastManagerSettings;
+        worker.settings = worker.lastManagerSettings!;
+    } else {
+        query["staff.$[user].settings"] = {};
+    }
+
+    const userUpdate = await updateUser(userId, { $set: { "restaurants.$[restaurant].role": role != "manager" ? role : ((worker.settings as Settings.ManagerSettings).work.cook || (worker.settings as Settings.ManagerSettings).work.waiter) ? "manager:working" : "manager" } }, { arrayFilters: [ { "restaurant.restaurantId": id(restaurantId) } ]  })
+
+    console.log("user role updated: ", userUpdate.modifiedCount > 0);
+
+    const update = await Restaurant(restaurantId).update(
+        { $set: query },
+        { arrayFilters: [ { "user.userId": id(userId) } ] },
+    );
+
+    res.send({updated: update.modifiedCount > 0, settings: role == "manager" ? worker.lastManagerSettings : {} });
+});
+
+router.patch("/:userId/fire", allowed("manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
     const { text: comment, rating: stars } = req.body;
 
@@ -149,82 +438,14 @@ router.patch("/:userId/fire", allowed("manager", "staff", "fire"), async (req, r
 
 
     const result2 = await updateUser(userId, {
-        $pull: { works: id(restaurantId)!, restaurants: { restaurantId: id(restaurantId)! } },
+        $pull: { restaurants: { restaurantId: id(restaurantId)! } },
         $push: { feedbacks: newFeedback }
     });
 
     console.log("user fired: ", result!.modifiedCount > 0 && result2.modifiedCount > 0);
     res.send({ updated: result!.modifiedCount > 0 && result2.modifiedCount > 0 });
 });
-router.get("/invitations/get", allowed("manager", "staff"), async (req, res) => {
-    const { restaurantId } = req.params;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { invitations: 1, name: 1 } });
-
-    if (!restaurant) {
-        return res.sendStatus(404);
-    }
-
-    const result: {
-        date: string;
-        _id: any;
-        restaurantId: any;
-        userId: any;
-        role: string;
-        user: {
-            name: string;
-            username: string;
-        }
-    }[] = [];
-
-    for (let i of restaurant.invitations!) {
-        result.push({
-            date: getDate(i.date),
-            _id: i._id!,
-            restaurantId,
-            role: i.role!,
-            userId: i.userId,
-            user: await getUser(i.userId!, { projection: { name: 1, username: 1 } }) as any,
-        });
-    }
-
-    res.send(result);
-});
-router.delete("/invitations/:invId/:userId", allowed("manager", "staff", "hire"), async (req, res) => {
-    const { restaurantId, invId, userId } = req.params;
-
-    const changes1 = await Restaurant(restaurantId).update(
-        { $pull: { invitations: { _id: id(invId) } } }
-    );
-
-    const changes2 = await updateUser(
-        userId,
-        { $pull: { invitations: { _id: id(invId) } } }
-    );
-
-
-    res.send({ removed: changes1!.modifiedCount > 0 && changes2.modifiedCount > 0 });
-});
-
-
-
-
-
-
-router.post("/:userId/settings/update", allowed("manager", "staff", "settings"), async (req, res) => {
-    const { userId, restaurantId } = req.params;
-    const { f1, f2, value } = req.body;
-
-    const update: any = { $set: {} };
-
-    update.$set[`staff.$[user].settings.${f1}.${f2}`] = value;
-
-    const result = await Restaurant(restaurantId).update(update, { arrayFilters: [{ "user._id": id(userId) }] });
-
-    console.log("worker setting changed: ", result!.modifiedCount > 0);
-
-    return result;
-});
 
 
 

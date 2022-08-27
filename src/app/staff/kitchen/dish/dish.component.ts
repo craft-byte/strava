@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { MainService } from 'src/app/services/main.service';
 import { getImage } from 'src/functions';
 import { StaffService } from '../../staff.service';
 import { KitchenService } from '../kitchen.service';
@@ -10,6 +11,7 @@ interface Dish {
 
 interface OrderDish {
   dishId: string;
+  taken: string;
   time: {
     hours: number;
     minutes: number;
@@ -27,6 +29,7 @@ export class DishComponent implements OnInit, OnDestroy {
 
   dish: any;
   image: string;
+  userId: string;
 
   time: number;
 
@@ -35,7 +38,10 @@ export class DishComponent implements OnInit, OnDestroy {
   constructor(
     private kitchen: KitchenService,
     private service: StaffService,
-  ) { };
+    private main: MainService,
+  ) {
+    this.userId = this.main.userInfo._id;
+  };
 
   @Input() orderDish: OrderDish;
 

@@ -32,7 +32,7 @@ export class IngredientPage implements OnInit {
 
   async ngOnInit() {
     try {
-      this.component = await this.service.get("components", this.id);
+      this.component = await this.service.get({}, "components", this.id);
     } catch (e) {
       if(e == 404) {
         this.modalCtrl.dismiss();

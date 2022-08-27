@@ -150,7 +150,7 @@ export class DishesListComponent implements OnInit {
 
   async ngOnInit() {
     await this.loader.start();
-    this.dishes = await this.service.get('dishes');
+    this.dishes = await this.service.get({}, 'dishes');
     if(this.dishes.length == 0) {
       this.ui.showAdd = true;
     }

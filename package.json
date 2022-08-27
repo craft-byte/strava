@@ -14,7 +14,8 @@
     "server": "(npm run server:build || false) && npm run server:start",
     "server:build": "(cd ./server || false) && (npm install --force || false) && npm run prod:build",
     "server:start": "(cd ./server || false) && npm run start",
-    "web:build": "ng build --configuration production"
+    "web:build": "ng build --configuration production",
+    "web:npx": "npx ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''"
   },
   "private": true,
   "dependencies": {
@@ -73,6 +74,7 @@
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jsdoc": "30.7.6",
     "eslint-plugin-prefer-arrow": "1.2.2",
+    "ionic": "^5.4.16",
     "jasmine-core": "~3.8.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.3.2",

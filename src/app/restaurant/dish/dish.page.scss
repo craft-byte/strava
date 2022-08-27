@@ -1,48 +1,7 @@
-.header {
-    padding: 0 412px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    -webkit-box-shadow: 0px 5px 5px -5px rgba(34, 60, 80, 0.6);
-    -moz-box-shadow: 0px 5px 5px -5px rgba(34, 60, 80, 0.6);
-    box-shadow: 0px 5px 5px -5px rgba(34, 60, 80, 0.6);
-    height: 64px;
-    border-bottom: 1px solid var(--border-color);
-    .title {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .text {
-            font-size: 20px;
-            color: var(--title-color);
-            font-weight: 550;
-            margin-left: 12px;
-        }
-        .close {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            button {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 32px;
-                background: none;
-                width: 40px;
-                height: 40px;
-                border: none;
-                ion-icon {
-                    position: absolute;
-                }
-            }
-        }
-    }
+.the-header-with-close-icon {
     .buttons {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         .orange-button {
-            width: 168px;
+            width: 174px;
         }
         .white-button {
             width: 82px;
@@ -51,15 +10,21 @@
 }
 
 .app {
-    padding: 42px 412px;
+    display: flex;
+    justify-content: center;
     margin-bottom: 200px;
+    padding-top: 42px;
+
     .form {
+        width: 454px;
+
         .categories {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             margin-top: 32px;
+
             .title {
                 display: flex;
                 justify-content: center;
@@ -68,18 +33,22 @@
                 font-weight: 550;
                 color: var(--title-color);
             }
+
             ion-item {
                 width: 412px;
                 margin-top: 12px;
             }
         }
+
         .top {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+
             .image {
                 position: relative;
+
                 .input {
                     position: absolute;
                     top: 0;
@@ -89,11 +58,13 @@
                     align-items: center;
                     width: 100%;
                     height: 100%;
+
                     label {
                         cursor: pointer;
                         width: 100%;
                         height: 100%;
                     }
+
                     input {
                         position: absolute;
                         left: -99999rem;
@@ -101,39 +72,79 @@
                         // right: -2000px;
                     }
                 }
+
                 &.r1 {
                     width: 324px;
                     height: 324px;
                 }
+
                 &.r2 {
                     width: 324px;
                     height: 244px;
                 }
+
                 &.r3 {
                     width: 324px;
                     height: 183px;
                 }
+
                 img {
-                    border: 2px solid var(--gray);
+                    border: 2px solid var(--green);
                     border-radius: 12px;
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
                 }
             }
+
             .np {
                 margin-top: 12px;
                 display: flex;
             }
+
             .t {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
+
                 .link {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                 }
             }
+        }
+    }
+}
+
+
+
+@media (min-width: 300px) and (max-width: 549px) {
+    .app {
+        padding: 42 8px;
+
+        .form {
+            width: 95%;
+
+            .categories {
+                ion-item {
+                    width: 95%;
+                    margin-top: 12px;
+                }
+            }
+        }
+    }
+
+    .the-header-with-close-icon.add {
+        flex-direction: column;
+        height: auto;
+        .title {
+            width: 100%;
+            height: 26px;
+        }
+        .title #close {
+            position: absolute;
+            top: 8px;
+            left: 8px;
         }
     }
 }

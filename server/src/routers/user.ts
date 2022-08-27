@@ -2,12 +2,11 @@ import { ObjectId } from "bson";
 import { Router } from "express";
 import { MODE, stripe } from "../index";
 import { getDate, id, log, makePassword, sendEmail } from "../utils/functions";
-import { Invitation } from "../models/components";
 import { addUser, byUsername, getUser, getUserPromise, getUsers, updateUser } from "../utils/users";
 import passport from "passport";
 import { logged } from "../middleware/user";
 import { Restaurant } from "../utils/restaurant";
-import { bufferFromString, getRestaurantName, isAddToJobs, isAddToRestaurants } from "../utils/other";
+import { bufferFromString, getRestaurantName, isAddToJobs } from "../utils/other";
 import { UpdateResult } from "mongodb";
 import { AddRestaurantRouter } from "./user/addRestaurant";
 import { allowed } from "../middleware/restaurant";
@@ -39,7 +38,7 @@ router.post("/create", async (req, res) => {
         created: new Date(),
         password: newPassword,
         username: username as string,
-        invitations: [] as Invitation[],
+        // invitations: [] as Invitation[],
         works: [] as ObjectId[],
         restaurants: [] as any[],
         name: null as unknown as string,
@@ -52,6 +51,7 @@ router.post("/create", async (req, res) => {
             state: null!,
         },
         fullName: null!,
+        status: "enabled" as "enabled",
     };
 
     const result = await addUser(newUser);
@@ -97,11 +97,28 @@ router.patch("/login", async (req, res, next) => {
                     name: 1,
                     phone: 1,
                     avatar: 1,
-                    email: 1
+                    email: 1,
+
                 }
             });
 
-            res.send(user);
+            let redirectTo: string = "user/info";
+
+            if(!user) {
+                return res.status(404).send({ reason: "user" });
+            }
+
+            for(let i of user.restaurants!) {
+                console.log(i);
+                if(i.role != "staff") {
+                    redirectTo = `restaurant/${i.restaurantId}`;
+                    break;
+                }
+            }
+
+            console.log(redirectTo);
+
+            res.send({user: user, redirectTo });
         });
 
     })(req, res, next);
@@ -146,7 +163,6 @@ router.get("/userInfo", logged, async (req, res) => {
                 username: 1,
                 name: 1,
                 restaurants: 1,
-                works: 1,
                 email: 1,
                 avatar: { modified: 1 },
             }
@@ -161,7 +177,7 @@ router.get("/userInfo", logged, async (req, res) => {
         return res.sendStatus(404);
     }
 
-    const getRestaurantNameAndId = async (restaurantId: string | ObjectId, type: "works" | "restaurants") => {
+    const getRestaurantNameAndId = async (restaurantId: string | ObjectId, type: "works" | "restaurants", owner: boolean) => {
         const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1 } });
 
         if (!restaurant) {
@@ -174,7 +190,8 @@ router.get("/userInfo", logged, async (req, res) => {
 
         return {
             name: restaurant!.name,
-            _id: restaurant!._id
+            _id: restaurant!._id,
+            url: owner ? `restaurant/${restaurant._id}` : `staff/${restaurant._id}/dashboard`,
         }
     }
 
@@ -192,20 +209,20 @@ router.get("/userInfo", logged, async (req, res) => {
     }
 
     const restaurantsPromise = [];
-    const worksPromise = [];
+    // const worksPromise = [];
 
     if (user.restaurants!.length > 0) {
         showRestaurants = true;
         for (let i of user.restaurants!) {
-            restaurantsPromise.push(getRestaurantNameAndId(i.restaurantId, "restaurants"));
+            restaurantsPromise.push(getRestaurantNameAndId(i.restaurantId, "restaurants", i.role != "staff"));
         }
     }
-    if (user.works!.length > 0) {
-        showJobs = true;
-        for (let i of user.works!) {
-            worksPromise.push(getRestaurantNameAndId(i, "works"));
-        }
-    }
+    // if (user.works!.length > 0) {
+    //     showJobs = true;
+    //     for (let i of user.works!) {
+    //         worksPromise.push(getRestaurantNameAndId(i, "works"));
+    //     }
+    // }
 
 
     const restaurants = [];
@@ -216,11 +233,11 @@ router.get("/userInfo", logged, async (req, res) => {
             restaurants.push(i);
         }
     }
-    for (let i of await Promise.all(worksPromise)) {
-        if (i) {
-            works.push(i);
-        }
-    }
+    // for (let i of await Promise.all(worksPromise)) {
+    //     if (i) {
+    //         works.push(i);
+    //     }
+    // }
 
     res.send({
         ui: {
@@ -233,24 +250,57 @@ router.get("/userInfo", logged, async (req, res) => {
             registrationParagraphs,
         },
         restaurants,
-        works,
+        // works,
     });
 });
 router.get("/avatar", logged, async (req, res) => {
     const user = await getUser(req.user as string, { projection: { avatar: 1 } });
 
-    res.send({ avatar: user.avatar?.binary });
+    if(!user) {
+        return res.status(404).send({ reason: "user" });
+    }
+
+    res.send({ avatar: user?.avatar?.binary });
 });
 
 
 
 router.get("/name", logged, async (req, res) => {
     const user = await getUser(req.user as string, { projection: { fullName: 1 } });
+    
+    if(!user) {
+        return res.status(404).send({ reason: "user" });
+    }
 
     res.send(user.fullName);
 });
 
 
+
+
+router.delete("/", logged, async (req, res) => {
+    const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
+
+    if(!user) {
+        return res.sendStatus(404);
+    }
+
+    for(let i of user.restaurants!) {
+        if(i.role == "owner" && i.stripeAccountId) {
+            const result = await Restaurant(i.restaurantId).update({ $set: { status: "deleted" } });
+
+            console.log("restaurant REMOVED", result!.modifiedCount > 0);
+        }
+    }
+
+    const userUpdate = await updateUser(req.user as string, { $set: { status: "deleted" } });
+
+    req.logOut();
+
+    console.log("user removed", userUpdate.modifiedCount > 0);
+
+    res.send({ removed: userUpdate.matchedCount > 0 });
+});
 
 
 
@@ -296,6 +346,10 @@ router.post("/username/check", async (req, res) => {
 });
 router.get("/email/setup", logged, async (req, res) => {
     const user = await getUser(req.user as string, { projection: { emailVerify: 1, emailVerificationCode: 1 } });
+
+    if(!user) {
+        return res.status(404).send({ reason: "user" });
+    }
 
     res.send({ ...user, emailVerificationCode: !!user.emailVerificationCode });
 });
@@ -416,7 +470,7 @@ router.post("/avatar", logged, async (req, res) => {
 
 
     try {
-        const result = await sharp(buffer).resize(1000).png({ quality: 50 }).toBuffer();
+        const result = await sharp(buffer).resize(2000).png({ quality: 30 }).toBuffer();
         const update = await updateUser(req.user as string, {
             $set: {
                 avatar: {
@@ -438,138 +492,138 @@ router.post("/avatar", logged, async (req, res) => {
 });
 
 
-router.get("/restaurant/expanded/:restaurantId", logged, allowed("manager"), async (req, res) => {
-    const { restaurantId } = req.params;
+// router.get("/restaurant/expanded/:restaurantId", logged, allowed("manager"), async (req, res) => {
+//     const { restaurantId } = req.params;
 
-    const result = await Restaurant(restaurantId).get({ projection: { _id: 1 } });
+//     const result = await Restaurant(restaurantId).get({ projection: { _id: 1 } });
 
-    res.send("Not implemented")
-});
-
-
-router.patch("/invitations/reject/:restaurantId/:userId/:inv", logged, async (req, res) => {
-    const { userId, inv, restaurantId } = req.params;
-
-    const userUpdate = await updateUser(userId, { $pull: { invitations: { _id: id(inv) } } });
-    const restaurantUpdate = await Restaurant(restaurantId).update({ $pull: { invitations: { _id: id(inv) } } });
-
-    res.send({ success: userUpdate.modifiedCount > 0 && restaurantUpdate!.modifiedCount > 0 });
-});
-router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
-    const { user, inv } = req.params;
-
-    const foundUser = await getUser(user, { projection: { invitations: 1 } });
-
-    if (!foundUser || !foundUser.invitations) {
-        log("failed invitation accepting", "no user found");
-        return res.sendStatus(404);
-    } else if (foundUser.invitations.length == 0) {
-        log("failed invitation accepting", "no invitations found");
-        return res.sendStatus(404);
-    }
-
-    let userI: Invitation = null!;
+//     res.send("Not implemented")
+// });
 
 
+// router.patch("/invitations/reject/:restaurantId/:userId/:inv", logged, async (req, res) => {
+//     const { userId, inv, restaurantId } = req.params;
 
-    for (let i of foundUser.invitations) {
-        if (i._id.toString() == inv) {
-            userI = i;
-        }
-    }
+//     const userUpdate = await updateUser(userId, { $pull: { invitations: { _id: id(inv) } } });
+//     const restaurantUpdate = await Restaurant(restaurantId).update({ $pull: { invitations: { _id: id(inv) } } });
 
-    if (!userI) {
-        log("FAILED", "USER INVITATION DOESNT EXIST");
-        return res.sendStatus(404);
-    }
+//     res.send({ success: userUpdate.modifiedCount > 0 && restaurantUpdate!.modifiedCount > 0 });
+// });
+// router.patch("/invitation/accept/:user/:inv", logged, async (req, res) => {
+//     const { user, inv } = req.params;
 
+//     const foundUser = await getUser(user, { projection: { invitations: 1 } });
 
-    const foundR = await Restaurant(userI!.restaurantId!).get({ projection: { invitations: 1 } });
+//     if (!foundUser || !foundUser.invitations) {
+//         log("failed invitation accepting", "no user found");
+//         return res.sendStatus(404);
+//     } else if (foundUser.invitations.length == 0) {
+//         log("failed invitation accepting", "no invitations found");
+//         return res.sendStatus(404);
+//     }
 
-
-    if (!foundR || !foundR.invitations || foundR.invitations.length == 0) {
-        log("failed", `invitation doesnt exists in restaurant [${userI!.restaurantId}] [${inv}]`);
-
-        await updateUser(user, {
-            $pull: { invitations: { _id: id(inv) } }
-        });
-
-        return res.send({ success: true });
-    }
-
-    let restaurantI: Invitation = null!;
-
-    for (let i of foundR.invitations) {
-        if (i._id.toString() == inv) {
-            restaurantI = i;
-        }
-    }
-
-    if (!restaurantI) {
-        log("failed", `invitation doesnt exists in restaurant [${foundR._id.toString()}]`);
-        return res.sendStatus(404);
-    }
-
-    const restaurant = foundR._id;
-
-    const updatedRestaurant = await Restaurant(restaurant).update({
-        $push: {
-            staff: {
-                _id: id(user)!,
-                joined: new Date(),
-                role: restaurantI!.role!,
-                settings: restaurantI!.settings,
-            },
-        },
-        $pull: {
-
-            invitations: { _id: id(inv) }
-        }
-    });
-
-    let userUpdate: UpdateResult = null!;
-    let addJob = false;
-    let addRestaurant = false;
-
-    if (restaurantI.role == "cook" || restaurantI.role == "waiter") {
-        addJob = true;
-        userUpdate = await updateUser(user, {
-            $push: { works: restaurant },
-            $pull: { invitations: { _id: id(inv) } },
-        });
-    }
+//     let userI: Invitation = null!;
 
 
-    else {
-        const $push: any = {};
 
-        addJob = isAddToJobs(restaurantI.settings!);
-        addRestaurant = isAddToRestaurants(restaurantI.settings!);
+//     for (let i of foundUser.invitations) {
+//         if (i._id.toString() == inv) {
+//             userI = i;
+//         }
+//     }
+
+//     if (!userI) {
+//         log("FAILED", "USER INVITATION DOESNT EXIST");
+//         return res.sendStatus(404);
+//     }
 
 
-        if (addJob) {
-            $push.works = restaurant;
-        }
-        if (addRestaurant) {
-            $push.restaurants = restaurant;
-        }
+//     const foundR = await Restaurant(userI!.restaurantId!).get({ projection: { invitations: 1 } });
 
-        userUpdate = await updateUser(user, {
-            $push,
-            $pull: { invitations: { _id: id(inv) } }
-        });
-    }
 
-    const result = updatedRestaurant?.modifiedCount! > 0 && userUpdate.modifiedCount > 0;
+//     if (!foundR || !foundR.invitations || foundR.invitations.length == 0) {
+//         log("failed", `invitation doesnt exists in restaurant [${userI!.restaurantId}] [${inv}]`);
 
-    const restaurantName = await getRestaurantName(restaurant);
+//         await updateUser(user, {
+//             $pull: { invitations: { _id: id(inv) } }
+//         });
 
-    res.send({
-        success: result,
-        job: addJob ? { name: restaurantName, _id: restaurant } : null,
-        restaurant: addRestaurant ? { name: restaurantName, _id: restaurant } : null
-    });
-});
+//         return res.send({ success: true });
+//     }
+
+//     let restaurantI: Invitation = null!;
+
+//     for (let i of foundR.invitations) {
+//         if (i._id.toString() == inv) {
+//             restaurantI = i;
+//         }
+//     }
+
+//     if (!restaurantI) {
+//         log("failed", `invitation doesnt exists in restaurant [${foundR._id.toString()}]`);
+//         return res.sendStatus(404);
+//     }
+
+//     const restaurant = foundR._id;
+
+//     const updatedRestaurant = await Restaurant(restaurant).update({
+//         $push: {
+//             staff: {
+//                 _id: id(user)!,
+//                 joined: Date.now(),
+//                 role: restaurantI!.role!,
+//                 settings: restaurantI!.settings,
+//             },
+//         },
+//         $pull: {
+
+//             invitations: { _id: id(inv) }
+//         }
+//     });
+
+//     let userUpdate: UpdateResult = null!;
+//     let addJob = false;
+//     let addRestaurant = false;
+
+//     if (restaurantI.role == "cook" || restaurantI.role == "waiter") {
+//         addJob = true;
+//         userUpdate = await updateUser(user, {
+//             $push: { works: restaurant },
+//             $pull: { invitations: { _id: id(inv) } },
+//         });
+//     }
+
+
+//     else {
+//         const $push: any = {};
+
+//         addJob = isAddToJobs(restaurantI.settings!);
+//         addRestaurant = isAddToRestaurants(restaurantI.settings!);
+
+
+//         if (addJob) {
+//             $push.works = restaurant;
+//         }
+//         if (addRestaurant) {
+//             $push.restaurants = restaurant;
+//         }
+
+//         userUpdate = await updateUser(user, {
+//             $push,
+//             $pull: { invitations: { _id: id(inv) } }
+//         });
+//     }
+
+//     const result = updatedRestaurant?.modifiedCount! > 0 && userUpdate.modifiedCount > 0;
+
+//     const restaurantName = await getRestaurantName(restaurant);
+
+//     res.send({
+//         success: result,
+//         job: addJob ? { name: restaurantName, _id: restaurant } : null,
+//         restaurant: addRestaurant ? { name: restaurantName, _id: restaurant } : null
+//     });
+// });
 
 
 export {

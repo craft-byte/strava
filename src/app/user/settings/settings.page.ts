@@ -1,7 +1,7 @@
 import { ThisReceiver } from '@angular/compiler';
 import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
@@ -26,13 +26,41 @@ export class SettingsPage implements OnInit {
 
   constructor(
     private service: UserService,
-    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
     private router: RouterService,
     private main: MainService,
     private loader: LoadService,
   ) { };
 
 
+  async remove() {
+    const alert = await this.alertCtrl.create({
+      header: "Please, be certain.",
+      subHeader: "Are you sure you want to delete the account and all the data connected to it?",
+      mode: "ios",
+      buttons: [
+        {
+          role: "cancel",
+          text: "Cancel",
+        },
+        {
+          role: "remove",
+          text: "Submit",
+          cssClass: "alert-red-button"
+        }
+      ]
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+
+    if(role == "remove") {
+      const result: any = await this.service.delete("");
+
+      this.router.go(["user/creat3e"]);
+    }
+  }
 
   exit() {
     this.router.go(["user/account"], { replaceUrl: true, queryParamsHandling: "preserve" });

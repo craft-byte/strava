@@ -1,4 +1,4 @@
-import { FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
+import { Filter, FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
 import { client } from "..";
 import { mainDBName } from "../environments/server";
 import { User } from "../models/general";
@@ -11,12 +11,12 @@ function getUserPromise(search: Object, options?: Object): Promise<User | null> 
     return client.db(mainDBName).collection("users").findOne<User>(search, options);
 }
 
-async function getUsers(search: any, options?: Object): Promise<User[]> {
+async function getUsers(search: Filter<User>, options?: Object): Promise<User[]> {
     let result = null;
 
     try {
         result = await client.db(mainDBName).collection("users")
-            .find<User>(search, options).toArray();
+            .find<User>({ status: { $ne: "deleted" }, ...search }, options).toArray();
     } catch (e) {
         console.error(e);
         throw new Error("at getUsers()")
@@ -26,10 +26,10 @@ async function getUsers(search: any, options?: Object): Promise<User[]> {
     return result;
 }
 
-async function getUser(userId: string | ObjectId, options?: FindOptions<User>): Promise<User> {
+async function getUser(userId: string | ObjectId, options?: FindOptions<User>): Promise<User | null> {
 
     try {
-        return (await client.db(mainDBName).collection("users").findOne<User>({ _id: id(userId) }, options))!;
+        return (await client.db(mainDBName).collection("users").findOne<User>({ _id: id(userId), status: { $ne: "deleted" } }, options))!;
     } catch (e) {
         console.error(e);
         throw new Error("at getUser()")
@@ -74,7 +74,7 @@ async function byUsername(username: string, options?: Object): Promise<User> {
     let result = null;
 
     try {
-        result = await getUserPromise({ username }, options);
+        result = await getUserPromise({ username, status: { $ne: "deleted" } }, options);
     } catch (e) {
         console.error(e);
         throw new Error("at byUsername()")

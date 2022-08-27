@@ -94,7 +94,7 @@ export class InvitationsPage implements OnInit {
 
 
   async ngOnInit() {
-    this.list = await this.service.get("staff/invitations/get");
+    this.list = await this.service.get({}, "staff/invitations/get");
   }
 
 }

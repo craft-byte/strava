@@ -1,31 +1,12 @@
 interface ManagerSettings {
-    dishes: {
-        overview?: boolean;
-        add: boolean;
-        remove: boolean;
-    };
+    dishes: boolean;
+    components: boolean;
+    staff: boolean;
+    customers: boolean;
+    settings: boolean;
     work: {
         cook: boolean;
         waiter: boolean;
-    };
-    components: {
-        overview?: boolean;
-        add: boolean;
-        remove: boolean;
-    };
-    staff: {
-        overview?: boolean;
-        hire: boolean;
-        fire: boolean;
-        settings: boolean;
-    };
-    customers: {
-        blacklisting: boolean;
-    };
-    restaurant: {
-        overview?: boolean;
-        theme: boolean;
-        logo: boolean;
     };
 }
 interface CookSettings {

@@ -33,7 +33,7 @@ router.get("/", allowed("manager", "dishes"), async (req, res) => {
 
     res.send(result);
 });
-router.post("/", allowed("manager", "dishes", "add"), async (req, res) => {
+router.post("/", allowed("manager", "dishes"), async (req, res) => {
     console.log("HELLO?");
     const { restaurantId } = req.params;
     const { dish } = req.body;

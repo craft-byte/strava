@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoadService } from 'src/app/other/load.service';
+import { RouterService } from 'src/app/other/router.service';
 import { RestaurantService } from 'src/app/restaurant/services/restaurant.service';
 import { getImage } from 'src/functions';
 
@@ -23,13 +25,20 @@ export class InvitePage implements OnInit {
 
   constructor(
     private service: RestaurantService,
-    private router: Router, 
+    private router: RouterService,
+    private loader: LoadService, 
   ) { };
 
   find(e: any) {
 
     const { target: { value } } = e;
 
+    if(value.length < 4) {
+      return;
+    }
+
+    this.users = [];
+    
     clearTimeout(this.timeout);
 
     this.timeout = setTimeout(() => {
@@ -42,7 +51,7 @@ export class InvitePage implements OnInit {
 
     for(let i of result) {
       this.users.push(
-        Object.assign(i, { avatar: getImage(i.avatar) })
+        Object.assign(i, { avatar: getImage(i.avatar.binary) })
       );
     }
 
@@ -50,7 +59,7 @@ export class InvitePage implements OnInit {
   }
 
   invite(id: string) {
-    this.router.navigate(["restaurant", this.service.restaurantId, "people", "worker", id, "set-up"], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "people", "worker", id, "set-up"], { replaceUrl: true });
   }
 
   more() {
@@ -58,8 +67,8 @@ export class InvitePage implements OnInit {
   }
 
 
-  ngOnInit() {
-    
+  async ngOnInit() {
+    this.loader.end();
   }
 
 }

@@ -32,6 +32,7 @@ export class BankAccountPage implements OnInit {
     show: false,
     numberRed: false,
     routingRed: false,
+    errorMessage: "",
   }
 
   form: FormGroup;
@@ -118,6 +119,10 @@ export class BankAccountPage implements OnInit {
           message: "Filled data is incorrect",
           mode: "ios"
         })).present();
+      } else if(e.status == 400) {
+        if(e.body.reason == "no") {
+          this.ui.errorMessage = "Something went wrong, please try again.";
+        }
       }
     }
 

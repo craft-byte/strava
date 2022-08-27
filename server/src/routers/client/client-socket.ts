@@ -138,7 +138,7 @@ import { checkSession } from "./functions";
 
 
 function ClientSocket(socket: Socket) {
-  const subs = new Subject<ClientResponse>();
+  // const subs = new Subject<ClientResponse>();
 
   // socket.on("client/check", async () => {
   //   console.log("CONNECTION CHECK:", !!session);
@@ -357,7 +357,7 @@ function ClientSocket(socket: Socket) {
   // });
 
 
-  return subs;
+  // return subs;
 }
 
 

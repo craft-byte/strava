@@ -53,12 +53,12 @@
                     width: 36px;
                     height: 20px;
                     background-color: var(--purple-back);
+                    color: var(--purple-dark);
                     font-size: 14px;
                     border-radius: 5px;
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    color: var(--text-color);
                     margin-left: 8px;
                 }
                 .last4 {
@@ -77,6 +77,11 @@
             .title {
                 font-size: 18px;
                 color: var(--text-color);
+            }
+            .icon {
+                font-size: 22px;
+                color: var(--text-color);
+                margin-top: 6px;
             }
         }
         .one {
@@ -114,24 +119,7 @@
     }
     .stats {
         .money {
-            width: 50%;
-            height: auto;
-            border: 1px solid var(--border-color);
-            display: flex;
-            .chart {
-                width: 65%
-            }
-            .info {
-                width: 35%;
-                .title {
-                    width: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    font-size: 18px;
-                    font-weight: 550;
-                }
-            }
+            margin-top: 24px;
         }
     }
 }

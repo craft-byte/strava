@@ -47,6 +47,7 @@ export class AddressPage implements OnInit {
     postal: false,
     line1: false,
     line2: false,
+    errorMessage: "",
   }
 
 
@@ -126,6 +127,11 @@ export class AddressPage implements OnInit {
         })).present();
       }
     } catch (e) {
+      if(e.status == 400) {
+        if(e.body.reason == "postal_code") {
+          this.ui.errorMessage = "Invalid postal code";
+        }
+      }
       throw e;
     }
 
@@ -158,6 +164,9 @@ export class AddressPage implements OnInit {
       this.show = result;
       
     } catch (e) {
+      if(e.status == 403) {
+        return this.router.go(["user/info"]);
+      }
       throw e;
     }
     

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { HomePageRoutingModule } from './home-routing.module';
 import { NgxChartsModule } from "@swimlane/ngx-charts"
 import { HomePage } from './home.page';
+import { ChartsComponent } from './charts/charts.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,9 @@ import { HomePage } from './home.page';
     HomePageRoutingModule,
     NgxChartsModule
   ],
-  declarations: [HomePage]
+  declarations: [
+    HomePage,
+    ChartsComponent,
+  ],
 })
 export class HomePageModule {}

@@ -140,7 +140,7 @@ export class IngredientsComponent implements OnInit {
 
   async ngOnInit() {
     await this.loader.start();
-    this.components = await this.service.get("components");
+    this.components = await this.service.get({}, "components");
     this.loader.end();
   }
 

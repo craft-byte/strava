@@ -21,6 +21,7 @@ export class DobPage implements OnInit {
     year: false,
     month: false,
     day: false,
+    title: "Ctraba"
   }
 
   form: FormGroup;
@@ -41,11 +42,13 @@ export class DobPage implements OnInit {
       year: false,
       month: false,
       day: false,
+      title: "Ctraba"
     };
 
-    const { year, month, day } = this.form.value;
+    const { year, month, day } = this.form.value; 
 
     if(!this.form.valid) {
+      this.loader.end();
       return;  
     }
 
@@ -88,6 +91,8 @@ export class DobPage implements OnInit {
           message: "Filled data is incorrect.",
           color: "red",
         })).present();
+      } else if(error.status == 400) {
+        
       }
       this.loader.end();
     }
@@ -110,7 +115,7 @@ export class DobPage implements OnInit {
 
     this.form = new FormGroup({
       year: new FormControl(result.year || null, [Validators.max(new Date().getFullYear()), Validators.min(1900), Validators.required]),
-      month: new FormControl(result.month - 1 || null, [Validators.required]),
+      month: new FormControl(result.month - 1 || 0, [Validators.required]),
       day: new FormControl(result.day || null, [Validators.max(31), Validators.min(1), Validators.required]),
     });
 

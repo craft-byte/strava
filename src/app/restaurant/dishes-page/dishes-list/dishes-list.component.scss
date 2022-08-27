@@ -23,7 +23,14 @@
             button {
                 width: 36px;
                 height: 36px;
-                font-size: 22px;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                ion-icon {
+                    font-size: 22px;
+                    position: absolute;
+                }
             }
         }
         .list {

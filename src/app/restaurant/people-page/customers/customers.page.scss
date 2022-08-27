@@ -20,8 +20,7 @@
             padding-left: 8px;
             padding-right: 8px;
             .title {
-                font-size: 18px;
-                color: var(--text-color);
+                font-size: 20px;
             }
             .buttons {
                 display: flex;
@@ -35,7 +34,9 @@
                     justify-content: center;
                     align-items: center;
                     color: white;
-                    font-size: 20px;
+                    ion-icon {
+                        font-size: 20px;
+                    }
                     &:hover {
                         background-color: var(--ion-color-red-shade);
                     }
@@ -47,10 +48,12 @@
                     border-top-right-radius: 8px;
                     border-bottom-right-radius: 8px;
                     display: flex;
-                    font-size: 20px;
                     justify-content: center;
                     align-items: center;
                     color: white;
+                    ion-icon {
+                        font-size: 20px;
+                    }
                     &:hover {
                         background-color: var(--ion-color-green-shade);
                     }
@@ -59,6 +62,26 @@
         }
         .list {
             display: flex;
+            overflow-x: scroll;
+            white-space: nowrap;
+            scrollbar-width: auto;
+            scrollbar-color: var(--gray) transparent;
+            padding-bottom: 18px;
+
+
+            &::-webkit-scrollbar {
+                width: 10px;
+                height: 6px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: var(--gray);
+                border-radius: 10px;
+            }
             .table {
                 margin-left: 8px;
                 padding-top: 8px;
@@ -79,73 +102,85 @@
             }
         }
     }
-    .list {
-        .grid {
-            display: grid;
-            grid-template-columns: 10% 30% 25% 25% 10%;
-        }
-        .example {
+    .customers {
+        .top {
             height: 52px;
-            border-bottom: 1px solid var(--border-color);
-            div {
-                color: var(--text-color);
-                font-size: 18px;
-                display: flex;
-                align-items: center;
-            }
-        }
-        .customer {
-            height: 52px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            &:hover {
-                background-color: rgb(250, 250, 250);
-            }
-            .avatar {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 52px;
-                img {
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 100%;
-                    object-fit: cover;
-                }
-            }
-            .name,.total,.visit {
-                display: flex;
-                align-items: center;
-                padding-left: 6px;
-            }
-            .total,.visit {
-                color: var(--text-color);
-                font-size: 17px;
-            }
-            .name {
-                font-size: 18px;
-                .red {
-                    color: var(--red);
-                    font-weight: 550;
-                }
-                p {
-                    margin: 0;
-                }
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            // border-bottom: 1px solid var(--border-color);
+            .title {
+                font-size: 20px;
             }
             .buttons {
                 display: flex;
-                justify-content: center;
                 align-items: center;
+                .last-update {
+                    color: var(--text-color);
+                    font-size: 14px;
+                }
                 button {
-                    height: 42px;
-                    width: 42px;
-                    border-radius: 100%;
-                    background: none;
+                    margin-left: 12px;
+                }
+            }
+        }
+        .list {
+            .example {
+                display: grid;
+                grid-template-columns: 10% 25% 20% 25% 20%;
+                height: 42px;
+                border-bottom: 1px solid var(--border-color);
+                div {
+                    font-size: 18px;
+                    color: var(--text-color);
                     display: flex;
                     align-items: center;
+                }
+            }
+            .customer {
+                display: grid;
+                grid-template-columns: 10% 25% 20% 25% 20%;
+                height: 52px;
+                border-bottom: 1px solid var(--border-color);
+                .avatar {
+                    display: flex;
                     justify-content: center;
-                    ion-icon {
-                        font-size: 24px;
+                    align-items: center;
+                    img {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 100%;
+                    }
+                }
+                .name,.orders,.last-visit,.total {
+                    font-size: 18px;
+                    color: var(--text-color);
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .app {
+        .customers {
+            .list {
+                .example {
+                    grid-template-columns: 30% 20% 25% 25%;
+                    .name,.orders,.last-visit,.total {
+                        font-size: 16px;
+                    }
+                    .avatar {
+                        display: none;
+                    }
+                }
+                .customer {
+                    grid-template-columns: 30% 20% 25% 25%;
+                    .avatar {
+                        display: none;
                     }
                 }
             }
