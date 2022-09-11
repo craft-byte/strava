@@ -190,7 +190,7 @@ router.post("/create", logged, email, async (req, res) => {
         },
         customers: {
             maxDishes: 10,
-            allowDistanceOrders: true,
+            allowTakeAway: true,
             trust: 1,
             maxCustomers: 10,
             maxPrice: "unlimited",

@@ -1,0 +1,94 @@
+.app {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999999999;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    .body {
+        width: 90vw;
+        height: 55vh;
+        border-radius: 8px;
+        background-color: white;
+
+        .header {
+            width: 100%;
+            height: 42px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            background-color: var(--orange);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .close {
+                height: 42px;
+                width: 42px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: none;
+                ion-icon {
+                    font-size: 24px;
+                }
+            }
+            .full-dish {
+                height: 42px;
+                background: none;
+                display: flex;
+                align-items: center;
+                width: auto;
+                padding-right: 8px;
+                font-size: 18px;
+            }
+            .title {
+                font-size: 18px;
+                font-weight: 550;
+                color: black;
+            }
+        }
+
+        .list {
+            .one {
+                height: 52px;
+                border-bottom: 1px solid rgb(224, 224, 224);
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 8px;
+                
+                .comment {
+                    color: black;
+
+                    button {
+                        width: 142px;
+                    }
+                }
+                .remove {
+                    button.red-button {
+                        width: 28px;
+                        height: 28px;
+                        border-radius: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        ion-icon {
+                            color: white;
+                            position: absolute;
+                            font-size: 22px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+.app {
+    .title {
+        display: flex;
+        align-items: center;
+        padding-left: 12px;
+        height: 52px;
+        .text {
+            font-size: 20px;
+            color: var(--text-color);
+            font-weight: 550;
+        }
+    }
+    .list {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 24px;
+        padding-bottom: 124px;
+    }
+}

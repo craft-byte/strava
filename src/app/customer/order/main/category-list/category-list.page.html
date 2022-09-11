@@ -1,0 +1,10 @@
+<div class="app">
+  <div class="title">
+    <span class="text">
+      {{ category }}
+    </span> 
+  </div>
+  <div class="list">
+    <app-dish *ngFor="let i of dishes" [dish]="i" [useLast]="true"></app-dish>
+  </div>
+</div>

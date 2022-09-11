@@ -1,0 +1,16 @@
+<div class="app" [@showUp]>
+    <div class="body">
+        <div class="header">
+            <button (click)="close()" id="close">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                Comment for {{ name }}
+            </div>
+            <button id="save" (click)="save()">Save</button>
+        </div>
+        <div class="content">
+            <textarea #focushere placeholder="Type here" [(ngModel)]="comment"></textarea>
+        </div>
+    </div>
+</div>

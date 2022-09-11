@@ -227,7 +227,7 @@ router.post("/dish/:orderDishId/take", async (req, res) => {
     });
 
     if(update.order.socketId) {
-        sendMessage([update.order.socketId], "client", {
+        sendMessage([update.order.socketId], "customer", {
             type: "customer/dish/status",
             data: {
                 orderDishId,
@@ -248,7 +248,7 @@ router.delete("/dish/:orderDishId/done", async (req, res) => {
         },
     }, {
         arrayFilters: [ { "dish._id": id(orderDishId) } ],
-        projection: { dishes: { status: 1, dishId: 1, _id: 1, } },
+        projection: { socketId: 1, dishes: { status: 1, dishId: 1, _id: 1, } },
         returnDocument: "before",
     });
 
@@ -276,17 +276,6 @@ router.delete("/dish/:orderDishId/done", async (req, res) => {
                     Restaurant(restaurantId).components.substract(i._id, i.amount);
                 }
             }
-            if(order.socketId) {
-                sendMessage([order.socketId], "client", {
-                    type: "customer/dish/status",
-                    data: {
-                        dishName: dish?.name,
-                        orderId,
-                        orderDishId,
-                        status: 3,
-                    }
-                });
-            }
         }
     } else {
         console.log("HOW NO DISH? staff/kitchen/order.ts    /dish/:orderDishId/done");
@@ -295,6 +284,14 @@ router.delete("/dish/:orderDishId/done", async (req, res) => {
     res.send({ success: update1.ok == 1 });
 
 
+    sendMessage([order.socketId], "customer", {
+        type: "customer/dish/status",
+        data: {
+            orderId,
+            orderDishId,
+            status: 3,
+        }
+    });
     sendMessage([`${restaurantId}/kitchen`], "kitchen", {
         type: "kitchen/dish/done",
         data: {
@@ -323,7 +320,7 @@ router.delete("/dish/:orderDishId/quit", async (req, res) => {
         },
     }, {
         arrayFilters: [ { "dish._id": id(orderDishId) } ],
-        projection: { _id: 1, },
+        projection: { _id: 1, socketId: 1 },
     });
 
 
@@ -335,6 +332,15 @@ router.delete("/dish/:orderDishId/quit", async (req, res) => {
         data: {
             orderId,
             orderDishId
+        },
+    });
+
+    sendMessage([update1.order.socketId], "customer", {
+        type: "customer/dish/status",
+        data: {
+            orderId,
+            orderDishId,
+            status: 1,
         },
     });
 });

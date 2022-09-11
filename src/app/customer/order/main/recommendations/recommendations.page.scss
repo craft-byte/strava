@@ -1,0 +1,11 @@
+.app {
+    padding-top: 32px;
+    background-color: rgb(250,250,250);
+    padding-bottom: 124px;
+    .list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+    }
+}

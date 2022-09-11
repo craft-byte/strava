@@ -1,0 +1,47 @@
+<button (click)="back()" id="close">
+  <ion-icon name="close"></ion-icon>
+</button>
+<ion-content>
+  <div class="app">
+    <div class="scanner" *ngIf="ui.showScanner">
+      <div class="vid">
+        <video #video [hidden]="!ui.showScan"></video>
+      </div>
+      <div class="buttons" *ngIf="!ui.showScan">
+        <button class="orange-button" (click)="startScan()"><ion-icon name="refresh"></ion-icon>re-scan</button>
+      </div>
+    </div>
+    
+    
+    <div *ngIf="ui.showOther" class="other">
+      <div class="select">
+        <div class="title">
+          Select restaurant
+        </div>
+        <div class="list">
+          <div *ngFor="let i of restaurants" (click)="selectRestaurant(i._id)" class="restaurant">
+            <div class="name">
+              {{ i.name }}
+            </div>
+            <div class="address">
+              <div class="city">
+                {{ i.info.city }}
+              </div>
+              <div class="line">
+                {{ i.info.line1 }}
+              </div>
+              <div class="line">
+                {{ i.info.line2 }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+
+
+
+<canvas #canvas hidden></canvas>

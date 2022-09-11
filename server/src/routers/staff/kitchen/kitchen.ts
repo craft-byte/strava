@@ -29,7 +29,8 @@ interface Dish {
         io.in(socketId).socketsJoin(`${restaurantId}/kitchen`);
     }
 
-    const orders = await Orders(restaurantId).many({}, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1 } } });
+    const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1 } } });
+
 
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, }, time: 1, general: 1 });
 
@@ -102,26 +103,6 @@ interface Dish {
 //     res.send(result);
 // });
 
-router.get("/delayed", async (req, res) => {
-    const { restaurantId } = req.params as any;
-
-    const allOrderDishes: Dish[] = (await Orders(restaurantId).aggregate([
-        { $unwind: "$orders" },
-        { $unwind: "$orders.dishes" },
-        {
-            $project: {
-                orderId: "$orders._id",
-                dishId: "$orders.dishes.dishId",
-                _id: "$orders.dishes._id",
-                time: "$orders.time",
-                taken: "$orders.dishes.taken",
-            }
-        },
-    ]) as Dish[]);
-
-
-    res.send(allOrderDishes.sort((a, b) => a.time - b.time).splice(0, 4));
-});
 
 router.get("/dish/:dishId", async (req, res) => {
     const { restaurantId, dishId } = req.params as any;

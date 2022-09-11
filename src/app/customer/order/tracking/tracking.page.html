@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar [color]="theme">
+    <ion-buttons slot="start">
+        <ion-button (click)="back()"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>Your order</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="app">
+        <div *ngFor="let i of data?.orders" class="order">
+            <div class="title">
+                <span class="title">
+                    {{ i.type }}
+                </span>
+                <span class="number">
+                    #{{ i.id }}
+                </span>
+            </div>
+            <div class="dishes">
+                <div class="list">
+                    <div *ngFor="let dish of i.dishes" class="dish">
+                        <div class="image">
+                            <img [src]="data.dishes[dish.dishId].image" alt="">
+                        </div>
+                        <div class="bottom">
+                            <div class="name">
+                                {{ data.dishes[dish.dishId].name }}
+                            </div>
+                            <div class="status"
+                                [class.status-badge-gray]="dish.status == 'ordered'"
+                                [class.status-badge-green]="dish.status == 'served'"
+                                [class.status-badge-red]="dish.status == 'removed'"
+                                [class.status-badge-purple]="dish.status == 'cooking'"
+                                [class.status-badge-orange]="dish.status == 'cooked'">
+                                <span class="waiting" *ngIf="dish.status == 'ordered'">
+                                    waiting
+                                </span>
+                                <span class="other" *ngIf="dish.status != 'ordered'">
+                                    {{ dish.status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-content>

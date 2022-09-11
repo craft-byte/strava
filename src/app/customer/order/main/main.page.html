@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar [color]="theme">
+    <ion-title (click)="recommendations()">{{ restaurantName }}</ion-title>
+  </ion-toolbar>
+  <ion-buttons slot="end">
+    <ion-button>Back</ion-button>
+  </ion-buttons>
+</ion-header>
+
+<ion-content>
+  <div class="types">
+    <app-category *ngFor="let i of categories" [data]="i"></app-category>
+  </div>
+  <div class="tracking" *ngIf="ui.showTracking">
+    <button (click)="tracking()"> <span class="text">Track your order</span> <ion-icon name="arrow-forward-outline"></ion-icon></button>
+  </div>
+  <div class="dishes">
+    <router-outlet></router-outlet>
+  </div>
+
+  <ion-fab-button id="see-order" [color]="theme" (click)="open()">
+    <ion-icon name="cart-outline"></ion-icon>
+  </ion-fab-button>
+
+</ion-content>
+
+<ng-container #previewContainer></ng-container>

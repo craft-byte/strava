@@ -45,12 +45,12 @@ export class LoadService {
     if(this.cur) {
       clearTimeout(this.timeout);
       setTimeout(() => {
-        this.cur.remove();
+        this.cur.dismiss();
         this.cur = null;
       }, 250);
     }
   }
-  async start() {
+  async start(long = false) {
     if(this.cur) {
       return;
     }
@@ -62,7 +62,7 @@ export class LoadService {
 
     this.timeout = setTimeout(() => {
       this.end();
-    }, 5000);
+    }, long ? 300000 : 5000);
     await this.cur.present();
   }
 

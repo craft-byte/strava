@@ -325,11 +325,13 @@ input[type=number] {
 
 @media screen and (max-width: 460px) {
     .a-page-with-box {
+        padding-top: 120px;
         margin-bottom: 164px;
 
         .box {
             width: 99vw;
             padding: 12px;
+            border: none;
         }
 
         .footer {
@@ -342,7 +344,7 @@ input[type=number] {
     
 }
 
-@media screen and(min-width: 624px) {
+@media screen and (min-width: 624px) {
     .modal-width {
         --width: 624px;
 

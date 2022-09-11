@@ -1,0 +1,14 @@
+<div class="app">
+  <div class="header">
+    <button (click)="exit()" id="exit">
+      <ion-icon name="close"></ion-icon>
+    </button>
+    <div class="title">
+      Add comment
+    </div>
+    <button (click)="save()" id="save">Save</button>
+  </div>
+  <div class="content">
+    <textarea id="comment" #theTextarea placeholder="Comment for your order"  [(ngModel)]="comment"></textarea>
+  </div>
+</div>

@@ -143,12 +143,12 @@
           </div>
         </div>
       </div>
-      <div class="setting allowDistanceOrders">
+      <div class="setting allowTakeAway">
         <div class="title">Allow distance orders</div>
         <div class="value">
           <ion-item>
-            <ion-select interface="popover" (ionChange)="select('customers', 'allowDistanceOrders', $event)" mode="ios"
-              [value]="settings.customers.allowDistanceOrders.toString()" id="allow-distance-orders">
+            <ion-select interface="popover" (ionChange)="select('customers', 'allowTakeAway', $event)" mode="ios"
+              [value]="settings.customers.allowTakeAway.toString()" id="allow-distance-orders">
               <ion-select-option value="true">Allowed</ion-select-option>
               <ion-select-option value="false">Not allowed</ion-select-option>
             </ion-select>

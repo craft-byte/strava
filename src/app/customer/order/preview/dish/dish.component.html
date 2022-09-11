@@ -1,0 +1,34 @@
+<div class="app" *ngIf="show" [@showUp]>
+  <div class="body">
+    <div class="header">
+      <button (click)="close()" class="close">
+        <ion-icon name="close"></ion-icon>
+      </button>
+      <div class="title" *ngIf="dish">
+        {{ dish.name }}
+      </div>
+      <button (click)="fullDish()" class="full-dish">
+        See dish
+      </button>
+    </div>
+    <div class="list" *ngIf="dish">
+      <div *ngFor="let i of dishes" class="one">
+        <div class="comment">
+          <span (click)="addComment(i._id, i.comment)" *ngIf="i.comment && i.comment.length > 0" class="text">
+            {{ i.comment }}
+          </span>
+          <button (click)="addComment(i._id, i.comment)" *ngIf="!i.comment || i.comment.length == 0" class="purple-button">
+            Add comment
+          </button>
+        </div>
+        <div class="remove">
+          <button (click)="remove(i._id)" class="red-button">
+            <ion-icon name="remove-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-container #commentModalContainer></ng-container>

@@ -1,0 +1,86 @@
+<div class="app" [@slideInOut] (click)="close()">
+  <div class="content" (click)="$event.stopPropagation()">
+    <div class="header">
+      <button (click)="close()" class="close">
+        <ion-icon name="close"></ion-icon>
+      </button>
+      <div class="title">
+        {{ order.dishesQuantity }} dishes
+      </div>
+      <div class="icon">
+        <ion-icon slot="end" size="large" *ngIf="order.type == 'out'" name="bag-outline"></ion-icon>
+        <ion-icon slot="end" size="large" *ngIf="order.type == 'in'" name="restaurant-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="place">
+      <div class="box">
+        <button (click)="place('in')" class="option" [class.a]="order.type == 'in'">
+          Inside
+        </button>
+        <button *ngIf="order.showOut" (click)="place('out')" class="option" [class.a]="order.type == 'out'">
+          Take away
+        </button>
+      </div>
+    </div>
+    <div class="info" *ngIf="order.type == 'in'">
+      <div class="content" *ngIf="order.id">
+        <div class="title">
+          <span class="text">
+            Table #{{order.id}}
+          </span>
+        </div>
+        <div class="button">
+          <button (click)="table()" class="orange-button">Change<ion-icon name="qr-code-outline"></ion-icon></button>
+        </div>
+      </div>
+      <div class="scan-qr" [class.red]="ui.redTable" *ngIf="!order.id">
+        <button (click)="table()" class="orange-button table">
+          Select table
+        </button>
+        <div class="or">or</div>
+        <button (click)="place('out')" class="orange-button" *ngIf="order.showOut">
+          Take away
+        </button>
+      </div>
+    </div>
+    <div class="dishes">
+      <div class="list" *ngIf="order.dishes.length > 0">
+        <div *ngFor="let i of order.dishes" (click)="seeAllDishes(i._id)" class="dish">
+          <div class="name">
+            {{ i.name }}
+          </div>
+          <div class="price">
+            <span class="amount">
+              ${{ i.price / 100 }}
+            </span>
+            <span>
+              x
+            </span>
+            <span class="quantity">
+              {{ i.quantity }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="order.dishes.length == 0" class="no-dishes">
+        <div class="title">
+          <span class="text" [class.red]="ui.redDishes">
+            No chosen dishes
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="comment">
+      <div class="title"><span class="text">Add comment</span></div>
+      <textarea id="order-comment" #commentTextarea (click)="comment()" [value]="order.comment" placeholder="Comment..." cols="30" rows="10"></textarea>
+    </div>
+    <div class="pay">
+      <button (click)="pay()" class="{{theme}}-button">PAY</button>
+    </div>
+  </div>
+</div>
+
+
+<ng-container #dishModalContainer></ng-container>
+<ng-container #commentModalContainer></ng-container>
+<ng-container #tableConfirmModalContainer></ng-container>

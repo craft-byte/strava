@@ -5,10 +5,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoggedGuard } from './guards/logged.guard';
 import { RestaurantGuard } from './guards/restaurant.guard';
 import { LoginGuard } from './guards/login.guard';
-import { loadavg } from 'os';
 import { StaffGuard } from './guards/staff.guard';
 import { KitchenSocketIdGuard } from './guards/kitchen-socket-id.guard';
 import { WaiterSocketIdGuard } from './guards/waiter-socket-id.guard';
+import { OrderGuard } from './guards/order.guard';
 
 
 
@@ -95,8 +95,6 @@ const user: Routes = [
     canActivate: [LoggedGuard],
   },
 ];
-
-
 const restaurant: Routes = [
   {
     path: "restaurant/:restaurantId",
@@ -120,8 +118,6 @@ const restaurant: Routes = [
     canActivate: [LoggedGuard, RestaurantGuard],
   },
 ];
-
-
 const staff: Routes = [
   {
     path: "staff/:restaurantId/dashboard",
@@ -139,6 +135,33 @@ const staff: Routes = [
     canActivate: [LoggedGuard, StaffGuard, WaiterSocketIdGuard],
   }
 ];
+const customer: Routes = [
+  {
+    path: "customer",
+    loadChildren: () => import("./customer/customer.module").then(m => m.CustomerPageModule),
+    canActivate: [LoggedGuard]
+  },
+  {
+    path: "customer/order/:restaurantId",
+    loadChildren: () => import("./customer/order/main/main.module").then(m => m.MainPageModule),
+    canActivate: [LoggedGuard, OrderGuard],
+  },
+  {
+    path: "customer/order/:restaurantId/dish/:dishId",
+    loadChildren: () => import("./customer/order/dish/dish.module").then(m => m.DishPageModule),
+    canActivate: [LoggedGuard, OrderGuard],
+  },
+  {
+    path: "customer/order/:restaurantId/checkout",
+    loadChildren: () => import("./customer/order/checkout/checkout.module").then(m => m.CheckoutPageModule),
+    canActivate: [LoggedGuard, OrderGuard],
+  },
+  {
+    path: 'customer/tracking/:restaurantId',
+    loadChildren: () => import('./customer/order/tracking/tracking.module').then( m => m.TrackingPageModule),
+    canActivate: [LoggedGuard, OrderGuard],
+  },
+];
 
 
 const routes: Routes = [
@@ -146,46 +169,14 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import("./ctraba/main/main.module").then(m => m.MainPageModule)
   },
-  // {
-  //   path: 'stripe-account',
-  //   loadChildren: () => import('./user/add-restaurant/stripe-account/stripe-account.module').then( m => m.StripeAccountPageModule),
-  //   canActivate: [LoggedGuard]
-  // },
   ...staff,
   ...user,
   ...restaurant,
+  ...customer,
   {
     path: "**",
     redirectTo: "user/info"
-  },  {
-    path: 'full-order',
-    loadChildren: () => import('./staff/full-order/full-order.module').then( m => m.FullOrderPageModule)
   },
-
-  // {
-  //   path: 'dashboard',
-  //   loadChildren: () => import('./staff/dashboard/dashboard.module').then( m => m.DashboardPageModule)
-  // },
-  // {
-  //   path: 'theme',
-  //   loadChildren: () => import('./user/add-restaurant/theme/theme.module').then( m => m.ThemePageModule)
-  // },
-  // {
-  //   path: 'account',
-  //   loadChildren: () => import('./user/account/account.module').then( m => m.AccountPageModule)
-  // },
-  // {
-  //   path: 'name',
-  //   loadChildren: () => import('./user/registration/name/name.module').then( m => m.NamePageModule)
-  // },
-  // {
-  //   path: 'avatar',
-  //   loadChildren: () => import('./user/registration/avatar/avatar.module').then( m => m.AvatarPageModule)
-  // },
-  // {
-  //   path: 'bank-account',
-  //   loadChildren: () => import('./user/add-restaurant/bank-account/bank-account.module').then( m => m.BankAccountPageModule)
-  // },
 ];
   
 @NgModule({

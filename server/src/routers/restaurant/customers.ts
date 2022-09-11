@@ -29,7 +29,7 @@ interface Customer {
     for(let i = 0; i < restaurant!.tables!; i++) {
         qrCodes.push({
             table: i + 1,
-            downloadUrl: `https://localhost:8101/order/${restaurant!._id.toString()}?table=${i + 1}`
+            downloadUrl: `https://ctraba.com/customer/order/${restaurant!._id.toString()}?table=${i + 1}`
         });
     }
 

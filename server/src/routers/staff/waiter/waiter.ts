@@ -177,7 +177,7 @@ router.delete("/:orderId/dish/:orderDishId/served", async (req, res) => {
     });
     
     if(result.order.socketId) {
-        sendMessage([result.order.socketId], "client", {
+        sendMessage([result.order.socketId], "customer", {
             type: "customer/dish/status",
             data: {
                 orderDishId,

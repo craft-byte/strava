@@ -44,6 +44,11 @@ export class ChartsComponent implements OnInit {
 
     console.log(result);
 
+    if(!result) {
+        this.chart.showChart = false;
+        return;
+    }
+
     this.chart.multi = [result];
     if(result) {
       this.chart.showChart = true;

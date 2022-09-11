@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { IonPopover, ModalController, PopoverController, ToastController } from '@ionic/angular';
+import { ModalController, PopoverController, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantSettings } from 'src/models/components';
-import { threadId } from 'worker_threads';
 import { RestaurantService } from '../services/restaurant.service';
-import { ContinueRegistrationPopoverComponent } from './continue-registration-popover/continue-registration-popover.component';
 import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page';
 
 @Component({
@@ -32,7 +29,6 @@ export class SettingsPage implements OnInit {
     private service: RestaurantService,
     private toastCtrl: ToastController,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController,
   ) { };
 
 
@@ -44,30 +40,6 @@ export class SettingsPage implements OnInit {
   continueRegistration() {
     this.router.go(["restaurant", this.service.restaurantId, "home"]);
   }
-
-  // async showContinue(event: any) {
-  //   console.log("HELLO");
-  //   // if(!this.continuePopover) {
-  //     this.continuePopover = await this.popoverCtrl.create({
-  //       event,
-  //       component: ContinueRegistrationPopoverComponent,
-  //       cssClass: "continue-popover",
-  //       id: "the-id",
-  //       mode: "ios",
-  //       showBackdrop: false,
-  //       componentProps: {
-  //         restaurantId: this.service.restaurantId
-  //       }
-  //     });
-
-  //   await this.continuePopover.present();
-  // }
-
-  // removeContinue() {
-  //   console.log("LEAVE");
-  //   this.popoverCtrl.dismiss(null, null, "the-id");
-  // }
-
   
 
 

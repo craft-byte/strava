@@ -1,0 +1,21 @@
+<div class="app" [@showUp]>
+  <div class="body">
+    <div class="header">
+      <button class="close" (click)="close()">
+        <ion-icon name="close"></ion-icon>  
+      </button>
+      <div class="title">
+        Add comment
+      </div>
+      <button class="add" (click)="add()">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </div>
+    <div class="content">
+      <ion-item>
+        <ion-label position="floating">Comment</ion-label>
+        <ion-textarea [(ngModel)]="newComment"></ion-textarea>
+      </ion-item>
+    </div>
+  </div>
+</div>

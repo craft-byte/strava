@@ -5,7 +5,7 @@ import { getUserPromise } from "./users";
 
 
 
-function sendMessage(to: string[], event: "client" | "kitchen" | "waiter", data: any) {
+function sendMessage(to: string[], event: "customer" | "kitchen" | "waiter", data: any) {
     for(let i of to) {
         io.to(i).emit(event, data);
     }

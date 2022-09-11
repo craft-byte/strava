@@ -61,6 +61,9 @@ export class UserInfoPage implements OnInit {
       this.router.go(["user/avatar/2"], { replaceUrl: true });
     }
   }
+  map() {
+    this.router.go(["customer", "map"]);
+  }
   goWork(restaurantId: string) {
     this.router.go(["staff", restaurantId, "dashboard"], { replaceUrl: true });
   }

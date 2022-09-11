@@ -59,7 +59,7 @@ export class CustomersPage implements OnInit {
 
     this.qrCodes.push({
       table: this.qrCodes.length + 1,
-      link: `https://localhost:8101/order/${this.service.restaurantId}?table=${this.qrCodes.length + 1}`,
+      link: `https://ctraba.com/customer/order/${this.service.restaurantId}?table=${this.qrCodes.length + 1}`,
       downloadUrl: null
     });
 
@@ -118,7 +118,7 @@ export class CustomersPage implements OnInit {
     for(let i of result.qrCodes) {
       this.qrCodes.push({
         ...i,
-        link: `https://localhost:8101/order/${this.service.restaurantId}?table=${i.table}`
+        link: `https://ctraba.com/customer/order?restaurantId=${this.service.restaurantId}&table=${i.table}`
       });
     }
     if(!result) {

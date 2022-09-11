@@ -1,3 +1,4 @@
+import { LargeNumberLike } from "crypto";
 import { ObjectId } from "mongodb";
 import { Component, Cooking, Order, Feedback, Invitation, RestaurantSettings, Table, Id } from "./components";
 import { Worker } from "./worker";
@@ -99,7 +100,7 @@ interface User {
     restaurants?: { restaurantId: ObjectId; stripeAccountId?: string; role: "manager" | "staff" | "owner" | "manager:working"; }[];
     password?: string;
     phone?: string;
-    orders?: any[];
+    orders?: { restaurantId: ObjectId; orderId: ObjectId; }[];
     created?: Date;
     emailVerificationCode?: number;
     emailVerify?: string;
@@ -132,7 +133,13 @@ interface Order {
     id: string;
     ordered?: number;
     connected?: number;
+    comment?: string;
 
+    money?: {
+        hst: number;
+        subtotal: number;
+        total: number;
+    }
     done?: {
         feedback?: {
             text?: string;

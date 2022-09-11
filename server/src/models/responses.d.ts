@@ -13,16 +13,16 @@ import {
     WaiterNewDish,
 } from "./other";
 
-interface ClientResponse {
-    type: 
-        "access"
-        | "kitchen/order/new"
-        | "notification"
-        | "connection/error"
-        | "connection/success"
-        | "customer/order/submited"
-        | "customer/dish/error"
-        | "customer/connection",
+interface CustomerResponse {
+    type: number;
+        // "access"
+        // | "kitchen/order/new"
+        // | "notification"
+        // | "connection/error"
+        // | "connection/success"
+        // | "customer/order/submited"
+        // | "customer/dish/error"
+        // | "customer/connection",
     data?: any;
     send: string[];
     event?: "kitchen" | "waiter";

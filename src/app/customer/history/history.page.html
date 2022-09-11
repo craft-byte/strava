@@ -1,0 +1,64 @@
+<ion-content>
+    <div class="app">
+        <div *ngIf="orders?.length == 0" class="no-orders">
+            <span class="text">
+                You have not ordered with Strava yet
+            </span>
+            <ion-icon name="flower-outline"></ion-icon>
+        </div>
+        <div *ngIf="orders && orders.length > 0" class="list">
+            <div *ngFor="let i of orders" class="order">
+                <div class="top">
+                    <div class="restaurant">
+                        {{ i.restaurant.name }}
+                    </div>
+                    <div class="status">
+                        {{ i.order.status }}
+                    </div>
+                </div>
+                <div class="info">
+                    <div class="type">
+                        <span class="title">
+                            {{ i.order.type }}
+                        </span>
+                        <span class="id">
+                            {{ i.order.id }}
+                        </span>
+                    </div>
+                    <div class="dishes">
+                        Dishes ordered: <span class="count">{{ i.order.dishes }}</span>
+                    </div>
+                </div>
+                <div class="money">
+                    <div class="subtotal">
+                        <div class="title">
+                            Subtotal
+                        </div>
+                        <div class="border"></div>
+                        <div class="amount">
+                            {{ i.order.money.subtotal }}
+                        </div>
+                    </div>
+                    <div class="hst">
+                        <div class="title">
+                            HST
+                        </div>
+                        <div class="border"></div>
+                        <div class="amount">
+                            {{ i.order.money.hst }}
+                        </div>
+                    </div>
+                    <div class="total">
+                        <div class="title">
+                            Total
+                        </div>
+                        <div class="border"></div>
+                        <div class="amount">
+                            {{ i.order.money.total }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-content>

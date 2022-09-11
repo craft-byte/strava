@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar [color]="theme">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>
+      Select table
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="showOrderButton" (click)="order()">Take away</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="app">
+    <div class="list">
+      <div (click)="select(i)" *ngFor="let i of tables" [class.taken]="i.taken" class="table">
+        {{ i.id }}
+      </div>
+    </div>
+  </div>
+</ion-content>

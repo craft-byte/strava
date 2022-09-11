@@ -1,0 +1,19 @@
+.app {
+    .no-orders {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        height: 50vh;
+        ion-icon {
+            color: var(--gray);
+            font-size: 42px;
+            margin-top: 24px;
+        }
+        .text {
+            color: var(--text-color);
+            font-size: 18px;
+        }
+    }
+}

@@ -27,6 +27,7 @@ import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
 import { Restaurant } from "./utils/restaurant";
 import { SocketIO } from "./utils/io";
+import { CustomerRouter } from "./routers/customer";
 
 export const MODE = process.argv[2] as "testing" | "prod" | "dev";
 
@@ -171,7 +172,8 @@ async function main(client: MongoClient) {
         app.use("/api/user", UserRouter);
         app.use("/api/restaurant/:restaurantId", logged, RadminRouter);
         app.use("/api/staff", StaffRouter);
-        app.use("/api/client", ClientRouter);
+        // app.use("/api/client", ClientRouter);        //// REMOVE CLIENT FOLDER AND client.ts
+        app.use("/api/customer", logged, CustomerRouter);
         app.use("/api/stripe", StripeRouter);
 
         app.get("**", (req, res) => {

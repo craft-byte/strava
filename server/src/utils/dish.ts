@@ -91,6 +91,14 @@ class DishHashTableUltra {
         }
         return ext;
     }
+
+    add(dishes: Dish[]) {
+        for(let i of dishes) {
+            if(!this.table[i._id.toString()]) {
+                this.table[i._id.toString()] = i;
+            }
+        }
+    }
 }
 
 

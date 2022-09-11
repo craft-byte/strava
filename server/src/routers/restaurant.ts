@@ -215,7 +215,7 @@ interface Chart {
     const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: weekAgo } }, { projection: { ordered: 1, dishes: { dishId: 1 } } })).toArray();
 
     if(orders.length == 0) {
-        return res.send([]);
+        return res.send(null);
     }
 
     const dishes = new DishHashTableUltra(restaurantId, { price: 1 });

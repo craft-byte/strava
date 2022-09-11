@@ -1,7 +1,8 @@
 {
   "name": "ctraba",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {},
+    "cordova": {}
   },
   "type": "angular"
 }

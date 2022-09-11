@@ -1,0 +1,50 @@
+.app {
+    .scanner {
+        width: 100%;
+        height: 45vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(235, 235, 235);
+        flex-direction: column;
+        .vid {
+            border-radius: 8px;
+            width: 208px;
+            height: 208px;
+            video {
+                border: 2px solid var(--orange);
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+        }
+        .buttons {
+            margin-top: 12px;
+        }
+    }
+    .list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 12px;
+        gap: 24px;
+
+        .table {
+            height: 124px;
+            border-radius: 8px;
+            background-color: rgb(250, 250, 250);
+            border: 1px solid rgb(231, 231, 231);
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .taken {
+            border: 2px solid var(--orange);
+        }
+        .selected {
+            border: 2px solid var(--green);
+        }
+    }
+}

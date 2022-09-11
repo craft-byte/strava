@@ -31,7 +31,7 @@ router.get("/restaurant/:restaurantId", async (req, res) => {
         return res.sendStatus(404);
     }
 
-    result.canDoOrder = restaurant.settings!.customers.allowDistanceOrders!;
+    result.canDoOrder = restaurant.settings!.customers.allowTakeAway!;
     result.restaurant = {
         name: restaurant.name!,
         _id: restaurant._id,

@@ -1,0 +1,20 @@
+.app {
+    .list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding: 12px;
+        .table {
+            border: 1px solid rgb(223, 223, 223);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 96px;
+            font-size: 18px;
+        }
+        .taken {
+            border: 2px solid var(--orange);
+        }
+    };
+}

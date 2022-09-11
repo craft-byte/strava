@@ -40,6 +40,15 @@
           </button>
         </div>
 
+        <div class="map">
+          <div class="block-header">
+            Restaurants near you
+          </div>
+          <button (click)="map()" id="go-map" class="orange-button">
+            Explore<ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
+
         <div class="add-restaurant" *ngIf="ui.showAdd">
           <div class="title">
             <h1>Add restaurant</h1>

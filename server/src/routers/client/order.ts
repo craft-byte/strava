@@ -402,15 +402,6 @@ router.post("/session/confirm", async (req, res) => {
     }
 
 
-    // const sessionUpdate = await Restaurant(restaurantId).update(
-    //     { $set: { "sessions.$[sessionId]._id": id()!, "sessions.$[sessionId].dishes": [] } },
-    //     { arrayFilters: [{ "sessionId._id": session._id }] }
-    // );
-
-    // if (sessionUpdate?.modifiedCount == 0) {
-    //     console.log("SESSION IS NOT UPDATED!!!!!!!!!");
-    //     return res.sendStatus(500);
-    // }
 
     res.send({ success: true });
 

@@ -1,0 +1,126 @@
+<ion-header>
+  <ion-toolbar [color]="theme">
+    <ion-buttons slot="start">
+        <ion-button (click)="back()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+    </ion-buttons>
+    <ion-title>Checkout</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="app">
+        <div class="top-wrap">
+            <div class="top">
+                <div class="type">
+                    <span *ngIf="data?.type == 'out'" class="title">
+                        Order
+                    </span>
+                    <span class="title" *ngIf="data?.type == 'in'">Table</span>
+                    <span class="number">#{{ data?.id }}</span>
+                </div>
+                <div class="dishes">
+                    <div *ngFor="let i of data?.dishes" class="dish">
+                        <div class="name-amount">
+                            <div class="amount">
+                                {{ i.amount }} <span class="x">x</span>
+                            </div>
+                            <div class="name">
+                                {{ i.name }}
+                            </div>
+                        </div>
+                        <div class="price">
+                            ${{ i.price / 100 }}
+                        </div>
+                    </div>
+                </div>
+                <div class="money">
+                    <div class="subtotal">
+                        <div class="title">
+                            Subtotal
+                        </div>
+                        <div class="border">
+
+                        </div>
+                        <div class="amount">
+                            ${{ data?.subtotal / 100 }}
+                        </div>
+                    </div>
+                    <div class="hst">
+                        <div class="title">
+                            HST
+                        </div>
+                        <div class="border">
+
+                        </div>
+                        <div class="amount">
+                            ${{ data?.hst / 100 }}
+                        </div>
+                    </div>
+                    <div class="total">
+                        <div class="title">
+                            Total
+                        </div>
+                        <div class="border">
+
+                        </div>
+                        <div class="amount">
+                            ${{ data?.total / 100 }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payments">
+            <div class="select" *ngIf="data?.methods && data?.methods.length > 0">
+                <div class="title">
+                    <span class="text">
+                        Select card
+                    </span>
+                </div>
+                <div class="list">
+                    <div *ngFor="let i of data?.methods" (click)="selectCard(i.id)" [class.selected]="selectedCard == i.id" class="option">
+                        <div class="number">
+                            <span class="dots">
+                                &#9679;&#9679;&#9679;&#9679;
+                            </span>
+                            <span class="dots">
+                                &#9679;&#9679;&#9679;&#9679;
+                            </span>
+                            <span class="dots">
+                                &#9679;&#9679;&#9679;&#9679;
+                            </span>
+                            <div class="last4">
+                                {{ i.last4 }}
+                            </div>
+                        </div>
+                        <div class="brand">
+                            <img src="./../../../../assets/icon/{{i.brand}}.png" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="button" *ngIf="selectedCard">
+                    <button (click)="payWithCard()" class="green-button">Confirm</button>
+                </div>
+            </div>
+            <div class="or" *ngIf="data?.methods && data?.methods.length > 0 && ui.showManual">
+                <span class="line"></span>
+                <span class="text">or</span>
+                <span class="line"></span>
+            </div>
+            <div class="manual" *ngIf="ui.showManual">
+                <ng-container *ngIf="elementsOptions?.clientSecret as clientSecret">
+                    <ngx-stripe-payment [clientSecret]="clientSecret">
+                    </ngx-stripe-payment>
+                </ng-container>
+                <div class="button">
+                    <button (click)="pay()" class="green-button">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-content>
