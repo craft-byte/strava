@@ -32,7 +32,11 @@ interface HistoryOrder {
 })
 export class HistoryPage implements OnInit {
 
-    orders: HistoryOrder[];
+
+    data: {
+        orders: HistoryOrder[];
+        stats: any;
+    }
 
     constructor(
         private service: CustomerService,
@@ -45,9 +49,12 @@ export class HistoryPage implements OnInit {
 
 
         try {
-            this.orders = await this.service.get({ length: "2" }, "history");
+            const result: { orders: HistoryOrder[], stats: any } = await this.service.get({ length: "2" }, "history");
+            this.data = result;
 
-            console.log(this.orders);
+
+            console.log(result);
+
         } catch (e) {
             if (e == 422) {
                 this.router.go(["customer", "scan"]);

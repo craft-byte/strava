@@ -19,7 +19,7 @@ interface WaiterSettings {
 interface RestaurantSettings {
     customers: {
         maxDishes: number | "unlimited";
-        allowDistanceOrders: boolean;
+        allowTakeAway: boolean;
         // trust: 1 | 2 | 3;
         maxCustomers: number | "unlimited";
         maxPrice: "unlimited" | number;

@@ -1,18 +1,25 @@
 <ion-content>
     <div class="app">
-        <div *ngIf="orders?.length == 0" class="no-orders">
+        <div *ngIf="data?.orders?.length == 0" class="no-orders">
             <span class="text">
                 You have not ordered with Strava yet
             </span>
             <ion-icon name="flower-outline"></ion-icon>
         </div>
-        <div *ngIf="orders && orders.length > 0" class="list">
+
+        <div *ngIf="data?.orders as orders" class="list">
             <div *ngFor="let i of orders" class="order">
                 <div class="top">
                     <div class="restaurant">
                         {{ i.restaurant.name }}
                     </div>
-                    <div class="status">
+                    <div class="date">
+                        {{ i.order.date }}
+                    </div>
+                    <div class="status"
+                        [class.status-badge-green]="i.order.status == 'done'"
+                        [class.status-badge-red]="i.order.status == 'removed'"
+                        [class.status-badge-orange]="i.order.status == 'done:removed'">
                         {{ i.order.status }}
                     </div>
                 </div>
@@ -22,7 +29,7 @@
                             {{ i.order.type }}
                         </span>
                         <span class="id">
-                            {{ i.order.id }}
+                            #{{ i.order.id }}
                         </span>
                     </div>
                     <div class="dishes">
@@ -36,7 +43,7 @@
                         </div>
                         <div class="border"></div>
                         <div class="amount">
-                            {{ i.order.money.subtotal }}
+                            ${{ i.order.money.subtotal / 100 }}
                         </div>
                     </div>
                     <div class="hst">
@@ -45,7 +52,7 @@
                         </div>
                         <div class="border"></div>
                         <div class="amount">
-                            {{ i.order.money.hst }}
+                            ${{ i.order.money.hst / 100 }}
                         </div>
                     </div>
                     <div class="total">
@@ -54,7 +61,7 @@
                         </div>
                         <div class="border"></div>
                         <div class="amount">
-                            {{ i.order.money.total }}
+                            ${{ i.order.money.total / 100 }}
                         </div>
                     </div>
                 </div>

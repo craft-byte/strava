@@ -1,3 +1,4 @@
+import { LargeNumberLike } from "crypto";
 import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { isPromise } from "util/types";
@@ -48,7 +49,7 @@ router.get("/", async (req, res) => {
         return res.sendStatus(result);
     }
 
-    res.send(result);
+    res.send({ orders: result });
 });
 
 
