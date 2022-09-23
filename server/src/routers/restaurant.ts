@@ -271,9 +271,9 @@ router.patch("/findUsers", async (req, res) => {
 
     for(let i of users) {
         if(
-            i.name?.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
-                ||
-            i.username!.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
+            i.name?.first.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
+            ||
+            i.name?.last.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
         ) {
             ids.push(i._id!);
         }
@@ -286,8 +286,7 @@ router.patch("/findUsers", async (req, res) => {
 
     for(let i of users2) {
         result.push({
-            name: i.name || i.username,
-            username: i.username,
+            name: i.name?.first || "User deleted",
             avatar: i.avatar,
             _id: i._id,
         });
@@ -313,8 +312,7 @@ router.get("/user/:userId", allowed("manager", "staff"), async (req, res) => {
     }
 
     res.send({
-        name: user!.name || user!.username,
-        username: user!.username,
+        name: user!.name?.first || "User deleted",
         _id: user!._id,
     });
 });

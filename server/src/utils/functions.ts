@@ -16,16 +16,16 @@ function makePassword(password: string) {
         return null;
     }
 
-    const salt = randomBytes(32).toString("hex");
+    const salt = randomBytes(128).toString("hex");
 
-    const hash = scryptSync(password, salt, 64).toString("hex");
+    const hash = scryptSync(password, salt, 128).toString("hex");
 
     return `${salt}:${hash}`;
 }
-function compare(currentPassword: string, oldPassword: string) {
-    const [salt, password] = oldPassword.split(":");
+function compare(entered: string, saved: string) {
+    const [salt, password] = saved.split(":");
 
-    const ws = scryptSync(currentPassword, salt, 64).toString("hex");
+    const ws = scryptSync(entered, salt, 128).toString("hex");
 
     if(ws === password) {
         return true;
@@ -80,45 +80,27 @@ function log(status: string, ...ar: (string | ObjectId | number | boolean | unde
     stdout.write(result);
 }
 
-async function sendEmail(email: string, type: "verification", user: string) {
+async function sendEmail(email: string, title: string, html: string) {
     if(!verifyEmail(email)) {
-        return 1;
+        return 0;
     }
 
     const options: any = {
         from: "Ctraba",
         to: email,
+        subject: title,
+        html,
     };
 
-    if(type == "verification") {
-        let code = Math.floor(Math.random() * 1000000).toString();
-        if(code.length == 5) {
-            code += "6";
-        }
-        options.subject = "Email Address Verification";
-        options.html =
-        `
-            <h1>Hello from Ctraba!</h1>
-            <p>To verify your email address enter this code.</p>
-            <h2>${code}</h2>
-        `
-        const update = await updateUser(user, { $set: { emailVerificationCode: Number(code), emailVerify: email } });
-
-        if(update.modifiedCount > 0) {
-            log("success", "settings email to an user");
-        } else {
-            log("failed", "setting email to an user");
-        }
-    }
-
     try {
-        const result = await Email.sendMail(options);
-        log('success', "accepted:", result.accepted.toString(), "response:", result.response, "message id:", result.messageId);
-        return 2;
-    } catch (err) {
-        console.error(err);
-        throw new Error("sending email");
+        await Email.sendMail(options);
+
+        return 1;
+    } catch (error) {
+        console.error(error);
+        return 0;
     }
+    
 }
 
 function verifyEmail(email: string) {

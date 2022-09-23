@@ -1,0 +1,40 @@
+<div class="app" (mousedown)="leave.emit()" [@showUp]>
+    <div class="box" (mousedown)="$event.stopPropagation()">
+        <div class="input" *ngIf="ui.showInput">
+            <div class="drop" appDnd (fileDropped)="fileChangeEvent($event)">
+                <div class="icon">
+                    <ion-icon name="download-outline"></ion-icon>
+                </div>
+                <div class="dnd-title title-font">
+                    Drop here
+                </div>
+                <div class="or title-font">
+                    or
+                </div>
+
+                <div class="browse">
+                    <input type="file" id="avatar-input" (change)="fileChangeEvent($event)" />
+                    <label for="avatar-input" class="orange-button">
+                        Browse files
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="cropper" *ngIf="ui.showCropper">
+            <div class="border">
+                <image-cropper
+                    [imageFile]="imageFile"
+                    [maintainAspectRatio]="true"
+                    [aspectRatio]="1"
+                    [roundCropper]="true"
+                    format="png"
+                    (imageCropped)="imageCropped($event)"
+                    (loadImageFailed)="loadImageFailed()"
+                ></image-cropper>
+            </div>
+
+            <button class="orange-button" (click)="save()">Save</button>
+        </div>
+    </div>
+</div>

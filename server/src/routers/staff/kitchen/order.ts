@@ -62,7 +62,7 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
     result.ui.showUser = true;
     if (user) {
         result.user = {
-            name: user?.name || user?.username,
+            name: user?.name?.first || "User deleted",
             avatar: user?.avatar?.binary,
             _id: customer,
         }
@@ -153,7 +153,7 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
                 result.taken = {
                     time: getDelay(i.taken!),
                     user: {
-                        name: user?.name || user?.username || "User deleted",
+                        name: user?.name?.first || "User deleted",
                         avatar: user?.avatar?.binary,
                         _id: user?._id,
                     }
@@ -202,7 +202,7 @@ router.post("/dish/:orderDishId/take", async (req, res) => {
         taken: {
             time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
             user: {
-                name: user?.name! || user?.username! || "User deleted",
+                name: user?.name! || "User deleted",
                 avatar: user?.avatar?.binary,
                 _id: req.user as string,
             }
@@ -218,7 +218,7 @@ router.post("/dish/:orderDishId/take", async (req, res) => {
             taken: {
                 time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
                 user: {
-                    name: user?.name! || user?.username! || "User deleted",
+                    name: user?.name?.first! || "User deleted",
                     avatar: user?.avatar?.binary,
                     _id: req.user as string,
                 }

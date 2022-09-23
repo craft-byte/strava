@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
-import { ChangeModalPage } from './change-modal/change-modal.page';
 
 @NgModule({
   imports: [
@@ -18,7 +17,6 @@ import { ChangeModalPage } from './change-modal/change-modal.page';
   ],
   declarations: [
     SettingsPage,
-    ChangeModalPage
   ]
 })
 export class SettingsPageModule {}

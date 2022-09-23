@@ -1,40 +1,45 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { client, stripe } from "../..";
-import { email, logged } from "../../middleware/user";
 import { RestaurantSettings } from "../../models/components";
 import { id } from "../../utils/functions";
 import { Restaurant } from "../../utils/restaurant";
-import { getUser, updateUser } from "../../utils/users";
+import { getUser, updateUser, user } from "../../utils/users";
 import * as axios from "axios";
 import { Restaurant as RestaurantType } from "../../models/general";
 import { months } from "../../assets/consts";
 import { dishesDBName, historyDBName, mainDBName, ordersDBName } from "../../environments/server";
+import { logged } from "../../utils/middleware/logged";
+import { confirmed } from "../../utils/middleware/confirmed";
+import { Locals } from "../../models/other";
 
 const router = Router({ mergeParams: true });
 
+/**
+ * checks if user is an owner of a restaurant
+ * 
+ * @throws { status: 403; reason: "NotOwner" }
+ */
+async function owner(req: Request, res: Response, next: NextFunction) {
+    const { restaurantId } = req.params;
 
-function can(projection: any) {
-    return async (req: Request, res: Response, next: NextFunction) => {
-        const { restaurantId } = req.params;
-        const user = await getUser(req.user as string, { projection: { ...projection, restaurants: 1 } });
+    const { user } = res.locals as Locals;
 
-        res.locals.user = user;
-
-        console.log("HELLO CAN");
-
-        if (!user!.restaurants) {
-            return res.status(404).send({ reason: "wrong" });
-        }
-
-        for (let i of user!.restaurants) {
-            if (i.restaurantId.equals(restaurantId)) {
-                res.locals.stripeAccountId = i.stripeAccountId;
-                return next();
-            }
-        }
-
-        return res.status(403).send({ reason: "forbidden" });
+    if (!user) {
+        throw "at addRestaurant.ts can() no user in locals?";
     }
+
+    if (!user.restaurants) {
+        return res.status(403).send({ reason: "NotOwner" });
+    }
+
+    for (let i of user.restaurants) {
+        if (i.restaurantId.equals(restaurantId)) {
+            res.locals.stripeAccountId = i.stripeAccountId;
+            return next();
+        }
+    }
+
+    return res.status(403).send({ reason: "NotOwner" });
 };
 async function getStates(country: string) {
     try {
@@ -87,8 +92,22 @@ async function checkLocation(country: string, state: string, city: string) {
 }
 
 
-router.post("/create", logged, email, async (req, res) => {
+
+/**
+ * 
+ * @param {stirng} name - name of restaurant
+ * @param {string} country - country code
+ * 
+ * creates restaurant
+ * creates stripe connected account
+ * updates user
+ * 
+ * 
+ * @returns { added: boolean; requrements: Hash; insertedId: stirng; }
+ */
+router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirmed(true), async (req, res) => {
     const { name, country } = req.body;
+    const { user } = res.locals as Locals;
 
     if (!name || name.length < 4 || !country || country.length < 2) {
         return res.sendStatus(422);
@@ -104,8 +123,6 @@ router.post("/create", logged, email, async (req, res) => {
     }
 
     let stripeAccountId: string;
-
-    const user = await getUser(req.user as string, { projection: { email: 1, username: 1 } });
 
     try {
         const account = await stripe.accounts.create({
@@ -255,7 +272,7 @@ router.post("/create", logged, email, async (req, res) => {
         );
 
 
-        result.added = !!result1 && !!result2 && !!result3 && !!result4 && result5.modifiedCount > 0;
+        result.added = !!result1 && !!result2 && !!result3 && !!result4 && result5.ok == 1;
         result.insertedId = newRestaurant._id;
 
         console.log("restaurant added: ", result.added);
@@ -269,13 +286,17 @@ router.post("/create", logged, email, async (req, res) => {
 
 });
 
-router.post("/name/:restaurantId", logged, can({}), async (req, res) => {
+
+/**
+ * sets user's legal name
+ */
+router.post("/name/:restaurantId", logged({ projection: { restaurants: 1, name: 1 } }), owner, async (req, res) => {
     const { stripeAccountId } = res.locals;
     const { firstName, lastName } = req.body;
 
 
     try {
-        const result = await updateUser(req.user as string, { $set: { fullName: { firstName, lastName } } });
+        const result = await updateUser(req.user as string, { $set: { name: { first: firstName, last: lastName } } });
         const account = await stripe.accounts.update(stripeAccountId, { individual: { first_name: firstName, last_name: lastName } });
 
 
@@ -285,7 +306,12 @@ router.post("/name/:restaurantId", logged, can({}), async (req, res) => {
         throw error;
     }
 });
-router.post("/set/state/:restaurantId", logged, can({}), async (req, res) => {
+
+
+/**
+ * sets restaurant location
+ */
+router.post("/set/state/:restaurantId", logged({ projection: { restaurants: 1, }}), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { state, country } = req.body;
 
@@ -293,9 +319,9 @@ router.post("/set/state/:restaurantId", logged, can({}), async (req, res) => {
         const result = await getCities(country, state);
 
         const update = await updateUser(req.user as string, { $set: { "info.state": state, "info.city": result.data[0].name } });
-        // const update = await Restaurant(restaurantId).update({ $set: { "info.state": state, "info.city": result.data[0].name } });
+        const restaurantUpdate = await Restaurant(restaurantId).update({ $set: { "info.state": state, "info.city": result.data[0].name } });
 
-        console.log("state updated: ", update!.modifiedCount > 0);
+        console.log("state updated: ", update!.ok == 1);
 
         res.send(result.data);
     } catch (e) {
@@ -304,16 +330,29 @@ router.post("/set/state/:restaurantId", logged, can({}), async (req, res) => {
     }
 
 });
-router.post("/set/city/:restaurantId", logged, can({}), async (req, res) => {
+
+
+/**
+ * sets restaurants city
+ */
+router.post("/set/city/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { city } = req.body;
 
     const update = await Restaurant(restaurantId).update({ $set: { "info.city": city } });
 
-
     res.send({ updated: update!.modifiedCount > 0 });
 });
-router.post("/set/all/:restaurantId", logged, can({}), async (req, res) => {
+
+
+/**
+ * sets full location to restaurant
+ * line1, line2, city, state, postal code, country
+ * 
+ * @throws { status: 422 } - location is invalid
+ * @throws { status: 422; reason: "PostalCodeInvalid" } - location is invalid
+ */
+router.post("/set/all/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { stripeAccountId } = res.locals;
 
@@ -347,7 +386,7 @@ router.post("/set/all/:restaurantId", logged, can({}), async (req, res) => {
     });
 
     console.log("restaurant's location updated: ", restaurantUpdate!.modifiedCount > 0);
-    console.log("user's location updated: ", userUpdate!.modifiedCount > 0);
+    console.log("user's location updated: ", userUpdate!.ok == 1);
 
 
     try {
@@ -367,20 +406,26 @@ router.post("/set/all/:restaurantId", logged, can({}), async (req, res) => {
         res.send({ updated: restaurantUpdate!.modifiedCount > 0 });
 
     } catch (e: any) {
-        if(e.raw.code == "postal_code_invalid") {
-            return res.status(400).send({ reason: "postal_code" });
+        if (e.raw.code == "postal_code_invalid") {
+            return res.status(422).send({ reason: "PostalCodeInvalid" });
         }
         console.log("UPDATING ACCOUNT");
         throw e;
     }
 });
-router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
-    const { stripeAccountId } = res.locals; 
+
+/**
+ * sets user's date of birth
+ * 
+ * @throws { status: 422 } - date is invalid
+ */
+router.post("/set/dob/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
+    const { stripeAccountId } = res.locals;
     const { year, month, day } = req.body;
 
     console.log(req.body);
 
-    if(
+    if (
         !year ||
         typeof year != "number" ||
         year < 1900 ||
@@ -400,8 +445,6 @@ router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
     ) {
         return res.sendStatus(422);
     }
-
-    console.log("HELLO");
 
 
     await updateUser(req.user as string, {
@@ -426,61 +469,25 @@ router.post("/set/dob/:restaurantId", logged, can({}), async (req, res) => {
 
 
 });
-router.post("/set/card/:restaurantId", logged, can({}), async (req, res) => {
-    const { card, expYear, expMonth, cvc, currency } = req.body;
-    const { stripeAccountId } = res.locals;
 
-    if(
-        !card ||
-        !currency ||
-        card.length < 16 ||
-        card.length > 19 ||
-        !/^\d+$/.test(card) ||
-        !expYear ||
-        typeof expYear != "number" ||
-        expYear < new Date().getFullYear() ||
-        expYear > new Date().getFullYear() + 5 ||
-        !expMonth ||
-        typeof expMonth != "number" ||
-        !cvc ||
-        typeof cvc != "string" ||
-        cvc.length < 3 ||
-        cvc.length > 4 ||
-        (expYear == new Date().getFullYear() && expMonth < new Date().getMonth())
-    ) {
-        return res.sendStatus(422);
-    }
 
-    try {
-        const token = await stripe.tokens.create({
-            "card": {
-                number: card as string,
-                exp_month: expMonth.toString(),
-                exp_year: expYear.toString(),
-                cvc: cvc,
-                currency: currency.toLowerCase(),
-            }
-        });
-        
-        const account = await stripe.accounts.createExternalAccount(stripeAccountId, { "external_account": token.id });
-        
-        res.send({ updated: !!account });
-    } catch (error: any) {
-        if(error.raw.code == "instant_payouts_unsupported") {
-            return res.status(400).send({ reason: "card" });
-        } else if(error.raw.code == "invalid_card_type") {
-            return res.status(400).send({ reason: "type", message: error.raw.message });
-        };
-        console.log("SETTING CARD");
-        throw error;
-    }
-});
-router.post("/set/bank-account/:restaurantId", logged, can({}), async (req, res) => {
+
+/**
+ * 
+ * sets bank account for payouts for a restaurant
+ * 
+ * @throws { status: 422 } - bank account data is invalid
+ * @throws { status: 400; reason: "InvalidError"; } - invalid error
+ * @throws { status: 500; } - no token invalid error
+ * 
+ * @returns { updated: boolean; }
+ */
+router.post("/set/bank-account/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { stripeAccountId } = res.locals;
     const { number, branch, institution, name, country, currency } = req.body;
 
-    if(
+    if (
         !number ||
         number.toString().length < 5 ||
         number.toString().length > 17 ||
@@ -504,14 +511,14 @@ router.post("/set/bank-account/:restaurantId", logged, can({}), async (req, res)
             }
         });
 
-        if(token) {
+        if (token) {
             await stripe.accounts.createExternalAccount(stripeAccountId, { external_account: token.id });
 
             const account = await stripe.accounts.retrieve(stripeAccountId);
 
             let payoutsStatus = "pending";
 
-            if(account.payouts_enabled) {
+            if (account.payouts_enabled) {
                 payoutsStatus = "enabled";
             }
 
@@ -522,55 +529,22 @@ router.post("/set/bank-account/:restaurantId", logged, can({}), async (req, res)
             return res.sendStatus(500);
         }
     } catch (e: any) {
-        if(e.raw.type == "invalid_request_error") {
-            return res.status(400).send({ reason: "no" });
+        if (e.raw.type == "invalid_request_error") {
+            return res.status(400).send({ reason: "InvalidError" });
         }
 
         console.log("SETTING BANK ACCOUNT");
         throw e;
     }
-    
+
 });
 
 
-// router.post("/theme/:restaurantId", logged, async (req, res) => {
-//     const { restaurantId } = req.params;
-//     const { color } = req.body;
 
-//     if (!restaurantId || restaurantId.length != 24) {
-//         return res.sendStatus(422);
-//     }
-
-//     if (!color || ![
-//         "red", "green", "orange", "brown", "black", "white", "gray", "sea", "blue", "pink", "purple",
-//     ].includes(color)) {
-//         return res.sendStatus(422);
-//     }
-
-//     const result = await Restaurant(restaurantId).update({ $set: { theme: color } });
-
-
-//     res.send({ success: result!.modifiedCount > 0 || result!.matchedCount > 0 });
-// });
-
-
-
-
-// router.get("/name/:restaurantId", logged, async (req, res) => {
-//     const { restaurantId } = req.params;
-
-//     if (!restaurantId || restaurantId.length != 24) {
-//         return res.sendStatus(422);
-//     }
-
-//     const result = await Restaurant(restaurantId).get({ projection: { name: 1, theme: 1 } });
-
-//     res.send({ name: result ? result.name : null });
-// });
-
-
-
-router.get("/address/:restaurantId", logged, can({ restaurants: 1 }), async (req, res) => {
+/**
+ * @returns saved location
+ */
+router.get("/address/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { stripeAccountId } = res.locals;
 
@@ -628,83 +602,95 @@ router.get("/address/:restaurantId", logged, can({ restaurants: 1 }), async (req
 
     res.send(result);
 });
-router.get("/dob", logged, async (req, res) => {
-    
-    const user = await getUser(req.user as string, { projection: { info: { year: 1, month: 1, day: 1 } } });
 
-    if(!user) {
-        return res.sendStatus(404);
-    }
+/**
+ * @returns saved date of birth
+ */
+router.get("/dob", logged({ projection: { dob: 1, }}), async (req, res) => {
+    const { user } = res.locals as Locals;
 
-    res.send(user?.info);
+    res.send(user.dob);
 });
-router.get("/bank-account", logged, async (req, res) => {
-    const user = await getUser(req.user as string, { projection: { fullName: 1, info: { country: 1 } } });
 
-    if(!user || !user.info || !user.info.country || !user.fullName) {
+/**
+ * @returns info for bank account: available currencies, saved user country, holder(user) name
+ */
+router.get("/bank-account", logged({ projection: { name: 1, location: 1  }}), async (req, res) => {
+
+    const { user } = res.locals as Locals;
+
+    if (!user || !user.location || !user.location.country || !user.name) {
         return res.sendStatus(404);
     }
 
-    const result = await stripe.countrySpecs.retrieve(user.info.country);
+    const result = await stripe.countrySpecs.retrieve(user.location.country);
 
     res.send({
         currencies: Object.keys(result.supported_bank_account_currencies),
-        country: user.info.country || "AF",
-        name: `${user.fullName.firstName} ${user.fullName.lastName}`,
+        country: user.location.country || "AF",
+        name: `${user.name.first} ${user.name.last}`,
     });
 });
+
+/**
+ * @returns currencies
+ */
 router.get("/currencies", logged, async (req, res) => {
     const user = await getUser(req.user as string, { projection: { info: { country: 1 } } });
 
-    if(!user || !user.info || !user.info.country) {
+    if (!user || !user.location || !user.location.country) {
         return res.sendStatus(404);
     }
 
-    const result = await stripe.countrySpecs.retrieve(user.info.country);
+    const result = await stripe.countrySpecs.retrieve(user.location.country);
 
     res.send(Object.keys(result.supported_bank_account_currencies));
 });
-router.get("/currencies/:country", logged, async (req, res) => {
+
+/**
+ * @returns currencies
+ */
+router.get("/currencies/:country", logged({ projection: { _id: 1 } }), async (req, res) => {
     const { country } = req.params;
 
     try {
         const result = await stripe.countrySpecs.retrieve(country);
-    
+
         res.send(Object.keys(result.supported_bank_account_currencies));
     } catch (error: any) {
         console.log("GETTING CURRENCIES BY COUNTRY");
-        if(error.raw.type == "invalid_request_error" && error.raw.param == "country") {
+        if (error.raw.type == "invalid_request_error" && error.raw.param == "country") {
             return res.sendStatus(400);
         }
-        throw error;   
+        throw error;
     }
 });
 router.get("/country", logged, async (req, res) => {
 
     const user = await getUser(req.user as string, { projection: { info: { country: 1 } } });
 
-    if(!user) {
+    if (!user) {
         return res.sendStatus(404);
     }
 
-    if (user!.info?.country) {
-        return res.send({ code: user!.info.country });
+    if (user!.location?.country) {
+        return res.send({ code: user!.location.country });
     }
 
     try {
         const result: any = await axios.default.get("https://api.ipregistry.co/?key=uxv7gs7ywlpf9v7m");
 
 
-        if(result?.data?.location?.country) {
+        if (result?.data?.location?.country) {
             const update = await updateUser(req.user as string, { $set: { "info.country": result?.data?.location?.country?.code } });
-    
-            console.log("user country set: ", update.modifiedCount > 0);
-    
+
+            console.log("user country set: ", update.ok == 1);
+
             res.send({ code: result?.data?.location?.country?.code });
         } else {
             return res.send({ code: "AF" });
         }
-        
+
     } catch (error) {
         console.error(error);
         console.log("GETTING COUNTRY");
@@ -715,29 +701,65 @@ router.get("/country", logged, async (req, res) => {
 
 
 
-// router.delete("/stop/:restaurantId", logged, can({ restaurants: 1 }), async (req, res) => {
-//     const { restaurantId } = req.params;
-
-//     const { stripeAccountId } = res.locals;
-
-//     if (!stripeAccountId) {
-//         return res.status(404).send({ reason: "restaurant" });
-//     }
-
-
-//     const account = await stripe.accounts.del(stripeAccountId);
-
-
-//     const restaurant = await Restaurant(restaurantId).remove();
-
-
-//     console.log("restaurant removed: ", account.deleted && restaurant);
-
-//     res.send({ removed: account.deleted && restaurant });
-// });
-
 
 
 export {
     router as AddRestaurantRouter
 }
+
+
+
+
+
+
+// set card is not explored fully yet
+
+// router.post("/set/card/:restaurantId", logged, can({}), async (req, res) => {
+    //     const { card, expYear, expMonth, cvc, currency } = req.body;
+//     const { stripeAccountId } = res.locals;
+
+//     if (
+//         !card ||
+//         !currency ||
+//         card.length < 16 ||
+//         card.length > 19 ||
+//         !/^\d+$/.test(card) ||
+//         !expYear ||
+//         typeof expYear != "number" ||
+//         expYear < new Date().getFullYear() ||
+//         expYear > new Date().getFullYear() + 5 ||
+//         !expMonth ||
+//         typeof expMonth != "number" ||
+//         !cvc ||
+//         typeof cvc != "string" ||
+//         cvc.length < 3 ||
+//         cvc.length > 4 ||
+//         (expYear == new Date().getFullYear() && expMonth < new Date().getMonth())
+//     ) {
+//         return res.sendStatus(422);
+//     }
+
+//     try {
+//         const token = await stripe.tokens.create({
+//             "card": {
+//                 number: card as string,
+//                 exp_month: expMonth.toString(),
+//                 exp_year: expYear.toString(),
+//                 cvc: cvc,
+//                 currency: currency.toLowerCase(),
+//             }
+//         });
+
+//         const account = await stripe.accounts.createExternalAccount(stripeAccountId, { "external_account": token.id });
+
+//         res.send({ updated: !!account });
+//     } catch (error: any) {
+//         if (error.raw.code == "instant_payouts_unsupported") {
+//             return res.status(400).send({ reason: "card" });
+//         } else if (error.raw.code == "invalid_card_type") {
+//             return res.status(400).send({ reason: "type", message: error.raw.message });
+//         };
+//         console.log("SETTING CARD");
+//         throw error;
+//     }
+// });

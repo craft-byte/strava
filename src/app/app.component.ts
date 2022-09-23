@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
-import { LoadService } from './other/load.service';
+import { Component, HostListener } from '@angular/core';
+import { UtilitiesService } from './other/utilities.service';
 
 @Component({
   selector: 'app-root',
@@ -9,24 +8,14 @@ import { LoadService } from './other/load.service';
 })
 export class AppComponent {
   constructor(
-    // private router: Router,
-    // private loader: LoadService,
+    private utilities: UtilitiesService,
   ) {
-    // this.router.events.subscribe(async (e: RouterEvent) => {
-    //   if (e instanceof NavigationStart) {
-    //     await this.loader.start();
-    //   }
 
-    //   if(e instanceof NavigationEnd) {
-    //     this.loader.end();
-    //   }
-  
-    //   if (e instanceof NavigationCancel) {
-    //     this.loader.end();
-    //   }
-    //   if (e instanceof NavigationError) {
-    //     this.loader.end();
-    //   }
-    // })
   }
+
+  @HostListener('document:click', ['$event'])
+  documentClick(event: any): void {
+    this.utilities.documentClickedTarget.next(event.target);
+  }
+
 }

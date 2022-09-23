@@ -1,90 +1,133 @@
-import { ThisReceiver } from '@angular/compiler';
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AlertController, ModalController } from '@ionic/angular';
+import { preserveWhitespacesDefault } from '@angular/compiler';
+import { Component, OnInit, Injector, ViewChild, ViewContainerRef } from '@angular/core';
+import { ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
 import { getImage } from 'src/functions';
-import { User } from 'src/models/user';
+import { threadId } from 'worker_threads';
 import { UserService } from '../user.service';
-import { ChangeModalPage } from './change-modal/change-modal.page';
+
+
+interface Profile {
+    email: string;
+    name: { first: string; last: string; };
+    avatar: any;
+    anon: boolean;
+}
+
+
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss'],
+    selector: 'app-settings',
+    templateUrl: './settings.page.html',
+    styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit {
 
-  user: User;
-  avatar: string = "./../../../assets/images/plain-avatar.jpg";
+    data: Profile;
+    avatar: string;
+    avatarChanged: boolean = false;
 
-  ui = {
-    changeTitle: "Change"
-  }
+    constructor(
+        private router: RouterService,
+        private loader: LoadService,
+        private toastCtrl: ToastController,
+        private service: UserService,
+        private injector: Injector,
+    ) { };
 
-  constructor(
-    private service: UserService,
-    private alertCtrl: AlertController,
-    private router: RouterService,
-    private main: MainService,
-    private loader: LoadService,
-  ) { };
+    @ViewChild("passwordModalContainer", { read: ViewContainerRef }) passwordModal: ViewContainerRef;
+    @ViewChild("avatarModalContainer", { read: ViewContainerRef }) avatarModal: ViewContainerRef;
+    @ViewChild("removeModalContainer", { read: ViewContainerRef }) removeModal: ViewContainerRef;
 
 
-  async remove() {
-    const alert = await this.alertCtrl.create({
-      header: "Please, be certain.",
-      subHeader: "Are you sure you want to delete the account and all the data connected to it?",
-      mode: "ios",
-      buttons: [
-        {
-          role: "cancel",
-          text: "Cancel",
-        },
-        {
-          role: "remove",
-          text: "Submit",
-          cssClass: "alert-red-button"
+    back() {
+        this.router.go(["user/profile"]);
+    }
+    changeEmail() {
+        this.router.go(["user", "reset-email"]);
+    }
+
+    /**
+     * 
+     * sends POST /user/profile/update
+     * updates name, anonymously setting, and avatar if it has been changed 
+     * 
+     */
+    async save() {
+        await this.loader.start();
+
+        const result = await this.service.post<any>({ name: this.data.name, anon: this.data.anon, avatar: this.avatarChanged ? this.avatar : null }, "profile/update");
+
+        if (result.success) {
+            this.back();
+            return;
+        } else {
+            (await this.toastCtrl.create({
+                duration: 1500,
+                color: "red",
+                message: "Something went wrong, please try again",
+                mode: "ios",
+            })).present();
         }
-      ]
-    });
 
-    await alert.present();
+        this.loader.end();
 
-    const { role } = await alert.onDidDismiss();
-
-    if(role == "remove") {
-      const result: any = await this.service.delete("");
-
-      this.router.go(["user/creat3e"]);
     }
-  }
 
-  exit() {
-    this.router.go(["user/account"], { replaceUrl: true, queryParamsHandling: "preserve" });
-  }
+    /**
+     * opens avatar-modal.component modal
+     */
+    async setAvatar() {
+        const { AvatarModalComponent } = await import("./avatar-modal/avatar-modal.component");
 
-  changeAvatar() {
-    this.router.go(["user/avatar/2"], { replaceUrl: true, queryParams: { last: this.router.url } });
-  }
+        const component = this.avatarModal.createComponent(AvatarModalComponent, { injector: this.injector });
 
-  async change(n: number) {
-    if(n == 1) {
-      this.router.go(["user/name/2"], { replaceUrl: true, queryParams: { last: this.router.url } });
-    } else if(n == 2) {
-      this.router.go(["user/username"], { replaceUrl: true, queryParams: { last: this.router.url } });
-    } else if(n == 3) {
-      this.router.go(["user/email"], { replaceUrl: true, queryParams: { last: this.router.url } });
+        component.instance.leave.subscribe(async (img?: string) => {
+            if (img) {
+                if (img == "error") {
+                    (await this.toastCtrl.create({
+                        duration: 1500,
+                        color: "red",
+                        message: "Failed to load image. Please try again.",
+                        mode: "ios",
+                    })).present();
+                } else {
+                    this.avatar = img;
+                    this.avatarChanged = true;
+                }
+            }
+            component.destroy();
+        });
+
     }
-  }
 
-  async ngOnInit() {
-    this.user = this.main.userInfo;
-    const { avatar } = await this.service.get("avatar") as any;
-    this.avatar = getImage(avatar) || "./../../../assets/images/plain-avatar.jpg";
-    this.loader.end();
-  }
+    /**
+     * opens password-modal.component modal
+     */
+    async changePassword() {
+        const { PasswordModalComponent } = await import("./password-modal/password-modal.component");
+
+        const component = this.passwordModal.createComponent(PasswordModalComponent, { injector: this.injector });
+
+        component.instance.leave.subscribe(() => {
+            component.destroy();
+        });
+    }
+
+
+    async ngOnInit() {
+        await this.loader.start();
+
+        const result = await this.service.get<Profile>("profile");
+
+        this.data = result;
+
+
+        this.avatar = getImage(this.data.avatar);
+
+        this.loader.end();
+    }
 
 }

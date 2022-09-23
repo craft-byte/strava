@@ -1,4 +1,4 @@
-import { Filter, FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
+import { Filter, FindOneAndUpdateOptions, FindOptions, ModifyResult, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
 import { client } from "..";
 import { mainDBName } from "../environments/server";
 import { User } from "../models/general";
@@ -6,6 +6,14 @@ import { id } from "./functions";
 
 
 
+async function user(filter: Filter<User>, options: FindOptions<User>): Promise<User | null> {
+    try {
+        return await client.db(mainDBName).collection<User>("users").findOne(filter, options);
+    } catch (e) {
+        console.error("at utils/user.ts user()");
+        throw e;
+    }
+}
 
 function getUserPromise(search: Object, options?: Object): Promise<User | null> {
     return client.db(mainDBName).collection("users").findOne<User>(search, options);
@@ -36,24 +44,16 @@ async function getUser(userId: string | ObjectId, options?: FindOptions<User>): 
     }
 }
 
-async function updateUser(userId: string | ObjectId, update: UpdateFilter<User>, options?: UpdateOptions): Promise<UpdateResult> {
-
-    let result = null;
+async function updateUser(userId: string | ObjectId, update: UpdateFilter<User>, options: FindOneAndUpdateOptions = { returnDocument: "after" }): Promise<{ ok: 1 | 0; user: User }> {
 
     try {
-        if(options) {
-            result = await client.db(mainDBName).collection("users")
-                .updateOne({ _id: id(userId) }, update, options);
-        } else {
-            result = await client.db(mainDBName).collection("users")
-                .updateOne({ _id: id(userId) }, update);
-        }
-    } catch (e) {
-        console.error(e);
-        throw new Error("at updateUser()");
-    }
+       const result = await client.db(mainDBName).collection<User>("users").findOneAndUpdate({ _id: id(userId) }, update, options);
 
-    return result;
+       return { user: result.value!, ok: result.ok };
+    } catch (e) {
+        console.error("at updateUser()");
+        throw e;
+    }
 }
 
 async function addUser(newUser: User) {
@@ -94,6 +94,15 @@ async function aggregateUser(pipeline: any[]) {
     }
 }
 
+async function getUserByEmail(email: string, options: FindOptions) {
+    try {
+        return await client.db(mainDBName).collection("users").findOne({ email, status: { $ne: "deleted" } }, options);
+    } catch (e) {
+        console.log("getting user by email");
+        throw e;
+    }
+}
+
 
 export {
     getUsers,
@@ -102,5 +111,7 @@ export {
     byUsername,
     addUser,
     getUserPromise,
+    getUserByEmail,
     aggregateUser,
+    user,
 }

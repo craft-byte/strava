@@ -84,42 +84,39 @@ interface Dish {
 
 
 interface User {
-    name?: string;
-    username?: string;
     email?: string;
     blacklisted?: ObjectId[];
-    _id?: ObjectId;
-    status: "enabled" | "deleted";
+    _id: ObjectId;
+    status: "enabled" | "deleted" | "restricted";
     avatar?: {
         binary: Buffer;
-        modified: Date;
+        modified: number;
     };
+    anonymously?: boolean;
     feedbacks?: Feedback[];
     invitations?: Invitation[];
     works?: ObjectId[];
     restaurants?: { restaurantId: ObjectId; stripeAccountId?: string; role: "manager" | "staff" | "owner" | "manager:working"; }[];
     password?: string;
-    phone?: string;
     orders?: { restaurantId: ObjectId; orderId: ObjectId; }[];
-    created?: Date;
-    emailVerificationCode?: number;
-    emailVerify?: string;
+    created?: number;
     stripeCustomerId?: string;
-    fullName: {
-        firstName: string;
-        lastName: string;
+    name?: {
+        first: string;
+        last: string;
+    };
+    location?: {
+        country: string;
+        city: string;
     }
-    info?: {
-        country?: string;
-        city?: string;
+    dob?: {
         year?: number;
         month?: number;
         day?: number;
-        state?: string;
-        line1?: string;
-        line2?: string;
-        postalCode?: string;
     }
+
+    emailCode?: string;
+    emailStored?: string;
 }
 
 

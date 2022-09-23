@@ -1,188 +1,177 @@
 <ion-content>
-  <div class="header">
-    <div class="title">
-      <p>{{ ui.title }}</p>
-    </div>
-    <div class="links">
-      <div class="link restaurant">
-        <button (click)="addRestaurant()" id="add-restaurant">
-          Add restaurant
+    <div class="header">
+        <div class="title">
+            <p>{{ ui.title }}</p>
+        </div>
+        <button id="account-popover" (click)="openAccount($event)">
+            <ion-icon name="person"></ion-icon>
         </button>
-      </div>
-      <div class="link job">
-        <a routerLink="/jobs" id="job">
-          Find job
-        </a>
-      </div>
-      <div class="link account" id="account">
-        <a routerLink="/user/account" [replaceUrl]="true">Account</a>
-      </div>
     </div>
-  </div>
 
-  <div class="app">
-    <div class="content">
-      <div class="left">
+    <div class="app">
+        <div class="content">
+            <div class="left">
 
-        <div class="account-registration" *ngIf="ui.showRegistration">
-          <div class="title">
-            <h1>Finish your account registration</h1>
-          </div>
-          <div class="text">
-            <ul>
-              <li (click)="registration(i)" *ngFor="let i of objectKeys(ui.registrationParagraphs)">
-                {{ ui.registrationParagraphs[i] }}
-              </li>
-            </ul>
-          </div>
-          <button class="orange-button" (click)="registration('continue')" id="continue-registration">
-            Finish<ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-        </div>
-
-        <div class="map">
-          <div class="block-header">
-            Restaurants near you
-          </div>
-          <button (click)="map()" id="go-map" class="orange-button">
-            Explore<ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-        </div>
-
-        <div class="add-restaurant" *ngIf="ui.showAdd">
-          <div class="title">
-            <h1>Add restaurant</h1>
-          </div>
-          <div class="subtitle">
-            <h2>Add your restaurant to ctraba and you'll get</h2>
-          </div>
-          <div class="text">
-            <ul>
-              <li>Statistics of your restaurant</li>
-              <li>Control of ingredients</li>
-              <li>Control of staff</li>
-            </ul>
-            <ul>
-              <li>Better user experience</li>
-              <li>More automatization</li>
-              <li>Something else</li>
-            </ul>
-          </div>
-          <div class="button">
-            <button class="orange-button" (click)="addRestaurant()" id="add-restaurant-bottom">
-              Start
-            </button>
-          </div>
-        </div>
-        <div class="or" *ngIf="ui.showAdd">
-          <div class="line"></div>
-          <div class="text">
-            or
-          </div>
-          <div class="line"></div>
-        </div>
-        <div class="find-job" *ngIf="ui.showAdd">
-          <div class="title">
-            <h1>Find a job</h1>
-          </div>
-          <div class="subtitle">
-            <h2>With ctraba you can find a full-, part-time or summer job in a restaurant near you</h2>
-          </div>
-          <div class="roles">
-            <div class="role waiter" (click)="role = 'waiter'" [ngClass]="{ active: role == 'waiter' }">
-              <div class="title">Waiter</div>
-              <div class="icon">
-                <span title="Waiter">
-                  <ion-icon name="footsteps-outline"></ion-icon>
-                </span>
-              </div>
-            </div>
-            <div class="role manager" (click)="role = 'manager'" [ngClass]="{ active: role == 'manager' }">
-              <div class="title">Manager</div>
-              <div class="icon">
-                <span title="Manager">
-                  <ion-icon name="calculator-outline"></ion-icon>
-                </span>
-              </div>
-            </div>
-            <div class="role cook" (click)="role = 'cook'" [ngClass]="{ active: role == 'cook' }">
-              <div class="title">Cook</div>
-              <div class="icon">
-                <span title="Cook">
-                  <ion-icon name="construct-outline"></ion-icon>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="button">
-            <button [disabled]="!role" class="orange-button" (click)="addRestaurant()" id="add-restaurant-bottom">
-              Find
-            </button>
-          </div>
-        </div>
-
-
-        <div class="container-restaurants-jobs" *ngIf="ui.showRestaurants || ui.showJobs">
-          <div class="restaurants" *ngIf="ui.showRestaurants">
-            <div class="title">
-              Restaurants
-            </div>
-            <div class="list">
-              <app-restaurant *ngFor="let i of restaurants" [data]="i"></app-restaurant>
-            </div>
-          </div>
-          <div class="jobs" *ngIf="ui.showJobs">
-            <div class="title">
-              Your jobs
-            </div>
-            <div class="list">
-              <div class="restaurant" (click)="goWork(i._id)" *ngFor="let i of works">
-                <div class="name">
-                  {{ i.name }}
-                </div>
-                <div class="button">
-                  <button class="go">
-                    <!-- fsdafasd -->
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="right">
-        <div *ngIf="ui.showInvitations" class="invitations">
-          <div class="body">
-            <div class="title">
-              Invitations
-            </div>
-            <div class="list">
-              <div class="one" *ngFor="let i of invitations">
-                <div class="restaurant">
-                  <div class="name">
-                    {{ i.restaurant }}
-                  </div>
-                  <div class="text">
-                    Offers you a <p class="role">{{ i.role }}</p> job
-                  </div>
-                </div>
-                <div class="other">
-                  <div class="send">
-                    Sent: {{ i.date }}
-                  </div>
-                  <div class="buttons">
-                    <button class="accept success-button" (click)="invitation(i._id, 'accept')">Accept</button>
-                    <button class="reject red-button" (click)="invitation(i._id, 'reject', i.restaurantId)">
-                      <ion-icon name="close-outline"></ion-icon>
+                <div class="account-verification" *ngIf="ui.showEmailVerification">
+                    <div class="block-header">
+                        Verify your email to activate your account
+                    </div>
+                    <button class="orange-button" (click)="emailVerification()" id="continue-registration">
+                        Verify<ion-icon name="chevron-forward-outline"></ion-icon>
                     </button>
-                  </div>
                 </div>
-              </div>
+
+                <div class="map">
+                    <div class="block-header">
+                        Restaurants near you
+                    </div>
+                    <button (click)="map()" id="go-map" class="orange-button">
+                        Explore<ion-icon name="chevron-forward-outline"></ion-icon>
+                    </button>
+                </div>
+
+                <div class="add-restaurant" *ngIf="ui.showAddRestaurant">
+                    <div class="title">
+                        <h1>Add restaurant</h1>
+                    </div>
+                    <div class="subtitle">
+                        <h2>Add your restaurant to ctraba and you'll get</h2>
+                    </div>
+                    <div class="text">
+                        <ul>
+                            <li>Statistics of your restaurant</li>
+                            <li>Control of ingredients</li>
+                            <li>Control of staff</li>
+                        </ul>
+                        <ul>
+                            <li>Better user experience</li>
+                            <li>More automatization</li>
+                            <li>Something else</li>
+                        </ul>
+                    </div>
+                    <div class="button">
+                        <button class="orange-button" (click)="addRestaurant()" id="add-restaurant-bottom">
+                            Start
+                        </button>
+                    </div>
+                </div>
+                <div class="or" *ngIf="ui.showAddRestaurant">
+                    <div class="line"></div>
+                    <div class="text">
+                        or
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <div class="find-job" *ngIf="ui.showAddRestaurant">
+                    <div class="title">
+                        <h1>Find a job</h1>
+                    </div>
+                    <div class="subtitle">
+                        <h2>With ctraba you can find a full-, part-time or summer job in a restaurant near you</h2>
+                    </div>
+                    <div class="roles">
+                        <div class="role waiter" (click)="role = 'waiter'" [ngClass]="{ active: role == 'waiter' }">
+                            <div class="title">Waiter</div>
+                            <div class="icon">
+                                <span title="Waiter">
+                                    <ion-icon name="footsteps-outline"></ion-icon>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="role manager" (click)="role = 'manager'" [ngClass]="{ active: role == 'manager' }">
+                            <div class="title">Manager</div>
+                            <div class="icon">
+                                <span title="Manager">
+                                    <ion-icon name="calculator-outline"></ion-icon>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="role cook" (click)="role = 'cook'" [ngClass]="{ active: role == 'cook' }">
+                            <div class="title">Cook</div>
+                            <div class="icon">
+                                <span title="Cook">
+                                    <ion-icon name="construct-outline"></ion-icon>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button">
+                        <button [disabled]="!role" class="orange-button" (click)="addRestaurant()"
+                            id="add-restaurant-bottom">
+                            Find
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="container-restaurants-jobs" *ngIf="ui.showRestaurants || ui.showJobs">
+                    <div class="restaurants" *ngIf="ui.showRestaurants">
+                        <div class="title">
+                            Restaurants
+                        </div>
+                        <div class="list">
+                            <app-restaurant *ngFor="let i of restaurants" [data]="i"></app-restaurant>
+                        </div>
+                    </div>
+                    <div class="jobs" *ngIf="ui.showJobs">
+                        <div class="title">
+                            Your jobs
+                        </div>
+                        <div class="list">
+                            <div class="restaurant" (click)="goWork(i._id)" *ngFor="let i of works">
+                                <div class="name">
+                                    {{ i.name }}
+                                </div>
+                                <div class="button">
+                                    <button class="go">
+                                        <!-- fsdafasd -->
+                                        <ion-icon name="chevron-forward-outline"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="right">
+                <div *ngIf="ui.showInvitations" class="invitations">
+                    <div class="body">
+                        <div class="title">
+                            Invitations
+                        </div>
+                        <div class="list">
+                            <div class="one" *ngFor="let i of invitations">
+                                <div class="restaurant">
+                                    <div class="name">
+                                        {{ i.restaurant }}
+                                    </div>
+                                    <div class="text">
+                                        Offers you a <p class="role">{{ i.role }}</p> job
+                                    </div>
+                                </div>
+                                <div class="other">
+                                    <div class="send">
+                                        Sent: {{ i.date }}
+                                    </div>
+                                    <div class="buttons">
+                                        <button class="accept success-button"
+                                            (click)="invitation(i._id, 'accept')">Accept</button>
+                                        <button class="reject red-button"
+                                            (click)="invitation(i._id, 'reject', i.restaurantId)">
+                                            <ion-icon name="close-outline"></ion-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </ion-content>
+
+
+
+
+<ng-container #accountPopoverContainer></ng-container>

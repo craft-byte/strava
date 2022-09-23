@@ -13,11 +13,6 @@ interface User {
     feedbacks?: Feedback[];
 }
 
-interface LoginData {
-    username: string;
-    password: string;
-}
-
 
 interface UserInvitation {
     restaurant: string;
@@ -32,5 +27,4 @@ interface UserInvitation {
 export {
     UserInvitation,
     User,
-    LoginData,
 }

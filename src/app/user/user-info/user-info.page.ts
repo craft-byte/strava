@@ -1,11 +1,8 @@
-import { ThisReceiver } from '@angular/compiler';
-import { Component, ElementRef, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { compilePipeFromMetadata } from '@angular/compiler';
+import { Component, OnInit, Injector, ViewChild, ViewContainerRef } from '@angular/core';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
-import { getImage } from 'src/functions';
-import { UserInvitation } from 'src/models/user';
 import { UserService } from '../user.service';
 
 @Component({
@@ -16,27 +13,18 @@ import { UserService } from '../user.service';
 export class UserInfoPage implements OnInit {
 
 
-  avatar: string;
 
   restaurants: any[] = [];
-  works: any[] = [];
-  invitations: UserInvitation[] = [];
 
   role: "manager" | "waiter" | "cook" = null!;
 
 
   ui = {
-    title: "Ctraba",
+    title: "Straba",
     showRestaurants: false,
-    showJobs: false,
-    showAdd: false,
-    showInvitations: false,
-    registrationParagraphs: {
-      email: "Add email address",
-      avatar: "Add avatar image",
-      // food: "What food do you like?"
-    },
-    showRegistration: false,
+    showAddRestaurant: false,
+    showEmail: false,
+    fullName: ""
   };
 
   constructor(
@@ -44,25 +32,17 @@ export class UserInfoPage implements OnInit {
     private main: MainService,
     private router: RouterService,
     private loader: LoadService,
+    private injector: Injector,
   ) {
   }
 
-  objectKeys = Object.keys;
-  registration(type: string) {
-    if(type == "continue") {
-      if(!this.main.userInfo.email) {
-        this.router.go(["user/email"], { replaceUrl: true });
-      } else if(!this.main.userInfo.avatar) {
-        this.router.go(["user/avatar/2"], { replaceUrl: true });
-      }
-    } else if(type == "email") {
-      this.router.go(["user/email"], { replaceUrl: true });
-    } else if(type == "avatar") {
-      this.router.go(["user/avatar/2"], { replaceUrl: true });
-    }
-  }
-  map() {
-    this.router.go(["customer", "map"]);
+
+  @ViewChild("accountPopoverContainer", { read: ViewContainerRef }) accountPopover: ViewContainerRef;
+
+
+  
+  customer() {
+    this.router.go(["customer"]);
   }
   goWork(restaurantId: string) {
     this.router.go(["staff", restaurantId, "dashboard"], { replaceUrl: true });
@@ -70,61 +50,50 @@ export class UserInfoPage implements OnInit {
   addRestaurant() {
     this.router.go(["add-restaurant/start"], { replaceUrl: true });
   }
-  async invitation(id: string, type: "accept" | "reject", restaurant?: string) {
-    let result = null;
-    if(type == "accept") {
-      result = await this.service
-        .patch<{ success: boolean}>({}, "invitation/accept", this.main.userInfo._id, id);
-    } else {
-      result = await this.service
-        .patch({}, "invitation/reject", restaurant, this.main.userInfo._id, id);
-    }
-    if(result.success) {
-      for(let i in this.invitations) {
-        if(this.invitations[i]._id == id) {
-          this.invitations.splice(+i, 1);
-          break;
-        }
-      }
-      for(let i in this.main.userInfo.invitations) {
-        if(this.main.userInfo.invitations[i]._id == id) {
-          this.main.userInfo.invitations.splice(+i, 1);
-          break;
-        }
-      }
-      if(this.invitations.length == 0) {
-        this.ui.showInvitations = false;
-      }
-    }
-    if(result.job) {
-      this.main.userInfo.works.push(result.job);
-      this.works.push(result.job);
-      this.ui.showJobs = true;
-    }
-    if(result.restaurant) {
-      this.main.userInfo.restaurants.push(result.restaurant);
-      this.restaurants.push(result.restaurant);
-      this.ui.showRestaurants = true;
-    }
-  }
-  async getUser() {
-
-    const { ui, restaurants, works } = await this.service.get("userInfo");
-
-    console.log(ui);
-
-    this.restaurants = restaurants;
-    this.works = works;
-
-    this.ui = ui;
-  }
   findJob() {
     this.router.go(["jobs"], { queryParams: { role: this.role }, queryParamsHandling: "merge", replaceUrl: true });
   }
+  emailVerification() {
+    this.router.go(["user/email/verification"]);
+  }
+
+
+  async openAccount(event: any) {
+
+    console.log(event.target.offsetHeight);
+    console.log(event.target.offsetLeft);
+
+    const { AccountPopoverComponent } = await import("./account-popover/account-popover.component");
+
+    const component = this.accountPopover.createComponent(AccountPopoverComponent, { injector: this.injector });
+
+    component.instance.name = this.ui.fullName;
+    component.instance.location = { x: event.target.offsetLeft, y: event.target.offsetHeight };
+
+    component.instance.leave.subscribe(action => {
+        if(action == "profile") {
+            this.router.go(["user","profile"]);
+        } else if(action == "signOut") {
+            this.main.removeUserInfo();
+            this.router.go(["login"]);
+        }
+        component.destroy();
+    });
+
+
+  }
+
+
   async ngOnInit() {
     await this.loader.start();
     this.router.go([], { queryParams: { last: null } }, false);
-    await this.getUser();
+
+    const { ui, restaurants } = await this.service.get<any>("");
+
+    this.restaurants = restaurants;
+    this.ui = ui;
+
+    
     this.loader.end();
   }
 }

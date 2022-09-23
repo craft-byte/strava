@@ -19,20 +19,20 @@ function Restaurant(restaurantId?: string | ObjectId) {
         }
 
         for (let i of restaurant.staff!) {
-          const result = await updateUser(i.userId, { $pull: { works: id(restaurantId)! } });
+          const result = await updateUser(i.userId, { $pull: { works: id(restaurantId)!, restaurants: { restaurantId: id(restaurantId)! } } });
 
-          console.log("user works deleted: ", result.modifiedCount > 0);
+          console.log("user works deleted: ", result.ok == 1);
         }
 
         for (let i of restaurant.invitations!) {
           const result = await updateUser(i._id, { $pull: { invitations: { _id: id(i._id) } } });
 
-          console.log("user invitation deleted: ", result.modifiedCount > 0);
+          console.log("user invitation deleted: ", result.ok == 1);
         }
 
         const result1 = await updateUser(restaurant.owner!, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
 
-        console.log("owner restaurant removed: ", result1.modifiedCount > 0);
+        console.log("owner restaurant removed: ", result1.ok == 1);
 
 
         const result2 = await client.db(mainDBName).collection("restaurants").deleteOne({ _id: id(restaurantId) });
@@ -49,7 +49,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         console.log("dishes collection removed: ", result4);
         console.log("history collection removed: ", result5);
 
-        return result1.modifiedCount > 0 && result2.deletedCount > 0 && result4 && result3;
+        return result1.ok == 1 && result2.deletedCount > 0 && result4 && result3;
 
       } catch (e) {
         throw e;

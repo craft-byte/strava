@@ -6,26 +6,17 @@ import session from "express-session";
 import cookieparser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "https";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import { UserRouter } from "./routers/user";
 import { RadminRouter } from "./routers/restaurant";
 import { serverEnvinroment } from "./environments/server";
 import { StaffRouter } from "./routers/staff";
-import { ClientResponse, KitchenResponse, WaiterResponse } from "./models/responses";
-import passport from "passport";
-import LocalStrategy from "passport-local";
-import { passportFunction } from "./utils/passport";
-import { ClientRouter } from "./routers/client";
 import nodemailer from "nodemailer";
-import { ClientSocket } from "./routers/client/client-socket";
 import logger from "morgan";
-import { KitchenSocket } from "./routers/staff/kitchen/functions";
-import { WaiterSocket } from "./routers/staff/waiter/functions";
 import { logged } from "./middleware/user";
 import Stripe from "stripe";
 import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
-import { Restaurant } from "./utils/restaurant";
 import { SocketIO } from "./utils/io";
 import { CustomerRouter } from "./routers/customer";
 
@@ -145,18 +136,16 @@ app.use(express.static(splitted.join("/") + "/www"));
 app.use(cookieparser());
 
 
-passport.serializeUser(function (user: any, cb) {
-    cb(null, user._id);
-});
-passport.deserializeUser(function (user: Express.User, cb) {
-    cb(null, user);
-});
-passport.use("local", new LocalStrategy.Strategy(
-    passportFunction
-));
+// passport.serializeUser(function (user: any, cb) {
+//     cb(null, user._id);
+// });
+// passport.deserializeUser(function (user: Express.User, cb) {
+//     cb(null, user);
+// });
+// passport.use(PassportJWT());
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 
 

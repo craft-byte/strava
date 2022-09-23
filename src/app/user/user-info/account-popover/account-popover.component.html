@@ -1,0 +1,15 @@
+<div class="app" (mousedown)="leave.emit()" [@showUp]>
+    <div #setLocation class="popover" (mousedown)="$event.stopPropagation()">
+        <div class="name">
+            {{ name }}
+        </div>
+        <div class="buttons">
+            <button id="profile" class="button-font" (click)="profile()">
+                Profile
+            </button>
+            <button id="sign-out" class="button-font" (click)="signOut()">
+                Sign out
+            </button>
+        </div>
+    </div>
+</div>

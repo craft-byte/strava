@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { LoginData, User } from 'src/models/user';
+import { User } from 'src/models/user';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { of } from 'rxjs';
 
 
 @Injectable({
@@ -13,6 +14,7 @@ export class MainService {
 
   userInfo: User;
   last: { url: string, queryParams?: any };
+
 
   confirmType: "remove" | "restaurant";
   type: string;
@@ -24,49 +26,45 @@ export class MainService {
 
   constructor(
     private cookies: CookieService,
-    private http: HttpClient,
-    private router: Router
-  ) {
-  };
+    private router: Router,
+    private http: HttpClient
+  ) {};
 
-  isOwner(restaurant: string) {
-    for(let i of this.userInfo.restaurants) {
-      if(i === restaurant) {
-        return true;
-      }
-    }
-    return false;
-  }
-  async login(data?: LoginData) {
-    try {
-      const result = await this.http.patch<any>(environment.url + '/user/login', data).toPromise(); 
-      this.userInfo = result.user;
-      this.setUserInfo(result.user.username);
-      return result.redirectTo;
-    } catch (error) {
-      return false;
+  auth() {
+    const token = localStorage.getItem("token");
+
+    if(token) {
+        const headers = new HttpHeaders().append("Authorization", token).append("Skip-Interceptor", "true");
+
+        return this.http.get<any>(environment.url + "/user/status", { headers });
+    } else {
+        return of({ success: false });
     }
   }
-  auth(s: string) {
-    return this.http.get(environment.url + "/user/authenticate/" + s);
-  }
+
   logout() {
     this.userInfo = null;
     this.http.delete(environment.url + "/user/logout").toPromise();
   }
 
-  public setUserInfo(id: string) {
-    this.cookies.set("CTRABAUSERID", id);
+  setUserInfo(token: string) {
+    localStorage.setItem('token', token);    
   }
+  removeUserInfo() {
+    localStorage.removeItem("token");
+  }
+  
 
 
-  confirm(t: "restaurant" | "remove", r?: string) {
-    this.router.navigate(["confirm"], { replaceUrl: true });
-    this.confirmType = t;
-    this.type = r;
-  }
+  async login(data: { email: string; password: string; }) {
+    const result = await this.http.post<{ success: boolean; redirectTo: string; token: string; expiresAt: string}>(environment.url + "/user/login", data, { headers: new HttpHeaders({ "Skip-Interceptor": "true" }) }).toPromise();
 
-  allowed(page: string, restaurantId: string) {
-    return this.http.post<boolean>(`${environment.url}/user/allowed`, { page, restaurantId }).toPromise();
-  }
+    if(result.success) {
+        this.setUserInfo(result.token);           
+    }
+
+    return { success: result.success, redirectTo: result.redirectTo };
+
+  };
+
 }

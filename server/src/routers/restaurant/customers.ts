@@ -49,7 +49,7 @@ interface Customer {
                 const user = await getUser(i._id, { projection: { username: 1, name: 1, avatar: { binary: 1 } } });
                 result.push({
                     ...i,
-                    name: user?.name || user?.username || "User deleted",
+                    name: user?.name?.first || "User deleted",
                     avatar: user?.avatar?.binary,
                     blacklisted: isBlacklisted(i._id),
                 });
@@ -92,7 +92,7 @@ interface Customer {
                     _id: i.customer.toString(),
                     blacklisted: isBlacklisted(i.customer),
                     avatar: user?.avatar?.binary!,
-                    name: user?.name || user?.username || "User deleted",
+                    name: user?.name?.first || "User deleted",
                 }
             }
             customers[i.customer.toString()].orders++;
@@ -139,9 +139,9 @@ router.delete("/blacklist/:userId", allowed("manager", "staff"), async (req, res
     const user = await updateUser(userId, { $addToSet: { blacklisted: id(restaurantId)! } });
 
     console.log("user added to blacklist: ", restaurant!.modifiedCount > 0);
-    console.log("restaurant added to banned: ", user!.modifiedCount > 0);
+    console.log("restaurant added to banned: ", user!.ok == 1);
 
-    res.send({ updated: restaurant!.modifiedCount > 0 && user.modifiedCount > 0 });
+    res.send({ updated: restaurant!.modifiedCount > 0 && user.ok == 1 });
 });
 router.delete("/unblacklist/:userId", allowed("manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
@@ -150,9 +150,9 @@ router.delete("/unblacklist/:userId", allowed("manager", "staff"), async (req, r
     const user = await updateUser(userId, { $pull: { blacklisted: id(restaurantId)! } });
 
 
-    console.log("removed from blacklist: ", restaurant!.modifiedCount > 0 && user!.modifiedCount > 0);
+    console.log("removed from blacklist: ", restaurant!.modifiedCount > 0 && user!.ok == 1);
 
-    res.send({ updated: restaurant!.modifiedCount > 0 && user!.modifiedCount > 0 });
+    res.send({ updated: restaurant!.modifiedCount > 0 && user!.ok == 1 });
 });
 
 interface Result {
@@ -201,7 +201,7 @@ interface Result {
 
     const result: Result = {
         user: {
-            name: user?.name || user?.username || "User deletd",
+            name: user?.name?.first || "User deletd",
             avatar: user?.avatar?.binary,
             email: user?.email!,
             _id: user?._id!

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
 .header {
     width: 100%;
     height: 64px;
@@ -8,6 +10,7 @@
     z-index: 999999;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid var(--gray);
     background-color: white;
     overflow: hidden;
@@ -20,66 +23,36 @@
         font-weight: 600;
         p {
             margin: 0;
+            font-family: 'Rubik', sans-serif;
             border-bottom: 2px solid var(--orange);
             padding-right: 24px;
         }
     }
 
-    .links {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+    .restaurant {
+        button {
+            width: auto;
+            height: auto;
+            padding: 8px 8px;
+            background: none;
+            font-size: 18px;
+            color: var(--gray);
+            transition: 0.4s all;
+            border-radius: 10px;
 
-        .settings {
-            a {
-                &:hover {
-                    color: var(--purple);
-                }
+            &:hover {
+                color: black;
+                background-color: var(--orange);
             }
         }
+    }
 
-        .restaurant {
-            button {
-                width: auto;
-                height: auto;
-                padding: 12px 8px;
-                background: none;
-                font-size: 18px;
-                color: var(--gray);
-                transition: 0.4s all;
-                border-radius: 10px;
-
-                &:hover {
-                    color: black;
-                    background-color: var(--orange);
-                }
-            }
-        }
-
-        .account {
-            a:hover {
-                color: var(--green);
-            }
-        }
-
-        .job {
-            a {
-                &:hover {
-                    color: var(--red);
-                }
-            }
-        }
-
-        .link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            a {
-                font-size: 18px;
-                color: var(--gray);
-                text-decoration: none;
-                transition: 0.4s all;
-            }
+    #account-popover {
+        background: none;
+        border-radius: 100%;
+        padding: 8px;
+        ion-icon {
+            color: var(--text-color);
         }
     }
 }
@@ -98,59 +71,28 @@
         .left {
 
             // padding: 0 26px;
+            display: flex;
+            flex-direction: column;
             gap: 24px;
 
 
-            .account-registration {
+            .account-verification {
+                width: 100%;
+                border-radius: 8px;
+                border: 2px solid var(--border-color);
+                min-height: 94px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 16px;
                 -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
                 -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
                 box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-                width: 100%;
-                border: 2px solid var(--border-color);
-                border-radius: 8px;
-                position: relative;
-                height: 160px;
 
-                .title {
-                    width: 100%;
-                    display: flex;
-                    align-items: center;
-                    padding-left: 24px;
-                    height: 58px;
-                    text-align: center;
-
-                    h1 {
-                        margin: 0;
-                        font-size: 22px;
-                        color: var(--text-color);
-                    }
-                }
-
-                .text {
-                    display: flex;
-                    align-items: center;
-
-                    li {
-                        color: var(--gray);
-                        cursor: pointer;
-                        transition: font-size .2s;
-
-                        &:hover {
-                            color: var(--orange);
-                            font-size: 18px;
-                        }
-                    }
-                }
-
-                #continue-registration {
-                    position: absolute;
-                    right: 16px;
-                    top: 50%;
-                    transform: translateY(-50%);
-
-                    ion-icon {
-                        font-size: 22px;
-                    }
+                .block-header {
+                    font-size: 18px;
+                    color: var(--title-color);
+                    font-weight: 550;
                 }
             }
 
@@ -163,7 +105,6 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 0 16px;
-                margin-bottom: 24px;
                 -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
                 -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
                 box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
@@ -595,29 +536,29 @@
     }
     .header {
         padding: 0 24px;
-        display: inline-block;
-        height: auto;
-        position: static;
-        .title {
-            font-size: 22px;
-            width: 100%;
-            height: 38px;
-            padding-left: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        // display: inline-block;
+        // height: auto;
+        // position: static;
+        // .title {
+        //     font-size: 22px;
+        //     width: 100%;
+        //     height: 38px;
+        //     padding-left: 0;
+        //     display: flex;
+        //     justify-content: center;
+        //     align-items: center;
+        // }
 
-        .links {
-            width: 100%;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            .link {
-                font-size: 16px;
-                height: 32px;
-            }
-        }
+        // .links {
+        //     width: 100%;
+        //     display: flex;
+        //     flex-direction: column-reverse;
+        //     align-items: center;
+        //     .link {
+        //         font-size: 16px;
+        //         height: 32px;
+        //     }
+        // }
     }
 }
 @media (min-width: 300px) and (max-width: 549px) {
@@ -688,34 +629,6 @@
     }
     .header {
         padding: 0 24px;
-        display: inline-block;
-        height: auto;
-        position: static;
-
-        .title {
-            padding-left: 0;
-            font-size: 22px;
-            width: 100%;
-            height: 38px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .links {
-            width: 100%;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            .link {
-                font-size: 16px;
-                height: 32px;
-            }
-            #add-restaurant:hover {
-                color: var(--text-color);
-                background-color: transparent;
-            }
-        }
     }
 }
 @media (min-width: 200px) and (max-width: 450px) {

@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap');
+
+
 .the-header-with-close-icon {
     padding: 0 412px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 64px;
+    height: 42px;
     background-color: white;
     border-bottom: 1px solid var(--border-color);
     .title {
@@ -12,6 +15,7 @@
         align-items: center;
         position: relative;
         .text {
+            font-family: 'Source Sans Pro', sans-serif;
             font-size: 20px;
             color: var(--title-color);
             font-weight: 550;
@@ -30,7 +34,7 @@
                 height: 40px;
                 border: none;
                 ion-icon {
-                    font-size: 32px;
+                    font-size: 26px;
                     position: absolute;
                 }
             }

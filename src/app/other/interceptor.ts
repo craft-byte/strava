@@ -1,5 +1,5 @@
 import { Location } from "@angular/common";
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest, HttpResponse } from "@angular/common/http";
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpContextToken, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { ToastController } from "@ionic/angular";
@@ -27,14 +27,26 @@ export class Interceptor implements HttpInterceptor {
     }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        request = request.clone({
-            withCredentials: true,
-        });
-        return next.handle(request).pipe(
+
+        if (request.headers.get("Skip-Interceptor")) {
+            return next.handle(request);
+        }
+            
+        const token = localStorage.getItem("token");
+        if(token) {
+            request = request.clone({
+                headers: request.headers.append("Authorization", token)
+            });
+        }
+
+        return next.handle(request)
+        .pipe(
             catchError(err => {
                 if(err instanceof HttpErrorResponse) {
                     if(err.status == 401) {
-                        this.router.go(["login"], { replaceUrl: true, queryParams: { last: this.router.url } }, false);
+                        if(err.error.redirect) {
+                            this.router.go(["login"], { replaceUrl: true, queryParams: { last: this.router.url } }, false);
+                        }
                     } else if(err.status == 403) {
                         if(err.error.redirect) {
                             this.toast();
@@ -45,7 +57,6 @@ export class Interceptor implements HttpInterceptor {
                             }
                         }
                     }
-                    console.log(err.error);
                     return throwError({ status: err.status, body: err.error });
                 }
             })

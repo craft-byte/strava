@@ -1,0 +1,72 @@
+.app {
+    padding-top: 64px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgb(250,250,250);
+    width: 100vw;
+    min-height: 100vh;
+
+    .box {
+        width: 428px;
+        padding: 8px;
+        padding-bottom: 24px;
+        background-color: white;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        display: grid;
+        grid-template-columns: 65% 35%;
+
+        .left {
+            padding-top: 12px;
+            .name {
+                font-size: 20px;
+            }
+            .email {
+                color: var(--text-color);
+            }
+            .settings {
+                margin-top: 12px;
+
+                #settings {
+                    display: flex;
+                    align-items: center;
+                    background: none;
+
+                    .text {
+                        color: var(--text-color);
+                        margin-left: 4px;
+                        font-size: 16px;
+                    }
+                    ion-icon {
+                        font-size: 20px;
+                        color: var(--text-color);
+                    }
+    
+                    &:hover {
+                        ion-icon,.text {
+                            color: var(--black);
+                        }
+                    }
+                }
+            }
+        }
+        .right {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            padding-top: 12px;
+            .avatar {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                img {
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 100%;
+                    border: 2px solid var(--orange);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,38 @@
+<div class="app" (mousedown)="leave.emit()" [@showUp]>
+    <div class="box" (mousedown)="$event.stopPropagation()">
+        <div class="header">
+            <span class="warning">
+                !
+            </span>
+            <span class="text title-font">
+                Remove Account
+            </span>
+            <span class="warning">
+                !
+            </span>
+        </div>
+        <div class="content">
+            <div class="info">
+                <span class="bigger">
+                    You're about to remove your account and all it's data.
+                </span><br>
+                <span class="text">
+                    Please be certain. All your data stored in Strava will be removed forever. 
+                </span>
+            </div>
+            <div class="form">
+                <div class="password">
+                    <input type="password" id="password" placeholder="Password" [class.red]="ui.passwordMessage.length > 0" [(ngModel)]="password">
+                    <span class="message" *ngIf="ui.passwordMessage.length > 0">
+                        {{ ui.passwordMessage }}
+                    </span>
+                </div>
+
+                <div class="buttons">
+                    <button class="white-button" (click)="leave.emit()">Cancel</button>
+                    <button class="red-button" type="submit" id="submit" [disabled]="ui.disableSubmit" (click)="submit()">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

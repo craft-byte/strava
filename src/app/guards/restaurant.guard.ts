@@ -40,6 +40,9 @@ export class RestaurantGuard implements CanActivate {
           if(err.status == 403) {
             this.router.go(["user/info"]);
             return;
+          } else if(err.status == 404) {
+            this.router.go(["user/info"]);
+            return;
           }
           return throwError(err);
         })

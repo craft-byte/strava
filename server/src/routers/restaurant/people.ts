@@ -149,7 +149,7 @@ interface FullOrder {
         id: order.id,
         status: order.status,
         customer: {
-            username: user?.name || user?.username || "User deleted",
+            username: user?.name?.first || "User deleted",
             avatar: user?.avatar?.binary!,
             userId: user?._id!.toString()
         }
@@ -174,7 +174,7 @@ interface FullOrder {
             const user = await getUser(dish.removed!.userId, { projection: { name: 1, username: 1, avatar: { binary: 1, } } });
             one.removed = {
                 avatar: user?.avatar?.binary!,
-                username: user?.name || user?.username! || "User deleted",
+                username: user?.name?.first || "User deleted",
                 role: dish.removed!.userRole || "other",
                 time: await getRelativeDelay(order.ordered!, dish.removed!.time!),
             }
@@ -183,7 +183,7 @@ interface FullOrder {
             one.taken = await getRelativeDelay(order.ordered!, dish.taken!);
             const user = await getUser(dish.takenBy!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
             one.takenBy = {
-                username: user?.name || user?.username || "User deleted",
+                username: user?.name?.first || "User deleted",
                 avatar: user?.avatar?.binary!,
                 userId: user?._id!.toString() || null!,
             }
@@ -192,7 +192,7 @@ interface FullOrder {
             one.cooked = await getRelativeDelay(dish.taken!, dish.cooked!, { dishId: dish.dishId, restaurantId });
             const user = await getUser(dish.cook!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
             one.cook = {
-                username: user?.name || user?.username || "User deleted",
+                username: user?.name?.first || "User deleted",
                 avatar: user?.avatar?.binary!,
                 userId: user?._id!.toString() || null!,
             }
@@ -201,7 +201,7 @@ interface FullOrder {
             one.served = await getRelativeDelay(dish.cooked!, dish.served!);
             const user = await getUser(dish.waiter!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
             one.waiter = {
-                username: user?.name || user?.username || "User deleted",
+                username: user?.name?.first || "User deleted",
                 avatar: user?.avatar?.binary!,
                 userId: user?._id!.toString() || null!,
             }
