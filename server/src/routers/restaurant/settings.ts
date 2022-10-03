@@ -1,22 +1,28 @@
 import { Router, urlencoded } from "express";
 import { stripe } from "../..";
+import { Locals } from "../../models/other";
+import { logged } from "../../utils/middleware/logged";
+import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { Restaurant } from "../../utils/restaurant";
 
 
 const router = Router({ mergeParams: true });
 
 
-
-router.get("/", async (req, res) => {
-    const { restaurantId } = req.params as any;
-
-    const restaurant = await Restaurant(restaurantId).get({ projection: { settings: 1, money: 1, stripeAccountId: 1 } });
+/**
+ * 
+ * GET /restaurant/settings
+ * returns restaurant settings
+ * 
+ */
+router.get("/", logged({ _id: 1, }), allowed({ settings: 1, money: 1, stripeAccountId: 1, }, "manager", "settings"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
 
     if(!restaurant) {
         return res.sendStatus(404);
     }
 
-    const result = await stripe.accounts.listExternalAccounts(restaurant.stripeAccountId);
+    const result = await stripe.accounts.listExternalAccounts(restaurant.stripeAccountId!);
 
     let payoutDestination: any = null;
 
@@ -35,7 +41,18 @@ router.get("/", async (req, res) => {
         money: restaurant.money
     });
 });
-router.post("/", async (req, res) => {
+
+
+
+/**
+ * change settings
+ * 
+ * @param { string } field1 - field 1 ex. customers
+ * @param { string } field2 - field 2 ex. maxOrdersPrice
+ * @param { any } value - value of a setting ex. 'unlimited'
+ * 
+ */
+router.post("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings"), async (req, res) => {
     const { field1, field2, value } = req.body;
     const { restaurantId } = req.params as any;
 
@@ -49,12 +66,14 @@ router.post("/", async (req, res) => {
 
     const result = await Restaurant(restaurantId).update({ $set: query });
 
-    console.log("updated: ", result!.modifiedCount > 0);
-
     res.send({ updated: result!.modifiedCount > 0 });
 });
 
-router.post("/cash", async (req, res) => {
+
+/**
+ * enable or disable cash payment
+ */
+router.post("/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { value } = req.body;
 
@@ -63,13 +82,16 @@ router.post("/cash", async (req, res) => {
 
     res.send({ updated: result!.modifiedCount > 0 });
 });
-router.post("/card", async (req, res) => {
+
+/**
+ * disable or enable card payment
+ */
+router.post("/card", logged({ _id: 1, }), allowed({ money: 1 }, "manager", "settings"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { value } = req.body;
+    const { restaurant } = res.locals as Locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1 } });
-
-    if(restaurant!.money.card == "enabled" || restaurant!.money.card == "disabled") {
+    if(restaurant!.money!.card == "enabled" || restaurant!.money!.card == "disabled") {
         const update = await Restaurant(restaurantId).update({ $set: { "money.card": value ? "enabled" : "disabled" } });
 
         return res.send({ updated: update!.modifiedCount > 0 });

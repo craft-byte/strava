@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
-import { allowed } from "../../middleware/restaurant";
-import { order } from "../../middleware/user";
+import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser, updateUser } from "../../utils/users";
+import { logged } from "../../utils/middleware/logged";
 
 
 const router = Router({ mergeParams: true });
@@ -18,7 +18,11 @@ interface Customer {
     total: number;
     _id: string;
     blacklisted?: boolean;
-} router.get("/", allowed("manager", "customers"), async (req, res) => {
+};
+/**
+ * @returns { Customer[] } - list of customers
+ */
+router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, tables: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { calculate } = req.query;
 
@@ -131,7 +135,11 @@ interface Customer {
     console.log("cache updated: ", update.modifiedCount > 0);
 });
 
-router.delete("/blacklist/:userId", allowed("manager", "staff"), async (req, res) => {
+/**
+ * add to blacklist
+ * @returns { updated: boolean; }
+ */
+router.delete("/blacklist/:userId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).update({ $addToSet: { blacklist: id(userId)! } });
@@ -143,7 +151,12 @@ router.delete("/blacklist/:userId", allowed("manager", "staff"), async (req, res
 
     res.send({ updated: restaurant!.modifiedCount > 0 && user.ok == 1 });
 });
-router.delete("/unblacklist/:userId", allowed("manager", "staff"), async (req, res) => {
+
+/**
+ * remove from blacklist
+ * @returns { updated: boolean; }
+ */
+router.delete("/unblacklist/:userId", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).update({ $pull: { blacklist: id(userId)! } });
@@ -154,6 +167,7 @@ router.delete("/unblacklist/:userId", allowed("manager", "staff"), async (req, r
 
     res.send({ updated: restaurant!.modifiedCount > 0 && user!.ok == 1 });
 });
+
 
 interface Result {
     user: {
@@ -175,11 +189,14 @@ interface Result {
         lastVisit: string;
         blacklisted: boolean;
     }
-}; router.get("/:userId", allowed("manager", "customers"), async (req, res) => {
+};
+/**
+ * @returns { Result } a customer and a customer's all orders
+ */
+router.get("/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, email: 1, blacklisted: 1 } });
-
 
     const orders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { ordered: 1, status: 1, _id: 1, dishes: { dishId: 1, price: 1 } }})).limit(7).toArray();
     const allOrders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { _id: 1 } })).toArray();
@@ -251,14 +268,20 @@ interface Result {
 });
 
 
-router.delete("/table", allowed("manager", "customers"), async (req, res) => {
+/**
+ * remove table
+ */
+router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params;
 
     const result = await Restaurant(restaurantId).update({ $inc: { tables: -1 } });
 
     res.send({ updated: result!.modifiedCount > 0 });
 });
-router.post("/table", allowed("manager", "customers"), async (req, res) => {
+/**
+ * add table
+ */
+router.post("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params;
 
     const result = await Restaurant(restaurantId).update({ $inc: { tables: 1 } });

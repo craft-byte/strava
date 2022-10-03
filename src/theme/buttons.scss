@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&family=Rubik&display=swap');
+
+
+.button-font {
+    font-family: 'Rubik', sans-serif;
+}
+button {
+    color: var(--black);
+    ion-icon {
+        font-size: 20px;
+    }
+}
+
+
+.only-text-button {
+    padding: 2px 4px;
+    font-family: "Rubik", sans-serif;
+    color: var(--text-color);
+    font-size: 14px;
+    background: none;
+    border-radius: 4px;
+    &:hover {
+        color: var(--black);
+    }
+    &:disabled {
+        background-color: rgb(250, 250, 250);
+    }
+}
+
+.gradient-button {
+    --width: 124px;
+    --height: 42px;
+    --color1: var(--orange);
+    --color2: var(--purple);
+    --color3: var(--red);
+    --direction: 90deg;
+    --color: white;
+    width: var(--width);
+    height: var(--height);
+    background: var(--color1);
+    background: linear-gradient(var(--direction), var(--color1) 0%, var(--color2) 50%, var(--color3) 100%);
+    border-radius: 8px;
+    color: var(--color);
+}
+.red-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--red);
+    color: white;
+    font-family: 'Rubik', sans-serif;
+
+    &:disabled {
+        background-color: var(--red-dark);
+        color: var(--red);
+    }
+}
+.orange-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--orange);
+    color: var(--black);
+    font-family: 'Rubik', sans-serif;
+
+    &:disabled {
+        background-color: var(--orange-dark);
+    }
+}
+.white-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: white;
+    color: var(--black);
+    border: 1px solid var(--gray);
+    font-family: 'Rubik', sans-serif;
+
+    &:hover {
+        background-color: rgb(248, 248, 248);
+    }
+
+    &:disabled {
+        background-color: rgb(233, 233, 233);
+    }
+}
+.green-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--green);
+    color: white;
+
+    ion-icon {
+        font-size: 22px;
+    }
+
+    &:disabled {
+        background-color: var(--green-back);
+        color: var(--light-gray);
+    }
+}
+.purple-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--purple);
+    color: white;
+
+    &:disabled {
+        background-color: purple;
+        color: var(--light-gray);
+    }
+}
+.blue-button {
+    width: 120px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    margin: 6px;
+    border-radius: 8px;
+    background-color: var(--blue);
+    color: white;
+
+    &:disabled {
+        background-color: rgb(2, 2, 187);
+        color: var(--light-gray);
+    }
+}

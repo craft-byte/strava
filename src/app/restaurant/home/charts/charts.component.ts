@@ -40,24 +40,31 @@ export class ChartsComponent implements OnInit {
   };
 
   async ngOnInit() {
-    const result: any = await this.service.get({}, "charts");
-
-    console.log(result);
-
-    if(!result) {
-        this.chart.showChart = false;
-        return;
-    }
-
-    this.chart.multi = [result];
-    if(result) {
-      this.chart.showChart = true;
-    }
-
-    console.log(window.innerWidth);
 
     if(window.innerWidth < 700) {
       this.chart.legendPosition = LegendPosition.Below;
+    }
+
+    try {
+        const result: any = await this.service.get({}, "charts");
+        
+        console.log(result);
+    
+        if(!result) {
+            this.chart.showChart = false;
+            return;
+        }
+    
+        this.chart.multi = [result];
+        if(result) {
+          this.chart.showChart = true;
+        }
+    } catch (e) {
+        if(e.status == 403) {
+            if(e.body.reason == "RestaurantNotEnabled") {
+                this.chart.showChart = false;
+            }
+        }
     }
     
   }

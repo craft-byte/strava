@@ -68,8 +68,10 @@ router.post("/login", async (req, res) => {
  * @returns { authorized: boolean; }
  * 
  */
-router.get("/status", logged({ projection: { _id: 1 } }), (req, res) => {
-    res.send({ authorized: true });
+router.get("/status", logged({ _id: 1, email: 1 }), (req, res) => {
+    const { user } = res.locals as Locals;
+
+    res.send({ authorized: true, user });
 });
 
 
@@ -112,6 +114,8 @@ router.post("/create", async (req, res) => {
             last: lastName,
         },
         emailCode: code.toString(),
+        restaurants: [],
+        blacklisted: [],
     };
 
     const insert = await addUser(newUser);
@@ -142,7 +146,7 @@ router.post("/create", async (req, res) => {
  * @throws { status: 403; reason: "AccountConfirmed" }  if email is registered but for some reason confirmation code was not sent
  * 
  */
-router.get("/email/check", logged({ projection: { status: 1, email: 1, emailCode: 1, } }), async (req, res) => {
+router.get("/email/check", logged({ status: 1, email: 1, emailCode: 1, }), async (req, res) => {
     const { user } = res.locals as Locals;
 
     if(!user.email) {
@@ -179,7 +183,7 @@ router.get("/email/check", logged({ projection: { status: 1, email: 1, emailCode
  * @throws { status: 403; reason: "EmailHasBeenConfirmed" }
  * 
  */
-router.post("/email/resend", logged({ projection: { email: 1, } }), async (req, res) => {
+router.post("/email/resend", logged({ email: 1, }), async (req, res) => {
     const { user } = res.locals as Locals;
 
     if(!user.email) {
@@ -214,7 +218,7 @@ router.post("/email/resend", logged({ projection: { email: 1, } }), async (req, 
  * @throws { status: 422; reason: "CodeInvalid" } if code is invalid (e.x. not 6 chars length)
  * 
  */
-router.post("/email/confirm", logged({ projection: { email: 1, emailCode: 1, status: 1 } }), async (req, res) => {
+router.post("/email/confirm", logged({ email: 1, emailCode: 1, status: 1 }), async (req, res) => {
     const { code } = req.body;
     const { user } = res.locals as Locals;
 
@@ -263,7 +267,7 @@ router.post("/email/confirm", logged({ projection: { email: 1, emailCode: 1, sta
  * 
  * 
  */
-router.post("/email/reset", logged({ projection: { password: 1, email: 1 } }), async (req, res) => {
+router.post("/email/reset", logged({ password: 1, email: 1 }), async (req, res) => {
     const { email, password } = req.body;
     const { user } = res.locals as Locals;
 
@@ -331,14 +335,14 @@ interface UserInfo {
  * @returns { result: UserInfo }
  * 
  */
-router.get("/", logged({ projection: { status: 1, restaurants: 1, name: { first: 1, last: 1, } } }), async (req, res) => {
+router.get("/", logged({ status: 1, restaurants: 1, name: { first: 1, last: 1, } }), async (req, res) => {
     const { user } = res.locals as Locals;
 
     const result: UserInfo = {
         ui: {
             title: `Hi, ${user.name!.first}` || "Strava",
             fullName: `${user.name!.first} ${user.name!.last}`,
-            showAddRestaurant: true,
+            showAddRestaurant: user.restaurants.length == 0,
             showEmailVerification: user.status == "restricted",
             showRestaurants: user.restaurants && user.restaurants?.length > 0 || false
         },
@@ -367,8 +371,6 @@ router.get("/", logged({ projection: { status: 1, restaurants: 1, name: { first:
     }
 
 
-    console.log(result);
-
     res.send(result);
 
 });
@@ -389,7 +391,7 @@ router.get("/", logged({ projection: { status: 1, restaurants: 1, name: { first:
  * @throws { status: 403; reason: "PasswordIncorrect" } - password is incorrect
  * 
  */
-router.post("/remove", logged({ projection: { password: 1 } }), async (req, res) => {
+router.post("/remove", logged({ password: 1 }), async (req, res) => {
     const { password } = req.body;
     const { user } = res.locals as Locals;
 

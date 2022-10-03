@@ -114,9 +114,9 @@ export class DobPage implements OnInit {
     console.log(result);
 
     this.form = new FormGroup({
-      year: new FormControl(result.year || null, [Validators.max(new Date().getFullYear()), Validators.min(1900), Validators.required]),
-      month: new FormControl(result.month - 1 || 0, [Validators.required]),
-      day: new FormControl(result.day || null, [Validators.max(31), Validators.min(1), Validators.required]),
+      year: new FormControl(result?.year || null, [Validators.max(new Date().getFullYear()), Validators.min(1900), Validators.required]),
+      month: new FormControl(result?.month - 1 || 0, [Validators.required]),
+      day: new FormControl(result?.day || null, [Validators.max(31), Validators.min(1), Validators.required]),
     });
 
     

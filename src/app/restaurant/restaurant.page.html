@@ -2,7 +2,7 @@
   <div class="header">
     <div class="restaurant {{ navClass }}" (click)="navigation($event)">
       <div class="name">
-        {{ restaurant.name }}
+        {{ restaurant?.name }}
       </div>
       <div class="button" *ngIf="ui.showButtonNearRestaurantName">
         <ion-icon name="chevron-forward-outline"></ion-icon>

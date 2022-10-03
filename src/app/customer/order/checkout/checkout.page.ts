@@ -22,6 +22,7 @@ interface PaymentInfo {
     dishes: { name: string; price: number; amount: number; }[];
     methods: { last4: string; brand: string; id: string; }[];
     _id: string;
+    theme: string;
 };
 
 
@@ -191,6 +192,8 @@ export class CheckoutPage implements OnInit, OnDestroy {
             const result: PaymentInfo = await this.service.get({}, "order", this.service.restaurantId, "session", "payment-info");
 
             this.data = result;
+            this.theme = result.theme;
+            this.service.theme = result.theme;
 
             this.elementsOptions.clientSecret = result.clientSecret;
         } catch (e) {

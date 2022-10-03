@@ -117,7 +117,7 @@ export class AddressPage implements OnInit {
       const result: any = await this.service.post({...this.form.value, country: this.country}, "add-restaurant/set/all", this.restaurantId);
 
       if(result.updated) {
-        this.router.go(["add-restaurant", this.restaurantId, "choose-method"]);
+        this.router.go(["add-restaurant", this.restaurantId, "bank-account"]);
       } else {
         (await this.toastCtrl.create({
           color: "red",

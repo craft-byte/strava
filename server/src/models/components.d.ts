@@ -17,7 +17,8 @@ interface Component {
 interface Cooking {
     recipee: string;
     components: { amount: number; _id: ObjectId; }[];
-    prefered: ObjectId[]
+    cooks: ObjectId[];
+    modified: { date: number; userId: ObjectId; };
 }
 interface RestaurantSettings {
     customers: {

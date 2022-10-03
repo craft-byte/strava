@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { allowed } from "../middleware/restaurant";
 import { Orders, Restaurant } from "../utils/restaurant";
 import { ComponentsRouter } from "./restaurant/components";
 import { StaffRouter } from "./restaurant/staff";
 import { DishesRouter } from "./restaurant/dishes";
 import { UpdateRouter } from "./restaurant/update";
-import { getUser, getUsers } from "../utils/users";
 import { PeopleRouter } from "./restaurant/people";
 import { CustomersRouter } from "./restaurant/customers";
-import { SettingsRouter } from "./restaurant/settings";
 import { stripe } from "..";
 import { DishHashTableUltra } from "../utils/dish";
+import { logged } from "../utils/middleware/logged";
+import { allowed } from "../utils/middleware/restaurantAllowed";
+import { Locals } from "../models/other";
+import { SettingsRouter } from "./restaurant/settings";
 
 
 const router = Router({ mergeParams: true });
@@ -21,16 +22,17 @@ router.use("/components", ComponentsRouter);
 router.use("/people", PeopleRouter);
 router.use("/staff", StaffRouter);
 router.use("/customers", CustomersRouter);
-router.use("/settings", allowed("manager", "settings"), SettingsRouter);
+router.use("/settings", SettingsRouter);
 
 
-router.get("/init", allowed("manager"), async (req, res) => {
+router.get("/init", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ name: 1, status: 1 }, "manager"), async (req, res) => {
     const{ restaurantId } = req.params;
+    const { restaurant, user } = res.locals as Locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, status: 1 } });
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, status: 1 } });
+    // const user = await getUser(req.user as string, { projection: { restaurants: { restaurantId: 1, role: 1 } } });
 
 
-    const user = await getUser(req.user as string, { projection: { restaurants: { restaurantId: 1, role: 1 } } });
 
     const promises = [];
 
@@ -51,6 +53,13 @@ router.get("/init", allowed("manager"), async (req, res) => {
 
 
 
+/**
+ * 
+ * data for restaurant/home.page
+ * card payments status
+ * payouts status
+ * 
+ */
 interface ReviewResult {
     nextUrl?: string;
     nextEventuallyUrl?: string;
@@ -65,14 +74,16 @@ interface ReviewResult {
         cash: "enabled" | "disabled";
         payouts: "enabled" | "restricted" | "pending" | "rejected";
     };
-}; router.get("/home", allowed("manager"), async (req, res) => {
+}; router.get("/home", logged({ restaurants: 1 }), allowed({ money: 1 }, "owner"), async (req, res) => {
     const { restaurantId } = req.params as any;
-    
-    const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1 } });
-    
-    
-    if(!restaurant) {
-        return res.sendStatus(404);
+    const { restaurant, user } = res.locals as Locals;
+
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1 } });
+    // const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
+
+
+    if(!restaurant.money) {
+        throw "NO restaurant.money property at /restaurant/home";
     }
     
     const result: ReviewResult = {
@@ -84,19 +95,23 @@ interface ReviewResult {
     };
 
 
-    const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
 
-
-    if (!user!.restaurants) {
-        return res.sendStatus(404);
-    }
-
-    for (let i of user!.restaurants) {
+    for (let i of user.restaurants) {
         if (i.role == "owner" && i.restaurantId.equals(restaurantId)) {
+
+            if(!i.stripeAccountId) {
+                console.error("at GET /restaurant/home no stripeAccountId");
+                throw "at GET /restaurant/home no stripeAccountId";
+                break;
+            }
 
             const account = await stripe.accounts.retrieve(i.stripeAccountId!);
             
             if(!account) {
+                break;
+            }
+
+            if(!account.requirements) {
                 break;
             }
 
@@ -136,7 +151,7 @@ interface ReviewResult {
                 for (let i of account.requirements?.currently_due!) {
                     switch (i) {
                         case "external_account":
-                            result.nextUrl = `add-restaurant/${restaurantId}/choose-method`;
+                            result.nextUrl = `add-restaurant/${restaurantId}/bank-account`;
                             break;
                         case "individual.address.city":
                             result.nextUrl = `add-restaurant/${restaurantId}/address`;
@@ -195,19 +210,25 @@ interface ReviewResult {
 
 
 
+/**
+ * charts data for restaurant/home.page
+ * 
+ * @throws { status: 403; reason: "RestaurantNotEnabled" }
+ */
 interface Chart {
     name: string;
     series: {
         value: number;
         name: string;
     }[];
-}; router.get("/charts", allowed("manager"), async (req, res) => {
+}; router.get("/charts", logged({ _id: 1 }), allowed({ status: 1 }, "manager"), async (req, res) => {
     const { restaurantId } = req.params;
+    const { restaurant } = res.locals as Locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { status: 1 } });
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { status: 1 } });
 
     if(restaurant!.status != "disabled" && restaurant!.status != "enabled") {
-        return res.status(403).send({ reason: "status" });
+        return res.status(403).send({ reason: "RestaurantNotEnabled" });
     }
 
     const weekAgo = Date.now() - 604800000;
@@ -262,71 +283,78 @@ interface Chart {
 
 
 
-router.patch("/findUsers", async (req, res) => {
-    const { searchText } = req.body;
+// router.patch("/findUsers", logged({ _id: 1 }), async (req, res) => {
+//     const { searchText } = req.body;
 
-    const users = await getUsers({}, { projection: { name: 1, username: 1, } });
+//     const users = await getUsers({}, { projection: { name: 1, username: 1, } });
 
-    const ids = [];
+//     const ids = [];
 
-    for(let i of users) {
-        if(
-            i.name?.first.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
-            ||
-            i.name?.last.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
-        ) {
-            ids.push(i._id!);
-        }
-    }
+//     for(let i of users) {
+//         if(
+//             i.name?.first.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
+//             ||
+//             i.name?.last.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
+//         ) {
+//             ids.push(i._id!);
+//         }
+//     }
 
-    const users2 = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, username: 1, avatar: 1 } });
+//     const users2 = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, username: 1, avatar: 1 } });
 
-    const result = [];
-
-
-    for(let i of users2) {
-        result.push({
-            name: i.name?.first || "User deleted",
-            avatar: i.avatar,
-            _id: i._id,
-        });
-    }
+//     const result = [];
 
 
-    res.send(result);
-});
-router.get("/user/:userId", allowed("manager", "staff"), async (req, res) => {
-    const { userId, restaurantId } = req.params;
+//     for(let i of users2) {
+//         result.push({
+//             name: i.name?.first || "User deleted",
+//             avatar: i.avatar,
+//             _id: i._id,
+//         });
+//     }
 
-    const user = await getUser(userId, { projection: { name: 1, username: 1 } });
-    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1 } } });
+
+//     res.send(result);
+// });
+
+
+// router.get("/user/:userId", allowed("manager", "staff"), async (req, res) => {
+//     const { userId, restaurantId } = req.params;
+
+//     const user = await getUser(userId, { projection: { name: 1, username: 1 } });
+//     const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1 } } });
     
 
-    if(user!._id!.equals(req.user as any)) {
-        return res.send({ works: true });
-    }
-    for(let i of restaurant!.staff!) {
-        if(i.userId.equals(userId)) {
-            return res.send({ works: true });
-        }
-    }
+//     if(user!._id!.equals(req.user as any)) {
+//         return res.send({ works: true });
+//     }
+//     for(let i of restaurant!.staff!) {
+//         if(i.userId.equals(userId)) {
+//             return res.send({ works: true });
+//         }
+//     }
 
-    res.send({
-        name: user!.name?.first || "User deleted",
-        _id: user!._id,
-    });
-});
+//     res.send({
+//         name: user!.name?.first || "User deleted",
+//         _id: user!._id,
+//     });
+// });
 
-router.delete("/", allowed("owner"), async (req, res) => {
+
+/**
+ * delete restaurant
+ * for development only
+ * should be reconsidered
+ */
+router.delete("/", logged({ _id: 1, }), allowed({ owner: 1, staff: 1, stripeAccountId: 1 }, "owner"), async (req, res) => {
     const { restaurantId } = req.params;
+    const { restaurant } = res.locals as Locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { owner: 1, staff: 1, stripeAccountId: 1 } });
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { owner: 1, staff: 1, stripeAccountId: 1 } });
 
 
-    if(!restaurant) {
-        return res.sendStatus(404);
-    } else if(!restaurant.owner?.equals(req.user as string)) {
-        return res.sendStatus(403);
+    if(!restaurant.stripeAccountId) {
+        throw "error at DELETE /restaurant no restaurant.stripeAccountId property";
     }
 
     try {

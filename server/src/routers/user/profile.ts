@@ -28,7 +28,7 @@ interface Profile {
  * user in profile.page and settings.page
  * 
  */
-router.get("/", logged({ projection: { email: 1, name: 1, avatar: { binary: 1 }, status: 1, anonymously: 1 } }), async (req, res) => {
+router.get("/", logged({ email: 1, name: 1, avatar: { binary: 1 }, status: 1, anonymously: 1 }), async (req, res) => {
     const { user } = res.locals as Locals;
     
     const result: Profile = {
@@ -48,7 +48,7 @@ router.get("/", logged({ projection: { email: 1, name: 1, avatar: { binary: 1 },
  * @throws { status: 422 } - if types are incorrect
  * 
  */
-router.post("/update", logged({ projection: { _id: 1, } }), async (req, res) => {
+router.post("/update", logged({ _id: 1, }), async (req, res) => {
     const { anon, name: { first, last }, avatar } = req.body;
     const { user: { _id } } = res.locals as Locals;
 
@@ -94,7 +94,7 @@ router.post("/update", logged({ projection: { _id: 1, } }), async (req, res) => 
  * 
  * 
  */
-router.post("/password", logged({ projection: { _id: 1, password: 1, email: 1 } }), async (req, res) => {
+router.post("/password", logged({ _id: 1, password: 1, email: 1 }), async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     const { user } = res.locals as Locals;
 

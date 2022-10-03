@@ -1,7 +1,9 @@
-import { User } from "./general";
+import { Restaurant, User } from "./general";
 
 interface Locals {
     user: User;
+    restaurant: Restaurant;
+    stripeAccountId: string;
 }
 
 export {

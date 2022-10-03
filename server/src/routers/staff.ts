@@ -27,8 +27,8 @@ router.get("/:restaurantId/dashboard", logged, allowed("staff"), async (req, res
 
     for(let i of restaurant?.staff!) {
         if(i.userId.toString() == req.user) {
-            user.showKitchen = i.role == "cook" || i.role == "admin" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.cook : false);
-            user.showWaiter = i.role == "waiter" || i.role == "admin" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.waiter : false);
+            user.showKitchen = i.role == "cook" || i.role == "owner" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.cook : false);
+            user.showWaiter = i.role == "waiter" || i.role == "owner" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.waiter : false);
             user.role = i.role;
         }
     }

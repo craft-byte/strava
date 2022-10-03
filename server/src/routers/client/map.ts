@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getDate, id } from "../../utils/functions";
+import { logged } from "../../utils/middleware/logged";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { checkSession } from "./functions";
 
@@ -7,14 +8,13 @@ import { checkSession } from "./functions";
 const router = Router();
 
 
-router.get("/restaurants", async (_req, res) => {
+router.get("/restaurants", logged({ _id: 1 }), async (_req, res) => {
     const result = await Restaurant().search({  }, { limit: 7 });
-
 
     res.send(result);
 });
 
-router.get("/restaurant/:restaurantId", async (req, res) => {
+router.get("/restaurant/:restaurantId", logged({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params;
 
 
@@ -96,7 +96,7 @@ router.get("/restaurant/:restaurantId", async (req, res) => {
     res.send(result);
 });
 
-router.post("/table/:restaurantId", async (req, res) => {
+router.post("/table/:restaurantId", logged({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params;
     const { table } = req.body;
 
@@ -116,7 +116,7 @@ router.post("/table/:restaurantId", async (req, res) => {
 });
 
 
-router.delete("/restaurant/:restaurantId/session", async (req, res) => {
+router.delete("/restaurant/:restaurantId/session", logged({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params;
 
     // const result = await Restaurant(restaurantId).sessions.userId(req.user as string)

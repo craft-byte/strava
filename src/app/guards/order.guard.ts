@@ -10,91 +10,87 @@ import { RouterService } from '../other/router.service';
 import { SequentialRoutingGuardService } from '../other/sequential-routing-guard.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class OrderGuard implements CanActivate {
 
-  constructor(
-    private service: CustomerService,
-    private router: RouterService,
-    private sequentialRoutingGuardService: SequentialRoutingGuardService,
-    private order: OrderService,
-    private toastCtrl: ToastController,
-  ) {};
+    constructor(
+        private service: CustomerService,
+        private router: RouterService,
+        private sequentialRoutingGuardService: SequentialRoutingGuardService,
+        private order: OrderService,
+        private toastCtrl: ToastController,
+    ) { };
 
-  async toast() {
-    (await this.toastCtrl.create({
-      duration: 1500,
-      message: "You're not allowed to be there.",
-      color: "green",
-      mode: "ios",
-    })).present();
-  }
+    async toast() {
+        (await this.toastCtrl.create({
+            duration: 1500,
+            message: "You're not allowed to be there.",
+            color: "green",
+            mode: "ios",
+        })).present();
+    }
 
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
-    const restaurantId = route.paramMap.get("restaurantId");
-    
-    const rid = restaurantId.split("?")[0];
-    this.service.restaurantId = rid;
+        const restaurantId = route.paramMap.get("restaurantId");
 
-    const observalbe = new Observable<boolean>(subs => {
-      if(!this.order.socketId) {
-        console.log("ORDER  SOCKET ID DOES NOT EXITST");
-        this.order.socket.connect();
-        this.order.socket.on("connect", () => {
-          console.log("ORDER  SOCKET ON CONNECT");
-          this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check")
-          .pipe(
-            catchError(err => {
-              if(err.status == 404) {
-                this.router.go(["customer", "scan"]);
-              } else if(err.status == 403) {
-                this.router.go(["customer", "scan"]);
-                this.toast()
-              }
+        const rid = restaurantId.split("?")[0];
+        this.service.restaurantId = rid;
 
-              return throwError(err.status);
-            })
-          )
-          .subscribe(res => {
-            if(res) {
-              this.service.theme = res.theme;
-              subs.next(true);
+        const observalbe = new Observable<boolean>(subs => {
+            if (!this.order.socketId) {
+                this.order.socket.connect();
+                this.order.socket.on("connect", () => {
+                    console.log("ORDER  SOCKET ON CONNECT");
+                    this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check")
+                        .pipe(
+                            catchError(err => {
+                                if (err.status == 404) {
+                                    this.router.go(["customer", "scan"]);
+                                } else if (err.status == 403) {
+                                    this.router.go(["customer", "scan"]);
+                                    this.toast()
+                                }
+
+                                return throwError(err.status);
+                            })
+                        )
+                        .subscribe(res => {
+                            if (res) {
+                                subs.next(true);
+                            } else {
+                                this.router.go(["customer/scan"]);
+                            }
+                        });
+                });
             } else {
-              this.router.go(["customer/scan"]);
+                this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check").pipe(
+                    catchError(err => {
+                        if (err.status == 404) {
+                            this.router.go(["customer", "scan"]);
+                        } else if (err.status == 403) {
+                            this.router.go(["customer", "scan"]);
+                            this.toast()
+                        }
+
+                        return throwError(err.status);
+                    })
+                ).subscribe(res => {
+                    if (res) {
+                        subs.next(true);
+                    } else {
+                        this.router.go(["customer/scan"]);
+                    }
+                });
             }
-          });
         });
-      } else {
-        console.log("ORDER  SOCKET ID EXITST");
-        this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check").pipe(
-          catchError(err => {
-            if(err.status == 404) {
-              this.router.go(["customer", "scan"]);
-            } else if(err.status == 403) {
-              this.router.go(["customer", "scan"]);
-              this.toast()
-            }
 
-            return throwError(err.status);
-          })
-        ).subscribe(res => {
-          if(res) {
-            this.service.theme = res.theme;
-            subs.next(true);
-          } else {
-            this.router.go(["customer/scan"]);
-          }
-        });
-      }
-    });
+        return this.sequentialRoutingGuardService.queue(
+            route,
+            observalbe
+        );
 
-    return this.sequentialRoutingGuardService.queue(
-      route,
-      observalbe
-    );
-
-  }
+    }
 }

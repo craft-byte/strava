@@ -105,7 +105,7 @@ async function checkLocation(country: string, state: string, city: string) {
  * 
  * @returns { added: boolean; requrements: Hash; insertedId: stirng; }
  */
-router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirmed(true), async (req, res) => {
+router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (req, res) => {
     const { name, country } = req.body;
     const { user } = res.locals as Locals;
 
@@ -128,10 +128,10 @@ router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirm
         const account = await stripe.accounts.create({
             type: "custom",
             metadata: {
-                userId: user!._id!.toString(),
+                userId: user._id.toString(),
                 restaurantId: restaurantId.toString(),
             },
-            email: user!.email,
+            email: user.email,
             capabilities: {
                 card_payments: {
                     requested: true,
@@ -145,7 +145,7 @@ router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirm
                 ip: req.ip,
                 date: Math.floor(Date.now() / 1000),
             },
-            "business_type": "individual"
+            business_type: "individual"
         });
 
 
@@ -227,8 +227,8 @@ router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirm
     const newRestaurant: RestaurantType = {
         _id: restaurantId,
         name,
-        owner: id(req.user as string)!,
-        staff: [{ userId: id(req.user as string)!, role: "admin", joined: Date.now(), settings: {} }],
+        owner: user._id,
+        staff: [{ userId: user._id, role: "owner", joined: Date.now(), settings: {} }],
         created: new Date(),
         theme: "orange",
         invitations: [],
@@ -260,13 +260,13 @@ router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirm
         const result3 = await client.db(ordersDBName).createCollection(newRestaurant._id.toString());
         const result4 = await client.db(historyDBName).createCollection(newRestaurant._id.toString());
         const result5 = await updateUser(
-            req.user as string,
+            user._id,
             {
                 $push: {
                     restaurants: { restaurantId: newRestaurant._id!, stripeAccountId, role: "owner" },
                 },
                 $set: {
-                    "info.country": country,
+                    "info.location.country": country,
                 }
             }
         );
@@ -290,13 +290,13 @@ router.post("/create", logged({ projection: { email: 1, status: 1, } }), confirm
 /**
  * sets user's legal name
  */
-router.post("/name/:restaurantId", logged({ projection: { restaurants: 1, name: 1 } }), owner, async (req, res) => {
-    const { stripeAccountId } = res.locals;
+router.post("/name/:restaurantId", logged({ restaurants: 1, name: 1 }), owner, async (req, res) => {
+    const { stripeAccountId, user, } = res.locals as Locals;
     const { firstName, lastName } = req.body;
 
 
     try {
-        const result = await updateUser(req.user as string, { $set: { name: { first: firstName, last: lastName } } });
+        const result = await updateUser(user._id, { $set: { name: { first: firstName, last: lastName } } });
         const account = await stripe.accounts.update(stripeAccountId, { individual: { first_name: firstName, last_name: lastName } });
 
 
@@ -311,14 +311,15 @@ router.post("/name/:restaurantId", logged({ projection: { restaurants: 1, name: 
 /**
  * sets restaurant location
  */
-router.post("/set/state/:restaurantId", logged({ projection: { restaurants: 1, }}), owner, async (req, res) => {
+router.post("/set/state/:restaurantId", logged({ restaurants: 1 }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { state, country } = req.body;
+    const { user } = res.locals as Locals;
 
     try {
         const result = await getCities(country, state);
 
-        const update = await updateUser(req.user as string, { $set: { "info.state": state, "info.city": result.data[0].name } });
+        const update = await updateUser(user._id, { $set: { "info.location.state": state, "info.location.city": result.data[0].name } });
         const restaurantUpdate = await Restaurant(restaurantId).update({ $set: { "info.state": state, "info.city": result.data[0].name } });
 
         console.log("state updated: ", update!.ok == 1);
@@ -335,11 +336,11 @@ router.post("/set/state/:restaurantId", logged({ projection: { restaurants: 1, }
 /**
  * sets restaurants city
  */
-router.post("/set/city/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
+router.post("/set/city/:restaurantId", logged({ restaurants: 1 }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { city } = req.body;
 
-    const update = await Restaurant(restaurantId).update({ $set: { "info.city": city } });
+    const update = await Restaurant(restaurantId).update({ $set: { "info.location.city": city } });
 
     res.send({ updated: update!.modifiedCount > 0 });
 });
@@ -352,9 +353,9 @@ router.post("/set/city/:restaurantId", logged({ projection: { restaurants: 1 } }
  * @throws { status: 422 } - location is invalid
  * @throws { status: 422; reason: "PostalCodeInvalid" } - location is invalid
  */
-router.post("/set/all/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
+router.post("/set/all/:restaurantId", logged({ restaurants: 1 }), owner, async (req, res) => {
     const { restaurantId } = req.params;
-    const { stripeAccountId } = res.locals;
+    const { stripeAccountId, user } = res.locals as Locals;
 
     const { line1, line2, city, state, postal_code, country } = <{ [key: string]: string; }>req.body;
 
@@ -377,11 +378,11 @@ router.post("/set/all/:restaurantId", logged({ projection: { restaurants: 1 } })
             "info.postal_code": postal_code,
         }
     });
-    const userUpdate = await updateUser(req.user as string, {
+    const userUpdate = await updateUser(user._id, {
         $set: {
-            "info.state": state,
-            "info.city": city,
-            "info.postal_code": postal_code,
+            "info.location.state": state,
+            "info.location.city": city,
+            "info.location.postal_code": postal_code,
         }
     });
 
@@ -419,11 +420,10 @@ router.post("/set/all/:restaurantId", logged({ projection: { restaurants: 1 } })
  * 
  * @throws { status: 422 } - date is invalid
  */
-router.post("/set/dob/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
-    const { stripeAccountId } = res.locals;
+router.post("/set/dob/:restaurantId", logged({ restaurants: 1 }), owner, async (req, res) => {
+    const { stripeAccountId, user } = res.locals;
     const { year, month, day } = req.body;
 
-    console.log(req.body);
 
     if (
         !year ||
@@ -447,11 +447,11 @@ router.post("/set/dob/:restaurantId", logged({ projection: { restaurants: 1 } })
     }
 
 
-    await updateUser(req.user as string, {
+    await updateUser(user._id as string, {
         $set: {
-            "info.year": year,
-            "info.month": month,
-            "info.day": day,
+            "info.dob.year": year,
+            "info.dob.month": month,
+            "info.dob.day": day,
         }
     });
 
@@ -482,7 +482,7 @@ router.post("/set/dob/:restaurantId", logged({ projection: { restaurants: 1 } })
  * 
  * @returns { updated: boolean; }
  */
-router.post("/set/bank-account/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
+router.post("/set/bank-account/:restaurantId", logged({ restaurants: 1 }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { stripeAccountId } = res.locals;
     const { number, branch, institution, name, country, currency } = req.body;
@@ -544,7 +544,7 @@ router.post("/set/bank-account/:restaurantId", logged({ projection: { restaurant
 /**
  * @returns saved location
  */
-router.get("/address/:restaurantId", logged({ projection: { restaurants: 1 } }), owner, async (req, res) => {
+router.get("/address/:restaurantId", logged({ restaurants: 1 }), owner, async (req, res) => {
     const { restaurantId } = req.params;
     const { stripeAccountId } = res.locals;
 
@@ -605,29 +605,42 @@ router.get("/address/:restaurantId", logged({ projection: { restaurants: 1 } }),
 
 /**
  * @returns saved date of birth
- */
-router.get("/dob", logged({ projection: { dob: 1, }}), async (req, res) => {
+ */ 
+router.get("/dob", logged({ info: { dob: 1 }, }), async (req, res) => {
     const { user } = res.locals as Locals;
 
-    res.send(user.dob);
+    res.send(user.info?.dob);
 });
+
+
+/**
+ * @returns saved full user name
+ */
+router.get("/name", logged({ name: 1 }), (req, res) => {
+    const { user } = res.locals;
+
+    res.send(user.name);
+});
+
 
 /**
  * @returns info for bank account: available currencies, saved user country, holder(user) name
  */
-router.get("/bank-account", logged({ projection: { name: 1, location: 1  }}), async (req, res) => {
+router.get("/bank-account", logged({ name: 1, info: 1 }), async (req, res) => {
 
     const { user } = res.locals as Locals;
 
-    if (!user || !user.location || !user.location.country || !user.name) {
+    console.log(user);
+
+    if (!user || !user.info?.location || !user.info?.location.country || !user.name) {
         return res.sendStatus(404);
     }
 
-    const result = await stripe.countrySpecs.retrieve(user.location.country);
+    const result = await stripe.countrySpecs.retrieve(user.info?.location.country);
 
     res.send({
         currencies: Object.keys(result.supported_bank_account_currencies),
-        country: user.location.country || "AF",
+        country: user.info?.location.country || "AF",
         name: `${user.name.first} ${user.name.last}`,
     });
 });
@@ -635,14 +648,15 @@ router.get("/bank-account", logged({ projection: { name: 1, location: 1  }}), as
 /**
  * @returns currencies
  */
-router.get("/currencies", logged, async (req, res) => {
-    const user = await getUser(req.user as string, { projection: { info: { country: 1 } } });
+router.get("/currencies", logged({ info: { location: { country: 1 } } }), async (req, res) => {
 
-    if (!user || !user.location || !user.location.country) {
+    const { user } = res.locals as Locals;
+
+    if (!user || !user.info?.location || !user.info?.location.country) {
         return res.sendStatus(404);
     }
 
-    const result = await stripe.countrySpecs.retrieve(user.location.country);
+    const result = await stripe.countrySpecs.retrieve(user.info?.location.country);
 
     res.send(Object.keys(result.supported_bank_account_currencies));
 });
@@ -650,7 +664,7 @@ router.get("/currencies", logged, async (req, res) => {
 /**
  * @returns currencies
  */
-router.get("/currencies/:country", logged({ projection: { _id: 1 } }), async (req, res) => {
+router.get("/currencies/:country", logged({ _id: 1 }), async (req, res) => {
     const { country } = req.params;
 
     try {
@@ -665,16 +679,27 @@ router.get("/currencies/:country", logged({ projection: { _id: 1 } }), async (re
         throw error;
     }
 });
-router.get("/country", logged, async (req, res) => {
 
-    const user = await getUser(req.user as string, { projection: { info: { country: 1 } } });
+/**
+ * 
+ * @returns { code: string } - code of country
+ * 
+ * country code can be saved in user object in db
+ * else it will be found by ip and saved to user object
+ * 
+ */
+router.get("/country", logged({ info: { location: { country: 1 } } }), async (req, res) => {
+
+    // const user = await getUser(user._id as string, { projection: { info: { country: 1 } } });
+
+    const { user } = res.locals as Locals;
 
     if (!user) {
         return res.sendStatus(404);
     }
 
-    if (user!.location?.country) {
-        return res.send({ code: user!.location.country });
+    if (user!.info?.location?.country) {
+        return res.send({ code: user!.info?.location.country });
     }
 
     try {
@@ -682,7 +707,7 @@ router.get("/country", logged, async (req, res) => {
 
 
         if (result?.data?.location?.country) {
-            const update = await updateUser(req.user as string, { $set: { "info.country": result?.data?.location?.country?.code } });
+            const update = await updateUser(user._id, { $set: { "info.location.country": result?.data?.location?.country?.code } });
 
             console.log("user country set: ", update.ok == 1);
 

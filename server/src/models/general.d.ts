@@ -6,22 +6,22 @@ import { Worker } from "./worker";
 interface Restaurant {
     _id: ObjectId;
     name?: string;
-    theme: string;
-    created: Date;
+    theme?: string;
+    created?: Date;
     owner?: ObjectId;
     tables?: number;
     staff?: Worker[];
     settings?: RestaurantSettings;
     components?: Component[];
     invitations?: Invitation[];
-    blacklist?: ObjectId[];
-    stripeAccountId: string;
+    blacklist?: (ObjectId | string)[];
+    stripeAccountId?: string;
     customersCache?: {
         lastUpdate: number;
         data: any[];
     };
     status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
-    money: {
+    money?: {
         card: "enabled" | "disabled" | "rejected" | "restricted" | "pending";
         cash: "enabled" | "disabled";
         payouts: "enabled" | "restricted" | "rejected" | "pending";
@@ -38,19 +38,23 @@ interface Restaurant {
 
 
 interface Dish {
+    _id: ObjectId;
     name?: string;
     price?: number;
-    time?: number;
-    created?: { date: Date, user: ObjectId };
-    modified?: { date: Date, user: ObjectId };
     description?: string;
     categories?: string[];
     strict?: string[];
     general?: string;
-    image?: { binary?: Buffer; date?: Date; resolution?: 1.33 | 1.77 | 1 };
-    _id: ObjectId;
+    image?: { binary?: Buffer; modified: { userId: ObjectId; date?: number; }; resolution?: 1.33 | 1.77 | 1 };
     cooking?: Cooking;
-    bought?: number;
+
+    info: {
+        liked?: number;
+        time?: number;
+        created?: { date: number, userId: ObjectId };
+        modified?: { date: number, userId: ObjectId };
+        bought?: number;
+    }
 
     
     /* 
@@ -86,6 +90,7 @@ interface Dish {
 interface User {
     email?: string;
     blacklisted?: ObjectId[];
+    password?: string;
     _id: ObjectId;
     status: "enabled" | "deleted" | "restricted";
     avatar?: {
@@ -95,9 +100,7 @@ interface User {
     anonymously?: boolean;
     feedbacks?: Feedback[];
     invitations?: Invitation[];
-    works?: ObjectId[];
-    restaurants?: { restaurantId: ObjectId; stripeAccountId?: string; role: "manager" | "staff" | "owner" | "manager:working"; }[];
-    password?: string;
+    restaurants: { restaurantId: ObjectId; stripeAccountId?: string; role: "manager" | "staff" | "owner" | "manager:working"; }[];
     orders?: { restaurantId: ObjectId; orderId: ObjectId; }[];
     created?: number;
     stripeCustomerId?: string;
@@ -105,14 +108,16 @@ interface User {
         first: string;
         last: string;
     };
-    location?: {
-        country: string;
-        city: string;
-    }
-    dob?: {
-        year?: number;
-        month?: number;
-        day?: number;
+    info?: {
+        location?: {
+            country: string;
+            city: string;
+        }
+        dob?: {
+            year?: number;
+            month?: number;
+            day?: number;
+        }
     }
 
     emailCode?: string;
@@ -123,7 +128,7 @@ interface User {
 interface Order {
     _id: ObjectId;
     status: "ordering" | "progress" | "done" | "removed" | "done:removed";
-    customer: ObjectId;
+    customer: ObjectId | null;
     socketId: string;
     method?: "card" | "cash";
     type: "in" | "out";
@@ -131,6 +136,7 @@ interface Order {
     ordered?: number;
     connected?: number;
     comment?: string;
+    ip?: string;
 
     money?: {
         hst: number;

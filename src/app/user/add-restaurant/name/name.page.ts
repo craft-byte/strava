@@ -68,11 +68,11 @@ export class NamePage implements OnInit {
     await this.loader.start();
     this.restaurantId = this.route.snapshot.paramMap.get('restaurantId');
 
-    const result: any = await this.service.get("name");
+    const result: any = await this.service.get("add-restaurant/name");
 
     if(result) {
-      this.firstName = result.firstName;
-      this.lastName = result.lastName;
+      this.firstName = result.first;
+      this.lastName = result.last;
     }
 
     this.loader.end();

@@ -20,58 +20,27 @@
                 {{ dish.name }}
             </div>
             <div class="price">
-                $ {{ dish.price }}
+                ${{ dish.price / 100 }}
             </div>
             <div class="time">
-                {{ dish.time }} min.
+                <span *ngIf="dish.info.time">
+                    {{ dish.info.time }} min.
+                </span>
+                <span *ngIf="!dish.info.time">
+                    <button class="only-text-button" (click)="edit()">Add time</button>
+                </span>
             </div>
             <div class="description">
-                {{ dish.description }}
+                <span class="margin" *ngIf="dish.description">
+                    {{ dish.description }}
+                </span>
+                <span *ngIf="!dish.description">
+                    <button class="only-text-button">Add description</button>
+                </span>
             </div>
         </div>
     </div>
-    <div class="cooking">
-        <div class="block main">
-            <div class="title">
-                Cooking
-            </div>
-            <div class="content">
-                <button class="purple-button" (click)="cooking()">
-                    <p *ngIf="dish.cooking">Change</p>
-                    <p *ngIf="!dish.cooking">Add</p>
-                </button>
-            </div>
-        </div>
-        <div class="block time" *ngIf="dish.cooking">
-            <div class="title">
-                Time:
-            </div>
-            <div class="content">
-                {{ dish.time }} min.
-            </div>
-        </div>
-        <div class="block recipee" *ngIf="dish.cooking">
-            <div class="title">
-                Recipee:
-            </div>
-            <div class="content">
-                {{ dish.cooking.recipee }}
-            </div>
-        </div>
-        <div class="block ingredients" *ngIf="dish.cooking">
-            <div class="title">
-                Ingredients:
-            </div>
-            <div class="content">
-                <div *ngFor="let i of dish.cooking.components" class="one">
-                    <div class="amount">
-                        {{i.amount}} grams
-                    </div>
-                    <div class="name">
-                        of <p (click)="component(i._id)">{{ i.name }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="bought">
+
     </div>
 </div>

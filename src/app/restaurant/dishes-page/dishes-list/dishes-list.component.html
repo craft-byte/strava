@@ -6,7 +6,7 @@
       </div>
       <div class="buttons">
         <button class="orange-button" id="add-dish" (click)="addDish()">
-          <ion-icon name="add-outline"></ion-icon>Add dishes
+          <ion-icon name="add-outline"></ion-icon>Add dish
         </button>
       </div>
     </div>
@@ -46,7 +46,7 @@
             {{ i.name }}
           </p>
           <p class="price">
-            {{ i.price }}
+            ${{ i.price / 100 }}
           </p>
         </div>
         <div class="bought">
@@ -54,11 +54,6 @@
         </div>
         <div class="date">
           {{ i.modified }}
-        </div>
-        <div class="info" (click)="$event.stopPropagation()">
-          <button (click)="more($event, i._id)">
-            <ion-icon name="ellipsis-vertical"></ion-icon>
-          </button>
         </div>
       </div>
     </div>

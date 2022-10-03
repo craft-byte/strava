@@ -79,12 +79,14 @@ export class MainPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.theme = this.service.theme;
     const result: InitResult = await this.service.post({ platform: this.platform }, "order", this.service.restaurantId, "init");
 
     const { restaurant, order, showOut, showTracking } = result;
 
+
     this.restaurantName = restaurant.name;
+    this.service.theme = restaurant.theme;
+    this.theme = restaurant.theme
 
     this.ui.showTracking = showTracking;
 

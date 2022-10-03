@@ -65,7 +65,8 @@ export class FullDishPage implements OnInit {
         },
         {
           text: "Submit",
-          role: "remove"
+          role: "remove",
+          cssClass: "alert-red-button",
         }
       ]
     });
@@ -81,16 +82,16 @@ export class FullDishPage implements OnInit {
       if(result.removed) {
         this.router.go(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
         (await this.toastCtrl.create({
-          duration: 4000,
+          duration: 1500,
           color: "green",
-          message: "Successfuly removed.",
+          message: "Successfuly removed",
           mode: "ios"
         })).present();
       } else {
         (await this.toastCtrl.create({
-          duration: 4000,
+          duration: 2000,
           color: "red",
-          message: "Something went wrong. Try again later.",
+          message: "Something went wrong. Please try again",
           mode: "ios"
         })).present();
       }

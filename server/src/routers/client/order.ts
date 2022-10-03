@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
 import Stripe from "stripe";
-import { resourceLimits } from "worker_threads";
 import { stripe } from "../..";
 import { Order } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
@@ -27,6 +26,7 @@ router.get("/authenticate", async (req, res) => {
 
 
 router.post("/init", async (req, res) => {
+    console.log("HELLOOO????");
     const { restaurantId } = req.params as any;
     const { table } = req.body;
 
@@ -81,6 +81,7 @@ router.post("/init", async (req, res) => {
 
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, theme: 1, settings: 1, components: { amount: 1, _id: 1 } } });
+    console.log(restaurant);
     if (!restaurant) {
         return res.sendStatus(404);
     }
@@ -178,7 +179,7 @@ router.get("/category/:category", async (req, res) => {
 router.get("/dish/:dishId", async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
-    const convert = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1, general: 1, image: 1, time: 1, description: 1 } });
+    const convert = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1, general: 1, image: 1, info: { time: 1 }, description: 1 } });
 
     if (!convert) {
         return res.sendStatus(404);
@@ -190,7 +191,7 @@ router.get("/dish/:dishId", async (req, res) => {
         category: convert.general!,
         price: (convert.price! / 100).toFixed(2),
         image: convert.image,
-        time: convert.time,
+        time: convert.info.time,
         _id: convert._id,
         description: convert.description,
     };
@@ -484,7 +485,7 @@ router.get("/session/payment-intent", async (req, res) => {
         return res.sendStatus(404);
     }
 
-    if(restaurant.money.card != "enabled") {
+    if(restaurant.money!.card != "enabled") {
         return res.status(403).send({ reason: "card" });
     }
 

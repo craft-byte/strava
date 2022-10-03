@@ -19,6 +19,7 @@ import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
 import { SocketIO } from "./utils/io";
 import { CustomerRouter } from "./routers/customer";
+import { errorHandler } from "./utils/middleware/errorHandler";
 
 export const MODE = process.argv[2] as "testing" | "prod" | "dev";
 
@@ -159,10 +160,10 @@ async function main(client: MongoClient) {
         await client.connect();
 
         app.use("/api/user", UserRouter);
-        app.use("/api/restaurant/:restaurantId", logged, RadminRouter);
+        app.use("/api/restaurant/:restaurantId", RadminRouter);
         app.use("/api/staff", StaffRouter);
         // app.use("/api/client", ClientRouter);        //// REMOVE CLIENT FOLDER AND client.ts
-        app.use("/api/customer", logged, CustomerRouter);
+        app.use("/api/customer", CustomerRouter);
         app.use("/api/stripe", StripeRouter);
 
         app.get("**", (req, res) => {
@@ -174,6 +175,8 @@ async function main(client: MongoClient) {
             splitted.splice(splitted.length - 1, splitted.length);
             res.sendFile(splitted.join("/") + "/www/index.html");
         });
+        
+        app.use(errorHandler);
 
         io.on("connection", SocketIO);
     } catch (e) {

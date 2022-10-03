@@ -29,9 +29,52 @@ const reset: Routes = [
     // }
 ]
 
+const addRestaurant: Routes = [
+    {
+        path: "add-restaurant/start",
+        loadChildren: () => import('./user/add-restaurant/country/country.module').then(m => m.CountryPageModule),
+        canActivate: [LoggedGuard],
+    },
+    {
+        path: "add-restaurant/:restaurantId/name",
+        loadChildren: () => import("./user/add-restaurant/name/name.module").then(m => m.NamePageModule),
+        canActivate: [LoggedGuard],
+    },
+    {
+        path: 'add-restaurant/:restaurantId/dob',
+        loadChildren: () => import('./user/add-restaurant/dob/dob.module').then(m => m.DobPageModule),
+        canActivate: [LoggedGuard],
+    },
+    {
+        path: 'add-restaurant/:restaurantId/address',
+        loadChildren: () => import('./user/add-restaurant/address/address.module').then(m => m.AddressPageModule),
+        canActivate: [LoggedGuard],
+    },
+    // {
+    //     path: 'add-restaurant/:restaurantId/choose-method',
+    //     loadChildren: () => import('./user/add-restaurant/choose-method/choose-method.module').then(m => m.ChooseMethodPageModule),
+    //     canActivate: [LoggedGuard],
+    // },
+    // {
+    //     path: 'add-restaurant/:restaurantId/card',
+    //     loadChildren: () => import('./user/add-restaurant/card/card.module').then(m => m.CardPageModule),
+    //     canActivate: [LoggedGuard],
+    // },
+    {
+        path: 'add-restaurant/:restaurantId/bank-account',
+        loadChildren: () => import('./user/add-restaurant/bank-account/bank-account.module').then(m => m.BankAccountPageModule),
+        canActivate: [LoggedGuard],
+    },
+    {
+        path: "add-restaurant/:restaurantId/theme",
+        loadChildren: () => import("./user/add-restaurant/theme/theme.module").then(m => m.ThemePageModule),
+        canActivate: [LoggedGuard],
+    },
+]
 const user: Routes = [
     ...registration,
     ...reset,
+    ...addRestaurant,
     {
         path: 'user/info',
         loadChildren: () => import('./user/user-info/user-info.module').then(m => m.UserInfoPageModule),
@@ -66,46 +109,6 @@ const user: Routes = [
         loadChildren: () => import("./user/login/login.module").then(m => m.LoginPageModule),
         canActivate: [LoginGuard],
     },
-    {
-        path: "add-restaurant/start",
-        loadChildren: () => import('./user/add-restaurant/country/country.module').then(m => m.CountryPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: "add-restaurant/:restaurantId/name",
-        loadChildren: () => import("./user/add-restaurant/name/name.module").then(m => m.NamePageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: 'add-restaurant/:restaurantId/dob',
-        loadChildren: () => import('./user/add-restaurant/dob/dob.module').then(m => m.DobPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: 'add-restaurant/:restaurantId/address',
-        loadChildren: () => import('./user/add-restaurant/address/address.module').then(m => m.AddressPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: 'add-restaurant/:restaurantId/choose-method',
-        loadChildren: () => import('./user/add-restaurant/choose-method/choose-method.module').then(m => m.ChooseMethodPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: 'add-restaurant/:restaurantId/card',
-        loadChildren: () => import('./user/add-restaurant/card/card.module').then(m => m.CardPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: 'add-restaurant/:restaurantId/bank-account',
-        loadChildren: () => import('./user/add-restaurant/bank-account/bank-account.module').then(m => m.BankAccountPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: "add-restaurant/:restaurantId/theme",
-        loadChildren: () => import("./user/add-restaurant/theme/theme.module").then(m => m.ThemePageModule),
-        canActivate: [LoggedGuard],
-    },
 ];
 const restaurant: Routes = [
     {
@@ -115,13 +118,13 @@ const restaurant: Routes = [
         runGuardsAndResolvers: "always",
     },
     {
-        path: "dish/:restaurantId/:mode",
-        loadChildren: () => import("./restaurant/dish/dish.module").then(m => m.DishPageModule),
+        path: "dish/:restaurantId/add",
+        loadChildren: () => import("./restaurant/dish-add/dish-add.module").then(m => m.DishAddPageModule),
         canActivate: [LoggedGuard, RestaurantGuard]
     },
     {
-        path: "dish/:restaurantId/:mode/:dishId",
-        loadChildren: () => import("./restaurant/dish/dish.module").then(m => m.DishPageModule),
+        path: "dish/:restaurantId/edit/:dishId",
+        loadChildren: () => import("./restaurant/dish-edit/dish-edit.module").then(m => m.DishEditPageModule),
         canActivate: [LoggedGuard, RestaurantGuard]
     },
     {
@@ -151,27 +154,27 @@ const customer: Routes = [
     {
         path: "customer",
         loadChildren: () => import("./customer/customer.module").then(m => m.CustomerPageModule),
-        canActivate: [LoggedGuard]
+        canActivate: []
     },
     {
         path: "customer/order/:restaurantId",
         loadChildren: () => import("./customer/order/main/main.module").then(m => m.MainPageModule),
-        canActivate: [LoggedGuard, OrderGuard],
+        canActivate: [OrderGuard],
     },
     {
         path: "customer/order/:restaurantId/dish/:dishId",
         loadChildren: () => import("./customer/order/dish/dish.module").then(m => m.DishPageModule),
-        canActivate: [LoggedGuard, OrderGuard],
+        canActivate: [OrderGuard],
     },
     {
         path: "customer/order/:restaurantId/checkout",
         loadChildren: () => import("./customer/order/checkout/checkout.module").then(m => m.CheckoutPageModule),
-        canActivate: [LoggedGuard, OrderGuard],
+        canActivate: [OrderGuard],
     },
     {
         path: 'customer/tracking/:restaurantId',
         loadChildren: () => import('./customer/order/tracking/tracking.module').then(m => m.TrackingPageModule),
-        canActivate: [LoggedGuard, OrderGuard],
+        canActivate: [OrderGuard],
     },
 ];
 

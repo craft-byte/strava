@@ -8,9 +8,9 @@ import { OrderRouter } from "./client/order";
 const router = Router();
 
 
-router.use("/account", logged, AccountRouter);
-router.use("/map", logged, MapRouter);
-router.use("/order/:restaurantId", logged, order, OrderRouter);
+router.use("/account", AccountRouter);
+router.use("/map", MapRouter);
+router.use("/order/:restaurantId", order, OrderRouter);
 
 
 export {

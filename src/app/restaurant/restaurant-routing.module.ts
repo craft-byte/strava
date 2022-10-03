@@ -36,7 +36,15 @@ const routes: Routes = [
         loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
       },
     ]
+  },  {
+    path: 'dish-add',
+    loadChildren: () => import('./dish-add/dish-add.module').then( m => m.DishAddPageModule)
   },
+  {
+    path: 'dish-edit',
+    loadChildren: () => import('./dish-edit/dish-edit.module').then( m => m.DishEditPageModule)
+  },
+
 ];
 
 @NgModule({

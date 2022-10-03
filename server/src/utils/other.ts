@@ -52,7 +52,7 @@ async function getRelativeDelay(relativeTo: number | Date, time: number | Date, 
 
     if(d) {
         const { restaurantId, dishId } = d;
-        const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { time: 1 } });
+        const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { info: { time: 1, } } });
 
         if(!dish) {
             return {
@@ -62,8 +62,8 @@ async function getRelativeDelay(relativeTo: number | Date, time: number | Date, 
             };
         }
 
-        const hrs = Math.ceil(dish.time! / 60);
-        const mins = dish.time!;
+        const hrs = Math.ceil(dish.info.time! / 60);
+        const mins = dish.info.time!;
 
 
         let color: string;

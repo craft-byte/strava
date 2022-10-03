@@ -93,14 +93,14 @@ router.get("/dish/:orderDishId/info", async (req, res) => {
         return res.sendStatus(404);
     }
 
-    const dish = await Restaurant(restaurantId).dishes.one(dishId!).get({ projection: { cooking: 1, name: 1, time: 1, image: { binary: 1, resolution: 1, } } });
+    const dish = await Restaurant(restaurantId).dishes.one(dishId!).get({ projection: { cooking: 1, name: 1, image: { binary: 1, time: 1, resolution: 1, } } });
 
     if (dish) {
         result.dish = {
             _id: dish._id,
             name: dish.name,
             image: { binary: dish.image?.binary, resolution: dish.image?.resolution == 1 ? "r1" : dish.image!.resolution == 1.33 ? "r2" : "r3" },
-            time: dish.time,
+            time: dish.info.time,
         }
         if (dish.cooking) {
             if (dish.cooking.components) {

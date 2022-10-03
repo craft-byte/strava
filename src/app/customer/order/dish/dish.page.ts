@@ -86,7 +86,7 @@ export class DishPage implements OnInit {
         component.instance.name = this.dish.name;
 
         component.instance.leave.subscribe(res => {
-            if(res) {
+            if (res) {
                 this.add(res)
             }
             component.destroy();
@@ -113,6 +113,7 @@ export class DishPage implements OnInit {
             const result: any = await this.service.get({}, "order", this.service.restaurantId, "dish", dishId);
 
             this.dish = result;
+            this.theme = result.theme;
 
             this.image = getImage(this.dish.image.binary) || './../../../../assets/images/no-image.jpg';
 

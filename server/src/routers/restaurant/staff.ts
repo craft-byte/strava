@@ -1,19 +1,68 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
-import { inflateRaw } from "zlib";
-import { allowed } from "../../middleware/restaurant";
+import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { Settings } from "../../models/components";
 import { Worker } from "../../models/worker";
 import { getDate, id } from "../../utils/functions";
 import { checkManagerSettings } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser, getUsers, updateUser } from "../../utils/users";
+import { logged } from "../../utils/middleware/logged";
+import { Locals } from "../../models/other";
 
 
 const router = Router({ mergeParams: true });
 
 
-router.post("/", allowed("manager", "staff"), async (req, res) => {
+
+/**
+ * @returns list of restaurant staff
+ */
+router.get("/", logged({ _id: 1 }), allowed({ staff: { joined: 1, userId: 1, role: 1 } }, "manager", "staff"), async (req, res) => {
+    const { restaurantId } = req.params as any;
+    const { restaurant } = res.locals as Locals;
+
+    const ids: ObjectId[] = [];
+
+
+    for (let i of restaurant.staff!) {
+        ids.push(i.userId);
+    }
+
+    const users = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, avatar: 1 } });
+
+
+    const result = [];
+
+    for (let i in restaurant.staff!) {
+        if(users[i]) {
+            result.push({
+                name: users[i].name?.first || "User deleted",
+                _id: users[i]._id,
+                date: getDate(restaurant.staff![i].joined!),
+                role: restaurant.staff![i].role,
+                avatar: users[i].avatar?.binary,
+            });    
+        } else {
+            result.push({
+                name: "User deleted",
+                avatar: null,
+                _id: restaurant.staff![i].userId,
+                date: getDate(restaurant?.staff![i].joined!),
+                role: restaurant.staff![i].role,
+            });
+        }
+    }
+
+
+
+    res.send(result);
+});
+
+/**
+ * BROKEN
+ */
+router.post("/", allowed({}, "manager", "staff"), async (req, res) => {
     const { restaurantId } = req.params;
     const { role, userId, settings } = req.body;
 
@@ -52,48 +101,8 @@ router.post("/", allowed("manager", "staff"), async (req, res) => {
 
     res.send({ done: restaurantUpdate!.modifiedCount > 0 && userUpdate!.ok == 1 });
 });
-router.get("/", allowed("manager", "staff"), async (req, res) => {
-    const { restaurantId } = req.params as any;
 
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { joined: 1, userId: 1, role: 1 } } })
-
-    const ids: ObjectId[] = [];
-
-    for (let i of restaurant?.staff!) {
-        ids.push(i.userId);
-    }
-
-    const users = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, avatar: 1 } });
-
-
-
-    const result = [];
-
-    for (let i in restaurant!.staff!) {
-        if(users[i]) {
-            result.push({
-                name: users[i].name?.first || "User delted",
-                _id: users[i]._id,
-                date: getDate(restaurant?.staff![i].joined!),
-                role: restaurant?.staff![i].role,
-                avatar: users[i].avatar?.binary,
-            });    
-        } else {
-            result.push({
-                name: "User deleted",
-                avatar: null,
-                _id: restaurant?.staff![i].userId,
-                date: getDate(restaurant?.staff![i].joined!),
-                role: restaurant?.staff![i].role,
-            });
-        }
-    }
-
-
-
-    res.send(result);
-});
 
 interface WorkerResult {
     restaurantName?: string;
@@ -114,11 +123,15 @@ interface WorkerResult {
             _id: string | ObjectId;
         }
     }
-}; router.get("/:userId", allowed("manager", "staff"), async (req, res) => {
+};
+/**
+ * @returns { WorkerResult }
+ * @throws { status: 404; reason: "NotWorker" } - not member of restaurant staff
+ */
+router.get("/:userId", logged({ _id: 1 }), allowed({ name: 1, staff: 1 }, "manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
     const { calculate } = req.query;
-    
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, staff: 1 } });
+    const { restaurant } = res.locals as Locals;    
 
     
     let worker: Worker | undefined;
@@ -131,7 +144,7 @@ interface WorkerResult {
     }
 
     if(!worker) {
-        return res.status(404).send({ reason: "worker" });
+        return res.status(404).send({ reason: "NotWorker" });
     }
 
     const user = await getUser(userId, { projection: { avatar: 1, username: 1, name: 1, email: 1 } });
@@ -176,10 +189,10 @@ interface WorkerResult {
             };
         } else {
             const or: any = [];
-            if(worker.role == "admin" || worker.role == "cook" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.cook)) {
+            if(worker.role == "owner" || worker.role == "cook" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.cook)) {
                 or.push({ cook: id(userId) });
             }
-            if(worker.role == "admin" || worker.role == "waiter" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.waiter)) {
+            if(worker.role == "owner" || worker.role == "waiter" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.waiter)) {
                 or.push({ waiter: id(userId) });
             }
             
@@ -200,7 +213,7 @@ interface WorkerResult {
     
                 for(let order of orders) {
                     for(let dish of order.dishes) {
-                        if((worker.role == "cook" || worker.role == "admin" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.cook)) && dish.cook!.equals(userId)) {
+                        if((worker.role == "cook" || worker.role == "owner" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.cook)) && dish.cook!.equals(userId)) {
                             cooked++;
                             if(fav[dish.dishId.toString()]) {
                                 fav[dish.dishId.toString()]++;
@@ -208,7 +221,7 @@ interface WorkerResult {
                                 fav[dish.dishId.toString()] = 1;
                             }
                         }
-                        if((worker.role == "waiter" || worker.role == "admin" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.waiter)) && dish.waiter!.equals(userId)) {
+                        if((worker.role == "waiter" || worker.role == "owner" || (worker.role == "manager" && (worker.settings as Settings.ManagerSettings).work.waiter)) && dish.waiter!.equals(userId)) {
                             served++;
                         }
                     }
@@ -251,10 +264,19 @@ interface WorkerResult {
     res.send(result);
 });
 
-router.get("/:userId/settings", allowed("manager", "staff"), async (req, res) => {
-    const { userId, restaurantId } = req.params;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, userId: 1, settings: 1 } } });
+
+
+/**
+ * @returns settings of status member
+ * 
+ * HAS TO BE FINISHED
+ */
+router.get("/:userId/settings", logged({}), allowed({ staff: {} }, "manager", "staff"), async (req, res) => {
+    const { userId } = req.params;
+    const { restaurant } = res.locals as Locals;
+
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { role: 1, userId: 1, settings: 1 } } });
 
     const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, } });
 
@@ -277,10 +299,12 @@ router.get("/:userId/settings", allowed("manager", "staff"), async (req, res) =>
     }
 
 
-    return res.status(404).send({ reason: "staff" });
+    return res.status(404).send({ reason: "NoStaff" });
 
 });
-router.post("/:userId/settings", allowed("manager", "staff"), async (req, res) => {
+
+
+router.post("/:userId/settings", allowed({}, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params;
     const { field, value } = req.body;
 
@@ -301,7 +325,7 @@ router.post("/:userId/settings", allowed("manager", "staff"), async (req, res) =
 
     res.send({updated: update.modifiedCount > 0});
 });
-router.post("/:userId/settings/work", allowed("manager", "staff"), async (req, res) => {
+router.post("/:userId/settings/work", allowed({}, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params;
     const { field, value } = req.body;
 
@@ -346,7 +370,7 @@ router.post("/:userId/settings/work", allowed("manager", "staff"), async (req, r
 
     res.send({ updated: restaurantUpdate.modifiedCount > 0 });
 });
-router.post("/:userId/role", allowed("manager", "staff"), async (req, res) => {
+router.post("/:userId/role", allowed({}, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params;
     const { role } = req.body;
 
@@ -399,7 +423,7 @@ router.post("/:userId/role", allowed("manager", "staff"), async (req, res) => {
     res.send({updated: update.modifiedCount > 0, settings: role == "manager" ? worker.lastManagerSettings : {} });
 });
 
-router.patch("/:userId/fire", allowed("manager", "staff"), async (req, res) => {
+router.patch("/:userId/fire", allowed({}, "manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
     const { comment, rating: stars } = req.body;
 
@@ -424,7 +448,7 @@ router.patch("/:userId/fire", allowed("manager", "staff"), async (req, res) => {
         return res.status(404).send({ reason: "staff" });
     }
 
-    if(worker.role == "admin") {
+    if(worker.role == "owner") {
         return res.sendStatus(403);
     }
 

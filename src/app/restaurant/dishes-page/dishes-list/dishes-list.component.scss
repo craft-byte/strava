@@ -40,7 +40,7 @@
             }
             div {
                 display: grid;
-                grid-template-columns: 50% 20% 20% 10%;
+                grid-template-columns: 50% 25% 25%;
                 height: 52px;
                 border-bottom: 1px solid var(--border-color);
                 div {
@@ -67,14 +67,6 @@
                     }
                     .price {
                         color: var(--text-color);
-                    }
-                }
-                .info {
-                    button {
-                        width: 32px;
-                        height: 32px;
-                        font-size: 24px;
-                        background: none;
                     }
                 }
             }

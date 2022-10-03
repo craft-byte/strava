@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
-import { dishesDBName } from "../../environments/server";
-import { allowed } from "../../middleware/restaurant";
+import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { Time } from "../../models/components";
 import { Order } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
+import { logged } from "../../utils/middleware/logged";
 import { getRelativeDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
@@ -31,10 +31,15 @@ interface ConvertedOrder {
     total: number;
     blacklisted: boolean;
     statusColor: "green" | "red" | "purple" | "orange";
-} router.get("/orders", allowed("manager", "customers"), async (req, res) => {
+};
+/**
+ * @returns { ConvertedOrder[] } - list of last 12 orders
+ */
+router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
+    const { restaurant } = res.locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { blacklist: 1 } });
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { blacklist: 1 } });
 
     if(!restaurant) {
         return res.sendStatus(404);
@@ -135,7 +140,11 @@ interface FullOrder {
             role: string;
         };
     }[];
-}; router.get("/order/:orderId", allowed("manager", "customers"), async (req, res) => {
+};
+/**
+ * @returns { FullOrder } - info about whole order and all its dishes
+ */
+router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager", "customers"), async (req, res) => {
     const { restaurantId, orderId } = req.params;
 
     const order = await Orders(restaurantId).history.one({ _id: id(orderId) });
@@ -216,7 +225,10 @@ interface FullOrder {
 });
 
 
-router.get("/user/:userId", allowed("manager", 'customers'), async (req, res) => {
+/**
+ * @returns small info about a customer
+ */
+router.get("/user/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", 'customers'), async (req, res) => {
     const { userId, restaurantId } = req.params as any;
 
     const user = await getUser(userId, { projection: { blacklisted: 1, name: 1, username: 1, avatar: 1 } });

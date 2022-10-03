@@ -97,6 +97,17 @@
             }
         }
     }
+    .no-orders {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 64px;
+
+        .text {
+            color: var(--text-color);
+            font-size: 18px;
+        }
+    }
 }
 
 

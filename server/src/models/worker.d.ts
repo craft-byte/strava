@@ -12,7 +12,7 @@ interface WorkerCache {
 
 interface Worker {
     userId: ObjectId;
-    role: "manager" | "cook" | "waiter" | "admin";
+    role: "manager" | "cook" | "waiter" | "owner";
     joined: number;
     settings: Settings.ManagerSettings | Settings.CookSettings | Settings.WaiterSettings;
     lastManagerSettings?: Settings.ManagerSettings;

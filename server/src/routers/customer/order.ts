@@ -1,52 +1,69 @@
+import e from "cors";
 import { Router } from "express";
-import { getDefaultSettings } from "http2";
-import { ObjectId } from "mongodb";
-import Stripe from "stripe";
-import { resourceLimits } from "worker_threads";
+import { stat } from "fs";
+import { Filter, ObjectId } from "mongodb";
+import { isPromise } from "util/types";
 import { stripe } from "../..";
 import { Time } from "../../models/components";
+import { Order, User } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
 import { id } from "../../utils/functions";
+import { passOrder } from "../../utils/middleware/customerAllowed";
+import { passUserId } from "../../utils/middleware/logged";
 import { getDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
 
 const router = Router({ mergeParams: true });
 
+interface LocalLocals {
+    status: "loggedin" | "loggedout" | "noinfo";
+    userId: string | null;
+    order: Order;
+}
 
-router.post("/check", async (req, res) => {
+
+/**
+ * 
+ * @param { string } restaurantId
+ * @param { string } socketId
+ * @param { string } userId
+ * @param { loggedin | loggedout | noinfo } status
+ * 
+ */
+router.post("/check", passUserId, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { socketId } = req.body;
+    const { userId, status } = res.locals as LocalLocals;
 
-    const order = await Orders(restaurantId).one({ customer: id(req.user as string) }).update({ $set: { socketId, connected: Date.now() } }, { projection: { _id: 1 } });
-    const restaurant = await Restaurant(restaurantId).get({ projection: { blacklist: 1, theme: 1, settings: { customers: { allowDistanceOrders: 1 } } } });
+    console.log(userId, status);
 
-    if (!restaurant) {
-        return res.sendStatus(404);
-    }
 
-    for (let i of restaurant.blacklist!) {
-        if (i.equals(req.user as string)) {
-            return res.sendStatus(403);
-        }
-    }
+    let order: Order;
 
-    if (order.order) {
-        res.send({ theme: restaurant?.theme });
+    if(userId && status != "noinfo") {
+        const update = await Orders(restaurantId).one({ customer: id(userId) }).update({ $set: { socketId, connected: Date.now() } }, { projection: { _id: 1 } });
+        order = update.order;
     } else {
-        await Orders(restaurantId).createSession({
-            customer: id(req.user as string)!,
-            socketId: null!,
-            type: "in",
-            id: null!,
-            dishes: [],
-            status: "ordering",
-            _id: id(),
-        });
-
-        res.send({ theme: restaurant.theme });
+        const update = await Orders(restaurantId).one({ ip: req.ip }).update({ $set: { socketId, connected: Date.now() } }, { projection: { _id: 1 } });
+        order = update.order;
     }
 
+    if(!order) {
+        const order = await Orders(restaurantId).createSession({
+            customer: id(userId!) || null,
+            status: "ordering",
+            _id: id()!,
+            dishes: [],
+            id: null!,
+            type: "in",
+            socketId,
+            ip: req.ip,
+        });
+    }
+    
+    
+    res.send({ status });
 });
 
 
@@ -65,25 +82,52 @@ interface InitResult {
     };
     showOut: boolean;
     showTracking: boolean;
-}; router.post("/init", async (req, res) => {
+};
+/**
+ * @param { any } platform
+ * 
+ * returns dishes, order data, restaurant data.
+ * 
+*/
+router.post("/init", passUserId, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { platform } = req.body;
+    const { status, userId } = res.locals as LocalLocals;
 
     console.log(platform);
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, settings: { customers: { allowTakeAway: 1 } } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1 } } } });
 
     if (!restaurant) {
-        return res.status(404).send({ reason: "restaurant" });
+        return res.status(404).send({ reason: "RestaurantNotFound" });
+    }
+    
+    if(restaurant.blacklist) {
+        for(let i of restaurant.blacklist) {
+            if(typeof i == "string") {
+                if(i == req.ip) {
+                    return res.status(403).send({ reason: "Blacklisted" });
+                }
+            } else if(i.equals(userId!)) {
+                return res.status(403).send({ reason: "Blacklisted" });
+            }
+        }
     }
 
-    const order = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
+    let order: Order;
+    let trackingOrders: Order;
+
+    if(status == "loggedin" || status == "loggedout") {
+        order = await Orders(restaurantId).one({ customer: id(userId as string), status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
+        trackingOrders = await Orders(restaurantId).one({ customer: id(userId as string), status: "progress" }).get({ projection: { _id: 1 } });
+    } else {
+        order = await Orders(restaurantId).one({ ip: req.ip, status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
+        trackingOrders = await Orders(restaurantId).one({ ip: req.ip, status: "progress" }).get({ projection: { _id: 1 } });
+    }
 
     if (!order) {
         return res.sendStatus(404);
     }
-
-    const trackingOrders = await Orders(restaurantId).one({ customer: id(req.user as string), status: "progress" }).get({ projection: { _id :1 } });
 
 
 
@@ -137,6 +181,8 @@ interface InitResult {
     res.send(result);
 });
 
+
+
 router.get("/recommendations", async (req, res) => {
     const { restaurantId } = req.params as any;
 
@@ -145,7 +191,7 @@ router.get("/recommendations", async (req, res) => {
             .many({})
             .get({
                 limit: 7, projection: {
-                    name: 1, price: 1, general: 1, time: 1,
+                    name: 1, price: 1, general: 1, info: {time: 1},
                 }
             });
 
@@ -157,7 +203,7 @@ router.get("/recommendations", async (req, res) => {
                 price: dish.price!,
                 category: dish.general!,
                 _id: dish._id!,
-                time: dish.time,
+                time: dish.info.time,
             });
         }
 
@@ -170,13 +216,9 @@ router.get("/recommendations", async (req, res) => {
 router.get("/dishes/:category", async (req, res) => {
     const { restaurantId, category } = req.params as any;
 
-    console.log(category);
-
     if (!category || !["a", "so", "sa", "e", "si", "d", "b"].includes(category)) {
         return res.sendStatus(422);
     }
-
-
 
     const dishes = await Restaurant(restaurantId).dishes.many({ general: category }).get({ limit: 7, projection: { name: 1, time: 1, price: 1, general: 1, } });
 
@@ -197,28 +239,24 @@ router.get("/dish-image/:dishId", async (req, res) => {
 
     res.send(dish.image);
 });
-router.get("/dish/:dishId", async (req, res) => {
+router.get("/dish/:dishId", passUserId, passOrder({ dishes: { dishId: 1, } }), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
+    const { order } = res.locals;
 
     const dish = await Restaurant(restaurantId).dishes.one(dishId).get({
         projection: {
             name: 1,
-            time: 1,
             price: 1,
             description: 1,
             general: 1,
+            info: { time: 1, },
             image: { binary: 1, resolution: 1, }
         }
     });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1 } });
 
     if (!dish) {
         return res.sendStatus(404);
-    }
-
-    const order = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).get({ projection: { dishes: { dishId: 1 } } });
-
-    if (!order) {
-        return res.sendStatus(403);
     }
 
     let quantity = 0;
@@ -233,14 +271,28 @@ router.get("/dish/:dishId", async (req, res) => {
     res.send({
         ...dish,
         category: dish.general,
-        quantity
+        quantity,
+        theme: restaurant?.theme
     })
 });
 
 
-router.post("/session/table", async (req, res) => {
+/**
+ * 
+ * FRONTEND ERROR HANDLING
+ * 
+ * changes order table
+ * 
+ * @param { number } table - scanned or selected table
+ * @param { boolean } force - if table is taken and force is true update will be forced
+ * 
+ * @throws { status: 403; reason: "Invalidtable" } - table is invalid
+ * 
+ */
+router.post("/session/table", passUserId, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { table, force } = req.body;
+    const { status, userId } = res.locals as LocalLocals;
 
     if(!table) {
         return res.sendStatus(422);
@@ -249,17 +301,15 @@ router.post("/session/table", async (req, res) => {
     const restaurant = await Restaurant(restaurantId).get({ projection: { tables: 1, } });
 
     if(!restaurant) {
-        return res.status(404).send({ reason: "restaurant" });
+        return res.status(404).send({ reason: "RestaurantNotFound" });
     }
 
     if(table > restaurant.tables!) {
-        return res.status(403).send({ reason: "table" });
+        return res.status(403).send({ reason: "InvalidTable" });
     }
 
-    console.log(req.body);
-
     if(!force) {
-        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(req.user as string) }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
+        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(userId!) }, ip: { $ne: req.ip }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
 
         if(orders.length > 0) {
             console.log("CONFIRMED");
@@ -267,54 +317,114 @@ router.post("/session/table", async (req, res) => {
         }
     }
 
-    console.log("FORCE FALSE AND UPDATE TRUE");
 
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!) };
+    } else {
+        filter = { ip: req.ip };
+    }
 
-    const update = await Orders(restaurantId).one({ customer: id(req.user as string) }).update({ $set: { id: table.toString(), connected: Date.now() } });
-
+    const update = await Orders(restaurantId).one(filter).update({ $set: { id: table.toString(), connected: Date.now() } }, { projection: { _id: 1 } });
     res.send({ updated: update.ok == 1 });
 
-    Orders(restaurantId).update({ type: "in", customer: { $ne: id(req.user as string) }, id: table.toString(), status: "ordering" }, { $set: { id: null! }})
+    Orders(restaurantId).update({ type: "in", customer: { $ne: id(userId!) }, ip: { $ne: req.ip }, id: table.toString(), status: "ordering" }, { $set: { id: null! }})
 });
-router.post("/session/type", async (req, res) => {
+
+/**
+ * 
+ * FRONTEND ERROR HANDLING
+ * 
+ * changes type of the order
+ * 
+ * @param { "in" | "out" } type - order type in(Table) or out(Take away)
+ * 
+ * @returns { updated: boolean }
+ * 
+ * @throws { status: 422; reason: "InvalidType" } - type is invalid
+ * 
+ */
+router.post("/session/type", passUserId, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { type } = req.body;
+    const { status, userId } = res.locals as LocalLocals;
 
     if (!type || !["in", "out"].includes(type)) {
-        return res.sendStatus(422);
+        return res.status(422).send({ reason: "InvalidType" });
+    }
+
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { status: "ordering", customer: id(userId!) };
+    } else {
+        filter = { status: "ordering", ip: req.ip };
     }
 
     if (type == "out") {
         const oid = Math.floor(Math.random() * 1000).toString();
-        const update = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).update({ $set: { type, id: oid } });
+        const update = await Orders(restaurantId).one(filter).update({ $set: { type, id: oid } });
 
         return res.send({ updated: update.ok == 1, id: oid });
     }
 
-    const update = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).update({ $set: { type, id: null! } });
-
+    const update = await Orders(restaurantId).one(filter).update({ $set: { type, id: null! } });
 
     res.send({ updated: update.ok == 1 });
 });
-router.post("/session/comment", async (req, res) => {
+
+/**
+ * 
+ * FRONTEND ERROR HANDLING
+ * 
+ * sets comment to the order
+ * 
+ * @param { string } comment - the comment
+ * 
+ * @returns { updated: boolean; }
+ * 
+ * @throws { status: 422; reason: "InvalidComment" } - comment is invalid
+ */
+router.post("/session/comment", passUserId, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { comment } = req.body;
+    const { userId, status } = res.locals as LocalLocals;
 
     if(!comment || typeof comment != "string") {
-        return res.sendStatus(422);
+        return res.status(422).send({ reason: "InvalidComment" });
     }
 
-    const update = await Orders(restaurantId).update({ customer: id(req.user as string), status: "ordering" }, { $set: { comment } });
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "ordering" };
+    } else {
+        filter = { ip: req.ip, status: "ordering" };
+    }
+
+    const update = await Orders(restaurantId).update(filter, { $set: { comment } });
 
 
     res.send({ updated: update.modifiedCount > 0 });
 });
-router.post("/session/dish", async (req, res) => {
+
+/**
+ * 
+ * @param { string } dishId - id of dish   !not orderDishId!
+ * @param { string | null } comment - comment to dish
+ * 
+ * @returns { updated: boolean; }
+ * 
+ * @throws { status: 422; reason: "InvalidDishId" } - invalid dish id
+ * @throws { status: 422; reason: "InvalidDishComment" } - invalid comment to dish if provided
+ */
+router.post("/session/dish", passUserId, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { dishId, comment } = req.body;
+    const { status, userId } = res.locals as LocalLocals;
 
     if (!dishId || dishId.length != 24) {
-        return res.sendStatus(422);
+        return res.status(422).send({ reason: "InvalidDishId" });
+    } else if(comment && typeof comment != "string") {
+        return res.status(422).send({ reason: "InvalidDishComment" });
     }
 
     const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1, } });
@@ -323,7 +433,15 @@ router.post("/session/dish", async (req, res) => {
         return res.sendStatus(404);
     }
 
-    const update = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" })
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "ordering" };
+    } else {
+        filter = { ip: req.ip, status: "ordering" };
+    }
+
+
+    const update = await Orders(restaurantId).one(filter)
         .update(
             {
                 $push: {
@@ -340,14 +458,24 @@ router.post("/session/dish", async (req, res) => {
 
     res.send({ updated: update.ok == 1, dish });
 });
-router.get("/session/dish/:dishId", async (req, res) => {
+
+/**
+ * 
+ * @returns { comment: string; [] } - array of comments of selected dishes
+ * 
+ */
+router.get("/session/dish/:dishId", passUserId, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
+    const { userId, status } = res.locals as LocalLocals;
 
-    const order = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).get({ projection: { dishes: { dishId: 1, _id: 1, comment: 1, } } });
-
-    if(!order) {
-        return res.sendStatus(404);
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "ordering" };
+    } else {
+        filter = { ip: req.ip, status: "ordering" };
     }
+
+    const order = await Orders(restaurantId).one(filter).get({ projection: { dishes: { dishId: 1, _id: 1, comment: 1, } } });
 
     const result = [];
 
@@ -357,26 +485,57 @@ router.get("/session/dish/:dishId", async (req, res) => {
         }
     }
 
-
     res.send(result);
 });
-router.delete("/session/dish/:orderDishId", async (req, res) => {
-    const { restaurantId, orderDishId } = req.params as any;
 
-    const update = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).update({ $pull: { dishes: { _id: id(orderDishId) } } }, { projection: { _id: 1 } });
+/**
+ * removes dish from order
+ * @param { string } orderDishId - req.params.orderDishId - id of dish in order
+ */
+router.delete("/session/dish/:orderDishId", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+    const { restaurantId, orderDishId } = req.params as any;
+    const { userId, status } = res.locals as LocalLocals;
+
+
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "ordering" };
+    } else {
+        filter = { status: "ordering", ip: req.ip };
+    }
+
+    const update = await Orders(restaurantId).one(filter).update({ $pull: { dishes: { _id: id(orderDishId) } } }, { projection: { _id: 1 } });
 
 
     res.send({ updated: update.ok == 1 });
 });
-router.post("/session/dish/:orderDishId/comment", async (req, res) => {
+
+/**
+ * sets a comment to a dish
+ * @param { string } comment - comment to a dish req.body.comment
+ * @param { string } orderDishId - id of the dish req.params.orderDishId
+ * 
+ * @returns { updated: boolean }
+ * 
+ * @throws { status: 422; reason: "InvalidDishComment" } - comment is invalid
+ */
+router.post("/session/dish/:orderDishId/comment", passUserId, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId, orderDishId } = req.params as any;
     const { comment } = req.body;
+    const { status, userId } = res.locals as LocalLocals;
 
-    if(!comment) {
-        return res.sendStatus(422);
+    if(!comment || typeof comment != "string") {
+        return res.status(422).send({ reason: "InvalidDishComment" });
     }
 
-    const update = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" })
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "ordering", };
+    } else {
+        filter = { ip: req.ip, status: "ordering" };
+    }
+
+    const update = await Orders(restaurantId).one(filter)
         .update(
             { $set: { "dishes.$[dish].comment": comment } },
             { arrayFilters: [ { "dish._id": id(orderDishId) } ], projection: { _id: 1 } }
@@ -393,6 +552,7 @@ interface PaymentInfo {
     total: number;
     subtotal: number;
     hst: number;
+    theme: string;
     type: "in" | "out";
     id: string | null;
     dishes: { name: string; price: number; amount: number; }[];
@@ -400,29 +560,33 @@ interface PaymentInfo {
     paymentIntentId?: string;
     methods: { last4: string; brand: string; id: string; }[];
     _id: ObjectId;
-}; router.get("/session/payment-info", async (req, res) => {
+}; router.get("/session/payment-info", passUserId, passOrder({ type: 1, id: 1, dishes: { dishId: 1 } }), async (req, res) => {
     const { restaurantId } = req.params as any;
+    const { order, status, userId } = res.locals as LocalLocals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1, stripeAccountId: 1, } });
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "ordering" };
+    } else {
+        filter = { ip: req.ip, status: "ordering" };
+    }
+
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { money: 1, theme: 1, stripeAccountId: 1, } });
     if(!restaurant) {
         return res.sendStatus(404);
     }
     
-    const user = await getUser(req.user as string, { projection: { stripeCustomerId: 1 } });
-    if(!user) {
-        return res.sendStatus(403).send({ redirect: true });
+
+    let user: User | null | undefined;
+    if(userId) {
+        user = await getUser(req.user as string, { projection: { stripeCustomerId: 1 } });
     }
 
-    const order = await Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering" }).get({ projection: { type: 1, id: 1, dishes: { dishId: 1 } }});
-    if(!order) {
-        return res.sendStatus(404);
-    } else if(order.dishes.length == 0) {
-        return res.status(403).send({ reason: "dishes" });
-    }
 
     const result: PaymentInfo = {
-        card: restaurant.money.card == "enabled",
-        cash: restaurant.money.cash == "enabled",
+        card: restaurant.money!.card == "enabled",
+        cash: restaurant.money!.cash == "enabled",
         total: 0,
         subtotal: 0,
         hst: 0,
@@ -430,7 +594,8 @@ interface PaymentInfo {
         id: order.id,
         dishes: [],
         methods: [],
-        _id: order._id
+        _id: order._id,
+        theme: restaurant.theme || "orange",
     };
 
 
@@ -484,9 +649,9 @@ interface PaymentInfo {
     result.hst = Number((result.subtotal > 400 ? result.subtotal * 0.13 : result.subtotal * 0.05).toFixed(2));
     result.total = result.subtotal + result.hst;
 
-    Orders(restaurantId).one({ customer: id(req.user as string), status: "ordering", }).update({ $set: { money: { total: result.total, subtotal: result.subtotal, hst: result.hst } } });
+    Orders(restaurantId).one(filter).update({ $set: { money: { total: result.total, subtotal: result.subtotal, hst: result.hst } } });
 
-    if(user.stripeCustomerId) {
+    if(user && user.stripeCustomerId) {
         try {
             const paymentMethods = await stripe.paymentMethods.list({ customer: user.stripeCustomerId, type: "card" });
 
@@ -508,31 +673,51 @@ interface PaymentInfo {
     }
 
     try {
-        const p = await stripe.paymentIntents.create({
-            amount: result.total,
-            currency: "cad",
-            setup_future_usage: "off_session",
-            customer: user.stripeCustomerId,
-            automatic_payment_methods: {
-                enabled: true,
-            },            
-            metadata: {
-                restaurantId: restaurantId,
-                customerId: user._id!.toString(),
-                orderId: order._id.toString(),
-            },
-            transfer_data: {
-                destination: restaurant.stripeAccountId,
-            },
-            payment_method_options: {
-                card: {
-                    setup_future_usage: "off_session"
+        if(user && user.stripeCustomerId) {
+            const p = await stripe.paymentIntents.create({
+                amount: result.total,
+                currency: "cad",
+                setup_future_usage: "off_session",
+                customer: user.stripeCustomerId,
+                automatic_payment_methods: {
+                    enabled: true,
+                },            
+                metadata: {
+                    restaurantId: restaurantId,
+                    customerId: user._id!.toString(),
+                    orderId: order._id.toString(),
+                },
+                transfer_data: {
+                    destination: restaurant.stripeAccountId!,
+                },
+                payment_method_options: {
+                    card: {
+                        setup_future_usage: "off_session"
+                    }
                 }
-            }
-        });
+            });
+    
+            result.clientSecret = p.client_secret!;
+            result.paymentIntentId = p.id;
+        } else {
+            const p = await stripe.paymentIntents.create(
+                {
+                    amount: result.total,
+                    currency: "usd",
+                    transfer_data: {
+                        destination: restaurant.stripeAccountId!,
+                    },
+                    metadata: {
+                        restaurantId: restaurantId,
+                        customerIp: req.ip,
+                        orderId: order._id.toString(),
+                    },
+                },
+            );
 
-        result.clientSecret = p.client_secret!;
-        result.paymentIntentId = p.id;
+            result.clientSecret = p.client_secret!;
+            result.paymentIntentId = p.id;
+        }
     } catch (e: any) {
         console.log(e.type);
         if (e.type == "StripeInvalidRequestError") {
@@ -540,13 +725,12 @@ interface PaymentInfo {
                 {
                     amount: result.total,
                     currency: "usd",
-                    customer: user.stripeCustomerId,
                     transfer_data: {
-                        destination: restaurant.stripeAccountId,
+                        destination: restaurant.stripeAccountId!,
                     },
                     metadata: {
                         restaurantId: restaurantId,
-                        customerId: user._id!.toString(),
+                        customerIp: req.ip,
                         orderId: order._id.toString(),
                     },
                 },

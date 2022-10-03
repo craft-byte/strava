@@ -33,8 +33,7 @@ export class UserInfoPage implements OnInit {
     private router: RouterService,
     private loader: LoadService,
     private injector: Injector,
-  ) {
-  }
+  ) { }
 
 
   @ViewChild("accountPopoverContainer", { read: ViewContainerRef }) accountPopover: ViewContainerRef;

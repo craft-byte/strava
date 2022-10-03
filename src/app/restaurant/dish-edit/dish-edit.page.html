@@ -1,0 +1,64 @@
+<div class="header the-header-with-close-icon">
+    <div class="title">
+        <div class="close">
+            <button (click)="back()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </div>
+        <span class="text">
+            Edit <span *ngIf="!dish">dish</span> <span *ngIf="dish">{{ dish.name }}</span>
+        </span>
+    </div>
+</div>
+
+
+<ion-content>
+    <div class="app">
+        <form class="box" *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+            <div class="image">
+                <img [class]="imageClass" [src]="image || './../../../assets/images/no-image.jpg'" alt="">
+                <button type="button" class="orange-button" (click)="setImage()">Set image</button>
+            </div>
+            <div class="name">
+                <input type="text" formControlName="name" placeholder="Dish name">
+            </div>
+            <div class="price">
+                <div class="input">
+                    <input type="number" formControlName="price" placeholder="Price">
+                </div>
+                <div class="info">
+                    <span class="text">
+                        Should be in pennys. Ex 1 USD is 100 cents
+                    </span>
+                </div>
+            </div>
+            <div class="time">
+                <div class="input">
+                    <input type="number" formControlName="time" placeholder="Time">
+                </div>
+                <div class="info">
+                    <span class="text">
+                        Time cooking in minutes. Ex 5 minutes
+                    </span>
+                </div>
+            </div>
+            <div class="description">
+                <textarea id="" cols="30" rows="10" formControlName="description" placeholder="Description"></textarea>
+            </div>
+            <div class="category">
+                <ion-item>
+                    <ion-label>Category</ion-label>
+                    <ion-select formControlName="category" mode="ios" interface="popover" placeholder="Select fruit">
+                        <ion-select-option [value]="i.value" *ngFor="let i of categories">{{ i.title }}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+            </div>
+            <div class="submit">
+                <button type="submit" class="orange-button">Save</button>
+            </div>
+        </form>
+    </div>
+</ion-content>
+
+
+<ng-container #imageModalContainer></ng-container>

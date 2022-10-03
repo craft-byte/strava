@@ -31,7 +31,7 @@ export class Interceptor implements HttpInterceptor {
         if (request.headers.get("Skip-Interceptor")) {
             return next.handle(request);
         }
-            
+
         const token = localStorage.getItem("token");
         if(token) {
             request = request.clone({

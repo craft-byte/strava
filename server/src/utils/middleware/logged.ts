@@ -6,9 +6,15 @@ import { User } from "../../models/general";
 import { PRIV_KEY } from "../passport";
 
 
+type UserProjection = {
+    [key in keyof User]?: (1 | 0) | { [key2 in keyof (User[key] extends Array<any> ? User[key][0] : User[key])]?: 1 | 0 };
+}
+
+
+
 /**
  *
- * @param {FindOptions<User>} options  -  options for getUser method
+ * @param {UserProjection} projection  -  options for getUser method
  *
  *
  * @throws { status: 401; reason: "TokenNotProvided" } - token not provided
@@ -22,7 +28,7 @@ import { PRIV_KEY } from "../passport";
  * @returns { user: User }
  *
  */
-export function logged(options: FindOptions<User>) {
+export function logged(projection: UserProjection) {
     return async (req: Request, res: Response, next: NextFunction) => {
         if (!req.headers.authorization) {
             return res.status(401).send({ reason: "TokenNotProvided", redirect: true });
@@ -39,7 +45,7 @@ export function logged(options: FindOptions<User>) {
             return res.status(401).send({ reason: "TokenInvalid", redirect: true });
         }
 
-        const user = await getUser(data.userId, options);
+        const user = await getUser(data.userId, { projection });
 
         if (!user) {
             return res.status(401).send({ reason: "UserNotFound", redirect: true });
@@ -50,3 +56,38 @@ export function logged(options: FindOptions<User>) {
         return next();
     };
 }
+
+
+/**
+ *
+ * if user is logged in 
+ *  
+ * @returns { userId: string } - res.locals.userId if user has token saved
+ */
+export function passUserId(req: Request, res: Response, next: NextFunction) {
+    if (!req.headers.authorization) {
+        res.locals.status = "noinfo";
+        return next();
+    }
+    const token = req.headers.authorization.replace("Bearer ", "");
+
+    if(!token) {
+
+    }
+
+    const data: { userId: string; iat: number; exp: number; } = jsonwebtoken.verify(token, PRIV_KEY, { algorithms: ["RS256"] }) as any;
+
+    if (Date.now() > data.exp) {
+        res.locals.status = "loggedout";
+    } else {
+        res.locals.status = "loggedin";
+    }
+
+    if (!data.userId) {
+        return next();
+    }
+
+    res.locals.userId = data.userId;
+
+    return next();
+};

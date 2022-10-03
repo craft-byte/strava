@@ -1,5 +1,6 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Settings } from "../models/components";
+import { Locals } from "../models/other";
 import { log } from "../utils/functions";
 import { Restaurant } from "../utils/restaurant";
 import { getUser } from "../utils/users";
@@ -55,8 +56,10 @@ function allowed(
     return async (req: Request, res: Response, next: NextFunction) => {
         const restaurantId = req.params.restaurant || req.params.restaurantId || req.body.restaurant || req.body.restaurantId;
 
-        if (!req.user) {
-            log("failed", "middleware - allowed - no req.user");
+        const { user } = res.locals as Locals;
+
+        if (!user) {
+            throw "allowed middleware locals don't have user property";
             return res.sendStatus(401);
         }
 

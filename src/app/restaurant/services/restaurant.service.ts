@@ -38,7 +38,7 @@ export class RestaurantService {
     if(!this.restaurantId) {
       return null;
     }
-    return this.http.get<T>(this.url + this.restaurantId + "/" + args.join("/"), { params }).toPromise();
+    return this.http.get<T>(this.url + this.restaurantId + "/" + args.join("/"), { params, headers: {} }).toPromise();
   }
   post<T>(body: any, ...args: string[]) {
     if(!this.restaurantId) {
