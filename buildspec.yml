@@ -24,8 +24,4 @@ phases:
 
 artifact:
   files:
-    - angular.json
-    - package.json
-    - server/build/**/*
-    - server/package.json
-    - www/**/*
+    - '**/*'
