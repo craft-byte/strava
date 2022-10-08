@@ -24,6 +24,11 @@ const reset: Routes = [
         loadChildren: () => import("./user/email-reset/email-reset.module").then(m => m.EmailResetPageModule),
         canActivate: [LoggedGuard],
     },
+    {
+        path: "user/reset-password",
+        loadChildren: () => import("./user/password-reset/password-reset.module").then(m => m.PasswordResetPageModule),
+        canActivate: [LoggedGuard],
+    },
     // {
     //     path: "user/reset-password",
     // }

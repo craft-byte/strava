@@ -6,6 +6,7 @@ import { getDate, id } from "../../utils/functions";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser, updateUser } from "../../utils/users";
 import { logged } from "../../utils/middleware/logged";
+import { Locals } from "../../models/other";
 
 
 const router = Router({ mergeParams: true });
@@ -25,8 +26,8 @@ interface Customer {
 router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, tables: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { calculate } = req.query;
+    const { restaurant } = res.locals as Locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { customersCache: 1, blacklist: 1, tables: 1 } });
 
     
     const qrCodes = [];
@@ -39,8 +40,10 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
 
     const isBlacklisted = (id: string | ObjectId) => {
         for(let i of restaurant!.blacklist!) {
-            if(i.equals(id)) {
-                return true;
+            if(typeof i != "string") {
+                if(i.equals(id)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -86,29 +89,33 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
         }
 
         for(let i of orders) {
-            customerIds.push(i.customer);
-            if(!customers[i.customer.toString()]) {
-                const user = await getUser(i.customer, { projection: { avatar: { binary: 1, }, username: 1, name: 1, } })
-                customers[i.customer.toString()] = {
-                    total: 0,
-                    orders: 0,
-                    lastOrdered: getDate(i.ordered!),
-                    _id: i.customer.toString(),
-                    blacklisted: isBlacklisted(i.customer),
-                    avatar: user?.avatar?.binary!,
-                    name: user?.name?.first || "User deleted",
-                }
-            }
-            customers[i.customer.toString()].orders++;
-            for(let { dishId, price } of i.dishes) {
-                if(price) {
-                    customers[i.customer.toString()].total += price!;
-                } else {
-                    const dish = await dishes.get(dishId);
-                    if(dish) {
-                        customers[i.customer.toString()].total += dish!.price!;
+            if(i.customer) {
+                customerIds.push(i.customer);
+                if(!customers[i.customer.toString()]) {
+                    const user = await getUser(i.customer, { projection: { avatar: { binary: 1, }, username: 1, name: 1, } })
+                    customers[i.customer.toString()] = {
+                        total: 0,
+                        orders: 0,
+                        lastOrdered: getDate(i.ordered!),
+                        _id: i.customer.toString(),
+                        blacklisted: isBlacklisted(i.customer),
+                        avatar: user?.avatar?.binary!,
+                        name: user?.name?.first || "User deleted",
                     }
                 }
+                customers[i.customer.toString()].orders++;
+                for(let { dishId, price } of i.dishes) {
+                    if(price) {
+                        customers[i.customer.toString()].total += price!;
+                    } else {
+                        const dish = await dishes.get(dishId);
+                        if(dish) {
+                            customers[i.customer.toString()].total += dish!.price!;
+                        }
+                    }
+                }
+            } else {
+                /////// add anonymous people
             }
         }
     }

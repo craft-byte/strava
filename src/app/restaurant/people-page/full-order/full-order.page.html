@@ -29,7 +29,7 @@
   
   <div *ngIf="order" class="order">
     <div class="customer">
-      <img [src]="customerAvatar" alt="">
+      <img [src]="customerAvatar || './../../../../assets/images/plain-avatar.jpg'" alt="">
       <span class="username" (click)="fullCustomer()">
         {{ order.customer.username }}
       </span>

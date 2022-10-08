@@ -24,6 +24,7 @@ export class UserInfoPage implements OnInit {
     showRestaurants: false,
     showAddRestaurant: false,
     showEmail: false,
+    showEmailVerification: false,
     fullName: ""
   };
 
@@ -58,10 +59,6 @@ export class UserInfoPage implements OnInit {
 
 
   async openAccount(event: any) {
-
-    console.log(event.target.offsetHeight);
-    console.log(event.target.offsetLeft);
-
     const { AccountPopoverComponent } = await import("./account-popover/account-popover.component");
 
     const component = this.accountPopover.createComponent(AccountPopoverComponent, { injector: this.injector });

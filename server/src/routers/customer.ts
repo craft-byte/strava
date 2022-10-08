@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { Locals } from "../models/other";
 import { id } from "../utils/functions";
+import { logged } from "../utils/middleware/logged";
 import { getDelay } from "../utils/other";
 import { manyRestaurants, Orders, Restaurant } from "../utils/restaurant";
 import { getUser } from "../utils/users";
@@ -113,9 +115,10 @@ router.get("/restaurant/:restaurantId/tables", async (req, res) => {
 
 //     res.send(result);
 // });
-router.post("/restaurant/:restaurantId/create", async (req, res) => {
+router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params;
     const { table, order, force } = req.body;
+    const { user } = res.locals as Locals;
 
     console.log(req.body);
 
@@ -134,15 +137,17 @@ router.post("/restaurant/:restaurantId/create", async (req, res) => {
     }
 
     for(let i of restaurant.blacklist!) {
-        if(i.equals(req.user as string)) {
-            return res.status(403).send({ reason: "blacklisted" });
+        if(typeof i != "string") {
+            if(i.equals(user._id)) {
+                return res.status(403).send({ reason: "blacklisted" });
+            }
         }
     }
 
 
     if(order) {
         const result = await Orders(restaurantId).createSession({
-            customer: id(req.user as string)!,
+            customer: id(user._id)!,
             connected: Date.now(),
             type: "out",
             id: null!,
@@ -163,7 +168,7 @@ router.post("/restaurant/:restaurantId/create", async (req, res) => {
 
     if(force) {
         const result = await Orders(restaurantId).createSession({
-            customer: id(req.user as string)!,
+            customer: id(user._id)!,
             connected: Date.now(),
             type: "in",
             id: table?.toString(),
@@ -179,7 +184,7 @@ router.post("/restaurant/:restaurantId/create", async (req, res) => {
     }
 
     if(table) {
-        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(req.user as string) }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
+        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(user._id) }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
     
         if(orders.length > 0) {
             console.log("OTHER");
@@ -188,7 +193,7 @@ router.post("/restaurant/:restaurantId/create", async (req, res) => {
     }
 
     const result = await Orders(restaurantId).createSession({
-        customer: id(req.user as string)!,
+        customer: id(user._id)!,
         connected: Date.now(),
         type: "in",
         id: table?.toString(),

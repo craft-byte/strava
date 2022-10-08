@@ -9,6 +9,7 @@ import { Locals } from "../models/other";
 import { ObjectId } from "mongodb";
 import { Restaurant } from "../utils/restaurant";
 import { ProfileRouter } from "./user/profile";
+import * as crypto from "crypto"
 
 
 const router = Router();
@@ -32,8 +33,6 @@ router.use("/profile", ProfileRouter);
  */
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-
-    console.log(req.body);
 
     const emailFormat = /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
 
@@ -107,15 +106,17 @@ router.post("/create", async (req, res) => {
         _id: userId,
         status: "restricted",
         email,
+        restaurants: [],
+        blacklisted: [],
         anonymously: false,
         password: makePassword(password)!,
         name: {
             first: firstName,
             last: lastName,
         },
-        emailCode: code.toString(),
-        restaurants: [],
-        blacklisted: [],
+        security: {
+            code: code.toString(),
+        },
     };
 
     const insert = await addUser(newUser);
@@ -146,14 +147,14 @@ router.post("/create", async (req, res) => {
  * @throws { status: 403; reason: "AccountConfirmed" }  if email is registered but for some reason confirmation code was not sent
  * 
  */
-router.get("/email/check", logged({ status: 1, email: 1, emailCode: 1, }), async (req, res) => {
+router.get("/email/check", logged({ status: 1, email: 1, security: { code: 1} }), async (req, res) => {
     const { user } = res.locals as Locals;
 
     if(!user.email) {
         return res.status(401).send({ redirect: true });
     }
 
-    if(!user.emailCode) {
+    if(!user.security!.code) {
         const code = Math.floor(100000 + Math.random() * 900000);
         const message = await sendEmail(user.email, "Strava Email Confirmation",
             `
@@ -162,7 +163,7 @@ router.get("/email/check", logged({ status: 1, email: 1, emailCode: 1, }), async
             `
         );
 
-        const update = await updateUser(user._id, { $set: { emailCode: code.toString() } }, { projection: { _id: 1, } });
+        const update = await updateUser(user._id, { $set: { security: { code: code.toString() } } }, { projection: { _id: 1, } });
     }
 
     if(user.status != "restricted") {
@@ -178,27 +179,37 @@ router.get("/email/check", logged({ status: 1, email: 1, emailCode: 1, }), async
 
 /**
  * 
+ * @param { boolean } force - force send or not
+ * 
  * @returns { success: boolean; };
  * 
- * @throws { status: 403; reason: "EmailHasBeenConfirmed" }
+ * @throws { status: 422; reason: "InvalidParams" } - invalid type of force or not provided
  * 
  */
-router.post("/email/resend", logged({ email: 1, }), async (req, res) => {
+router.post("/code/resend", logged({ email: 1, security: { code: 1, } }), async (req, res) => {
     const { user } = res.locals as Locals;
+    const { force } = req.body;
 
+    if(typeof force != "boolean") {
+        return res.status(422).send({ reason: "InvalidParams" });
+    }
     if(!user.email) {
         return res.status(401).send({ redirect: true });   
+    }
+
+    if(user.security?.code && !force) {
+        return res.send({ success: true });
     }
 
     const code = Math.floor(100000 + Math.random() * 900000);
     const message = await sendEmail(user.email, "Strava Email Confirmation",
         `
-        Hello from Strava. To submit your email and create your account please enter the code below to the code field on Strava website
-        code: ${code}
+        Hello from Strava. Use this code to confirm an action on Strava platform, please don't share this code with anybody.
+        Code: ${code}
         `
     );
 
-    const update = await updateUser(user._id, { $set: { emailCode: code.toString() } }, { projection: { _id: 1, } });
+    const update = await updateUser(user._id, { $set: { security: { code: code.toString(), codeConfrimed: null!, codeToken: null!, codeAsked: Date.now() } } }, { projection: { _id: 1, } });
 
     res.send({ success: update.ok == 1 });
 });
@@ -218,7 +229,7 @@ router.post("/email/resend", logged({ email: 1, }), async (req, res) => {
  * @throws { status: 422; reason: "CodeInvalid" } if code is invalid (e.x. not 6 chars length)
  * 
  */
-router.post("/email/confirm", logged({ email: 1, emailCode: 1, status: 1 }), async (req, res) => {
+router.post("/email/confirm", logged({ email: 1, security: { emailCode: 1, }, status: 1 }), async (req, res) => {
     const { code } = req.body;
     const { user } = res.locals as Locals;
 
@@ -226,7 +237,7 @@ router.post("/email/confirm", logged({ email: 1, emailCode: 1, status: 1 }), asy
         return res.status(422).send({ reason: "CodeInvalid" });
     }
 
-    const { email, emailCode, status } = user;
+    const { email, security, status } = user;
 
     if(status != "restricted") {
         return res.status(403).send({ reason: "EmailConfirmed" });
@@ -234,15 +245,15 @@ router.post("/email/confirm", logged({ email: 1, emailCode: 1, status: 1 }), asy
 
     if(!email) {
         return res.status(401).send({ redirect: true });
-    } else if(!emailCode) {
+    } else if(!security?.code) {
         return res.status(403).send({ reason: "CodeNotSet" });
     }
 
-    if(code != emailCode) {
+    if(code != security.code) {
         return res.status(403).send({ reason: "CodeIncorrect" });
     }
 
-    const update = await updateUser(user._id, { $set: { emailCode: null!, status: "enabled" } }, { projection: { _id: 1 } });
+    const update = await updateUser(user._id, { $set: { status: "enabled", security: { code: null!, codeConfrimed: Date.now(), } } }, { projection: { _id: 1 } });
 
     
     res.send({ success: update.ok == 1 });
@@ -304,10 +315,84 @@ router.post("/email/reset", logged({ password: 1, email: 1 }), async (req, res) 
     );
 
 
-    const update = await updateUser(user._id, { $set: { email: email, status: "restricted", emailCode: code.toString() } });
+    const update = await updateUser(user._id, { $set: { email: email, status: "restricted", security: { code: code.toString(), codeAsked: Date.now() } } });
 
 
     res.send({ success: update.ok == 1 });
+});
+
+
+/**
+ * 
+ * Confirms code sent to email and if true returned user continues to reset the password
+ * 
+ * @param { string } code - 6 numbers code
+ * 
+ * @returns { success: boolean; token: string; }
+ * 
+ */
+router.post("/password/confirm-code", logged({ security: { code: 1 }, }), async (req, res) => {
+    const { code } = req.body;
+    const { user } = res.locals as Locals;
+
+    if(!code || typeof code != "string" || code.length != 6) {
+        return res.status(422).send({ reason: "InvalidCode" });
+    }
+
+    if(user.security?.code != code) {
+        return res.send({ success: false });
+    }
+
+    const token = crypto.randomBytes(64).toString('hex');
+
+    const update = await updateUser(user._id, { $set: { security: { code: null!, codeToken: token, codeConfirmed: Date.now(), } } }, { projection: { _id: 1 } });
+
+    res.send({ success: update.ok == 1, token });
+
+});
+
+
+/**
+ * 
+ * Resets user password
+ * 
+ * @param { string } password - new password
+ * @param { string } token - token saved when email code was confirmed /\
+ * 
+ * @throws { status: 422; reason: "InvalidPassword" } - password is invalid (less than 8 characters)
+ * @throws { status: 403; reason: "InvalidToken" } - code token is not provided or invalid
+ * @throws { status: 403; reason: "SessionExpired" } - email code was confirmed(user.security.codeConfirmed) 8 minutes ago which is too much
+ *  
+ * @returns { updated: boolean; }
+ * 
+ */
+router.post("/password/reset", logged({ _id: 1, security: { code: 1, codeToken: 1, codeConfirmed: 1, } }), async (req, res) => {
+    const { password, token } = req.body;
+    const { user } = res.locals as Locals;
+
+    if(!token) {
+        return res.status(403).send({ reason: "InvalidToken" });
+    } else if(!password || password.length < 8) {
+        return res.status(422).send({ reason: "InvalidPassword" });
+    }
+
+    if(user.security?.code) {
+        return res.status(403).send({ reason: "InvalidToken" });
+    } else if(!user.security?.codeConfirmed || Date.now() - user.security.codeConfirmed > 4800000) {
+        return res.status(403).send({ reason: "SessionExpired" });
+    } else if(token != user.security?.codeToken) {
+        return res.status(403).send({ reason: "InvalidToken" });
+    }
+
+    const newPassword = makePassword(password);
+
+    if(!newPassword) {
+        return res.status(422).send({ reason: "InvalidPassword" });
+    }
+
+    const update = await updateUser(user._id, { $set: { password: newPassword, security: { codeConfrimed: null!, codeToken: null!, } } }, { projection: { _id: 1 } });
+
+    res.send({ updated: update.ok == 1 });
 });
 
 

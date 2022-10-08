@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { io } from "../../..";
 import { DishHashTableUltra } from "../../../utils/dish";
+import { logged } from "../../../utils/middleware/logged";
+import { allowed } from "../../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../../utils/other";
 import { Orders, Restaurant } from "../../../utils/restaurant";
 import { getUser } from "../../../utils/users";
@@ -19,7 +21,7 @@ interface Dish {
     orderId: string;
     time: number;
     dishId: string;
-}; router.post("/init", async (req, res) => {
+}; router.post("/init", logged({ _id: 1 }), allowed({}, "cook"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { socketId } = req.body;
 
@@ -104,7 +106,7 @@ interface Dish {
 // });
 
 
-router.get("/dish/:dishId", async (req, res) => {
+router.get("/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1 }, "cook"), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, time: 1, image: { binary: 1 } } });

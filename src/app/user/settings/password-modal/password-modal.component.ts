@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, Output, EventEmitter, } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
-import { RestaurantRemovePage } from 'src/app/restaurant/settings/restaurant-remove/restaurant-remove.page';
+import { RouterService } from 'src/app/other/router.service';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -48,10 +48,15 @@ export class PasswordModalComponent implements OnInit {
     constructor(
         private service: UserService,
         private toastCtrl: ToastController,
+        private router: RouterService,
     ) { };
 
 
     @Output() leave = new EventEmitter();
+
+    reset() {
+        this.router.go(["user/reset-password"]);
+    }
 
     async submit() {
         const { currentPassword, newPassword, confirmPassword } = this.form.value;

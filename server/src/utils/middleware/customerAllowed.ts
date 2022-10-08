@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { Filter } from "mongodb";
+import { Order } from "../../models/general";
 import { id } from "../functions";
 import { Orders } from "../restaurant";
 
@@ -27,21 +29,14 @@ export function passOrder(projection: any) {
             throw "no res.locals.status found at passOrder() middleware";
         }
 
+        let filter: Filter<Order>;
         if(status == "loggedin" || status == "loggedout") {
-            const customer = id(userId!)!;
-
-            const order = await Orders(restaurantId).one({ customer }).get({ projection });
-
-            if(!order) {
-                return res.status(403).send({ reason: "OrderNotFound" });
-            }
-
-            res.locals.order = order;
-            return next();
+            filter = { customer: id(userId!), status: "ordering" };
+        } else {
+            filter = { ip: req.ip, status: "ordering" };
         }
 
-        
-        const order = await Orders(restaurantId).one({ ip: req.ip }).get({ projection });
+        const order = await Orders(restaurantId).one(filter).get({ projection });
 
         if(!order) {
             return res.status(403).send({ reason: "OrderNotFound" });

@@ -50,7 +50,7 @@ export class EmailVerificationPage implements OnInit {
             }
         }, 1000);
 
-        const result = await this.service.post<{ success: boolean; }>({}, "email/resend");
+        const result = await this.service.post<{ success: boolean; }>({ force: true, }, "code/resend");
 
         if (result.success) {
             (await this.toastCtrl.create({

@@ -12,7 +12,7 @@ interface Dish {
     name: string;
     date: string;
     _id: string;
-    price: string;
+    price: number;
     bought: number;
     modified: string;
 }

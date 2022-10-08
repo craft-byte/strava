@@ -1,0 +1,29 @@
+<div class="app">
+    <div class="header">
+        <div class="back">
+            <button id="back" (click)="back()" class="button-font">
+                <ion-icon name="arrow-back-outline"></ion-icon> Exit
+            </button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="info">
+            We've sent an email with code to your email address
+        </div>
+        <div class="code-wrap">
+            <code-input [isCodeHidden]="false" id="code-input" [codeLength]="6" (codeCompleted)="onCodeCompleted($event)">
+            </code-input>
+            <div *ngIf="ui.message && ui.message.length > 0" class="message">
+                {{ ui.message }}
+            </div>
+        </div>
+        <div class="buttons">
+            <button (click)="resend()" class="only-text-button" id="resend">
+                Resend code
+            </button>
+            <button id="submit" (click)="submit()" class="orange-button">
+                Submit
+            </button>
+        </div>
+    </div>
+</div>

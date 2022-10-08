@@ -122,13 +122,13 @@ router.post("/account-webhook", e.raw({ type: 'application/json' }), async (req,
         console.log(data);
 
 
-        if (data.metadata.orderId && data.metadata.restaurantId && data.metadata.customer) {
+        if (data.metadata.orderId && data.metadata.restaurantId && (data.metadata.customerId || data.metadata.customerIp)) {
 
-            const { orderId, customer, restaurantId } = data.metadata;
+            const { orderId, customerId, customerIp, restaurantId } = data.metadata;
 
             console.log("on order payed called");
 
-            onOrderPayed(restaurantId, orderId, customer);
+            onOrderPayed(restaurantId, orderId, customerId);
 
         }
 
@@ -137,11 +137,11 @@ router.post("/account-webhook", e.raw({ type: 'application/json' }), async (req,
 
         console.log(data);
 
-        if (data.metadata.orderId && data.metadata.restaurantId && data.metadata.customer) {
+        if (data.metadata.orderId && data.metadata.restaurantId && data.metadata.customerId) {
 
-            const { orderId, customer, restaurantId } = data.metadata;
+            const { orderId, customerId, restaurantId } = data.metadata;
 
-            onOrderPaymentFailed(restaurantId, orderId, customer);
+            onOrderPaymentFailed(restaurantId, orderId, customerId);
         } else {
             throw "at charge.failed event no metadata wtf";
         }
@@ -177,6 +177,8 @@ router.get("/", (req, res) => {
 
 
 async function onOrderPayed(restaurantId: string, orderId: string, customerId: string) {
+
+    console.log(restaurantId, orderId, customerId);
 
     // set order type to progress (cooking)
     const update = await Orders(restaurantId).one({ _id: id(orderId) })
@@ -229,7 +231,9 @@ async function onOrderPayed(restaurantId: string, orderId: string, customerId: s
     Restaurant(restaurantId).dishes.many({ _id: { $in: Array.from(ids).map(a => id(a)) } }).update({ $inc: { bought: 1 } });
 
     // add order to user history
-    updateUser(customerId, { $push: { orders: { restaurantId: id(restaurantId), orderId: id(orderId) } } });
+    if(customerId) {
+        updateUser(customerId, { $push: { orders: { restaurantId: id(restaurantId), orderId: id(orderId) } } });
+    }
 }
 
 

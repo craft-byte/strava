@@ -1,86 +1,121 @@
-.app {
-    
-    .box {
+@import url('https://fonts.googleapis.com/css2?family=Nabla&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
 
-        .header {
-            padding-top: 36px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            h1 {
-                margin: 0;
-                font-size: 22px;
-            }
-            h2 {
-                margin: 0;
-                color: var(--text-color);
-                font-size: 20px;
-                font-weight: 500;
-            }
-        }
-        .body {
-            padding-top: 36px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            width: 100%;
-            .username-message, .password-message {
-                width: 100%;
-                color: var(--red);
-                font-size: 14px;
-                margin-top: 4px;
-                text-align: start;
-            }
-            input {
-                height: 42px;
-                width: 100%;
-                border-radius: 6px;
-                border: 1px solid var(--border-color);
-                padding-left: 6px;
-                transition: border .1s;
-                &.red {
-                    border: 1px solid var(--red);
+.app {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(250, 250, 250);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 52px;
+
+    .animations {
+        
+    }
+    .flex-column {
+        .box {
+            background-color: white;
+            border-radius: 8px;
+            width: 324px;
+            padding: 24px 12px;
+            border: 1px solid var(--border-color);
+    
+            .header {
+                padding-bottom: 32px;
+                .title {
+                    font-size: 52px;
+                    color: var(--black);
+                    text-align: center;
+                    
+                    font-family: 'Nabla', cursive;
                 }
-                &:focus {
+                .subtitle {
+                    color: var(--text-color);
+                    font-size: 18px;
+                    text-align: center;
+                }
+            }
+    
+    
+            .login {
+                input {
+                    width: 100%;
+                    height: 38px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    border: 1px solid var(--border-color);
                     outline: none;
-                    border: 2px solid var(--orange);
+                    background-color: rgb(250, 250, 250);
+                    margin-top: 12px;
+                    padding: 8px 12px;
+    
+                    &:focus {
+                        border: 1px solid var(--gray);
+                    }
+                    &.ng-touched.ng-invalid {
+                        border: 1px solid var(--red);
+                    }
+                }
+    
+                .name {
+                    input:last-of-type {
+                       margin-top: 6px; 
+                    }
+                }
+    
+                .username-message,.password-message {
+                    color: var(--red);
+                    font-size: 14px;
+                    padding-left: 2px;
+                }
+    
+                .info {
+                    p {
+                        text-align: center;
+                        margin: 8px;
+                        color: var(--gray);
+                        font-size: 14px;
+                        font-family: 'Rubik', sans-serif;
+    
+                        a {
+                            text-decoration: none;
+                            font-family: 'Rubik', sans-serif;
+                            font-weight: 400;
+                            color: var(--text-color);
+                        }
+                    }
+                }
+    
+                .submit {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 24px;
+                }
+
+                .forgot {
+                    margin-top: 12px;
+                    display: flex;
+                    justify-content: center;
                 }
             }
-            #password {
-                margin-top: 24px;
-            }
         }
-        .buttons {
-            padding-top: 40px;
-            margin-bottom: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            #sign-in {
-                color: var(--gray);
-                font-size: 17px;
-                background: none;
-            }
-            #next {
-                background-color: var(--orange);
-                width: 82px;
-                height: 36px;
-                border-radius: 8px;
-                font-size: 17px;
-                &:hover {
-                    background-color: #f5bd04;
-                }
-            }
-        }
-        .reset {
-            display: flex;
-            justify-content: center;
-            button {
-                background: none;
+    
+        .sign-in {
+            width: 324px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-top: 12px;
+    
+            span.wrap {
+                font-size: 16px;
                 color: var(--text-color);
-                &:hover {
-                    color: var(--gray);
+                font-family: 'Rubik', sans-serif;
+                a {
+                    font-family: 'Rubik', sans-serif;
+                    text-decoration: none;
                 }
             }
         }

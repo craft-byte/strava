@@ -1,7 +1,7 @@
 import { animate, group, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
 import { DragAndDropModule } from 'src/app/directives/drag-and-drop.module';
 
@@ -10,7 +10,7 @@ import { DragAndDropModule } from 'src/app/directives/drag-and-drop.module';
     templateUrl: './image-modal.component.html',
     styleUrls: ['./image-modal.component.scss'],
     standalone: true,
-    imports: [CommonModule, DragAndDropModule, ImageCropperModule],
+    imports: [CommonModule, DragAndDropModule, ImageCropperModule, IonicModule],
     animations: [
         trigger("showUp", [
             transition(":enter", [

@@ -1,6 +1,7 @@
 import { animate, group, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
 import { DragAndDropModule } from 'src/app/directives/drag-and-drop.module';
 import { threadId } from 'worker_threads';
@@ -10,7 +11,7 @@ import { threadId } from 'worker_threads';
     templateUrl: './avatar-modal.component.html',
     styleUrls: ['./avatar-modal.component.scss'],
     standalone: true,
-    imports: [ImageCropperModule, DragAndDropModule, CommonModule],
+    imports: [ImageCropperModule, DragAndDropModule, CommonModule, IonicModule],
     animations: [
         trigger("showUp", [
             transition(":enter", [

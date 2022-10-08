@@ -2,13 +2,14 @@ import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { Time } from "../../models/components";
-import { Order } from "../../models/general";
+import { Order, User } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { getRelativeDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
+import { isPromise } from "util/types";
 
 
 const router = Router({ mergeParams: true });
@@ -39,13 +40,6 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
     const { restaurantId } = req.params as any;
     const { restaurant } = res.locals;
 
-    // const restaurant = await Restaurant(restaurantId).get({ projection: { blacklist: 1 } });
-
-    if(!restaurant) {
-        return res.sendStatus(404);
-    }
-
-
     const orders = await (await Orders(restaurantId).history.many({ }, { limit: 12 })).sort({ ordered: -1 }).toArray();
 
     if(!orders || orders.length == 0) {
@@ -69,16 +63,31 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
     }
 
     for(let i of orders) {
+        let user: ConvertedOrder["user"] = null!;
+        if(i.customer) {
+            const userdata = await getUser(i.customer, { projection: { name: 1, username: 1, avatar: 1, } });
+            user = {
+                name: userdata?.name?.first || "User deleted",
+                avatar: userdata?.avatar?.binary,
+                _id: userdata?._id,
+            }
+        } else {
+            user = {
+                name: "Anonymous",
+                avatar: null,
+                _id: null,
+            }
+        }
         i.dishes = i.dishes.slice(0, 5);
         const one: ConvertedOrder = {
             status: i.status,
             _id: i._id,
             date: getDate(i.ordered!),
-            user: (await getUser(i.customer, { projection: { name: 1, username: 1, avatar: 1, } }))! as any,
+            user: user as any,
             dishes: [] as any,
             total: 0,
             statusColor: i.status == "progress" ? "purple" : i.status == "done" ? "green" : i.status == "removed" ? "red" : "orange",
-            blacklisted: isBlacklisted(i.customer)
+            blacklisted: isBlacklisted(i.customer || i.ip!)
         };
         for(let j of i.dishes) {
             const dish = await dishes.get(j.dishId) as any;
@@ -148,7 +157,21 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
     const { restaurantId, orderId } = req.params;
 
     const order = await Orders(restaurantId).history.one({ _id: id(orderId) });
-    const user = await getUser(order.customer, { projection: { username: 1, name: 1, avatar: { binary: 1, }}})
+    let user: FullOrder["customer"] = null!;
+    if(order.customer) {
+        const userdata = await getUser(order.customer, { projection: { username: 1, name: 1, avatar: { binary: 1, }}})
+        user = {
+            username: userdata?.name?.first || "User deleted",
+            avatar: userdata?.avatar?.binary!,
+            userId: userdata?._id!.toString()
+        }
+    } else {
+        user = {
+            username: "Anonymous",
+            avatar: null!,
+            userId: null!,
+        }
+    }
 
     const result: FullOrder = {
         ordered: getDate(order.ordered!),
@@ -157,11 +180,7 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
         type: order.type == "in" ? "TABLE" : "ORDER",
         id: order.id,
         status: order.status,
-        customer: {
-            username: user?.name?.first || "User deleted",
-            avatar: user?.avatar?.binary!,
-            userId: user?._id!.toString()
-        }
+        customer: user
     };
 
 

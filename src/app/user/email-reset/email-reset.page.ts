@@ -28,6 +28,13 @@ export class EmailResetPage implements OnInit {
         private toastCtrl: ToastController,
     ) { };
 
+    resetPassword() {
+        this.router.go(["user/password-reset"]);
+    }
+    contact() {
+        
+    }
+
     async submit() {
         const { password, email } = this.form.value;
 

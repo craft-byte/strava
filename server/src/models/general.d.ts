@@ -120,8 +120,13 @@ interface User {
         }
     }
 
-    emailCode?: string;
-    emailStored?: string;
+    security?: {
+        code?: string;
+        codeToken?: string;
+        codeConfirmed?: number;
+        codeAsked?: number;
+    }
+
 }
 
 

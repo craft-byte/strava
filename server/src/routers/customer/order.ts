@@ -4,6 +4,7 @@ import { stat } from "fs";
 import { Filter, ObjectId } from "mongodb";
 import { isPromise } from "util/types";
 import { stripe } from "../..";
+import { order } from "../../middleware/user";
 import { Time } from "../../models/components";
 import { Order, User } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
@@ -39,19 +40,17 @@ router.post("/check", passUserId, async (req, res) => {
     console.log(userId, status);
 
 
-    let order: Order;
-
-    if(userId && status != "noinfo") {
-        const update = await Orders(restaurantId).one({ customer: id(userId) }).update({ $set: { socketId, connected: Date.now() } }, { projection: { _id: 1 } });
-        order = update.order;
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!) };
     } else {
-        const update = await Orders(restaurantId).one({ ip: req.ip }).update({ $set: { socketId, connected: Date.now() } }, { projection: { _id: 1 } });
-        order = update.order;
+        filter = { ip: req.ip };
     }
+    const update = await Orders(restaurantId).update(filter, { $set: { socketId, connected: Date.now() } });
 
-    if(!order) {
+    if(update.matchedCount > 0 && update.modifiedCount > 0) {
         const order = await Orders(restaurantId).createSession({
-            customer: id(userId!) || null,
+            customer: userId ? id(userId!) : null,
             status: "ordering",
             _id: id()!,
             dishes: [],
@@ -560,6 +559,7 @@ interface PaymentInfo {
     paymentIntentId?: string;
     methods: { last4: string; brand: string; id: string; }[];
     _id: ObjectId;
+    savePaymentMethod: boolean;
 }; router.get("/session/payment-info", passUserId, passOrder({ type: 1, id: 1, dishes: { dishId: 1 } }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { order, status, userId } = res.locals as LocalLocals;
@@ -580,7 +580,7 @@ interface PaymentInfo {
 
     let user: User | null | undefined;
     if(userId) {
-        user = await getUser(req.user as string, { projection: { stripeCustomerId: 1 } });
+        user = await getUser(userId, { projection: { stripeCustomerId: 1 } });
     }
 
 
@@ -596,6 +596,7 @@ interface PaymentInfo {
         methods: [],
         _id: order._id,
         theme: restaurant.theme || "orange",
+        savePaymentMethod: status != "noinfo",
     };
 
 
@@ -651,6 +652,7 @@ interface PaymentInfo {
 
     Orders(restaurantId).one(filter).update({ $set: { money: { total: result.total, subtotal: result.subtotal, hst: result.hst } } });
 
+
     if(user && user.stripeCustomerId) {
         try {
             const paymentMethods = await stripe.paymentMethods.list({ customer: user.stripeCustomerId, type: "card" });
@@ -685,6 +687,7 @@ interface PaymentInfo {
                 metadata: {
                     restaurantId: restaurantId,
                     customerId: user._id!.toString(),
+                    customerIp: req.ip,
                     orderId: order._id.toString(),
                 },
                 transfer_data: {
@@ -692,14 +695,16 @@ interface PaymentInfo {
                 },
                 payment_method_options: {
                     card: {
-                        setup_future_usage: "off_session"
-                    }
+                        setup_future_usage: "off_session",
+                    },
                 }
             });
     
             result.clientSecret = p.client_secret!;
             result.paymentIntentId = p.id;
         } else {
+            console.log("NO USER OR NO STRIPECUSOMERID");
+            console.log("USER: ", user);
             const p = await stripe.paymentIntents.create(
                 {
                     amount: result.total,
@@ -709,14 +714,16 @@ interface PaymentInfo {
                     },
                     metadata: {
                         restaurantId: restaurantId,
+                        customerId: user?._id.toString()!,
                         customerIp: req.ip,
                         orderId: order._id.toString(),
                     },
                 },
-            );
-
+                );
+                
             result.clientSecret = p.client_secret!;
             result.paymentIntentId = p.id;
+            result.savePaymentMethod = false;
         }
     } catch (e: any) {
         console.log(e.type);
@@ -731,11 +738,13 @@ interface PaymentInfo {
                     metadata: {
                         restaurantId: restaurantId,
                         customerIp: req.ip,
+                        customerId: user?._id.toString()!,
                         orderId: order._id.toString(),
                     },
                 },
             );
-
+                
+            result.savePaymentMethod = false;
             result.clientSecret = p.client_secret!;
             result.paymentIntentId = p.id;
         } else {
@@ -837,11 +846,34 @@ interface Tracking {
             _id: ObjectId;
         }[];
     }[];
-}; router.get("/tracking", async (req, res) => {
+};
+/**
+ * 
+ * FRONTEND ERROR HANDLING
+ * 
+ * used to get ordered orders for tracking
+ * 
+ * @returns { Tracking }
+ * 
+ * @throws { status: 404; reason: "NoOrders" } - user didn't order any orders
+ * 
+ */
+router.get("/tracking", passUserId, async (req, res) => {
     const { restaurantId } = req.params as any;
+    const { status, userId } = res.locals as LocalLocals;
 
+    let filter: Filter<Order>;
+    if(status == "loggedin" || status == "loggedout") {
+        filter = { customer: id(userId!), status: "progress" };
+    } else {
+        filter = { status: "progress", ip: req.ip };
+    }
 
-    const orders = await Orders(restaurantId).many({ customer: id(req.user as string), status: "progress" }, { projection: { dishes: 1, id: 1, type: 1, ordered: 1, } });
+    const orders = await Orders(restaurantId).many(filter, { projection: { dishes: 1, id: 1, type: 1, ordered: 1, } });
+
+    if(!orders || orders.length == 0) {
+        return res.status(404).send({ reason: "NoOrders" });
+    }
 
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1 } });
     

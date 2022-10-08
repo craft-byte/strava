@@ -23,6 +23,7 @@ interface PaymentInfo {
     methods: { last4: string; brand: string; id: string; }[];
     _id: string;
     theme: string;
+    savePaymentMethod: boolean;
 };
 
 
@@ -121,7 +122,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
             elements: this.paymentElement.elements,
             redirect: 'if_required',
             confirmParams: {
-                save_payment_method: true,
+                save_payment_method: this.data.savePaymentMethod,
             }
         }).toPromise();
 

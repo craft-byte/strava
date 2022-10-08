@@ -2,8 +2,11 @@ import { Router } from "express";
 import { io } from "../../..";
 import { Time } from "../../../models/components";
 import { Order } from "../../../models/general";
+import { Locals } from "../../../models/other";
 import { id } from "../../../utils/functions";
 import { sendMessage } from "../../../utils/io";
+import { logged } from "../../../utils/middleware/logged";
+import { allowed } from "../../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../../utils/other";
 import { Orders, Restaurant } from "../../../utils/restaurant";
 import { getUser } from "../../../utils/users";
@@ -13,9 +16,10 @@ import { convertDishes } from "./functions";
 const router = Router({ mergeParams: true });
 
 
-router.post("/init", async (req ,res) => {
+router.post("/init", logged({ _id: 1 }), allowed({ _id: 1, name: 1 }, "waiter"), async (req ,res) => {
     const { restaurantId } = req.params as any;
     const { socketId } = req.body;
+    const { restaurant } = res.locals as Locals;
 
     if(!socketId) {
         console.log("NO SOCKET ID WAITER: DANGER");
@@ -23,18 +27,13 @@ router.post("/init", async (req ,res) => {
         io.in(socketId).socketsJoin(`${restaurantId}/waiter`);
     }
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1  } });
-
-    if(!restaurant) {
-        return res.sendStatus(404);
-    }
 
     res.send({
         restaurant,
         ...await convertDishes(restaurantId)
     });
 });
-router.get("/dish/:dishId", async (req, res) => {
+router.get("/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1, }, "waiter"), async (req, res) => {
     const { dishId, restaurantId } = req.params as any;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, image: 1 } });
@@ -50,14 +49,14 @@ interface Dish {
         binary: any;
         resolution: number;
     }
-} interface OrderLocal {
+}; interface OrderLocal {
     type: "order" | "table";
     number: string;
-} interface User {
+}; interface User {
     name: string;
     username: string;
     avatar: { binary: any; };
-} interface RequestResult {
+}; interface RequestResult {
     comment: string;
     cook: User;
     user: User;
@@ -65,7 +64,7 @@ interface Dish {
     time: Time;
     timeDone: Time;
     order: OrderLocal;
-}; router.get("/:orderId/dish/:orderDishId", async (req, res) => {
+}; router.get("/:orderId/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
 
     const result: RequestResult = {
@@ -125,14 +124,14 @@ interface Dish {
     res.send(result);
 });
 
-router.delete("/:orderId/dish/:orderDishId/served", async (req, res) => {
+router.delete("/:orderId/dish/:orderDishId/served", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
-
+    const { user } = res.locals as Locals;
 
     const result = await Orders(restaurantId).one({ _id: id(orderId) }).update(
         { $set: {
             "dishes.$[dish].status": "served",
-            "dishes.$[dish].waiter": id(req.user as string),
+            "dishes.$[dish].waiter": id(user._id),
             "dishes.$[dish].served": Date.now(),
         } },
         { arrayFilters: [{ "dish._id": id(orderDishId) }] }
