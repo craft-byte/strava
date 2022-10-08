@@ -12,12 +12,12 @@ phases:
     commands:
       - n 16
       - npm install --force
-      - cd /server && npm install --force
+      - cd ./server && npm install --force
   build:
     commands:
       - echo build process started now
       - npm run build
-      - cd /server && npm run prod:build
+      - cd ./server && npm run prod:build
   post_build:
     commands:
       - echo build process finished, we should uplload to S3 now
