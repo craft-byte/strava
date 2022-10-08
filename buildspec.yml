@@ -5,6 +5,8 @@ phases:
   install:
     runtime-versions:
       nodejs: latest
+    commands:
+      - n 16
   build:
     commands:
       - echo build process started now
