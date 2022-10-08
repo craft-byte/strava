@@ -17,7 +17,7 @@ phases:
     commands:
       - echo build process started now
       - npm run build
-      - cd ./server && npm run prod:build
+      - cd ../ && npm run build
   post_build:
     commands:
       - echo build process finished, we should uplload to S3 now
