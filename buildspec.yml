@@ -21,3 +21,11 @@ phases:
   post_build:
     commands:
       - echo build process finished, we should uplload to S3 now
+
+artifact:
+  files:
+    - angular.json
+    - package.json
+    - server/build/**/*
+    - server/package.json
+    - www/**/*
