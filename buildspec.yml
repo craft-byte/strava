@@ -2,9 +2,10 @@ version: 0.2
 
 
 phases:
-  build:
+  install:
     runtime-versions:
       nodejs: 16
+  build:
     commands:
       - echo build process started now
       - npm run start
