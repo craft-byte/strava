@@ -25,4 +25,7 @@ phases:
 artifact:
   files:
     - '**/*'
+  name: strava-bucket-name
+  discard-paths: no
+  
   
