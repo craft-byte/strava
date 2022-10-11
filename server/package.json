@@ -34,9 +34,7 @@
     "rxjs": "^7.5.5",
     "sharp": "^0.30.7",
     "socket.io": "^4.4.1",
-    "stripe": "^10.1.0"
-  },
-  "devDependencies": {
+    "stripe": "^10.1.0",
     "@types/axios": "^0.14.0",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.2",
@@ -53,5 +51,7 @@
     "@types/stripe": "^8.0.417",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.19"
+  },
+  "devDependencies": {
   }
 }
