@@ -33,8 +33,8 @@ const sendEmail = nodemailer.createTransport({
         pass: 'tgphcddicttmsstf'
     }
 });
-const key = readFileSync(process.cwd() + "/src/environments/localhost.key", "utf-8");
-const cert = readFileSync(process.cwd() + "/src/environments/localhost.crt", "utf-8");
+// const key = readFileSync(process.cwd() + "/src/environments/localhost.key", "utf-8");
+// const cert = readFileSync(process.cwd() + "/src/environments/localhost.crt", "utf-8");
 const app = express();
 const splitted = process.cwd().split("\\");
 splitted.splice(splitted.length - 1, splitted.length);
@@ -100,7 +100,8 @@ app.use(
                 }
     )
 );
-const server = createServer({ key, cert }, app);
+const server = createServer({ }, app);
+// const server = createServer({ key, cert }, app);
 const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
 // app.use((req, res, next) => {
     //     console.log(req.headers.referer);
