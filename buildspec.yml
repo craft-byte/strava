@@ -22,7 +22,11 @@ phases:
 
 artifact:
   files:
-    - '**/*'
+    - package.json
+    - www/**/*
+    - server/build/**/*
+    - server/package.json
+
   name: strava-bucket-name
   discard-paths: no
   
