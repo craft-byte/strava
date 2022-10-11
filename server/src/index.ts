@@ -1,5 +1,4 @@
 import cors from "cors";
-import multer from "multer";
 import express from "express";
 import compression from "compression";
 import session from "express-session";
@@ -13,7 +12,6 @@ import { serverEnvinroment } from "./environments/server";
 import { StaffRouter } from "./routers/staff";
 import nodemailer from "nodemailer";
 import logger from "morgan";
-import { logged } from "./middleware/user";
 import Stripe from "stripe";
 import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
@@ -35,14 +33,8 @@ const sendEmail = nodemailer.createTransport({
         pass: 'tgphcddicttmsstf'
     }
 });
-declare module 'express-session' {
-    export interface SessionData {
-        userid: string;
-    }
-}
 const key = readFileSync(process.cwd() + "/src/environments/localhost.key", "utf-8");
 const cert = readFileSync(process.cwd() + "/src/environments/localhost.crt", "utf-8");
-const upload = multer({ dest: 'uploads/' }).single("image");
 const app = express();
 const splitted = process.cwd().split("\\");
 splitted.splice(splitted.length - 1, splitted.length);
@@ -192,7 +184,6 @@ server.listen(process.env.PORT || 3000, () => {
 
 
 export {
-    upload,
     sendEmail as Email,
     io
 }

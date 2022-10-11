@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node build/index.js prod",
     "build": "echo 'SERVER BUILD STAGE' && npm run prod:install && npm run prod:build",
-    "prod:install": "echo 'INSTALLING PACKAGES' && npm install --legacy-peer-deps",
+    "prod:install": "echo 'INSTALLING PACKAGES' && npm install",
     "prod:build": "echo 'BUILDING PROJECT' && tsc -p tsconfig.prod.json && echo 'PROJECT BUILT'",
 
     "dev:build": "tsc -p tsconfig.dev.json -w",
@@ -25,7 +25,6 @@
     "express": "^4.17.3",
     "express-session": "^1.17.2",
     "mongodb": "^4.4.1",
-    "multer": "^1.4.4",
     "nodemailer": "^6.7.3",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
@@ -45,7 +44,6 @@
     "@types/express-session": "^1.17.4",
     "@types/mongodb": "^4.0.7",
     "@types/morgan": "^1.9.3",
-    "@types/multer": "^1.4.7",
     "@types/nodemailer": "^6.4.4",
     "@types/passport": "^1.0.7",
     "@types/passport-jwt": "^3.0.6",
