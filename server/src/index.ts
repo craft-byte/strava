@@ -38,19 +38,19 @@ const sendEmail = nodemailer.createTransport({
 const app = express();
 const splitted = process.cwd().split("\\");
 splitted.splice(splitted.length - 1, splitted.length);
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 app.use(logger("dev"));
-app.use(session({
-    saveUninitialized: false,
-    resave: false,
-    secret: "y06q9MHVaQfW01cUli4frrA7BsAuOGusilovecatsS",
-    cookie: {
-        httpOnly: false,
-        secure: true,
-        sameSite: "none",
-        maxAge: (4 * 60 * 60 * 1000)
-    }
-}));
+// app.use(session({
+//     saveUninitialized: false,
+//     resave: false,
+//     secret: "y06q9MHVaQfW01cUli4frrA7BsAuOGusilovecatsS",
+//     cookie: {
+//         httpOnly: false,
+//         secure: true,
+//         sameSite: "none",
+//         maxAge: (4 * 60 * 60 * 1000)
+//     }
+// }));
 app.use(compression());
 app.use((req,res) => {
     console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA ITWORKSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
@@ -103,7 +103,7 @@ app.use(
                 }
     )
 );
-const server = createServer({ }, app);
+const server = createServer(app);
 // const server = createServer({ key, cert }, app);
 const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
 // app.use((req, res, next) => {
@@ -130,7 +130,6 @@ const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
 app.use(express.static(splitted.join("/") + "/www"));
-app.use(cookieparser());
 
 
 // passport.serializeUser(function (user: any, cb) {
