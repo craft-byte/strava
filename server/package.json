@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js prod",
-    "build": "npm run prod:build",
+    "build": "(echo 'SERVER BUILD STARTED ====' || false) && npm run prod:build",
     "prod:build": "tsc -p tsconfig.prod.json",
+
     "dev:build": "tsc -p tsconfig.dev.json -w",
     "dev:start": "nodemon dev/index.js dev",
     "dev:build:npx": "npx tsc -p tsconfig.dev.json -w",

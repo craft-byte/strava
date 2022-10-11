@@ -9,7 +9,7 @@
     "ng": "ng",
     "start": "npm run server:start",
     "build": "(npm run build:web || false) && npm run build:server",
-    "build:server": "(cd ./server || false) && (npm install --force || false) && npm run prod:build",
+    "build:server": "(cd ./server || false) && (npm install --legacy-peer-deps || false) && npm run build",
     "build:web": "ng build --configuration production",
 
     "web": "ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''",
