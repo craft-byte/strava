@@ -18,13 +18,12 @@ phases:
       - cd ../ && npm run build
   post_build:
     commands:
-      - echo build process finished, we should uplload to S3 now
+      - echo build process finished, we should upload to S3 now
 
 artifact:
   files:
     - '**/*'
 
-  name: strava-bucket-name
   discard-paths: yes
   
   
