@@ -52,6 +52,9 @@ app.use(session({
     }
 }));
 app.use(compression());
+app.use((req,res) => {
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA ITWORKSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+});
 app.use(
     cors(
         {
