@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node build/index.js prod",
     "build": "echo 'SERVER BUILD STAGE' && npm run prod:install && npm run prod:build",
-    "prod:install": "echo 'INSTALLING PACKAGES' && npm install",
+    "prod:install": "echo 'INSTALLING PACKAGES' && npm ci --only:prod",
     "prod:build": "echo 'BUILDING PROJECT' && tsc -p tsconfig.prod.json && echo 'PROJECT BUILT'",
 
     "dev:build": "tsc -p tsconfig.dev.json -w",
