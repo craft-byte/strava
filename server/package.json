@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js prod",
-    "build": "(echo 'SERVER BUILD STARTED ====' || false) && npm run prod:build",
-    "prod:build": "tsc -p tsconfig.prod.json",
+    "build": "echo 'SERVER BUILD STAGE' && npm run prod:install && npm run prod:build",
+    "prod:install": "echo 'INSTALLING PACKAGES' && npm install --legacy-peer-deps",
+    "prod:build": "echo 'BUILDING PROJECT' && tsc -p tsconfig.prod.json && echo 'PROJECT BUILT'",
 
     "dev:build": "tsc -p tsconfig.dev.json -w",
     "dev:start": "nodemon dev/index.js dev",
