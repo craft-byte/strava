@@ -20,7 +20,7 @@ phases:
     commands:
       - echo build process finished, we should upload to S3 now
 
-artifact:
+artifacts:
   files:
     - '**/*'
 
