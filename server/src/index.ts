@@ -76,9 +76,6 @@ async function main(client: MongoClient) {
         app.use("/api/stripe", StripeRouter);
 
         app.get("**", (req, res) => {
-            const splitted = process.cwd().split("\\");
-            console.log(splitted);
-            splitted.splice(splitted.length - 1, splitted.length);
             res.sendFile(path.join(__dirname, "..", "..", "www", "index.html"));
         });
 
