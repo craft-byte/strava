@@ -1,15 +1,18 @@
 import { ObjectId } from "bson";
 import { randomBytes, scryptSync } from "crypto";
-import { stdout } from "process";
-import { Email } from "..";
 import { months } from "../assets/consts";
-import { updateUser } from "./users";
+import * as nodemailer from "nodemailer";
 
-const logger = {
-    info: true,
-    check: false,
-    login: false
-}
+const Email = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'ctraba.business@gmail.com',
+        pass: 'tgphcddicttmsstf'
+    }
+});
+
+
+
 
 function makePassword(password: string) {
     if(password.length < 8) {
@@ -45,6 +48,7 @@ function id(str?: string | ObjectId): ObjectId {
     }
     return new ObjectId();
 }
+
 function getDate(d: Date | number) {
     if(!d) {
         return "Invalid date";
@@ -52,33 +56,7 @@ function getDate(d: Date | number) {
     const date = new Date(d);
     return `${date.getDate()} ${months[date.getMonth()]}`;
 }
-function log(status: string, ...ar: (string | ObjectId | number | boolean | undefined)[]) {
-    if(status.toLowerCase() == "info" && !logger.info) {
-        return;
-    }
-    if(status.toLocaleLowerCase() == "checking" && !logger.check) {
-        return;
-    }
-    
-    
-    const date = new Date();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-    
-    let result = `[${hours.toString().length == 1 ? `0${hours}` : hours}:${minutes.toString().length == 1 ? `0${minutes}` : minutes}:${seconds.toString().length == 1 ? `0${seconds}` : seconds}]`;
-    
-    result = result + (" > " + status.toUpperCase());
 
-    for(let i of ar) {
-        if(i) {
-            result = result + " " + i.toString().trim();
-        }
-    }
-    
-    result += "\n";
-    stdout.write(result);
-}
 
 async function sendEmail(email: string, title: string, html: string) {
     if(!verifyEmail(email)) {
@@ -112,7 +90,6 @@ export {
     makePassword,
     compare,
     id,
-    log,
     getDate,
     sendEmail
 }

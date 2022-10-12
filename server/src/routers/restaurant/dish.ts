@@ -5,7 +5,7 @@ import { Locals } from "../../models/other";
 import { id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
-import { bufferFromString, getIds } from "../../utils/other";
+import { bufferFromString } from "../../utils/other";
 import { Restaurant } from "../../utils/restaurant";
 
 

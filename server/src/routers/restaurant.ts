@@ -3,7 +3,6 @@ import { Orders, Restaurant } from "../utils/restaurant";
 import { ComponentsRouter } from "./restaurant/components";
 import { StaffRouter } from "./restaurant/staff";
 import { DishesRouter } from "./restaurant/dishes";
-import { UpdateRouter } from "./restaurant/update";
 import { PeopleRouter } from "./restaurant/people";
 import { CustomersRouter } from "./restaurant/customers";
 import { stripe } from "..";
@@ -16,7 +15,6 @@ import { SettingsRouter } from "./restaurant/settings";
 
 const router = Router({ mergeParams: true });
 
-router.use("/update", UpdateRouter);
 router.use("/dishes", DishesRouter);
 router.use("/components", ComponentsRouter);
 router.use("/people", PeopleRouter);

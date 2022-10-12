@@ -7,9 +7,8 @@ import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { getRelativeDelay } from "../../utils/other";
-import { Orders, Restaurant } from "../../utils/restaurant";
+import { Orders } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
-import { isPromise } from "util/types";
 
 
 const router = Router({ mergeParams: true });

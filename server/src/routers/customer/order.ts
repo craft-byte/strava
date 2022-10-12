@@ -4,7 +4,6 @@ import { stat } from "fs";
 import { Filter, ObjectId } from "mongodb";
 import { isPromise } from "util/types";
 import { stripe } from "../..";
-import { order } from "../../middleware/user";
 import { Time } from "../../models/components";
 import { Order, User } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
@@ -36,8 +35,6 @@ router.post("/check", passUserId, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { socketId } = req.body;
     const { userId, status } = res.locals as LocalLocals;
-
-    console.log(userId, status);
 
 
     let filter: Filter<Order>;

@@ -8,8 +8,6 @@ import { Orders } from "../restaurant";
 
 
 
-
-
 /**
  * 
  * checks if user has an order and passes it to the next middleware

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { compare, id, makePassword, sendEmail } from "../utils/functions";
-import { addUser, byUsername, getUserByEmail, updateUser, user } from "../utils/users";
+import { addUser, updateUser, user as FindUser } from "../utils/users";
 import { logged } from "../utils/middleware/logged";
 import { AddRestaurantRouter } from "./user/addRestaurant";
 import { Restaurant as RestaurantType, User } from "../models/general";
@@ -43,13 +43,13 @@ router.post("/login", async (req, res) => {
     }
 
 
-    const user = await getUserByEmail(email, { projection: { password: 1, restaurants: 1 } });
+    const user = await FindUser({ email }, { projection: { password: 1, restaurants: 1 } });
 
     if(!user) {
         return res.sendStatus(404);
     }
 
-    if(compare(password, user.password)) {
+    if(compare(password, user.password!)) {
 
         const data = issueJWT(user._id.toString());
 
@@ -94,7 +94,7 @@ router.post("/create", async (req, res) => {
         return res.sendStatus(422);
     }
 
-    const similar = await getUserByEmail(email, { projection: { email: 1 } });
+    const similar = await FindUser({ email }, { projection: { email: 1 } });
 
     if(similar) {
         return res.status(403).send({ reason: "EmailRegistered" });
