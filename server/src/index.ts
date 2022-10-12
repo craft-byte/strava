@@ -19,6 +19,7 @@ import { StripeRouter } from "./routers/stripe";
 import { SocketIO } from "./utils/io";
 import { CustomerRouter } from "./routers/customer";
 import { errorHandler } from "./utils/middleware/errorHandler";
+import path from "path";
 
 export const MODE = process.argv[2] as "testing" | "prod" | "dev";
 
@@ -37,8 +38,6 @@ const sendEmail = nodemailer.createTransport({
 // const key = readFileSync(process.cwd() + "/src/environments/localhost.key", "utf-8");
 // const cert = readFileSync(process.cwd() + "/src/environments/localhost.crt", "utf-8");
 const app = express();
-const splitted = process.cwd().split("\\");
-splitted.splice(splitted.length - 1, splitted.length);
 // app.set('trust proxy', true);
 app.use(logger("dev"));
 // app.use(session({
@@ -127,8 +126,7 @@ const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
 // });
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
-app.use(express.static(splitted.join("/") + "/www"));
-
+app.use(express.static(path.join(__dirname, "..", "..", "www")));
 
 // passport.serializeUser(function (user: any, cb) {
 //     cb(null, user._id);
@@ -161,10 +159,13 @@ async function main(client: MongoClient) {
 
         app.get("**", (req, res) => {
             console.log("UNKNOWN URI");
+            console.log(__dirname)
+            console.log(path.join(__dirname, "..", "..", "www"));
             // if(MODE != "prod") {
-            //     return res.sendStatus(404);
-            // }
+                //     return res.sendStatus(404);
+                // }
             const splitted = process.cwd().split("\\");
+            console.log(splitted);
             splitted.splice(splitted.length - 1, splitted.length);
             res.sendFile(splitted.join("/") + "/www/index.html");
         });
