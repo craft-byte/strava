@@ -53,9 +53,6 @@ app.use(logger("dev"));
 //     }
 // }));
 app.use(compression());
-app.use((req,res) => {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA ITWORKSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-});
 app.use(
     cors(
         {
