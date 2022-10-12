@@ -22,7 +22,6 @@ export class KitchenSocketIdGuard implements CanActivate {
         return rs(true);
       }
       this.kitchen.socket.on("connect", () => {
-        console.log("ON CONNECT + ID", this.kitchen.socket.ioSocket.id);
         this.kitchen.socketId = this.kitchen.socket.ioSocket.id;
         rs(true);
       });

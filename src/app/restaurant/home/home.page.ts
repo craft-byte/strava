@@ -53,7 +53,6 @@ export class HomePage implements OnInit {
 
     try {
       const result = await this.service.get<Result>({}, "home");
-      console.log(result);
       this.data = result;
     } catch (e) {
       if(e.status == 404) {
@@ -64,7 +63,6 @@ export class HomePage implements OnInit {
           message: "Not found",
           mode: "ios",
         })).present();
-        console.error("404 ERROR");
       } else if(e.status == 403) {
         this.router.go(["user/info"]);
         (await this.toastCtrl.create({

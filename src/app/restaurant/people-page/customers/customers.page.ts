@@ -110,7 +110,6 @@ export class CustomersPage implements OnInit {
       }[];
     } = await this.service.get({ calculate }, "customers");
 
-    console.log(result);
 
     this.lastUpdate = result.lastUpdate;
 
@@ -122,7 +121,6 @@ export class CustomersPage implements OnInit {
       });
     }
     if(!result) {
-      console.error("NO RESULT WTF");
       return;
     }
 

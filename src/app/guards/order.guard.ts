@@ -43,7 +43,6 @@ export class OrderGuard implements CanActivate {
             if (!this.order.socketId) {
                 this.order.socket.connect();
                 this.order.socket.on("connect", () => {
-                    console.log("ORDER  SOCKET ON CONNECT");
                     this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check")
                         .pipe(
                             catchError(err => {

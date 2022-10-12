@@ -17,7 +17,6 @@ export class EmailGuard implements CanActivate {
 
 
   canActivate(route: ActivatedRouteSnapshot, state: any) {
-    console.log("EMAIL GUARD");
     const observalbe = new Observable<boolean>(subs => {
       if(this.main.userInfo) {
         if(this.main.userInfo.email) {
@@ -27,7 +26,7 @@ export class EmailGuard implements CanActivate {
           subs.next(true);
         }
       } else {
-        console.error("NO MAIN USERINFO!!!!!");
+        throw "No main.userInfo"
       }
     });
 

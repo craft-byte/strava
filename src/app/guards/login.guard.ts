@@ -16,8 +16,6 @@ export class LoginGuard implements CanActivate {
 
     async canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) {
 
-        console.log("LOGIN GUARD NOT LOGGED");
-
         const token = localStorage.getItem("token");
 
 
@@ -49,7 +47,6 @@ export class LoginGuard implements CanActivate {
         try {
             const result = await this.main.auth().toPromise();
 
-            console.log("RESULT", result);
             if (result.success) {
                 if (result.redirectTo) {
                     this.router.navigate([result.redirectTo], { replaceUrl: true });
@@ -61,7 +58,6 @@ export class LoginGuard implements CanActivate {
                 return true;
             }
         } catch (e) {
-            console.log("THE ERROR");
             if (e.status == 401) {
                 return true;
             }

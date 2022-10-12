@@ -111,8 +111,7 @@ export class DishModalPage implements OnInit, OnDestroy {
         try {
             const result: RequestResult = await this.service.get("waiter", this.data.orderId, "dish", this.data._id);
      
-            console.log(result);
-
+            
             const { comment, user, time, timeDone, dish, cook, order } = result;
 
             this.dish = dish;

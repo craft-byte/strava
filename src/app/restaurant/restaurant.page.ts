@@ -69,7 +69,6 @@ export class RestaurantPage implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.username = this.main.userInfo.email.split("@")[0];
-        console.log(this.main.userInfo);
         this.restaurant = this.service.restaurant;
         this.ui.showGoWorkButton = this.service.showGoWork;
         if (this.service.restaurants?.length > 0) {

@@ -1,5 +1,4 @@
-import { EventEmitter, Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, AfterViewInit, Output } from '@angular/core';
-import { UtilitiesService } from 'src/app/other/utilities.service';
+import { EventEmitter, Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output } from '@angular/core';
 import { Subscription } from "rxjs";
 import { animate, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
@@ -27,7 +26,7 @@ import { CommonModule } from '@angular/common';
         ])
     ]
 })
-export class AccountPopoverComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AccountPopoverComponent implements OnInit, AfterViewInit {
 
     subscription: Subscription;
 
@@ -55,8 +54,8 @@ export class AccountPopoverComponent implements OnInit, AfterViewInit, OnDestroy
     signOut() {
         this.leave.emit("signOut");
     }
-
-    ngOnDestroy(): void {
+    addRestaurant() {
+        this.leave.emit("addRestaurant");
     }
 
     ngOnInit() {

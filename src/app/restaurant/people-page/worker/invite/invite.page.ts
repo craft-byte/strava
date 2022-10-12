@@ -54,8 +54,6 @@ export class InvitePage implements OnInit {
         Object.assign(i, { avatar: getImage(i.avatar.binary) })
       );
     }
-
-    console.log(this.users);
   }
 
   invite(id: string) {

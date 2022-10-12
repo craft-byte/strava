@@ -58,7 +58,6 @@ export class WaiterPage implements OnInit {
 
     const result = await this.service.post<{ dishes: any; orderDishes: any; restaurant: Restaurant; }>({ socketId: this.waiter.socketId }, "waiter", "init");
 
-    console.log(result);
 
     if(!result) {
       return false;
@@ -84,7 +83,6 @@ export class WaiterPage implements OnInit {
   // }
 
   async open(data: OrderDish) {
-    console.log(data);
     const modal = await this.modalCtrl.create({
       component: DishModalPage,
       cssClass: "modal-width",
@@ -121,7 +119,6 @@ export class WaiterPage implements OnInit {
     this.waiter.connect().subscribe(async res => {
       const { type } = res;
 
-      console.log(res);
 
       if(type == "waiter/dish/new") {
         const dish = res.data as any;

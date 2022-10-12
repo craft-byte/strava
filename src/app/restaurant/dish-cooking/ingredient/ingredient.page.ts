@@ -38,7 +38,6 @@ export class IngredientPage implements OnInit {
         this.modalCtrl.dismiss();
       }
     }
-    console.log(this.component);
   }
 
 }

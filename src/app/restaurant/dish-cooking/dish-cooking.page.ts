@@ -2,6 +2,7 @@ import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
+import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantService } from '../services/restaurant.service';
@@ -193,15 +194,15 @@ export class DishCookingPage implements OnInit {
   async ngOnInit() {
     await this.loader.start();
     const dishId = this.route.snapshot.paramMap.get("dishId");
-    const { cooking, dish } = await this.service.get({}, "dishes", dishId, "cooking");
+    const result: { cooking: any; dish: any; } = await this.service.get({}, "dishes", dishId, "cooking");
 
-    if (cooking) {
-      this.selected = cooking.components || [];
-      this.recipee = cooking.recipee;
+    if (result.cooking) {
+      this.selected = result.cooking.components || [];
+      this.recipee = result.cooking.recipee;
     }
 
-    this.dish = dish;
-    this.service.currentDish = dish;
+    this.dish = result.dish;
+    this.service.currentDish = result.dish;
 
     this.loader.end();
   }

@@ -99,8 +99,6 @@ export class MainPage implements OnInit, OnDestroy {
       }
     }
 
-    console.log(this.kitchen.dishes);
-
     (await this.toastCtrl.create({
       message: `${this.kitchen.dishes[dishId].name} is done`,
       color: "green",
@@ -132,7 +130,6 @@ export class MainPage implements OnInit, OnDestroy {
           const { orderDishId, taken: { user } } = res.data as any;
           for(let i in this.delayed) {
             if(this.delayed[i]._id == orderDishId) {
-              console.log("MATCH");
               this.delayed.splice(+i, 1);
               break;
             }
@@ -162,7 +159,6 @@ export class MainPage implements OnInit, OnDestroy {
 
           this.doneDish(orderDishId);
         } else if(type == "userIdRequired") {
-          console.log("HELLO?");
           this.kitchen.emit("connectWithUserId", { restaurantId: this.service.restaurantId, userId: this.main.userInfo._id, joinTo: "kitchen", })
         } else if(type == "kitchen/dish/quitted") {
           const { orderDishId } = res.data as any;

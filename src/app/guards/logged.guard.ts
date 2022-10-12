@@ -22,8 +22,6 @@ export class LoggedGuard implements CanActivate {
 
     canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
-        console.log("LOGGED GUARD");
-
         const observalbe = new Observable<boolean>(subs => {
             this.main.auth().pipe(
                 catchError(err => {

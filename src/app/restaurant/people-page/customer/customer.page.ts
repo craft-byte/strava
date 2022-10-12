@@ -151,7 +151,6 @@ export class CustomerPage implements OnInit {
 
     const result: Result = await this.service.get({}, "customers", userId);
 
-    console.log(result);
 
 
     if(!result) {

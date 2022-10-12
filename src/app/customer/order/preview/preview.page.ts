@@ -267,7 +267,7 @@ export class PreviewPage implements OnInit {
                     }
                 } catch (e) {
                     if (e.status == 422) {
-                        console.error("wtf");
+                        throw "422 Unproccesable entity";
                     }
                 }
             }

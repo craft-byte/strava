@@ -72,6 +72,8 @@ export class UserInfoPage implements OnInit {
         } else if(action == "signOut") {
             this.main.removeUserInfo();
             this.router.go(["login"]);
+        } else if(action == "addRestaurant") {
+            this.addRestaurant();
         }
         component.destroy();
     });

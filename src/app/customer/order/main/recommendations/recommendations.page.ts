@@ -23,8 +23,6 @@ export class RecommendationsPage implements OnInit {
 
     this.dishes = dishes;
 
-    console.log(dishes);
-
     this.loader.end();
   }
 

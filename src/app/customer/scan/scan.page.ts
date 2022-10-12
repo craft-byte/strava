@@ -86,16 +86,12 @@ export class ScanPage implements OnInit {
         try {
             const result: { other: boolean; updated: boolean; } = await this.service.post({ table: table, order, force: false }, "restaurant", restaurantId, "create");
 
-            console.log("FIRST", result);
-
             if (result.other) {
                 const force = await this.confirmTable();
 
                 if (force) {
                     try {
                         const result: { updated: boolean; } = await this.service.post({ table: table, order, force: true }, "restaurant", restaurantId, "create");
-
-                        console.log("SECOND", result);
 
                         if (result.updated) {
                             this.router.go(["customer", "order", restaurantId]);
@@ -185,12 +181,6 @@ export class ScanPage implements OnInit {
                 })).present();
             }
         }
-
-
-
-
-
-        // this.service.post({ table, type }, "restaurant", restaurantId, "create");
     }
 
 
@@ -264,28 +254,6 @@ export class ScanPage implements OnInit {
                 })).present();
             }
         }
-        // try {
-        //     const splitted = this.result.split("/");
-        //     const restaurantAndTable = splitted[5];
-        //     const splitted2 = restaurantAndTable.split("?table=");
-        //     const [restaurantId, table] = splitted2;
-
-
-        //     if (!table) {
-        //         this.selectRestaurant(restaurantId, "orange");
-        //         return;
-        //     }
-
-        //     this.getSession(restaurantId, table, "in");
-        // } catch (error) {
-        //     this.startScan();
-        //     (await this.toastCtrl.create({
-        //         duration: 1500,
-        //         message: "QR Code is invalid",
-        //         color: "red",
-        //         mode: "ios",
-        //     })).present()
-        // }
     }
 
 
@@ -344,7 +312,6 @@ export class ScanPage implements OnInit {
             this.videoElement.play();
             requestAnimationFrame(this.scan.bind(this));
         } catch (error) {
-            console.warn("No camera found");
             this.ui.showScanner = false;
             this.ui.showOther = true;
         }
@@ -362,14 +329,6 @@ export class ScanPage implements OnInit {
         await this.loader.start();
         const restaurantId = this.route.snapshot.queryParamMap.get("restaurantId");
         const table = this.route.snapshot.queryParamMap.get("table");
-
-        // if (restaurantId) {
-        //     if (table) {
-        //         this.getSession(restaurantId, table, "in");
-        //     } else {
-        //         this.selectRestaurant(restaurantId, "orange");
-        //     }
-        // }
 
 
         this.restaurants = await this.service.get({}, "restaurants");
