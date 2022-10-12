@@ -232,7 +232,6 @@ export class DishModalPage implements OnInit, OnDestroy {
       this.subscription = this.kitchen.flow.subscribe(res => {
         if(res.type == "kitchen/dish/take") {
           if((res.data as any).orderDishId == this.orderDishId) {
-            console.log("wut?", res.data);
             this.getTakenInfo((res.data as any).taken);
           }
         } else if(res.type == "kitchen/dish/done") {

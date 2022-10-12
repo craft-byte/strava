@@ -95,10 +95,10 @@ export class AvatarPage implements OnInit {
 
   async ngOnInit() {
     this.type = this.route.snapshot.paramMap.get('type');
-    const { avatar } = await this.service.get("avatar");
-    if(avatar) {
+    const result: { avatar: any } = await this.service.get("avatar");
+    if(result.avatar) {
       this.ui.backTitle = ""
-      this.avatar = getImage(avatar) || "./../../../../assets/images/no-image.jpg";
+      this.avatar = getImage(result.avatar) || "./../../../../assets/images/no-image.jpg";
     }
     this.loader.end();
   }

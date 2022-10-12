@@ -53,8 +53,6 @@ export class HistoryPage implements OnInit {
             this.data = result;
 
 
-            console.log(result);
-
         } catch (e) {
             if (e == 422) {
                 this.router.go(["customer", "scan"]);

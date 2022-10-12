@@ -17,7 +17,6 @@ export class RestaurantRemovePage implements OnInit {
   @Input() name: string;
 
   submit() {
-    console.log(this.result, this.name);
     if(this.name == this.result) {
       this.modalCtrl.dismiss(true);
     }

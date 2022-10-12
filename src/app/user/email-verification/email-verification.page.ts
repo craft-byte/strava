@@ -81,8 +81,7 @@ export class EmailVerificationPage implements OnInit {
      */
     async verify() {
         this.ui.disableSubmit = true;
-
-        console.log(this.code);
+        
 
         if (!this.code) {
             this.ui.disableSubmit = false;

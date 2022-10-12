@@ -21,7 +21,6 @@ export class WaiterSocketIdGuard implements CanActivate {
         return rs(true);
       }
       this.waiter.socket.on("connect", () => {
-        console.log("ON CONNECT + ID", this.waiter.socket.ioSocket.id);
         this.waiter.socketId = this.waiter.socket.ioSocket.id;
         rs(true);
       });

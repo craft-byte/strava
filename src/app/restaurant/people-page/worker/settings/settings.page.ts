@@ -180,7 +180,6 @@ export class SettingsPage implements OnInit {
     const { data, role: r } = await modal.onDidDismiss();
 
     if(r == "submit") {
-      console.log(data);
       const result: any = await this.service.patch(data, "staff", this.userId, "fire");
 
       if(result.fired) {
@@ -260,8 +259,6 @@ export class SettingsPage implements OnInit {
       this.role = role;
       this.settings = settings;
       this.userAvatar = getImage(user.avatar);
-
-      console.log(result);
     } catch (e) {
       if (e.status == 404) {
         if (e.body.reason == "deleted") {

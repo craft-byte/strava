@@ -111,7 +111,6 @@ export class IngredientsComponent implements OnInit {
       const result: any = await this.service.delete("components", id);
       if(result.removed) {
         for(let i in this.components) {
-          console.log(this.components[i]._id, id);
           if(this.components[i]._id == id) {
             this.components.splice(+i, 1);
             break;

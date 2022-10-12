@@ -59,8 +59,6 @@ export class TrackingPage implements OnInit {
         this.order.subs().subscribe((res: any) => {
             const { type } = res;
 
-            console.log(res);
-
             if (type == "customer/dish/status") {
                 const { orderDishId, orderId, status } = res.data;
                 for (let i of this.data.orders) {

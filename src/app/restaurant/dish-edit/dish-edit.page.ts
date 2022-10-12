@@ -84,7 +84,6 @@ export class DishEditPage implements OnInit {
         const body = this.form.value;
 
         if(this.imageChanged) {
-            console.log("+ IMAGE");
             body.image = this.imageChanged;
         }
 

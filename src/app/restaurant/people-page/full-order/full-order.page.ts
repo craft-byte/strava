@@ -94,7 +94,6 @@ export class FullOrderPage implements OnInit {
 
     this.customerAvatar = getImage(this.order.customer.avatar);
 
-    console.log(this.order);
     this.loader.end();
   }
 

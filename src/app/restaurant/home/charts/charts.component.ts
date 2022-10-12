@@ -47,8 +47,7 @@ export class ChartsComponent implements OnInit {
 
     try {
         const result: any = await this.service.get({}, "charts");
-        
-        console.log(result);
+
     
         if(!result) {
             this.chart.showChart = false;

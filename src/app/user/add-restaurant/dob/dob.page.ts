@@ -62,7 +62,6 @@ export class DobPage implements OnInit {
       (year == new Date().getFullYear() && month == new Date().getMonth() && day > new Date().getDate())
     ) {
       this.ui.day = true;
-      console.log("WRONG");
       return;
     }
 
@@ -110,8 +109,6 @@ export class DobPage implements OnInit {
     this.restaurantId = this.route.snapshot.paramMap.get("restaurantId");
 
     const result: any = await this.service.get("add-restaurant/dob");
-
-    console.log(result);
 
     this.form = new FormGroup({
       year: new FormControl(result?.year || null, [Validators.max(new Date().getFullYear()), Validators.min(1900), Validators.required]),

@@ -15,13 +15,11 @@ export class RestaurantComponent implements OnInit {
 
   constructor(
     private router: RouterService,
-    private service: UserService,
   ) { };
 
   @Input() data: any;
 
   goRestaurant() {
-    console.log(this.data);
     if(this.data.url) {
       this.router.go([this.data.url]);
     } else {

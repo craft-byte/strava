@@ -27,7 +27,6 @@ export class DishesPageComponent implements OnInit, OnDestroy {
     this.routerSubs = this.router.events.subscribe(a => {
       if(a instanceof NavigationEnd) {
         this.page = a.url.split("/")[4];
-        console.log(this.page);
       }
     });
   }

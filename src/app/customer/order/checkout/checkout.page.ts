@@ -162,7 +162,6 @@ export class CheckoutPage implements OnInit, OnDestroy {
         this.theme = this.service.theme;
 
         this.subscription = this.order.subs().subscribe(async (res: any) => {
-            console.log(res);
 
             //
             //  when payWithCard charge succeeded or fails

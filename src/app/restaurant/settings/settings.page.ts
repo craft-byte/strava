@@ -187,7 +187,6 @@ export class SettingsPage implements OnInit {
     this.money = result.money;
     this.bank = result.payoutDestination;
 
-    console.log(this.settings);
     this.loader.end();
   }
 

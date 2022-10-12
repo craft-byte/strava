@@ -37,7 +37,6 @@ export class AddIngredientPage implements OnInit {
     clearTimeout(this.timeout);
     const result = await this.service.patch({ searchText: this.searchText }, "components");
 
-    console.log(result);
     this.components = result as any[];
   }
 
@@ -70,7 +69,7 @@ export class AddIngredientPage implements OnInit {
     try {
       this.components = await this.service.get({}, "components/all", this.service.currentDish._id);
     } catch (e) {
-      console.error(e);
+      throw e;
     }
   }
 
