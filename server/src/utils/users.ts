@@ -1,4 +1,4 @@
-import { Filter, FindOneAndUpdateOptions, FindOptions, ModifyResult, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
+import { Filter, FindOneAndUpdateOptions, FindOptions, ObjectId, UpdateFilter } from "mongodb";
 import { client } from "..";
 import { mainDBName } from "../environments/server";
 import { User } from "../models/general";
@@ -11,6 +11,15 @@ async function user(filter: Filter<User>, options: FindOptions<User>): Promise<U
         return await client.db(mainDBName).collection<User>("users").findOne(filter, options);
     } catch (e) {
         console.error("at utils/user.ts user()");
+        throw e;
+    }
+}
+
+async function getUsers(filter: Filter<User>, options: FindOptions<User>): Promise<User[]> {
+    try {
+        return await client.db(mainDBName).collection<User>("users").find(filter, options).toArray();
+    } catch (e) {
+        console.error("at getUsers()");
         throw e;
     }
 }
@@ -57,4 +66,5 @@ export {
     getUser,
     addUser,
     user,
+    getUsers
 }
