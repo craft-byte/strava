@@ -5,6 +5,7 @@ import session from "express-session";
 import cookieparser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "https";
+import { createServer as createHttpServer } from "http"
 import { MongoClient } from "mongodb";
 import { UserRouter } from "./routers/user";
 import { RadminRouter } from "./routers/restaurant";
@@ -103,7 +104,7 @@ app.use(
                 }
     )
 );
-const server = createServer(app);
+const server = createHttpServer(app);
 // const server = createServer({ key, cert }, app);
 const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
 // app.use((req, res, next) => {
