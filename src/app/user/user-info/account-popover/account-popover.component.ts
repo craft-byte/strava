@@ -2,13 +2,14 @@ import { EventEmitter, Component, OnInit, Input, ViewChild, ElementRef, AfterVie
 import { Subscription } from "rxjs";
 import { animate, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
     selector: 'app-account-popover',
     templateUrl: './account-popover.component.html',
     styleUrls: ['./account-popover.component.scss'],
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, IonicModule],
     animations: [
         trigger("showUp", [
             transition(":enter", [
