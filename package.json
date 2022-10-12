@@ -14,7 +14,7 @@
 
     "web": "ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''",
     "testing": "ionic serve --configuration=testing --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''",
-    "server:start": "(cd ./server || false) && npm run start",
+    "server:start": "cd ./server && npm run start",
     "web:npx": "npx ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''"
   },
   "private": true,
