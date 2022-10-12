@@ -79,7 +79,7 @@ async function main(client: MongoClient) {
             const splitted = process.cwd().split("\\");
             console.log(splitted);
             splitted.splice(splitted.length - 1, splitted.length);
-            res.sendFile(splitted.join("/") + "/www/index.html");
+            res.sendFile(path.join(__dirname, "..", "..", "www", "index.html"));
         });
 
         app.use(errorHandler);
