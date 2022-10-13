@@ -29,9 +29,10 @@ const reset: Routes = [
         loadChildren: () => import("./user/password-reset/password-reset.module").then(m => m.PasswordResetPageModule),
         canActivate: [LoggedGuard],
     },
-    // {
-    //     path: "user/reset-password",
-    // }
+    {
+        path: "user/forgot-password",
+        loadChildren: () => import("./user/forgot-password/forgot-password.module").then(m => m.ForgotPasswordPageModule),
+    }
 ]
 
 const addRestaurant: Routes = [
