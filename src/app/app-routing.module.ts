@@ -187,7 +187,7 @@ const customer: Routes = [
 const routes: Routes = [
     {
         path: '',
-        loadChildren: () => import("./ctraba/main/main.module").then(m => m.MainPageModule)
+        loadChildren: () => import("./strava/main/main.module").then(m => m.MainPageModule)
     },
     ...staff,
     ...user,
