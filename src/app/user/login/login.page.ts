@@ -129,7 +129,7 @@ export class LoginPage implements OnInit {
         this.router.go(["registration"], { replaceUrl: true });
     }
     forgot() {
-        this.router.go(["reset"], { replaceUrl: true });
+        this.router.go(["user/reset-password"], { replaceUrl: true });
     }
 
     async ngOnInit() {
