@@ -60,9 +60,9 @@ async function addUser(newUser: User) {
     return result;
 }
 
-async function updateUsers(filter: Filter<User>, update: UpdateFilter<User>, options: UpdateOptions) {
+async function updateUsers(filter: Filter<User>, update: UpdateFilter<User>, options?: UpdateOptions) {
     try {
-        return await client.db(mainDBName).collection<User>("users").updateMany(filter, update, options);
+        return await client.db(mainDBName).collection<User>("users").updateMany(filter, update, options || {});
     } catch (e) {
         console.error("at updateUsers()");
         throw e;
