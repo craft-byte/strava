@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Nabla&display=swap');
+
+
+
+
+
+.app {
+    min-height: 100vh;
+    background-color: white;
+
+    .header {
+        padding: 0 412px;
+        display: flex;
+        align-items: center;
+        height: 64px;
+        background-color: var(--orange);
+        border-bottom: 2px solid var(--orange-dark);
+        justify-content: space-between;
+
+        .title {
+            animation-name: showUp;
+            animation-duration: 2s;
+            .text {
+                color: var(--black);
+                font-size: 24px;
+            }
+        }
+
+        .links {
+            animation-name: showUp;
+            animation-duration: 2s;
+            display: flex;
+            justify-content: space-between;
+
+            .link {
+                color: var(--text-color);
+                text-decoration: none;
+
+                &:hover {
+                    color: var(--black);
+                }
+            }
+        }
+    }
+
+    .main {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #ffd03a;
+        
+        .box1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30%;
+            background-color: #ffd653;
+            aspect-ratio: 1;
+            animation: rotation;
+            animation-duration: 2s;
+            border-radius: 52px;
+            
+            .box2 {
+                border-radius: 52px;
+                width: 70%;
+                aspect-ratio: 1;
+                animation: rotation;
+                animation-duration: 2s;
+                display: flex;
+                background-color: var(--orange);
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+
+                .title {
+                    font-family: 'Nabla', cursive;
+                    font-size: 52px;
+                    color: var(--black);
+                }
+                .icon {
+                    img {
+                        width: 124px;
+                        height: 124px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@keyframes rotation {
+    from {
+        rotate: 0deg;
+    }
+    to {
+        rotate: 180deg;
+    }
+}
+
+@keyframes showUp {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
