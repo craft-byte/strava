@@ -26,6 +26,8 @@ router.use("/profile", ProfileRouter);
  * 
  * @returns { success: boolean; redirectTo?: string; }
  * 
+ * redirectTo - can be restaurant dashboard if user is an owner or a manager in a restaurant
+ * 
  * @throws { status: 401 }
  * @throws { status: 404 }
  * @throws { status: 422 }
@@ -51,9 +53,37 @@ router.post("/login", async (req, res) => {
 
     if(compare(password, user.password!)) {
 
+        let redirectTo: string = null!;
+        
+        if(user.restaurants && user.restaurants.length > 0) {
+            let restaurant: User["restaurants"][0] = null!;
+            
+            for(let i of user.restaurants) {
+                if(i.role && i.role == "owner") {
+                    restaurant = i;
+                    break;
+                }
+            }
+            if(!restaurant) {
+                for(let i of user.restaurants) {
+                    if(i.role && i.role != "staff") {
+                        restaurant = i;
+                        break;
+                    }
+                }
+            }
+            if(!restaurant) {
+                restaurant = user.restaurants[0];
+            }
+
+            if(restaurant.role && restaurant.role != "staff") {
+                redirectTo = `restaurant/${restaurant.restaurantId.toString()}`;
+            }
+        }
+
         const data = issueJWT(user._id.toString());
 
-        return res.send({ ...data, success: true, redirectTo: user.restaurants?.length == 0 ? "customer" : null });
+        return res.send({ ...data, success: true, redirectTo });
     }
 
     return res.sendStatus(401);
@@ -466,7 +496,7 @@ router.get("/", logged({ status: 1, restaurants: 1, name: { first: 1, last: 1, }
 
 /**
  * 
- * NOT FINISHED   REMOVING ACCOUNT HAS TO BE THOUGHT OF
+ * NOT USED
  * 
  * @param {string} password
  * 
