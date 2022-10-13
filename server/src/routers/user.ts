@@ -229,7 +229,7 @@ router.post("/code/resend", logged({ email: 1, security: { code: 1, } }), async 
  * @throws { status: 422; reason: "CodeInvalid" } if code is invalid (e.x. not 6 chars length)
  * 
  */
-router.post("/email/confirm", logged({ email: 1, security: { emailCode: 1, }, status: 1 }), async (req, res) => {
+router.post("/email/confirm", logged({ email: 1, security: { code: 1, }, status: 1 }), async (req, res) => {
     const { code } = req.body;
     const { user } = res.locals as Locals;
 
