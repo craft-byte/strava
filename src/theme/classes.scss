@@ -53,17 +53,15 @@
 
 input, select {
     background-color: white;
-    &:-webkit-autofill {
+    &:-webkit-autofill, &.-internal-autofill-selected {
         // !!!WARNING!!!
         // the only solution i found
         // without it if input value is selected from recomended the input background will change its color
         // this thing below just makes changing color very long
         // after 600000 seconds color will change anyway, it's a bad solution.
-        transition: background-color 600000s 0s, color 600000s 0s; 
+        transition: background-color 600000s 0s, color 600000s 0s;
     }
 }
-
-input[type=checkbox]
 
 
 ion-icon {

@@ -40,13 +40,13 @@
                 border-radius: 6px;
                 border: 1px solid var(--border-color);
                 padding-left: 6px;
-                transition: border .1s;
+                
                 &.red {
                     border: 1px solid var(--red);
                 }
                 &:focus {
                     outline: none;
-                    border: 2px solid var(--orange);
+                    border: 1px solid var(--gray);
                 }
             }
             #password {
