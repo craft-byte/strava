@@ -1,4 +1,4 @@
-import { Filter, FindOneAndUpdateOptions, FindOptions, ObjectId, UpdateFilter } from "mongodb";
+import { Filter, FindOneAndUpdateOptions, FindOptions, ObjectId, UpdateFilter, UpdateOptions } from "mongodb";
 import { client } from "..";
 import { mainDBName } from "../environments/server";
 import { User } from "../models/general";
@@ -60,10 +60,20 @@ async function addUser(newUser: User) {
     return result;
 }
 
+async function updateUsers(filter: Filter<User>, update: UpdateFilter<User>, options: UpdateOptions) {
+    try {
+        return await client.db(mainDBName).collection<User>("users").updateMany(filter, update, options);
+    } catch (e) {
+        console.error("at updateUsers()");
+        throw e;
+    }
+}
+
 
 export {
     updateUser,
     getUser,
+    updateUsers,
     addUser,
     user,
     getUsers
