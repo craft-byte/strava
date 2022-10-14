@@ -4,6 +4,7 @@ import { Component, OnInit, Output, EventEmitter, } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { RouterService } from 'src/app/other/router.service';
+import { MainService } from 'src/app/services/main.service';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -49,13 +50,14 @@ export class PasswordModalComponent implements OnInit {
         private service: UserService,
         private toastCtrl: ToastController,
         private router: RouterService,
+        private main: MainService,
     ) { };
 
 
     @Output() leave = new EventEmitter();
 
     reset() {
-        this.router.go(["user/reset-password"]);
+        this.router.go(["user/forgot-password/email"], { queryParams: { email: this.main.userInfo.email } });
     }
 
     async submit() {
