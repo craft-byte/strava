@@ -34,10 +34,10 @@ async function getUser(userId: string | ObjectId, options?: FindOptions<User>): 
     }
 }
 
-async function updateUser(userId: string | ObjectId, update: UpdateFilter<User>, options: FindOneAndUpdateOptions = { returnDocument: "after" }): Promise<{ ok: 1 | 0; user: User }> {
+async function updateUser(filter: Filter<User>, update: UpdateFilter<User>, options: FindOneAndUpdateOptions = { returnDocument: "after" }): Promise<{ ok: 1 | 0; user: User }> {
 
     try {
-       const result = await client.db(mainDBName).collection<User>("users").findOneAndUpdate({ _id: id(userId) }, update, options);
+       const result = await client.db(mainDBName).collection<User>("users").findOneAndUpdate(filter, update, options);
 
        return { user: result.value!, ok: result.ok };
     } catch (e) {
@@ -62,7 +62,7 @@ async function addUser(newUser: User) {
 
 async function updateUsers(filter: Filter<User>, update: UpdateFilter<User>, options?: UpdateOptions) {
     try {
-        return await client.db(mainDBName).collection<User>("users").updateMany(filter, update, options || {});
+        return await client.db(mainDBName).collection<User>("users").updateMany(filter, update, options || { });
     } catch (e) {
         console.error("at updateUsers()");
         throw e;
