@@ -27,6 +27,23 @@ button {
     }
 }
 
+.gray-text-button {
+    padding: 0 4px;
+    height: 32px;
+    color: var(--gray);
+    border-radius: 8px;
+    font-size: "Rubik" sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    background: none;
+    
+    &:hover {
+        color: var(--text-color);
+    }
+}
+
 .gradient-button {
     --width: 124px;
     --height: 42px;
