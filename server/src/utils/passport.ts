@@ -27,7 +27,7 @@ export function issueJWT(userId: string) {
     });
 
     return {
-        token: "Bearer " + signedToken,
+        token: signedToken.toString(),
         expires: expiresIn,
     };
 }
