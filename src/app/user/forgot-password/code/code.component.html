@@ -1,0 +1,20 @@
+<div class="app">
+    <div class="info">
+        <span class="text">
+            Confirm your indentity, enter the code we've sent to your email address.
+        </span>
+    </div>
+    <div class="form">
+        <code-input [isCodeHidden]="false"
+                    id="code-input"
+                    [codeLength]="6"
+                    (codeCompleted)="onCodeCompleted($event)">
+        </code-input>
+        <div *ngIf="ui.message && ui.message.length > 0" class="message">
+            {{ ui.message }}
+        </div>
+    </div>
+    <div class="buttons">
+        <button class="orange-button" (click)="verify()">Verify</button>
+    </div>
+</div>

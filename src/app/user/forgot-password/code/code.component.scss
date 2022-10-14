@@ -1,0 +1,31 @@
+.app {
+    .info {
+        .text {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+    }
+    .form {
+        margin-top: 6px;
+        #code-input {
+            --item-height: 42px;
+            --item-border: 1px solid var(--border-color);
+            --item-border-bottom-has-value: 1px solid var(--green);
+            --item-border-focused: 1px solid var(--gray);
+            --item-border-bottom-focused: 1px solid var(--gray);
+            --item-border-radius: 6px;
+            --color: var(--text-color);
+            --item-background: white;
+        }
+        .message {
+            font-size: 14px;
+            color: var(--red);
+            padding-left: 4px;
+        }
+    }
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 12px;
+    }
+}
