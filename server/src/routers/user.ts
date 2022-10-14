@@ -10,12 +10,14 @@ import { ObjectId } from "mongodb";
 import { Restaurant } from "../utils/restaurant";
 import { ProfileRouter } from "./user/profile";
 import * as crypto from "crypto"
+import { ResetRouter } from "./user/reset";
 
 
 const router = Router();
 
 router.use("/add-restaurant", AddRestaurantRouter);
 router.use("/profile", ProfileRouter);
+router.use("/reset", ResetRouter)
 
 
 
@@ -193,7 +195,7 @@ router.get("/email/check", logged({ status: 1, email: 1, security: { code: 1} })
             `
         );
 
-        const update = await updateUser(user._id, { $set: { security: { code: code.toString() } } }, { projection: { _id: 1, } });
+        const update = await updateUser({ _id: id(user._id) }, { $set: { security: { code: code.toString() } } }, { projection: { _id: 1, } });
     }
 
     if(user.status != "restricted") {
@@ -239,7 +241,7 @@ router.post("/code/resend", logged({ email: 1, security: { code: 1, } }), async 
         `
     );
 
-    const update = await updateUser(user._id, { $set: { security: { code: code.toString(), codeConfrimed: null!, codeToken: null!, codeAsked: Date.now() } } }, { projection: { _id: 1, } });
+    const update = await updateUser({ _id: id(user._id) }, { $set: { security: { code: code.toString(), codeConfrimed: null!, codeToken: null!, codeAsked: Date.now() } } }, { projection: { _id: 1, } });
 
     res.send({ success: update.ok == 1 });
 });
@@ -283,7 +285,7 @@ router.post("/email/confirm", logged({ email: 1, security: { code: 1, }, status:
         return res.status(403).send({ reason: "CodeIncorrect" });
     }
 
-    const update = await updateUser(user._id, { $set: { status: "enabled", security: { code: null!, codeConfrimed: Date.now(), } } }, { projection: { _id: 1 } });
+    const update = await updateUser({ _id: id(user._id) }, { $set: { status: "enabled", security: { code: null!, codeConfrimed: Date.now(), } } }, { projection: { _id: 1 } });
 
     
     res.send({ success: update.ok == 1 });
@@ -345,7 +347,7 @@ router.post("/email/reset", logged({ password: 1, email: 1 }), async (req, res) 
     );
 
 
-    const update = await updateUser(user._id, { $set: { email: email, status: "restricted", security: { code: code.toString(), codeAsked: Date.now() } } });
+    const update = await updateUser({ _id: id(user._id) }, { $set: { email: email, status: "restricted", security: { code: code.toString(), codeAsked: Date.now() } } });
 
 
     res.send({ success: update.ok == 1 });
@@ -375,7 +377,7 @@ router.post("/password/confirm-code", logged({ security: { code: 1 }, }), async 
 
     const token = crypto.randomBytes(64).toString('hex');
 
-    const update = await updateUser(user._id, { $set: { security: { code: null!, codeToken: token, codeConfirmed: Date.now(), } } }, { projection: { _id: 1 } });
+    const update = await updateUser({ _id: id(user._id) }, { $set: { security: { code: null!, codeToken: token, codeConfirmed: Date.now(), } } }, { projection: { _id: 1 } });
 
     res.send({ success: update.ok == 1, token });
 
@@ -420,7 +422,7 @@ router.post("/password/reset", logged({ _id: 1, security: { code: 1, codeToken: 
         return res.status(422).send({ reason: "InvalidPassword" });
     }
 
-    const update = await updateUser(user._id, { $set: { password: newPassword, security: { codeConfrimed: null!, codeToken: null!, } } }, { projection: { _id: 1 } });
+    const update = await updateUser({ _id: id(user._id) }, { $set: { password: newPassword, security: { codeConfrimed: null!, codeToken: null!, } } }, { projection: { _id: 1 } });
 
     res.send({ updated: update.ok == 1 });
 });

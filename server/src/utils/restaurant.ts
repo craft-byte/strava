@@ -19,7 +19,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
         }
 
         for (let i of restaurant.staff!) {
-          const result = await updateUser(i.userId, { $pull: { works: id(restaurantId)!, restaurants: { restaurantId: id(restaurantId)! } } });
+          const result = await updateUser({ _id: id(i.userId) }, { $pull: { works: id(restaurantId)!, restaurants: { restaurantId: id(restaurantId)! } } });
 
           console.log("user works deleted: ", result.ok == 1);
         }
@@ -30,7 +30,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
           console.log("user invitation deleted: ", result.ok == 1);
         }
 
-        const result1 = await updateUser(restaurant.owner!, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
+        const result1 = await updateUser({ _id: (restaurant.owner!) }, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
 
         console.log("owner restaurant removed: ", result1.ok == 1);
 

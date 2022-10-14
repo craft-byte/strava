@@ -360,7 +360,7 @@ router.post("/:userId/settings/work", allowed({}, "manager", "staff"), async (re
 
     const working = (worker.settings as Settings.ManagerSettings).work.cook || (worker.settings as Settings.ManagerSettings).work.waiter;
 
-    const userUpdate = await updateUser(userId, { $set: { "restaurants.$[restaurant].role": working ? "manager:working" : "manager" } }, { arrayFilters: [ { "restaurant.restaurantId": id(restaurantId) } ] })
+    const userUpdate = await updateUser({ _id: id(userId) }, { $set: { "restaurants.$[restaurant].role": working ? "manager:working" : "manager" } }, { arrayFilters: [ { "restaurant.restaurantId": id(restaurantId) } ] })
 
     console.log("user role updated: ", userUpdate.ok == 1);
 
@@ -419,7 +419,7 @@ router.post("/:userId/role", allowed({}, "manager", "staff"), async (req, res) =
         query["staff.$[user].settings"] = {};
     }
 
-    const userUpdate = await updateUser(userId, { $set: { "restaurants.$[restaurant].role": role != "manager" ? role : ((worker.settings as Settings.ManagerSettings).work.cook || (worker.settings as Settings.ManagerSettings).work.waiter) ? "manager:working" : "manager" } }, { arrayFilters: [ { "restaurant.restaurantId": id(restaurantId) } ]  })
+    const userUpdate = await updateUser({ _id: id(userId) }, { $set: { "restaurants.$[restaurant].role": role != "manager" ? role : ((worker.settings as Settings.ManagerSettings).work.cook || (worker.settings as Settings.ManagerSettings).work.waiter) ? "manager:working" : "manager" } }, { arrayFilters: [ { "restaurant.restaurantId": id(restaurantId) } ]  })
 
     console.log("user role updated: ", userUpdate.ok == 1);
 
@@ -461,7 +461,7 @@ router.patch("/:userId/fire", allowed({}, "manager", "staff"), async (req, res) 
     }
 
     const userUpdate = await updateUser(
-        userId,
+        { _id: id(userId) },
         {
             $pull: {
                 restaurants: { restaurantId: id(restaurantId) },

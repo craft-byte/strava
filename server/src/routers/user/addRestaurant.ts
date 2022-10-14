@@ -260,7 +260,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         const result3 = await client.db(ordersDBName).createCollection(newRestaurant._id.toString());
         const result4 = await client.db(historyDBName).createCollection(newRestaurant._id.toString());
         const result5 = await updateUser(
-            user._id,
+            { _id: id(user._id) },
             {
                 $push: {
                     restaurants: { restaurantId: newRestaurant._id!, stripeAccountId, role: "owner" },
@@ -296,7 +296,7 @@ router.post("/name/:restaurantId", logged({ restaurants: 1, name: 1 }), owner, a
 
 
     try {
-        const result = await updateUser(user._id, { $set: { name: { first: firstName, last: lastName } } });
+        const result = await updateUser({ _id: user._id }, { $set: { name: { first: firstName, last: lastName } } });
         const account = await stripe.accounts.update(stripeAccountId, { individual: { first_name: firstName, last_name: lastName } });
 
 
@@ -319,7 +319,7 @@ router.post("/set/state/:restaurantId", logged({ restaurants: 1 }), owner, async
     try {
         const result = await getCities(country, state);
 
-        const update = await updateUser(user._id, { $set: { "info.location.state": state, "info.location.city": result.data[0].name } });
+        const update = await updateUser({ _id: id(user._id) }, { $set: { "info.location.state": state, "info.location.city": result.data[0].name } });
         const restaurantUpdate = await Restaurant(restaurantId).update({ $set: { "info.state": state, "info.city": result.data[0].name } });
 
         console.log("state updated: ", update!.ok == 1);
@@ -378,7 +378,7 @@ router.post("/set/all/:restaurantId", logged({ restaurants: 1 }), owner, async (
             "info.postal_code": postal_code,
         }
     });
-    const userUpdate = await updateUser(user._id, {
+    const userUpdate = await updateUser({ _id: id(user._id) }, {
         $set: {
             "info.location.state": state,
             "info.location.city": city,
@@ -447,7 +447,7 @@ router.post("/set/dob/:restaurantId", logged({ restaurants: 1 }), owner, async (
     }
 
 
-    await updateUser(user._id as string, {
+    await updateUser({ _id: id(user._id) }, {
         $set: {
             "info.dob.year": year,
             "info.dob.month": month,
@@ -707,7 +707,7 @@ router.get("/country", logged({ info: { location: { country: 1 } } }), async (re
 
 
         if (result?.data?.location?.country) {
-            const update = await updateUser(user._id, { $set: { "info.location.country": result?.data?.location?.country?.code } });
+            const update = await updateUser({ _id: id(user._id) }, { $set: { "info.location.country": result?.data?.location?.country?.code } });
 
             console.log("user country set: ", update.ok == 1);
 

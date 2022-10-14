@@ -230,7 +230,7 @@ async function onOrderPayed(restaurantId: string, orderId: string, customerId: s
 
     // add order to user history
     if(customerId) {
-        updateUser(customerId, { $push: { orders: { restaurantId: id(restaurantId), orderId: id(orderId) } } });
+        updateUser({ _id: id(customerId) }, { $push: { orders: { restaurantId: id(restaurantId), orderId: id(orderId) } } });
     }
 }
 

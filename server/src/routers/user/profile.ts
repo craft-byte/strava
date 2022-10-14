@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Locals } from "../../models/other";
-import { compare, makePassword, sendEmail } from "../../utils/functions";
+import { compare, id, makePassword, sendEmail } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { bufferFromString } from "../../utils/other";
 import { updateUser } from "../../utils/users";
@@ -63,14 +63,14 @@ router.post("/update", logged({ _id: 1, }), async (req, res) => {
         const binaryAvatar = bufferFromString(avatar);
 
         if(binaryAvatar) {
-            const update = await updateUser(_id, { $set: { name: { first, last }, anonymously: anon, avatar: { binary: binaryAvatar, modified: Date.now() } } }, { projection: { _id: 1 } });
+            const update = await updateUser({ _id: id(_id) }, { $set: { name: { first, last }, anonymously: anon, avatar: { binary: binaryAvatar, modified: Date.now() } } }, { projection: { _id: 1 } });
     
             return res.send({ success: update.ok == 1 });
         }
 
     }
     
-    const update = await updateUser(_id, { $set: { name: { first, last }, anonymously: anon } }, { projection: { _id: 1 } });
+    const update = await updateUser({ _id: id(_id) }, { $set: { name: { first, last }, anonymously: anon } }, { projection: { _id: 1 } });
     
     res.send({ success: update.ok == 1 });
     
@@ -116,7 +116,7 @@ router.post("/password", logged({ _id: 1, password: 1, email: 1 }), async (req, 
     const hash = makePassword(newPassword);
 
 
-    const update = await updateUser(user._id, { $set: { password: hash! } });
+    const update = await updateUser({ _id: id(user._id) }, { $set: { password: hash! } });
 
     res.send({ success: update.ok == 1 });
 
