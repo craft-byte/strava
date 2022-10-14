@@ -33,7 +33,10 @@
                         {{ ui.emailMessage }}
                     </span>
                 </div>
-                <div class="submit">
+                <div class="buttons">
+                    <button (click)="back()" type="button" id="cancel" class="gray-text-button">
+                        Cancel
+                    </button>
                     <button type="submit" [disabled]="ui.disableSubmit" id="submit" class="orange-button">
                         Submit
                     </button>

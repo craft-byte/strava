@@ -35,6 +35,10 @@ export class EmailResetPage implements OnInit {
         
     }
 
+    back() {
+        this.router.go(["user/settings"]);
+    }
+
     async submit() {
         const { password, email } = this.form.value;
 
