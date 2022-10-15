@@ -93,13 +93,13 @@ export class RegistrationPage implements OnInit {
                 this.checkEmail();
                 this.checkPassword();
                 this.loader.end();
-                this.ui.disableSubmit = true;
+                this.ui.disableSubmit = false;
                 return;
             } else if(e.status == 403) {
                 if(e.body.reason == "EmailRegistered") {
                     this.loader.end();
                     this.ui.emailMessage = "This email is already registered.";
-                    this.ui.disableSubmit = true;
+                    this.ui.disableSubmit = false;
                     return;
                 }
             }

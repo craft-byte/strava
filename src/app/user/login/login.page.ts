@@ -30,7 +30,6 @@ export class LoginPage implements OnInit {
         private loader: LoadService,
         private toastCtrl: ToastController,
     ) {
-
     };
 
 
@@ -46,7 +45,7 @@ export class LoginPage implements OnInit {
         return false;
     }
     checkPassword() {
-        if (this.form.value.password.length < 8) {
+        if (!this.form.value.password || this.form.value.password.length < 8) {
             this.ui.passwordMessage = "Password can't be less than 8 characters";
             return;
         }
@@ -69,11 +68,12 @@ export class LoginPage implements OnInit {
     //  the main function
     //
     async login() {
-        this.ui.disableSubmit = true;
         if (!this.form.valid) {
-            this.ui.disableSubmit = false;
+            this.checkUsername();
+            this.checkPassword();
             return;
         }
+        this.ui.disableSubmit = true;
 
 
         await this.loader.start();
