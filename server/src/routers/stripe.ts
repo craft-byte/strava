@@ -92,7 +92,7 @@ router.post("/webhook", e.raw({ type: 'application/json' }), async (req, res) =>
 
             const update = await Restaurant(account.metadata!.restaurantId).update({ $set: { "money.card": status } });
 
-            console.log("restaurant capability updated: ", update!.modifiedCount > 0);
+            console.log("restaurant capability updated: ", update!.ok == 0);
         }
 
 

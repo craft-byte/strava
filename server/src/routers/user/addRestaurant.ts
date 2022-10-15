@@ -342,7 +342,7 @@ router.post("/set/city/:restaurantId", logged({ restaurants: 1 }), owner, async 
 
     const update = await Restaurant(restaurantId).update({ $set: { "info.location.city": city } });
 
-    res.send({ updated: update!.modifiedCount > 0 });
+    res.send({ updated: update!.ok == 0 });
 });
 
 
@@ -386,7 +386,7 @@ router.post("/set/all/:restaurantId", logged({ restaurants: 1 }), owner, async (
         }
     });
 
-    console.log("restaurant's location updated: ", restaurantUpdate!.modifiedCount > 0);
+    console.log("restaurant's location updated: ", restaurantUpdate!.ok == 0);
     console.log("user's location updated: ", userUpdate!.ok == 1);
 
 
@@ -404,7 +404,7 @@ router.post("/set/all/:restaurantId", logged({ restaurants: 1 }), owner, async (
         });
 
 
-        res.send({ updated: restaurantUpdate!.modifiedCount > 0 });
+        res.send({ updated: restaurantUpdate!.ok == 0 });
 
     } catch (e: any) {
         if (e.raw.code == "postal_code_invalid") {

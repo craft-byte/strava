@@ -119,7 +119,7 @@ interface ReviewResult {
                 result.money!.payouts = "pending";
                 const update = await Restaurant(restaurantId).update({ $set: { "money.payouts": "pending" } });
 
-                console.log("payouts set to pending: ", update!.modifiedCount > 0);
+                console.log("payouts set to pending: ", update!.ok == 0);
             }
 
             if(!account.external_accounts) {
@@ -137,7 +137,7 @@ interface ReviewResult {
                         result.money!.payouts = "restricted";
                         const update = await Restaurant(restaurantId).update({ $set: { "money.payouts": "restricted" } });
 
-                        console.log("payouts set to restricted: ", update!.modifiedCount > 0);
+                        console.log("payouts set to restricted: ", update!.ok == 0);
                     }
                 }
             }

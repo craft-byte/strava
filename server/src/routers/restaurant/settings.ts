@@ -66,7 +66,7 @@ router.post("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings")
 
     const result = await Restaurant(restaurantId).update({ $set: query });
 
-    res.send({ updated: result!.modifiedCount > 0 });
+    res.send({ updated: result!.ok == 0 });
 });
 
 
@@ -80,7 +80,7 @@ router.post("/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settin
     const result = await Restaurant(restaurantId)
         .update({ $set: { "money.cash": value ? "enabled" : "disabled" } });
 
-    res.send({ updated: result!.modifiedCount > 0 });
+    res.send({ updated: result!.ok == 0 });
 });
 
 /**
@@ -94,7 +94,7 @@ router.post("/card", logged({ _id: 1, }), allowed({ money: 1 }, "manager", "sett
     if(restaurant!.money!.card == "enabled" || restaurant!.money!.card == "disabled") {
         const update = await Restaurant(restaurantId).update({ $set: { "money.card": value ? "enabled" : "disabled" } });
 
-        return res.send({ updated: update!.modifiedCount > 0 });
+        return res.send({ updated: update!.ok == 0 });
     }
 
     res.sendStatus(403);

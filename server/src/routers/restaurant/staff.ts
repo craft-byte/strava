@@ -105,9 +105,9 @@ router.post("/", allowed({}, "manager", "staff"), async (req, res) => {
     });
 
     console.log("user updated: ", userUpdate!.ok == 1);
-    console.log("restaurant updated: ", restaurantUpdate!.modifiedCount > 0);
+    console.log("restaurant updated: ", restaurantUpdate!.ok == 0);
 
-    res.send({ done: restaurantUpdate!.modifiedCount > 0 && userUpdate!.ok == 1 });
+    res.send({ done: restaurantUpdate!.ok == 0 && userUpdate!.ok == 1 });
 });
 
 
@@ -331,7 +331,7 @@ router.post("/:userId/settings", allowed({}, "manager", "staff"), async (req, re
         { arrayFilters: [ { "user.userId": id(userId) } ] },
     );
 
-    res.send({updated: update.modifiedCount > 0});
+    res.send({updated: update.ok == 0});
 });
 router.post("/:userId/settings/work", allowed({}, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params;
@@ -376,7 +376,7 @@ router.post("/:userId/settings/work", allowed({}, "manager", "staff"), async (re
         { arrayFilters: [ { "user.userId": id(userId) } ] }
     );
 
-    res.send({ updated: restaurantUpdate.modifiedCount > 0 });
+    res.send({ updated: restaurantUpdate.ok == 0 });
 });
 router.post("/:userId/role", allowed({}, "manager", "staff"), async (req, res) => {
     const { restaurantId, userId } = req.params;
@@ -428,7 +428,7 @@ router.post("/:userId/role", allowed({}, "manager", "staff"), async (req, res) =
         { arrayFilters: [ { "user.userId": id(userId) } ] },
     );
 
-    res.send({updated: update.modifiedCount > 0, settings: role == "manager" ? worker.lastManagerSettings : {} });
+    res.send({updated: update.ok == 0, settings: role == "manager" ? worker.lastManagerSettings : {} });
 });
 
 router.patch("/:userId/fire", allowed({}, "manager", "staff"), async (req, res) => {
@@ -489,10 +489,10 @@ router.patch("/:userId/fire", allowed({}, "manager", "staff"), async (req, res) 
 
 
     console.log("firing user update: ", userUpdate.ok == 1);
-    console.log("firing restaurant update: ", restaurantUpdate.modifiedCount > 0);
+    console.log("firing restaurant update: ", restaurantUpdate.ok == 0);
 
 
-    res.send({ fired: userUpdate.ok == 1 && restaurantUpdate.modifiedCount > 0 });
+    res.send({ fired: userUpdate.ok == 1 && restaurantUpdate.ok == 0 });
 });
 
 
