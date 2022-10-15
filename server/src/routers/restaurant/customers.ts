@@ -28,13 +28,12 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
     const { calculate } = req.query;
     const { restaurant } = res.locals as Locals;
 
-
-    
     const qrCodes = [];
     for(let i = 0; i < restaurant!.tables!; i++) {
         qrCodes.push({
             table: i + 1,
-            downloadUrl: `https://ctraba.com/customer/order/${restaurant!._id.toString()}?table=${i + 1}`
+            link: `${req.headers.origin}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
+            downloadUrl: null,
         });
     }
 
@@ -139,7 +138,7 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
 
     const update = await Restaurant(restaurantId).update({ $set: { customersCache: { lastUpdate: Date.now(), data: cache } } })
 
-    console.log("cache updated: ", update.modifiedCount > 0);
+    console.log("cache updated: ", update.ok == 0);
 });
 
 /**
@@ -153,10 +152,10 @@ router.delete("/blacklist/:userId", logged({ _id: 1 }), allowed({ _id: 1, }, "ma
 
     const user = await updateUser(userId, { $addToSet: { blacklisted: id(restaurantId)! } });
 
-    console.log("user added to blacklist: ", restaurant!.modifiedCount > 0);
+    console.log("user added to blacklist: ", restaurant!.ok == 0);
     console.log("restaurant added to banned: ", user!.ok == 1);
 
-    res.send({ updated: restaurant!.modifiedCount > 0 && user.ok == 1 });
+    res.send({ updated: restaurant!.ok == 0 && user.ok == 1 });
 });
 
 /**
@@ -170,9 +169,9 @@ router.delete("/unblacklist/:userId", logged({ _id: 1, }), allowed({ _id: 1 }, "
     const user = await updateUser(userId, { $pull: { blacklisted: id(restaurantId)! } });
 
 
-    console.log("removed from blacklist: ", restaurant!.modifiedCount > 0 && user!.ok == 1);
+    console.log("removed from blacklist: ", restaurant!.ok == 0 && user!.ok == 1);
 
-    res.send({ updated: restaurant!.modifiedCount > 0 && user!.ok == 1 });
+    res.send({ updated: restaurant!.ok == 0 && user!.ok == 1 });
 });
 
 
@@ -283,17 +282,21 @@ router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "cust
 
     const result = await Restaurant(restaurantId).update({ $inc: { tables: -1 } });
 
-    res.send({ updated: result!.modifiedCount > 0 });
+    res.send({ updated: result!.ok == 1 });
 });
+
 /**
  * add table
  */
 router.post("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params;
 
-    const result = await Restaurant(restaurantId).update({ $inc: { tables: 1 } });
+    const result = await Restaurant(restaurantId).update({ $inc: { tables: 1 } }, { projection: { tables: 1 } });
 
-    res.send({ updated: result!.modifiedCount > 0 });
+    console.log(result.restaurant);
+
+
+    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurantId}?table=${result.restaurant?.tables}` });
 });
 
 export {
