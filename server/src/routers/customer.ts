@@ -2,9 +2,7 @@ import { Router } from "express";
 import { Locals } from "../models/other";
 import { id } from "../utils/functions";
 import { logged } from "../utils/middleware/logged";
-import { getDelay } from "../utils/other";
 import { manyRestaurants, Orders, Restaurant } from "../utils/restaurant";
-import { getUser } from "../utils/users";
 import { HistoryRouter } from "./customer/history";
 import { OrderRouter } from "./customer/order";
 

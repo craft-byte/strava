@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
+import { Locals } from "../../models/other";
 import { getDate, id } from "../../utils/functions";
-import { manyRestaurants, Orders, Restaurant } from "../../utils/restaurant";
+import { logged } from "../../utils/middleware/logged";
+import { manyRestaurants, Orders } from "../../utils/restaurant";
 import { getUser } from "../../utils/users";
 
 
@@ -27,7 +29,8 @@ interface HistoryOrder {
         };
     };
 };
-router.get("/", async (req, res) => {
+router.get("/", logged({ _id: 1 }), async (req, res) => {
+    const { user } = res.locals as Locals;
     
     const lenght = Number(req.query.length) || 5;
 
@@ -35,7 +38,7 @@ router.get("/", async (req, res) => {
         return res.sendStatus(422);
     }
 
-    const result: 404 | HistoryOrder[] | null = await getHistory(req.user as string, lenght, 0);
+    const result: 404 | HistoryOrder[] | null = await getHistory(user._id, lenght, 0);
 
     if(!result) {
         return res.send([]);
@@ -52,7 +55,7 @@ router.get("/", async (req, res) => {
 //
 //  function
 //
-async function getHistory(userId: string, length: number, skip: number) {
+async function getHistory(userId: ObjectId, length: number, skip: number) {
 
     const result: HistoryOrder[] = [];
 
