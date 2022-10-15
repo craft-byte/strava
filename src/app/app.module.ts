@@ -21,7 +21,7 @@ const disableAnimations = () => {
         return true;
     }
 
-    if(window.innerWidth < 1000) {
+    if(window.innerWidth < 1200) {
         return true;
     }
 
@@ -35,7 +35,7 @@ const disableAnimations = () => {
         BrowserModule,
         BrowserAnimationsModule.withConfig({ disableAnimations: disableAnimations() }),
         SocketIoModule.forRoot({ url: environment.socketLink, options: {} }),
-        IonicModule.forRoot(),
+        IonicModule.forRoot({ animated: !disableAnimations() }),
         NgxStripeModule.forRoot("pk_test_51KNlK6LbfOFI72xW4xnsuE6JQRte49N0HFiLw9mfQn8JF1JuImLOr2QJZewBZwXiPRNgsS6ebeiOisn3Gebp0zLT00i143bkrp"),
         AppRoutingModule,
         HttpClientModule,
