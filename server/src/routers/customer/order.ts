@@ -850,8 +850,6 @@ interface Tracking {
 };
 /**
  * 
- * FRONTEND ERROR HANDLING
- * 
  * used to get ordered orders for tracking
  * 
  * @returns { Tracking }
