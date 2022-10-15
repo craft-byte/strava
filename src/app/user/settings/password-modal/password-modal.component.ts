@@ -63,12 +63,12 @@ export class PasswordModalComponent implements OnInit {
     async submit() {
         const { currentPassword, newPassword, confirmPassword } = this.form.value;
 
-        if(currentPassword.length < 8) {
-            this.ui.currentMessage = "Password cannot be less than 8 characters";
+        if(currentPassword == newPassword) {
+            this.ui.newMessage = "Current password is the same as new";
             return;
         }
-        if(newPassword.length < 8 || confirmPassword.length < 8) {
-            this.ui.newMessage = "Password cannot be less than 8 characters";
+        if(currentPassword.length < 8) {
+            this.ui.currentMessage = "Password cannot be less than 8 characters";
             return;
         }
         if(newPassword != confirmPassword) {
