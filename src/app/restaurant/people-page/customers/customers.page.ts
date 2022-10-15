@@ -59,7 +59,7 @@ export class CustomersPage implements OnInit {
 
     this.qrCodes.push({
       table: this.qrCodes.length + 1,
-      link: `https://ctraba.com/customer/order/${this.service.restaurantId}?table=${this.qrCodes.length + 1}`,
+      link: result.link,
       downloadUrl: null
     });
 
@@ -106,6 +106,7 @@ export class CustomersPage implements OnInit {
       lastUpdate: string;
       qrCodes: {
         table: number;
+        link: string;
         downloadUrl: string;
       }[];
     } = await this.service.get({ calculate }, "customers");
@@ -113,13 +114,8 @@ export class CustomersPage implements OnInit {
 
     this.lastUpdate = result.lastUpdate;
 
-    this.qrCodes = [];
-    for(let i of result.qrCodes) {
-      this.qrCodes.push({
-        ...i,
-        link: `https://ctraba.com/customer/order?restaurantId=${this.service.restaurantId}&table=${i.table}`
-      });
-    }
+    this.qrCodes = result.qrCodes;
+    
     if(!result) {
       return;
     }
