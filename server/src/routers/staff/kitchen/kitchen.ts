@@ -34,7 +34,7 @@ interface Dish {
     const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1 } } });
 
 
-    const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, }, time: 1, general: 1 });
+    const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, }, info: { time: 1 }, general: 1 });
 
     const delayed = [];
     const all: { [key: string]: any[] } = {
