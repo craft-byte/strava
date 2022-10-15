@@ -43,9 +43,14 @@ router.post("/check", passUserId, async (req, res) => {
     } else {
         filter = { ip: req.ip };
     }
-    const update = await Orders(restaurantId).update(filter, { $set: { socketId, connected: Date.now() } });
 
-    if(update.matchedCount > 0 && update.modifiedCount > 0) {
+
+    await Orders(restaurantId).update({ ...filter, status: "progress" }, { $set: { socketId, connected: Date.now() } });  // update for ordered orders
+    const update = await Orders(restaurantId).update({ ...filter, status: "ordering" }, { $set: { socketId, connected: Date.now() } }); // update for not ordered orders
+    // update.matchedCount == 0 means that user payed for an order and returned to ordering page - should create a new ordering order
+
+    
+    if(update.matchedCount == 0 || update.modifiedCount == 0) {
         const order = await Orders(restaurantId).createSession({
             customer: userId ? id(userId!) : null,
             status: "ordering",
@@ -55,7 +60,10 @@ router.post("/check", passUserId, async (req, res) => {
             type: "in",
             socketId,
             ip: req.ip,
+            connected: Date.now(),
         });
+
+        console.log(order);
     }
     
     
@@ -89,8 +97,6 @@ router.post("/init", passUserId, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { platform } = req.body;
     const { status, userId } = res.locals as LocalLocals;
-
-    console.log(platform);
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1 } } } });
 
@@ -904,6 +910,7 @@ router.get("/tracking", passUserId, async (req, res) => {
     const result = {
         dishes: dishes.table,
         orders: o,
+        
     };
 
 
