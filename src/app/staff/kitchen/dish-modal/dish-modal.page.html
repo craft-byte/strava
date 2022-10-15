@@ -28,39 +28,13 @@
           </div>
         </div>
       </div>
-      <div class="cooking">
-        <div *ngIf="ui.showRecipee" class="recipee">
-          <div class="title">
-            Recipee:
+      <div class="bottom">
+        <div class="comment" *ngIf="dish.comment">
+            Comment for dish: {{ dish.comment }}
           </div>
-          <div class="content">
-            {{ cooking.recipee }}
+          <div class="order-comment" *ngIf="order.comment">
+            Order comment: {{ order.comment }}
           </div>
-        </div>
-        <div *ngIf="ui.showComponents" class="components">
-          <div class="title">
-            Ingredients:
-          </div>
-          <div class="list">
-            <div *ngFor="let i of cooking.components" class="component">
-              <div class="name">
-                <span>
-                  {{ i.name }}
-                </span>-
-              </div>
-              <div class="amount">
-                <span>
-                  {{ i.amount }}
-                </span> grams
-              </div>
-              <div class="of">
-                you have <span>
-                  {{ i.of }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <div class="right">

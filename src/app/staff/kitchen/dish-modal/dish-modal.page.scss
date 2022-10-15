@@ -36,46 +36,8 @@
                 }
             }
         }
-        .cooking {
+        .bottom {
             padding: 12px;
-            .recipee {
-                display: flex;
-                .title {
-                    font-size: 18px;
-                    color: var(--text-color);
-                    margin-right: 8px;
-                }
-                .content {
-                    margin-top: 2px;
-                }
-            }
-            .components {
-                display: flex;
-                .title {
-                    font-size: 18px;
-                    color: var(--text-color);
-                    margin-right: 8px;
-                }
-                .list {
-                    padding-top: 2px;
-                    .component {
-                        display: flex;
-                        align-items: center;
-                        .name {
-                            cursor: pointer;
-                            &:hover {
-                                color: var(--text-color);
-                            }
-                        }
-                        .amount {
-                            margin-left: 4px;
-                        }
-                        .of {
-                            margin-left: 18px;
-                        }
-                    }
-                }
-            }
         }
     }
     .right {

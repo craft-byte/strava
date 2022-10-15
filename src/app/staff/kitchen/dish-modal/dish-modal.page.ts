@@ -24,6 +24,7 @@ interface Order {
   table: number;
   dishes: string;
   _id: string;
+  comment: string;
   time: {
     hours: number;
     minutes: number;
@@ -41,6 +42,7 @@ interface Dish {
   name: string;
   time: number;
   _id: string;
+  comment: string;
   image: {
     binary: any;
     resolution: string;
