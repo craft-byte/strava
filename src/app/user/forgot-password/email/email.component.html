@@ -11,6 +11,7 @@
         </div>
     </div>
     <div class="buttons">
+        <button (click)="back()" *ngIf="ui.showBackButton" class="gray-text-button">Cancel</button>
         <button (click)="send()" class="orange-button">Send code</button>
     </div>
 </div>

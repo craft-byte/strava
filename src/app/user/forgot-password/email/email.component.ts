@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
+import { MainService } from 'src/app/services/main.service';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -15,6 +16,7 @@ export class EmailComponent implements OnInit {
 
     ui = {
         message: "",
+        showBackButton: false,
     }
 
     constructor(
@@ -22,7 +24,16 @@ export class EmailComponent implements OnInit {
         private router: RouterService,
         private route: ActivatedRoute,
         private loader: LoadService,
+        private main: MainService,
     ) { };
+
+    back() {
+        if(localStorage.getItem("token")) {
+            this.router.go(["user/settings"]);
+        } else {
+            this.router.go(["login"]);
+        }
+    }
 
 
     async send() {
@@ -63,6 +74,7 @@ export class EmailComponent implements OnInit {
         if(email) {
             this.email = email;
         }
+        this.ui.showBackButton = !!localStorage.getItem("token");
         this.loader.end();
     }
 
