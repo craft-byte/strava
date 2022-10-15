@@ -32,7 +32,7 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
     for(let i = 0; i < restaurant!.tables!; i++) {
         qrCodes.push({
             table: i + 1,
-            link: `${req.headers.origin}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
+            link: `${req.protocol}://${req.get("host")}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
             downloadUrl: null,
         });
     }
