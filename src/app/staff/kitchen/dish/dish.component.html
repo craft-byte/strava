@@ -7,10 +7,11 @@
       {{ dish.name }}
     </div>
     <div class="time">
-      {{ dish.time }} min
+      {{ dish.info.time }} min
     </div>
   </div>
   <div class="delay {{ orderDish.time.color }}">
+    Delay:
     <span title="{{orderDish.time.hours}} hours and {{ orderDish.time.minutes}} minutes delay">
       <span *ngIf="orderDish.time.hours > 0">
         {{ orderDish.time.hours }} hours
