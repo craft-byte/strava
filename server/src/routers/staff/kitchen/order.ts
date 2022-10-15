@@ -38,6 +38,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
         id: 1,
         type: 1,
         ordered: 1,
+        comment: 1,
         dishes: {
             _id: 1,
             dishId: 1,
@@ -45,6 +46,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
             cook: 1,
             taken: 1,
             takenBy: 1,
+            comment: 1,
         } 
     } }));
 
@@ -52,7 +54,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
     if (!order) {
         return res.sendStatus(404);
     }
-    const { ip, customer, dishes, id: Id, type, ordered } = order;
+    const { ip, customer, dishes, id: Id, type, ordered, comment } = order;
 
     let user: User | any;
     if(ip && !customer) {
@@ -92,6 +94,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
         type,
         dishes: dishes.length,
         _id: orderId,
+        comment
     }
 
 
@@ -135,7 +138,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
 
                     for (let i in components) {
                         if (!components[i]) {
-                            console.log("NOT INPLEMETEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                            console.log("NOT INPLEMETEDDDD");
                             continue;
                         }
                         convertedComponents.push({
@@ -175,11 +178,10 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
                     }
                 }
             }
+            result.dish.comment = i.comment;
             break;
         }
     }
-
-
 
 
     res.send(result);
