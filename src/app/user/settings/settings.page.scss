@@ -81,6 +81,8 @@ ion-content {
             justify-content: center;
             flex-direction: column;
             padding-top: 12px;
+            padding-bottom: 52px;
+            height: 100%;
             position: relative;
 
             .avatar {
@@ -109,10 +111,9 @@ ion-content {
                 }
             }
             .buttons {
+                position: absolute;
                 bottom: 0;
                 right: 0;
-                width: 100%;
-                margin-top: 32px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
