@@ -211,8 +211,6 @@ export class ScanPage implements OnInit {
             const query = splitted[1];  // result    --=  restaurantId=63000acd4ebc81862fb5354f&table=3&order=true  =--
             const queries = query.split("&");    // result    ['restaurantId=63000acd4ebc81862fb5354f', 'table=3', 'order=true']
 
-            console.log(queries);
-
             let restaurantId: string;
             let table: number;
             let order: boolean = false;

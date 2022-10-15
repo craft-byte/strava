@@ -334,7 +334,7 @@ function Orders(restaurantId: string | ObjectId) {
 
         if(exists) {
           const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-            .updateOne({ customer: session.customer, status: "ordering" }, { $set: { socketId: session.socketId, connected: session.connected, id: null, type: exists.type } });
+            .updateOne({ customer: session.customer, status: "ordering" }, { $set: { socketId: session.socketId, connected: session.connected, id: session.id, type: session.type } });
 
           return result.modifiedCount > 0;
         } else {
