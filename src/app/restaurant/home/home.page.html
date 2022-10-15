@@ -9,7 +9,7 @@
       Continue
     </button>
   </div>
-  <div *ngIf="data && data.nextEventuallyUrl" class="info-box">
+  <!-- <div *ngIf="data && data.nextEventuallyUrl" class="info-box">
     <div class="title">
       <span>
         You'll have to provide more data in future to verify your restaurant
@@ -18,7 +18,7 @@
     <button (click)="finish()" class="orange-button">
       Finish now
     </button>
-  </div>
+  </div> -->
   <div *ngIf="data?.money" class="payments">
     <div class="one" (click)="go('settings')">
       <div class="status"
