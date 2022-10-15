@@ -49,7 +49,7 @@ router.post("/check", passUserId, async (req, res) => {
     const update = await Orders(restaurantId).update({ ...filter, status: "ordering" }, { $set: { socketId, connected: Date.now() } }); // update for not ordered orders
     // update.matchedCount == 0 means that user payed for an order and returned to ordering page - should create a new ordering order
 
-    
+
     if(update.matchedCount == 0 || update.modifiedCount == 0) {
         const order = await Orders(restaurantId).createSession({
             customer: userId ? id(userId!) : null,
@@ -62,8 +62,6 @@ router.post("/check", passUserId, async (req, res) => {
             ip: req.ip,
             connected: Date.now(),
         });
-
-        console.log(order);
     }
     
     
