@@ -201,6 +201,17 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         _id: id()!,
     });
 
+    console.log({
+        customer: id(user._id)!,
+        connected: Date.now(),
+        type: "in",
+        id: table?.toString(),
+        dishes: [],
+        socketId: null!,
+        status: "ordering",
+        _id: id()!,
+    });
+
     console.log("UPDATED LAST");
 
     return res.send({ updated: result });

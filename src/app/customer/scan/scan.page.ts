@@ -211,6 +211,8 @@ export class ScanPage implements OnInit {
             const query = splitted[1];  // result    --=  restaurantId=63000acd4ebc81862fb5354f&table=3&order=true  =--
             const queries = query.split("&");    // result    ['restaurantId=63000acd4ebc81862fb5354f', 'table=3', 'order=true']
 
+            console.log(queries);
+
             let restaurantId: string;
             let table: number;
             let order: boolean = false;
@@ -240,7 +242,12 @@ export class ScanPage implements OnInit {
             }
 
             if (!restaurantId) {
-                throw 'restaurantId';
+                const try2 = splitted[0].split("/")[splitted[0].split("/").length - 1];
+                if(try2.length == 24) {
+                    restaurantId = try2;
+                } else {
+                    throw 'restaurantId';
+                }
             }
 
             this.createSession(restaurantId, table, order);
@@ -308,7 +315,6 @@ export class ScanPage implements OnInit {
             this.videoElement.srcObject = stream;
             this.videoElement.setAttribute('playsinline', true);
 
-            await this.loader.start();
             this.videoElement.play();
             requestAnimationFrame(this.scan.bind(this));
         } catch (error) {
