@@ -144,7 +144,6 @@ export class CheckoutPage implements OnInit, OnDestroy {
                 message: "Successfuly payed.",
                 mode: "ios",
             })).present();
-            this.tracking();
             return;
         }
 
