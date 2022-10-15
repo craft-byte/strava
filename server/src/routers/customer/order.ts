@@ -12,7 +12,7 @@ import { passOrder } from "../../utils/middleware/customerAllowed";
 import { passUserId } from "../../utils/middleware/logged";
 import { getDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
-import { getUser } from "../../utils/users";
+import { getUser, user } from "../../utils/users";
 
 const router = Router({ mergeParams: true });
 
@@ -90,10 +90,14 @@ interface InitResult {
  * 
  * returns dishes, order data, restaurant data.
  * 
+ * @throws { status: 404; reason: "OrderNotFound" }
+ * 
+ * @returns { InitResult }
+ * 
 */
 router.post("/init", passUserId, async (req, res) => {
     const { restaurantId } = req.params as any;
-    const { platform } = req.body;
+    const { platform, table } = req.body;
     const { status, userId } = res.locals as LocalLocals;
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1 } } } });
@@ -114,19 +118,24 @@ router.post("/init", passUserId, async (req, res) => {
         }
     }
 
-    let order: Order;
-    let trackingOrders: Order;
+
+    let filter: Filter<Order>;
 
     if(status == "loggedin" || status == "loggedout") {
-        order = await Orders(restaurantId).one({ customer: id(userId as string), status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
-        trackingOrders = await Orders(restaurantId).one({ customer: id(userId as string), status: "progress" }).get({ projection: { _id: 1 } });
+        filter = { customer: id(userId as string) };
     } else {
-        order = await Orders(restaurantId).one({ ip: req.ip, status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
-        trackingOrders = await Orders(restaurantId).one({ ip: req.ip, status: "progress" }).get({ projection: { _id: 1 } });
+        filter = { ip: req.ip };
     }
 
+    const order = await Orders(restaurantId).one({ ...filter, status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
+    const trackingOrders = await Orders(restaurantId).one({ ...filter, status: "progress" }).get({ projection: { _id: 1 } });
+
     if (!order) {
-        return res.sendStatus(404);
+        return res.status(404).send({ reason: "OrderNotFound" });
+    }
+
+    if(table) {
+        const update = await Orders(restaurantId).update(filter, { $set: { type: "in", id: table } });
     }
 
 
@@ -169,8 +178,8 @@ router.post("/init", passUserId, async (req, res) => {
         order: {
             dishes: await getDishes(),
             dishesQuantity: order.dishes.length,
-            type: order.type,
-            id: order.id,
+            type: table ? "in" : order.type,
+            id: table ? table : order.id,
             comment: order.comment || null!,
         },
         showOut: restaurant!.settings!.customers.allowTakeAway,

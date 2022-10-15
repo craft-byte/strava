@@ -1,15 +1,10 @@
 import { Component, Injector, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
-import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { general } from 'src/assets/consts';
 import { CustomerService } from '../../customer.service';
 import { OrderService } from '../order.service';
-import { PreviewPage } from '../preview/preview.page';
-
 import { Platform } from "@angular/cdk/platform";
-import { StringOrNumberOrDate } from '@swimlane/ngx-charts';
 
 interface InitResult {
   restaurant: {
@@ -48,10 +43,10 @@ export class MainPage implements OnInit, OnDestroy {
     private service: CustomerService,
     private router: RouterService,
     private routerClassic: Router,
-    private modalCtrl: ModalController,
     private order: OrderService,
     private platform: Platform,
     private injector: Injector,
+    private route: ActivatedRoute,
   ) {
     this.routerClassic.routeReuseStrategy.shouldReuseRoute = () => false;
   };
@@ -79,7 +74,9 @@ export class MainPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    const result: InitResult = await this.service.post({ platform: this.platform }, "order", this.service.restaurantId, "init");
+    const table = this.route.snapshot.queryParamMap.get("table");
+
+    const result: InitResult = await this.service.post({ platform: this.platform, table }, "order", this.service.restaurantId, "init");
 
     const { restaurant, order, showOut, showTracking } = result;
 
@@ -97,6 +94,10 @@ export class MainPage implements OnInit, OnDestroy {
     this.order.id = order.id;
     this.order.showOut = showOut;
 
+
+    if(table) {
+        this.router.go([], { relativeTo: this.route, queryParams: { table: null } });
+    }
   }
   ngOnDestroy(): void {
 

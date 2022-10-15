@@ -118,8 +118,6 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
     const { table, order, force } = req.body;
     const { user } = res.locals as Locals;
 
-    console.log(req.body);
-
     if(typeof order != "boolean" || typeof force != "boolean") {
         return res.sendStatus(422);
     }
