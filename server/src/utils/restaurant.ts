@@ -1,4 +1,5 @@
-import { AggregateOptions, AnyBulkWriteOperation, Filter, FindOneAndUpdateOptions, FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
+import { AggregateOptions, AnyBulkWriteOperation, Filter, FindOneAndUpdateOptions, FindOptions, ModifyResult, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
+import { resourceLimits } from "worker_threads";
 import { client } from "..";
 import { dishesDBName, historyDBName, mainDBName, ordersDBName } from "../environments/server";
 import { Component, Id } from "../models/components";
@@ -76,10 +77,12 @@ function Restaurant(restaurantId?: string | ObjectId) {
         throw new Error("at getRestaurants()");
       }
     },
-    update: async (update: UpdateFilter<RestaurantType>, options: UpdateOptions = {}): Promise<UpdateResult> => {
+    update: async (update: UpdateFilter<RestaurantType>, options: FindOneAndUpdateOptions = { }): Promise<{ restaurant: RestaurantType; ok: 1 | 0 }> => {
       try {
-        return await client.db(mainDBName).collection("restaurants")
-          .updateOne({ _id: id(restaurantId) }, update, options);
+        const result = await client.db(mainDBName).collection<RestaurantType>("restaurants")
+            .findOneAndUpdate({ _id: id(restaurantId) }, update, { returnDocument: "after", ...options });;
+
+        return { restaurant: result.value!, ok: result.ok };
       } catch (e) {
         console.error(e);
         throw new Error("at Restaurant().update()");
