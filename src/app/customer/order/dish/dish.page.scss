@@ -1,9 +1,9 @@
 #close {
-    position: fixed;
-    width: 32px;
-    height: 32px;
-    top: 12px;
-    left: 12px;
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    top: 6px;
+    left: 6px;
     border-radius: 100%;
     background-color: rgb(255, 255, 255, 0.6);
     display: flex;
@@ -17,14 +17,19 @@
     }
 }
 
+ion-content {
+    --ion-background-color: rgb(250,250,250);
+}
+
 .app {
     display: flex;
     flex-direction: column;
     align-items: center;
 
     .content {
-        max-width: 428px;
-        min-width: 324px;
+        width: 100%;
+        max-width: 412px;
+        position: relative;
 
         .image {
             position: relative;
