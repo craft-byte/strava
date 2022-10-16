@@ -344,7 +344,7 @@ function Orders(restaurantId: string | ObjectId) {
         if(exists) {
           const result = await client.db(ordersDBName).collection(restaurantId!.toString())
             .updateOne(
-                { ...filter, ip: session.ip, status: "ordering" },
+                { ...filter, status: "ordering" },
                 { $set: {
                     socketId: session.socketId,
                     connected: session.connected,
