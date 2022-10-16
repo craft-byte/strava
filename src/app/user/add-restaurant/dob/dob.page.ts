@@ -54,6 +54,7 @@ export class DobPage implements OnInit {
 
     if((year == 2022 && new Date().getMonth() < month)) {
       this.ui.month = true;
+      this.loader.end();
       return;
     } else if(
       (day == 31 && !["Jan", "Mar", "May", "Jul", "Aug", "Oct", "Dec"].includes(months[month])) ||
@@ -62,6 +63,7 @@ export class DobPage implements OnInit {
       (year == new Date().getFullYear() && month == new Date().getMonth() && day > new Date().getDate())
     ) {
       this.ui.day = true;
+      this.loader.end();
       return;
     }
 

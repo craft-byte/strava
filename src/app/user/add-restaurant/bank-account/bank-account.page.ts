@@ -120,9 +120,12 @@ export class BankAccountPage implements OnInit {
           mode: "ios"
         })).present();
       } else if(e.status == 400) {
-        if(e.body.reason == "no") {
-          this.ui.errorMessage = "Something went wrong, please try again.";
-        }
+        (await this.toastCtrl.create({
+            duration: 2000,
+            color: "red",
+            message: "Something went wrong. Please try again",
+            mode: "ios"
+        })).present();
       }
     }
 
