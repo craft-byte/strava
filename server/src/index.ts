@@ -60,6 +60,14 @@ app.use(express.urlencoded({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, "..", "..", "www")));
 
 
+/**
+ * Heroku changes user's ip address
+ * real ip address is X-Forwarded-For header
+ * this middleware chagnes req.ip to the header so req.ip is the real ip
+ */
+app.use((req, res, next) => {
+    req.ip = req.get("X-Forwarded-For") || req.ip;
+});
 
 
 (async function () {
