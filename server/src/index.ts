@@ -47,13 +47,14 @@ let server: HTTPServer;
 if (MODE == "prod") {
     server = createHttpServer(app);
 } else {
+    // app.use(logger("dev"));
     const key = readFileSync(process.cwd() + "/src/environments/localhost.key", "utf-8");
     const cert = readFileSync(process.cwd() + "/src/environments/localhost.crt", "utf-8");
     server = createServer({ key, cert }, app);
 }
 
+app.use(logger("tiny"));
 const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
-app.use(logger("dev"));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, "..", "..", "www")));
