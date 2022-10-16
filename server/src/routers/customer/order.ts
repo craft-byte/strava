@@ -98,6 +98,10 @@ router.post("/check", async (req, res) => {
         filter = { customerToken };
     } else {
         filter = { customer: id(userId!) };
+
+        if(customerToken) {
+            await Orders(restaurantId).update({ customerToken, status: "ordering" }, { $set: { customer: id(userId!), customerToken: null! } });
+        }
     }
 
 
@@ -133,8 +137,9 @@ router.post("/check", async (req, res) => {
         return res.send({ status, token: optionals.customerToken });
     }
     
+    console.log("HERE", customerToken);
     
-    res.send({ status, token: customerToken });
+    res.send({ status, token: status == "noinfo" ? customerToken : null });
 });
 
 
@@ -151,6 +156,11 @@ interface InitResult {
         id: string;
         comment: string;
     };
+    user: {
+        avatar: any;
+        name: string;
+        _id: string;
+    } | null;
     showOut: boolean;
     showTracking: boolean;
 };
@@ -239,7 +249,20 @@ router.post("/init", passUserData, async (req, res) => {
         return result;
     }
 
+    let user: InitResult["user"] = null;
+    if(status != "noinfo") {
+        if(userId) {
+            const foundUser = await getUser(userId, { projection: { name: 1, avatar: { binary: 1 } } });
 
+            if(foundUser) {
+                user = {
+                    name: `${foundUser.name?.first} ${foundUser.name?.last}`,
+                    avatar: foundUser.avatar?.binary,
+                    _id: userId,
+                };
+            }
+        }
+    }
 
     const result: InitResult = {
         restaurant: {
@@ -254,6 +277,7 @@ router.post("/init", passUserData, async (req, res) => {
             id: table ? table : order.id,
             comment: order.comment || null!,
         },
+        user,
         showOut: restaurant!.settings!.customers.allowTakeAway,
         showTracking: !!trackingOrders,
     };
@@ -634,6 +658,21 @@ router.post("/session/dish/:orderDishId/comment", passUserData, passOrder({ _id:
         );
 
     res.send({ updated: update.ok == 1 });
+});
+
+router.post("/session/signout", passUserData, async (req, res) => {
+    const { restaurantId } = req.params;
+    const { status, userId } = res.locals as LocalLocals;
+
+    if(status == "noinfo") {
+        return res.status(403).send({ reason: "UserNotLogged" });
+    }
+
+    const token = crypto.randomBytes(64).toString("hex");
+
+    const update = await Orders(restaurantId).update({ customer: id(userId!), status: "ordering" }, { $set: { customerToken: token, customer: null! } });
+
+    res.send({ token });
 });
 
 

@@ -48,25 +48,25 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
         return false;
     }
 
-    if(restaurant!.customersCache && calculate == "false") {
-        if(Date.now() - restaurant!.customersCache.lastUpdate < 86400000) {
-            const result = [];
-            for(let i of restaurant!.customersCache.data) {
-                const user = await getUser(i._id, { projection: { username: 1, name: 1, avatar: { binary: 1 } } });
-                result.push({
-                    ...i,
-                    name: user?.name?.first || "User deleted",
-                    avatar: user?.avatar?.binary,
-                    blacklisted: isBlacklisted(i._id),
-                });
-            }
-            return res.send({
-                qrCodes,
-                customers: result,
-                lastUpdate: getDate(restaurant!.customersCache.lastUpdate)
-            });
-        }
-    }
+    // if(restaurant!.customersCache && calculate == "false") {
+    //     if(Date.now() - restaurant!.customersCache.lastUpdate < 86400000) {
+    //         const result = [];
+    //         for(let i of restaurant!.customersCache.data) {
+    //             const user = await getUser(i._id, { projection: { username: 1, name: 1, avatar: { binary: 1 } } });
+    //             result.push({
+    //                 ...i,
+    //                 name: user?.name?.first || "User deleted",
+    //                 avatar: user?.avatar?.binary,
+    //                 blacklisted: isBlacklisted(i._id),
+    //             });
+    //         }
+    //         return res.send({
+    //             qrCodes,
+    //             customers: result,
+    //             lastUpdate: getDate(restaurant!.customersCache.lastUpdate)
+    //         });
+    //     }
+    // }
 
     const customers: { [key: string]: Customer } = {};
     const dishes = new DishHashTableUltra(restaurantId, { price: 1, });
@@ -124,7 +124,6 @@ router.get("/", logged({ _id: 1 }), allowed({ customersCache: 1, blacklist: 1, t
     for(let i of Object.keys(customers)) {
         customersResult.push(customers[i]);
     }
-
 
     res.send({ customers: customersResult, qrCodes, lastUpdate: getDate(Date.now()) });
 

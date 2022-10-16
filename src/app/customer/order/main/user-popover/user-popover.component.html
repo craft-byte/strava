@@ -1,0 +1,55 @@
+<div class="app" [@showUp] (click)="leave.emit()">
+    <div #popover class="box">
+        <div class="header">
+            Strava
+        </div>
+        <div class="in" *ngIf="user">
+            <div class="subheader">
+                <div class="avatar">
+                    <img [src]="avatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+                </div>
+                <div class="name title-font">
+                    {{ user.name }}
+                </div>
+            </div>
+            <div class="buttons">
+                <div class="account">
+                    <button (click)="account()">
+                        <ion-icon name="accessibility-outline"></ion-icon> <span class="text">Your account</span>
+                    </button>
+                </div>
+                <div class="sign-out">
+                    <button (click)="signout()">
+                        <ion-icon name="log-out-outline"></ion-icon> <span class="text">Sign out</span>
+                    </button>
+                </div>
+            </div>
+            <div class="info">
+                <span class="text">
+                    The orders will be saved to your account, you will be able to see all the orders and visits in your account
+                </span>
+            </div>
+        </div>
+        <div class="out" *ngIf="!user">
+            <div class="subheader title-font">
+                You're not logged in
+            </div>
+            <div class="operations">
+                <button (click)="login()" class="orange-button">
+                    Log in
+                </button>
+                <div class="or">
+                    or
+                </div>
+                <button (click)="signup()" class="blue-button">
+                    Sign up
+                </button>
+            </div>
+            <div class="info">
+                <span class="text">
+                    Log in or create your account to keep all the visits and orders in one place
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

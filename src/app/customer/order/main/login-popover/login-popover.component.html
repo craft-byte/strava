@@ -1,0 +1,28 @@
+<div class="app" [@showUp]>
+    <div class="box">
+        <div class="header">
+            Strava
+        </div>
+        <div class="subheader title-font">
+            Login
+        </div>
+        <div class="form">
+            <div class="email">
+                <input type="email" [(ngModel)]="username" [class.invalid]="ui.emailMessage && ui.emailMessage.length > 0" placeholder="Email address">
+                <div *ngIf="ui.emailMessage && ui.emailMessage.length > 0" class="message">
+                    {{ ui.emailMessage }}
+                </div>
+            </div>
+            <div class="password">
+                <input type="password" [(ngModel)]="password" [class.invalid]="ui.passwordMessage && ui.passwordMessage.length > 0" placeholder="Password">
+                <div *ngIf="ui.passwordMessage && ui.passwordMessage.length > 0" class="message">
+                    {{ ui.passwordMessage }}
+                </div>
+            </div>
+            <div class="buttons">
+                <button (click)="leave.emit()" class="gray-text-button">Cancel</button>
+                <button (click)="login()" class="orange-button">Log in</button>
+            </div>
+        </div>
+    </div>
+</div>

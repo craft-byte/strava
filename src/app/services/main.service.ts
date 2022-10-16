@@ -42,11 +42,6 @@ export class MainService {
     }
   }
 
-  logout() {
-    this.userInfo = null;
-    this.http.delete(environment.url + "/user/logout").toPromise();
-  }
-
   setUserInfo(token: string) {
     localStorage.setItem('token', token);    
   }
