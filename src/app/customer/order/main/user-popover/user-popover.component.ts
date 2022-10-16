@@ -1,6 +1,7 @@
 import { animate, group, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { getImage } from 'src/functions';
 
 @Component({
@@ -8,7 +9,7 @@ import { getImage } from 'src/functions';
     templateUrl: './user-popover.component.html',
     styleUrls: ['./user-popover.component.scss'],
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, IonicModule],
     animations: [
         trigger("showUp", [
             transition(":enter", [
