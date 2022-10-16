@@ -45,7 +45,9 @@ export class LoadService {
     if(this.cur) {
       clearTimeout(this.timeout);
       setTimeout(() => {
-        this.cur.dismiss();
+        if(this.cur) {
+            this.cur.dismiss();
+        }
         this.cur = null;
       }, 250);
     }

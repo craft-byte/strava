@@ -1,10 +1,12 @@
 <ion-header>
   <ion-toolbar [color]="theme">
     <ion-title (click)="recommendations()">{{ restaurantName }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="userPopover()">
+        <ion-icon name="person"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
-  <ion-buttons slot="end">
-    <ion-button>Back</ion-button>
-  </ion-buttons>
 </ion-header>
 
 <ion-content>
@@ -25,3 +27,4 @@
 </ion-content>
 
 <ng-container #previewContainer></ng-container>
+<ng-container #userPopoverContainer></ng-container>

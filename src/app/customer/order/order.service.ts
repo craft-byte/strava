@@ -9,6 +9,7 @@ export class OrderService {
 
   dishes: { name: string; price: number; quantity: number; _id: string; }[] = [];
   dishesQuantity: number;
+  user: { name: string; _id: string; avatar: any; };
 
   type: "in" | "out";
   id: string;

@@ -65,13 +65,8 @@ export class OrderGuard implements CanActivate {
                             )
                             .subscribe(res => {
                                 if (res) {
-                                    if(res.status == "noinfo") {
-                                        if(!res.token) {
-                                            throw "no token and noinfo order.guard";
-                                        }
-                                        localStorage.setItem("ct", res.token);
-                                        this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token }, queryParamsHandling: "merge" });
-                                    }
+                                    localStorage.setItem("ct", res.token);
+                                    this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token }, queryParamsHandling: "merge" });
                                     this.order.us = res.status;
                                     subs.next(true);
                                 } else {
@@ -100,13 +95,8 @@ export class OrderGuard implements CanActivate {
                             })
                         ).subscribe(res => {
                             if (res) {
-                                if(res.status == "noinfo") {
-                                    if(!res.token) {
-                                        throw "no token and noinfo order.guard";
-                                    }
-                                    localStorage.setItem("ct", res.token);
-                                    this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } });
-                                }
+                                localStorage.setItem("ct", res.token);
+                                this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } });
                                 this.order.us = res.status;
                                 subs.next(true);
                             } else {
