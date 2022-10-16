@@ -93,6 +93,7 @@ export class MainPage implements OnInit, OnDestroy {
                 if(result.token) {
                     this.main.removeUserInfo();
                     this.order.user = null;
+                    this.order.us == "noinfo";
                     localStorage.setItem("ct", result.token);
                     this.router.go([], { relativeTo: this.route, queryParams: { ct: result.token }, queryParamsHandling: "merge" }, false);
                 }
