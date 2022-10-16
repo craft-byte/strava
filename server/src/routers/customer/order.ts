@@ -301,10 +301,21 @@ router.get("/dishes/:category", async (req, res) => {
         return res.sendStatus(422);
     }
 
-    const dishes = await Restaurant(restaurantId).dishes.many({ general: category }).get({ limit: 7, projection: { name: 1, time: 1, price: 1, general: 1, } });
+    const dishes = await Restaurant(restaurantId).dishes.many({ general: category }).get({ limit: 7, projection: { name: 1, info: { time: 1 }, price: 1, general: 1, } });
 
+    const result = [];
 
-    res.send(dishes);
+    for(let dish of dishes) {
+        result.push({
+            name: dish.name!,
+            price: dish.price!,
+            category: dish.general!,
+            _id: dish._id!,
+            time: dish.info.time,
+        })
+    }
+
+    res.send(result);
 });
 
 
