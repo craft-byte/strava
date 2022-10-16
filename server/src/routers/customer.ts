@@ -149,6 +149,7 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
             id: null!,
             dishes: [],
             socketId: null!,
+            ip: req.ip,
             status: "ordering",
             _id: id()!,
         });

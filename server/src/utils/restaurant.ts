@@ -330,11 +330,11 @@ function Orders(restaurantId: string | ObjectId) {
     createSession: async (session: Order) => {
       try {
         const exists = await client.db(ordersDBName).collection(restaurantId!.toString())
-          .findOne({ customer: session.customer, status: "ordering" }, { projection: { _id: 1, type: 1 } });
+          .findOne({ customer: session.customer, ip: session.ip, status: "ordering" }, { projection: { _id: 1, type: 1 } });
 
         if(exists) {
           const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-            .updateOne({ customer: session.customer, status: "ordering" }, { $set: { socketId: session.socketId, connected: session.connected, id: session.id, type: session.type } });
+            .updateOne({ customer: session.customer, status: "ordering" }, { $set: { socketId: session.socketId, connected: session.connected, id: session.id, type: session.type, ip: session.ip } });
 
           return result.modifiedCount > 0;
         } else {

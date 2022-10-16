@@ -51,6 +51,7 @@ router.post("/check", passUserId, async (req, res) => {
 
 
     if(update.matchedCount == 0 || update.modifiedCount == 0) {
+
         const order = await Orders(restaurantId).createSession({
             customer: userId ? id(userId!) : null,
             status: "ordering",
