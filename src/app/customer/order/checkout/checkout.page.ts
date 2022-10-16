@@ -166,7 +166,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
             //  when payWithCard charge succeeded or fails
             //
             if(res.type == "payment.succeeded") {
-                if(this.isPaying && this.data._id == res.orderId) {
+                if(this.data._id == res.orderId) {
                     (await this.toastCtrl.create({
                         duration: 1500,
                         color: "green",
