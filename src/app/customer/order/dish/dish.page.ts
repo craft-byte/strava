@@ -42,7 +42,10 @@ export class DishPage implements OnInit {
         this.dish.quantity++;
         this.order.dishesQuantity++;
         try {
-            const result: any = await this.service.post({ dishId: this.dish._id, comment }, "order", this.service.restaurantId, "session", "dish");
+            const result: any = await this.service.post(
+                { dishId: this.dish._id, comment, userToken: this.order.us == "noinfo" && !!localStorage.getItem("ut") ? localStorage.getItem("ut") : undefined },
+                "order", this.service.restaurantId, "session", "dish"
+            );
 
             if (!result.updated) {
                 this.dish.quantity--;

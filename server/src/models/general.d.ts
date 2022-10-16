@@ -142,6 +142,7 @@ interface Order {
     connected?: number;
     comment?: string;
     ip?: string;
+    customerToken?: string;
 
     money?: {
         hst: number;

@@ -20,7 +20,7 @@ import { Orders } from "../restaurant";
  */
 export function passOrder(projection: any) {
     return async (req: Request, res: Response, next: NextFunction) => {
-        const { status, userId } = res.locals as { status: "loggedin" | "loggedout" | "noinfo"; userId: string | null; };
+        const { status, userId, ct } = res.locals as { ct: string; status: "loggedin" | "loggedout" | "noinfo"; userId: string | null; };
         const { restaurantId } = req.params;
 
         if(!status || !restaurantId) {
@@ -31,7 +31,7 @@ export function passOrder(projection: any) {
         if(status == "loggedin" || status == "loggedout") {
             filter = { customer: id(userId!), status: "ordering" };
         } else {
-            filter = { ip: req.ip, status: "ordering" };
+            filter = { customerToken: ct, status: "ordering" };
         }
 
         const order = await Orders(restaurantId).one(filter).get({ projection });

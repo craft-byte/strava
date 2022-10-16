@@ -9,10 +9,13 @@ import { Order, User } from "../../models/general";
 import { DishHashTableUltra } from "../../utils/dish";
 import { id } from "../../utils/functions";
 import { passOrder } from "../../utils/middleware/customerAllowed";
-import { passUserId } from "../../utils/middleware/logged";
+import { passUserData } from "../../utils/middleware/logged";
 import { getDelay } from "../../utils/other";
+import { createJWT, issueJWT, PRIV_KEY } from "../../utils/passport";
 import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser, user } from "../../utils/users";
+import * as crypto from "crypto";
+import * as jsonwebtoken from "jsonwebtoken";
 
 const router = Router({ mergeParams: true });
 
@@ -20,6 +23,7 @@ interface LocalLocals {
     status: "loggedin" | "loggedout" | "noinfo";
     userId: string | null;
     order: Order;
+    ct: string;
 }
 
 
@@ -31,17 +35,69 @@ interface LocalLocals {
  * @param { loggedin | loggedout | noinfo } status
  * 
  */
-router.post("/check", passUserId, async (req, res) => {
+router.post("/check", async (req, res) => {
     const { restaurantId } = req.params as any;
-    const { socketId } = req.body;
-    const { userId, status } = res.locals as LocalLocals;
+    const { socketId, customerToken } = req.body;
 
+    let status: string;
+    let userId: string;
+    if (!req.headers.authorization) {
+        status = "noinfo";
+    } else {
+        const token = req.headers.authorization;
+    
+        const data: { userId: string; iat: number; exp: number; } = jsonwebtoken.verify(token!, PRIV_KEY, { algorithms: ["RS256"] }) as any;
+    
+        if (Date.now() > data.exp) {
+            status = "loggedout";
+        } else {
+            status = "loggedin";
+        }
+
+        userId = data.userId;
+    }
+
+    // let newToken: string;
+    // if(!customerToken) {
+    //     console.log("NO INFO + NO CUSTOMERTOKEN");
+    //     newToken = crypto.randomBytes(64).toString("hex");
+    //     const order = await Orders(restaurantId).createSession({
+    //         customer: null!,
+    //         customerToken: customerToken || newToken!,
+    //         status: "ordering",
+    //         _id: id()!,
+    //         dishes: [],
+    //         id: null!,
+    //         type: "in",
+    //         socketId,
+    //         ip: req.ip,
+    //         connected: Date.now(),
+    //     });
+    //     res.send({ status: "noinfo", token: customerToken || newToken! });
+    //     return;
+    // }
 
     let filter: Filter<Order>;
-    if(status == "loggedin" || status == "loggedout") {
-        filter = { customer: id(userId!) };
+    if(status == "noinfo") {
+        if(!customerToken) {
+            const token = crypto.randomBytes(64).toString("hex");
+            const order = await Orders(restaurantId).createSession({
+                customer: null!,
+                customerToken: token,
+                status: "ordering",
+                _id: id()!,
+                dishes: [],
+                id: null!,
+                type: "in",
+                socketId,
+                ip: req.ip,
+                connected: Date.now(),
+            });
+            return res.send({ status: "noinfo", token });
+        }
+        filter = { customerToken };
     } else {
-        filter = { ip: req.ip };
+        filter = { customer: id(userId!) };
     }
 
 
@@ -49,12 +105,22 @@ router.post("/check", passUserId, async (req, res) => {
     const update = await Orders(restaurantId).update({ ...filter, status: "ordering" }, { $set: { socketId, connected: Date.now() } }); // update for not ordered orders
     // update.matchedCount == 0 means that user payed for an order and returned to ordering page - should create a new ordering order
 
-
     if(update.matchedCount == 0 || update.modifiedCount == 0) {
 
+        const optionals: { customer: ObjectId | null; customerToken: string | undefined; } = {
+            customer: null,
+            customerToken: undefined
+        };
+
+        if(status == "noinfo") {
+            optionals.customerToken = customerToken ? customerToken : crypto.randomBytes(64).toString("hex");
+        } else {
+            optionals.customer = id(userId!);
+        }
+
         const order = await Orders(restaurantId).createSession({
-            customer: userId ? id(userId!) : null,
-            status: "ordering",
+            ...optionals,
+            status: "ordering", 
             _id: id()!,
             dishes: [],
             id: null!,
@@ -63,10 +129,12 @@ router.post("/check", passUserId, async (req, res) => {
             ip: req.ip,
             connected: Date.now(),
         });
+
+        return res.send({ status, token: optionals.customerToken });
     }
     
     
-    res.send({ status });
+    res.send({ status, token: customerToken });
 });
 
 
@@ -92,14 +160,17 @@ interface InitResult {
  * returns dishes, order data, restaurant data.
  * 
  * @throws { status: 404; reason: "OrderNotFound" }
+ * @throws { status: 404; reason: "OrderIdNotProvided" } - user status == 'noinfo'(1) and no order id provided
+ * (1) - order can be found with 'customer' which is user id, userstatus == 'noinfo' means that user doesn't have id means that order could be found only with orderId which is provided to users that don't have account
  * 
  * @returns { InitResult }
  * 
 */
-router.post("/init", passUserId, async (req, res) => {
+router.post("/init", passUserData, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { platform, table } = req.body;
-    const { status, userId } = res.locals as LocalLocals;
+    const { userId, ct, status } = res.locals as LocalLocals;
+
 
     const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1 } } } });
 
@@ -123,9 +194,9 @@ router.post("/init", passUserId, async (req, res) => {
     let filter: Filter<Order>;
 
     if(status == "loggedin" || status == "loggedout") {
-        filter = { customer: id(userId as string) };
+        filter = { customer: id(userId!) };
     } else {
-        filter = { ip: req.ip };
+        filter = { customerToken: ct };
     }
 
     const order = await Orders(restaurantId).one({ ...filter, status: "ordering" }).get({ projection: { comment: 1, type: 1, id: 1, dishes: { dishId: 1 } } });
@@ -249,7 +320,7 @@ router.get("/dish-image/:dishId", async (req, res) => {
 
     res.send(dish.image);
 });
-router.get("/dish/:dishId", passUserId, passOrder({ dishes: { dishId: 1, } }), async (req, res) => {
+router.get("/dish/:dishId", passUserData, passOrder({ dishes: { dishId: 1, } }), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
     const { order } = res.locals;
 
@@ -299,10 +370,10 @@ router.get("/dish/:dishId", passUserId, passOrder({ dishes: { dishId: 1, } }), a
  * @throws { status: 403; reason: "Invalidtable" } - table is invalid
  * 
  */
-router.post("/session/table", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.post("/session/table", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { table, force } = req.body;
-    const { status, userId } = res.locals as LocalLocals;
+    const { status, userId, ct } = res.locals as LocalLocals;
 
     if(!table) {
         return res.sendStatus(422);
@@ -319,7 +390,7 @@ router.post("/session/table", passUserId, passOrder({ _id: 1 }), async (req, res
     }
 
     if(!force) {
-        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(userId!) }, ip: { $ne: req.ip }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
+        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(userId!) }, customerToken: { $ne: ct }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
 
         if(orders.length > 0) {
             console.log("CONFIRMED");
@@ -332,13 +403,13 @@ router.post("/session/table", passUserId, passOrder({ _id: 1 }), async (req, res
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!) };
     } else {
-        filter = { ip: req.ip };
+        filter = { customerToken: ct };
     }
 
     const update = await Orders(restaurantId).one(filter).update({ $set: { id: table.toString(), connected: Date.now() } }, { projection: { _id: 1 } });
     res.send({ updated: update.ok == 1 });
 
-    Orders(restaurantId).update({ type: "in", customer: { $ne: id(userId!) }, ip: { $ne: req.ip }, id: table.toString(), status: "ordering" }, { $set: { id: null! }})
+    Orders(restaurantId).update({ type: "in", customer: { $ne: id(userId!) }, customerToken: { $ne: ct }, id: table.toString(), status: "ordering" }, { $set: { id: null! }})
 });
 
 /**
@@ -354,10 +425,10 @@ router.post("/session/table", passUserId, passOrder({ _id: 1 }), async (req, res
  * @throws { status: 422; reason: "InvalidType" } - type is invalid
  * 
  */
-router.post("/session/type", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.post("/session/type", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { type } = req.body;
-    const { status, userId } = res.locals as LocalLocals;
+    const { status, userId, ct } = res.locals as LocalLocals;
 
     if (!type || !["in", "out"].includes(type)) {
         return res.status(422).send({ reason: "InvalidType" });
@@ -367,7 +438,7 @@ router.post("/session/type", passUserId, passOrder({ _id: 1 }), async (req, res)
     if(status == "loggedin" || status == "loggedout") {
         filter = { status: "ordering", customer: id(userId!) };
     } else {
-        filter = { status: "ordering", ip: req.ip };
+        filter = { status: "ordering", customerToken: ct };
     }
 
     if (type == "out") {
@@ -394,10 +465,10 @@ router.post("/session/type", passUserId, passOrder({ _id: 1 }), async (req, res)
  * 
  * @throws { status: 422; reason: "InvalidComment" } - comment is invalid
  */
-router.post("/session/comment", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.post("/session/comment", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { comment } = req.body;
-    const { userId, status } = res.locals as LocalLocals;
+    const { userId, status, ct } = res.locals as LocalLocals;
 
     if(!comment || typeof comment != "string") {
         return res.status(422).send({ reason: "InvalidComment" });
@@ -407,7 +478,7 @@ router.post("/session/comment", passUserId, passOrder({ _id: 1 }), async (req, r
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "ordering" };
     } else {
-        filter = { ip: req.ip, status: "ordering" };
+        filter = { customerToken: ct, status: "ordering" };
     }
 
     const update = await Orders(restaurantId).update(filter, { $set: { comment } });
@@ -426,10 +497,10 @@ router.post("/session/comment", passUserId, passOrder({ _id: 1 }), async (req, r
  * @throws { status: 422; reason: "InvalidDishId" } - invalid dish id
  * @throws { status: 422; reason: "InvalidDishComment" } - invalid comment to dish if provided
  */
-router.post("/session/dish", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.post("/session/dish", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { dishId, comment } = req.body;
-    const { status, userId } = res.locals as LocalLocals;
+    const { status, userId, ct } = res.locals as LocalLocals;
 
     if (!dishId || dishId.length != 24) {
         return res.status(422).send({ reason: "InvalidDishId" });
@@ -447,7 +518,7 @@ router.post("/session/dish", passUserId, passOrder({ _id: 1 }), async (req, res)
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "ordering" };
     } else {
-        filter = { ip: req.ip, status: "ordering" };
+        filter = { customerToken: ct, status: "ordering" };
     }
 
 
@@ -474,15 +545,15 @@ router.post("/session/dish", passUserId, passOrder({ _id: 1 }), async (req, res)
  * @returns { comment: string; [] } - array of comments of selected dishes
  * 
  */
-router.get("/session/dish/:dishId", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.get("/session/dish/:dishId", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
-    const { userId, status } = res.locals as LocalLocals;
+    const { userId, status, ct } = res.locals as LocalLocals;
 
     let filter: Filter<Order>;
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "ordering" };
     } else {
-        filter = { ip: req.ip, status: "ordering" };
+        filter = { customerToken: ct, status: "ordering" };
     }
 
     const order = await Orders(restaurantId).one(filter).get({ projection: { dishes: { dishId: 1, _id: 1, comment: 1, } } });
@@ -502,16 +573,16 @@ router.get("/session/dish/:dishId", passUserId, passOrder({ _id: 1 }), async (re
  * removes dish from order
  * @param { string } orderDishId - req.params.orderDishId - id of dish in order
  */
-router.delete("/session/dish/:orderDishId", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.delete("/session/dish/:orderDishId", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId, orderDishId } = req.params as any;
-    const { userId, status } = res.locals as LocalLocals;
+    const { userId, status, ct } = res.locals as LocalLocals;
 
 
     let filter: Filter<Order>;
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "ordering" };
     } else {
-        filter = { status: "ordering", ip: req.ip };
+        filter = { status: "ordering", customerToken: ct };
     }
 
     const update = await Orders(restaurantId).one(filter).update({ $pull: { dishes: { _id: id(orderDishId) } } }, { projection: { _id: 1 } });
@@ -529,10 +600,10 @@ router.delete("/session/dish/:orderDishId", passUserId, passOrder({ _id: 1 }), a
  * 
  * @throws { status: 422; reason: "InvalidDishComment" } - comment is invalid
  */
-router.post("/session/dish/:orderDishId/comment", passUserId, passOrder({ _id: 1 }), async (req, res) => {
+router.post("/session/dish/:orderDishId/comment", passUserData, passOrder({ _id: 1 }), async (req, res) => {
     const { restaurantId, orderDishId } = req.params as any;
     const { comment } = req.body;
-    const { status, userId } = res.locals as LocalLocals;
+    const { status, userId, ct } = res.locals as LocalLocals;
 
     if(!comment || typeof comment != "string") {
         return res.status(422).send({ reason: "InvalidDishComment" });
@@ -542,7 +613,7 @@ router.post("/session/dish/:orderDishId/comment", passUserId, passOrder({ _id: 1
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "ordering", };
     } else {
-        filter = { ip: req.ip, status: "ordering" };
+        filter = { customerToken: ct, status: "ordering" };
     }
 
     const update = await Orders(restaurantId).one(filter)
@@ -571,15 +642,15 @@ interface PaymentInfo {
     methods: { last4: string; brand: string; id: string; }[];
     _id: ObjectId;
     savePaymentMethod: boolean;
-}; router.get("/session/payment-info", passUserId, passOrder({ type: 1, id: 1, dishes: { dishId: 1 } }), async (req, res) => {
+}; router.get("/session/payment-info", passUserData, passOrder({ type: 1, id: 1, dishes: { dishId: 1 } }), async (req, res) => {
     const { restaurantId } = req.params as any;
-    const { order, status, userId } = res.locals as LocalLocals;
+    const { order, status, userId, ct } = res.locals as LocalLocals;
 
     let filter: Filter<Order>;
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "ordering" };
     } else {
-        filter = { ip: req.ip, status: "ordering" };
+        filter = { customerToken: ct, status: "ordering" };
     }
 
 
@@ -867,15 +938,15 @@ interface Tracking {
  * @throws { status: 404; reason: "NoOrders" } - user didn't order any orders
  * 
  */
-router.get("/tracking", passUserId, async (req, res) => {
+router.get("/tracking", passUserData, async (req, res) => {
     const { restaurantId } = req.params as any;
-    const { status, userId } = res.locals as LocalLocals;
+    const { status, userId, ct } = res.locals as LocalLocals;
 
     let filter: Filter<Order>;
     if(status == "loggedin" || status == "loggedout") {
         filter = { customer: id(userId!), status: "progress" };
     } else {
-        filter = { status: "progress", ip: req.ip };
+        filter = { status: "progress", customerToken: ct };
     }
 
     const orders = await Orders(restaurantId).many(filter, { projection: { dishes: 1, id: 1, type: 1, ordered: 1, } });

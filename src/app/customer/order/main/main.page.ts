@@ -75,11 +75,13 @@ export class MainPage implements OnInit, OnDestroy {
 
   async ngOnInit() {
     const table = this.route.snapshot.queryParamMap.get("table");
-
-    const result: InitResult = await this.service.post({ platform: this.platform, table }, "order", this.service.restaurantId, "init");
+    
+    const result: InitResult = await this.service.post({
+        platform: this.platform,
+        table,
+    }, "order", this.service.restaurantId, "init");
 
     const { restaurant, order, showOut, showTracking } = result;
-
 
     this.restaurantName = restaurant.name;
     this.service.theme = restaurant.theme;
@@ -96,7 +98,7 @@ export class MainPage implements OnInit, OnDestroy {
 
 
     if(table) {
-        this.router.go([], { relativeTo: this.route, queryParams: { table: null } });
+        this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" });
     }
   }
   ngOnDestroy(): void {

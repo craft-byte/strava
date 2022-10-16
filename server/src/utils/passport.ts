@@ -31,3 +31,17 @@ export function issueJWT(userId: string) {
         expires: expiresIn,
     };
 }
+
+export function createJWT(data: { [key: string]: string; }, exp: number) {
+    const payload = {
+        ...data,
+        iat: Date.now(),
+    };
+
+    const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {
+        expiresIn: exp,
+        algorithm: "RS256",
+    });
+
+    return signedToken;
+}

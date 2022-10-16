@@ -1,6 +1,6 @@
 import { ForwardRefHandling } from '@angular/compiler';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -19,6 +19,7 @@ export class OrderGuard implements CanActivate {
         private router: RouterService,
         private sequentialRoutingGuardService: SequentialRoutingGuardService,
         private order: OrderService,
+        private route: ActivatedRoute,
         private toastCtrl: ToastController,
     ) { };
 
@@ -43,7 +44,49 @@ export class OrderGuard implements CanActivate {
             if (!this.order.socketId) {
                 this.order.socket.connect();
                 this.order.socket.on("connect", () => {
-                    this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check")
+                    this.service.getobs
+                        <{ token: string; status: "noinfo" | "loggedin" | "loggedout"; }>
+                        ({
+                            socketId: this.order.socketId,
+                            customerToken: localStorage.getItem("ct") || route.queryParamMap.get("ct")
+                        },
+                        "order", rid, "check")
+                            .pipe(
+                                catchError(err => {
+                                    if (err.status == 404) {
+                                        this.router.go(["customer", "scan"]);
+                                    } else if (err.status == 403) {
+                                        this.router.go(["customer", "scan"]);
+                                        this.toast()
+                                    }
+
+                                    return throwError(err.status);
+                                })
+                            )
+                            .subscribe(res => {
+                                if (res) {
+                                    if(res.status == "noinfo") {
+                                        if(!res.token) {
+                                            throw "no token and noinfo order.guard";
+                                        }
+                                        localStorage.setItem("ct", res.token);
+                                        this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } });
+                                    }
+                                    this.order.us = res.status;
+                                    subs.next(true);
+                                } else {
+                                    this.router.go(["customer/scan"]);
+                                }
+                            });
+                    });
+            } else {
+                this.service.getobs
+                    <{ token: string; status: "noinfo" | "loggedin" | "loggedout"; }>
+                    ({
+                        socketId: this.order.socketId,
+                        customerToken: localStorage.getItem("ct") || route.queryParamMap.get("ct")
+                    },
+                    "order", rid, "check")
                         .pipe(
                             catchError(err => {
                                 if (err.status == 404) {
@@ -55,34 +98,21 @@ export class OrderGuard implements CanActivate {
 
                                 return throwError(err.status);
                             })
-                        )
-                        .subscribe(res => {
+                        ).subscribe(res => {
                             if (res) {
+                                if(res.status == "noinfo") {
+                                    if(!res.token) {
+                                        throw "no token and noinfo order.guard";
+                                    }
+                                    localStorage.setItem("ct", res.token);
+                                    this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } });
+                                }
+                                this.order.us = res.status;
                                 subs.next(true);
                             } else {
                                 this.router.go(["customer/scan"]);
                             }
                         });
-                });
-            } else {
-                this.service.getobs<{ theme: string; }>({ socketId: this.order.socketId }, "order", rid, "check").pipe(
-                    catchError(err => {
-                        if (err.status == 404) {
-                            this.router.go(["customer", "scan"]);
-                        } else if (err.status == 403) {
-                            this.router.go(["customer", "scan"]);
-                            this.toast()
-                        }
-
-                        return throwError(err.status);
-                    })
-                ).subscribe(res => {
-                    if (res) {
-                        subs.next(true);
-                    } else {
-                        this.router.go(["customer/scan"]);
-                    }
-                });
             }
         });
 

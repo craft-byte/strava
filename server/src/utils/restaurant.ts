@@ -329,12 +329,30 @@ function Orders(restaurantId: string | ObjectId) {
     },
     createSession: async (session: Order) => {
       try {
+        let filter: Filter<Order>;
+        if(session.customer) {
+            filter = { customer: session.customer };
+        } else {
+            if(!session.customerToken) {
+                throw "customer token missed";
+            }
+            filter = { customerToken: session.customerToken };
+        }
         const exists = await client.db(ordersDBName).collection(restaurantId!.toString())
-          .findOne({ customer: session.customer, ip: session.ip, status: "ordering" }, { projection: { _id: 1, type: 1 } });
+          .findOne({ ...filter, status: "ordering" }, { projection: { _id: 1, type: 1 } });
 
         if(exists) {
           const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-            .updateOne({ customer: session.customer, ip: session.ip, status: "ordering" }, { $set: { socketId: session.socketId, connected: session.connected, id: session.id, type: session.type, ip: session.ip } });
+            .updateOne(
+                { ...filter, ip: session.ip, status: "ordering" },
+                { $set: {
+                    socketId: session.socketId,
+                    connected: session.connected,
+                    id: session.id,
+                    type: session.type,
+                    ip: session.ip,
+                    customerToken: session.customerToken,
+                } });
 
           return result.modifiedCount > 0;
         } else {

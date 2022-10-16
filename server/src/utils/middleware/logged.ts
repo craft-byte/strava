@@ -64,16 +64,16 @@ export function logged(projection: UserProjection) {
  *  
  * @returns { userId: string } - res.locals.userId if user has token saved
  */
-export function passUserId(req: Request, res: Response, next: NextFunction) {
+export function passUserData(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {
+        if(!req.headers["customer-token"]) {
+            return res.status(403).send({ reason: "CustomerTokenNotProvided" });
+        }
+        res.locals.ct = req.headers["customer-token"];
         res.locals.status = "noinfo";
         return next();
     }
-    const token = req.headers.authorization.replace("Bearer ", "");
-
-    if(!token) {
-
-    }
+    const token = req.headers.authorization;
 
     const data: { userId: string; iat: number; exp: number; } = jsonwebtoken.verify(token, PRIV_KEY, { algorithms: ["RS256"] }) as any;
 

@@ -17,6 +17,8 @@ export class OrderService {
 
   showOut: boolean;
 
+  us: "noinfo" | "loggedin" | "loggedout"; // user status
+
   constructor(
     public socket: Socket,
   ) { };
