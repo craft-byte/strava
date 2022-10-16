@@ -101,7 +101,7 @@ export class SettingsPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: s ? "Successfuly updated." : "Something went wrong. Try again later",
       duration: 1000,
-      color: "green",
+      color: s ? "green" : "red",
       mode: "ios",
     });
 
