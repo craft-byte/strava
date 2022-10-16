@@ -5,6 +5,7 @@ import { general } from 'src/assets/consts';
 import { CustomerService } from '../../customer.service';
 import { OrderService } from '../order.service';
 import { Platform } from "@angular/cdk/platform";
+import { LoadService } from 'src/app/other/load.service';
 
 interface InitResult {
   restaurant: {
@@ -47,6 +48,7 @@ export class MainPage implements OnInit, OnDestroy {
     private platform: Platform,
     private injector: Injector,
     private route: ActivatedRoute,
+    private loader: LoadService,
   ) {
     this.routerClassic.routeReuseStrategy.shouldReuseRoute = () => false;
   };
@@ -99,7 +101,7 @@ export class MainPage implements OnInit, OnDestroy {
     
     
         if(table) {
-            this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" });
+            this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" }, false);
         }
     } catch (e) {
         if(e.status == 404) {
@@ -108,6 +110,7 @@ export class MainPage implements OnInit, OnDestroy {
             }
         }
     }
+    this.loader.end();
   }
   ngOnDestroy(): void {
 
