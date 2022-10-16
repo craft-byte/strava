@@ -76,29 +76,37 @@ export class MainPage implements OnInit, OnDestroy {
   async ngOnInit() {
     const table = this.route.snapshot.queryParamMap.get("table");
     
-    const result: InitResult = await this.service.post({
-        platform: this.platform,
-        table,
-    }, "order", this.service.restaurantId, "init");
-
-    const { restaurant, order, showOut, showTracking } = result;
-
-    this.restaurantName = restaurant.name;
-    this.service.theme = restaurant.theme;
-    this.theme = restaurant.theme
-
-    this.ui.showTracking = showTracking;
-
-    this.order.dishes = order.dishes;
-    this.order.comment = order.comment;
-    this.order.dishesQuantity = order.dishesQuantity;
-    this.order.type = order.type as any;
-    this.order.id = order.id;
-    this.order.showOut = showOut;
-
-
-    if(table) {
-        this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" });
+    try {
+        const result: InitResult = await this.service.post({
+            platform: this.platform,
+            table,
+        }, "order", this.service.restaurantId, "init");
+    
+        const { restaurant, order, showOut, showTracking } = result;
+    
+        this.restaurantName = restaurant.name;
+        this.service.theme = restaurant.theme;
+        this.theme = restaurant.theme
+    
+        this.ui.showTracking = showTracking;
+    
+        this.order.dishes = order.dishes;
+        this.order.comment = order.comment;
+        this.order.dishesQuantity = order.dishesQuantity;
+        this.order.type = order.type as any;
+        this.order.id = order.id;
+        this.order.showOut = showOut;
+    
+    
+        if(table) {
+            this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" });
+        }
+    } catch (e) {
+        if(e.status == 404) {
+            if(e.body.reason == "RestaurantNotFound") {
+                this.router.go(["login"]);
+            }
+        }
     }
   }
   ngOnDestroy(): void {

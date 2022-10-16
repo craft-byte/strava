@@ -70,7 +70,7 @@ export class OrderGuard implements CanActivate {
                                             throw "no token and noinfo order.guard";
                                         }
                                         localStorage.setItem("ct", res.token);
-                                        this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } }, false);
+                                        this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token }, queryParamsHandling: "merge" });
                                     }
                                     this.order.us = res.status;
                                     subs.next(true);
@@ -105,7 +105,7 @@ export class OrderGuard implements CanActivate {
                                         throw "no token and noinfo order.guard";
                                     }
                                     localStorage.setItem("ct", res.token);
-                                    this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } }, false);
+                                    this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token } });
                                 }
                                 this.order.us = res.status;
                                 subs.next(true);
