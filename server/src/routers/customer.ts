@@ -154,8 +154,6 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
             _id: id()!,
         });
 
-        console.log("UPDATED 1");
-
         return res.send({ updated: result });
     }
 
@@ -175,8 +173,6 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
             _id: id()!,
         });
 
-        console.log("UPDATED FORCED");
-
         return res.send({ updated: result });
     }
 
@@ -184,7 +180,6 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(user._id) }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
     
         if(orders.length > 0) {
-            console.log("OTHER");
             return res.send({ other: true });
         }
     }
@@ -199,19 +194,6 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         status: "ordering",
         _id: id()!,
     });
-
-    console.log({
-        customer: id(user._id)!,
-        connected: Date.now(),
-        type: "in",
-        id: table?.toString(),
-        dishes: [],
-        socketId: null!,
-        status: "ordering",
-        _id: id()!,
-    });
-
-    console.log("UPDATED LAST");
 
     return res.send({ updated: result });
     
