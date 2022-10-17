@@ -147,7 +147,7 @@ export class MainPage implements OnInit, OnDestroy {
 
 
             if (table) {
-                this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" });
+                this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" }, false);
             }
         } catch (e) {
             if (e.status == 404) {
