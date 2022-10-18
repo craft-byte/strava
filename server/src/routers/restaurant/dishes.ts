@@ -82,14 +82,6 @@ router.post("/", logged({ _id: 1 }), allowed({  }, "manager", "dishes"), async (
     const newDish: Dish = {
         name: name,
         price: price,
-        image: {
-            binary: bufferFromString(image.binary),
-            modified: {
-                date: Date.now(),
-                userId: user._id,
-            },
-            resolution: image.resolution
-        },
         cooking: { components: [], cooks: [], recipee: null!, modified: { date: null!, userId: null!, } },
         _id: id(),
         description,
@@ -102,6 +94,17 @@ router.post("/", logged({ _id: 1 }), allowed({  }, "manager", "dishes"), async (
             modified: { date: Date.now(), userId: user._id },
         }
     };
+
+    if(image) {
+        newDish.image = {
+            binary: bufferFromString(image.binary),
+            modified: {
+                date: Date.now(),
+                userId: user._id,
+            },
+            resolution: image.resolution
+        };
+    }
 
     const result = await Restaurant(restaurantId).dishes.add(newDish);
 
