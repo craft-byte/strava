@@ -68,7 +68,7 @@ export class DishAddPage implements OnInit {
         if(name.length > 30) {
             this.ui.nameRed = true;
             return;
-        } else if(price < 100) {
+        } else if(price < 1) {
             this.ui.priceRed = true;
             return;
         }
@@ -76,7 +76,7 @@ export class DishAddPage implements OnInit {
         const body = {
             description,
             name,
-            price,
+            price: price * 100,
             time,
             category,
             image: this.image

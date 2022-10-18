@@ -28,7 +28,7 @@
                 </div>
                 <div class="info">
                     <span class="text">
-                        Should be in pennys. Ex 1 USD is 100 cents
+                        Price in CAD. Use decimal numbers if needed.
                     </span>
                 </div>
             </div>
@@ -48,7 +48,7 @@
             <div class="category">
                 <ion-item>
                     <ion-label>Category</ion-label>
-                    <ion-select formControlName="category" mode="ios" interface="popover" placeholder="Select fruit">
+                    <ion-select formControlName="category" mode="ios" interface="popover" placeholder="Select">
                         <ion-select-option [value]="i.value" *ngFor="let i of categories">{{ i.title }}</ion-select-option>
                     </ion-select>
                 </ion-item>
