@@ -54,13 +54,22 @@ export class LoginPopoverComponent implements OnInit {
         await this.loader.start();
 
 
-        const result = await this.main.login({ email: this.username, password: this.password });
+        try {
+            const result = await this.main.login({ email: this.username, password: this.password });
 
-        if(result.success) {
-            this.leave.emit(true);
-        } else {
-            this.password = "Your data is incorrect";
-            this.loader.end();
+            if(result.success) {
+                this.leave.emit(true);
+            } else {
+                this.ui.passwordMessage = "Your data is incorrect";
+                this.loader.end();
+            }
+        } catch (e) {
+            if(e.status == 401 || e.status == 404) {
+                this.ui.passwordMessage = "Your data is incorrect";
+            } else if(e.status == 422) {
+                this.ui.passwordMessage = "Provided data is invalid";
+            }
+            this.loader.end()
         }
     }
 
