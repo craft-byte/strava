@@ -160,34 +160,3 @@ router.patch("/find", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes
 export {
     router as DishesRouter
 }
-
-
-
-// router.get("/overview/:time", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
-//     const { restaurantId, time } = req.params as any;
-
-//     const result = await Restaurant(restaurantId)
-//         .dishes.many(
-//             {},
-//         ).get({
-//             limit: (+time + 1) * 7,
-//             projection: {
-//                 name: 1,
-//                 price: 1,
-//                 created: 1,
-//             }
-//         });
-
-//     const dishes = [];
-
-//     for (let i of result) {
-//         dishes.push({
-//             name: i.name,
-//             date: i.info.created?.date,
-//             price: `$${i.price}`,
-//             _id: i._id,
-//         });
-//     }
-
-//     res.send(dishes);
-// });
