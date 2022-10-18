@@ -1,11 +1,10 @@
 import { config } from "./config";
-import { loginTest, registrationTest } from "./src/login";
+import { register } from "./src/login";
 
 import * as p from "puppeteer";
 import { click } from "./scripts/utils/functions";
 
 
-process.setMaxListeners(20);
 
 /*
   FULL TEST PATH
@@ -54,53 +53,11 @@ process.setMaxListeners(20);
 
 
 (async () => {
-  for (let i = 0; i < 50; i++) {
-    open()
-  }
+  open();
 })();
 
 
 
 async function open() {
-  const browser = await p.launch({ headless: true, ignoreHTTPSErrors: true });
-
-  const page = await browser.newPage();
-
-
-  await page.goto("https://localhost:8100/login");
-
-  await page.waitForSelector("#username", { timeout: 5000 });
-
-  await page.type("#username", "account");
-  await page.type("#password", "123123123");
-
-  await page.click("#next")
-
-  try {
-    await page.waitForNavigation();
-  } catch (error) {
-    console.log("failure");
-  }
-
-  await page.waitForSelector(".link.people", { timeout: 5000 });
-
-  await click(page, ".link.people");
-
-  await page.waitForNavigation();
-
-  await page.waitForSelector(".link.orders");
-
-  await click(page, ".link.orders");
-
-  await page.waitForNavigation();
-
-  await page.waitForSelector(".list .order:last-of-type");
-
-  await page.click(".list .order:last-of-type");
-
-
-  setTimeout(() => {
-    console.log("success");
-    browser.close();
-  }, 20000);
+  register();
 }
