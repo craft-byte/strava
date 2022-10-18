@@ -30,13 +30,11 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+/tests
 /dev
 /server/node_modules
 /server/dev
 /server/build
 /server/uploads
-/tests/node_modules
-/tests/build
-/tests
 
 /fakedata
