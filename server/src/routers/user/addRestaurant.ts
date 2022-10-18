@@ -208,14 +208,14 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         customers: {
             maxDishes: 10,
             allowTakeAway: true,
-            trust: 1,
+            // trust: 1,
             maxCustomers: 10,
-            maxPrice: "unlimited",
+            // maxPrice: "unlimited",
             minPrice: 100,
         },
         dishes: {
-            strictIngredients: false,
-            types: 1,
+            // strictIngredients: false,
+            // types: 1,
         },
         payments: {
 
