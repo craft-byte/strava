@@ -1,5 +1,5 @@
 <div class="app" [@showUp] (click)="leave.emit()">
-    <div #popover class="box">
+    <div #popover class="box" (click)="$event.stopPropagation()">
         <div class="header">
             Strava
         </div>
