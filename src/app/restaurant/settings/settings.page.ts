@@ -78,13 +78,12 @@ export class SettingsPage implements OnInit {
   }
 
   async input(field1: string, field2: string, event: any) {
-    await this.loader.start();
     const { target: { value } } = event;
 
     clearTimeout(this.timeout);
 
     this.timeout = setTimeout(async () => {
-      const result: any = await this.service.post({ field1, field2, value: value || 0 }, "settings");
+      const result: any = await this.service.post({ field1, field2, value: Number(value) || 0 }, "settings");
 
       this.toast(result.updated);
 
@@ -92,7 +91,6 @@ export class SettingsPage implements OnInit {
         this.settings[field1][field2] = value || 0;
       }
 
-      this.loader.end();
     }, 600);
   }
 
