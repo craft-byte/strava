@@ -28,7 +28,13 @@
       </div>
     </div>
   </div>
-  <div *ngIf="ui.showCustomers" class="customers">
+  <div class="no-customers" *ngIf="customers && customers.length == 0">
+    <span class="text">
+        No customers visited your restaurant yet
+    </span>
+    <ion-icon name="accessibility"></ion-icon>
+  </div>
+  <div *ngIf="customers && customers.length > 0" class="customers">
     <div class="top">
       <div class="title">
         Customers

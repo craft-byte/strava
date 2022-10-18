@@ -32,7 +32,6 @@ export class CustomersPage implements OnInit {
 
   ui = {
     showBest: false,
-    showCustomers: false,
     showQrCodes: true,
   };
 
@@ -120,13 +119,11 @@ export class CustomersPage implements OnInit {
       return;
     }
 
-    if(result.customers && result.customers.length > 0) {
-      this.customers = result.customers;
-      for(let i of this.customers) {
-        i.avatar = getImage(i.avatar) || "./../../../../assets/images/plain-avatar.jpg";
-      }
-      this.ui.showCustomers = true;
+    this.customers = result.customers;
+    for(let i of this.customers) {
+      i.avatar = getImage(i.avatar) || "./../../../../assets/images/plain-avatar.jpg";
     }
+    
 
     this.loader.end();
   }
