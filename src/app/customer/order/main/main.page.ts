@@ -93,9 +93,10 @@ export class MainPage implements OnInit, OnDestroy {
                 if(result.token) {
                     this.main.removeUserInfo();
                     this.order.user = null;
-                    this.order.us == "noinfo";
+                    this.order.us = "noinfo";
                     localStorage.setItem("ct", result.token);
-                    this.router.go([], { relativeTo: this.route, queryParams: { ct: result.token }, queryParamsHandling: "merge" }, false);
+                    await this.router.go([], { relativeTo: this.route, queryParams: { ct: result.token }, queryParamsHandling: "merge" });
+                    window.location.reload();
                 }
             } else if(op == "login") {
                 this.login();
@@ -114,6 +115,7 @@ export class MainPage implements OnInit, OnDestroy {
 
         component.instance.leave.subscribe(async res => {
             if(res) {
+                localStorage.removeItem("ct");
                 window.location.reload();
             }
             component.destroy();
@@ -146,9 +148,14 @@ export class MainPage implements OnInit, OnDestroy {
             this.order.user = user;
 
 
+
+            const qp: any = {};
             if (table) {
-                this.router.go([], { relativeTo: this.route, queryParams: { table: null }, queryParamsHandling: "merge" }, false);
+                qp.table = null;
+            } if(this.order.us != "noinfo") {
+                qp.ct = null;
             }
+            this.router.go([], { relativeTo: this.route, queryParams: qp, queryParamsHandling: "merge" }, false);
         } catch (e) {
             if (e.status == 404) {
                 if (e.body.reason == "RestaurantNotFound") {

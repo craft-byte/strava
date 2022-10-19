@@ -20,6 +20,8 @@ export class ScanPage implements OnInit {
     videoElement: any;
     canvasContext: any;
 
+    stream: MediaStream;
+
     result: string = null!;
 
     ui = {
@@ -205,6 +207,9 @@ export class ScanPage implements OnInit {
         }
 
 
+        this.stream.getVideoTracks().forEach(t => t.stop());
+
+
         try {
             // ex.    https://ctraba.com/doesn't-matter/what-matters-are-query-params?restaurantId=63000acd4ebc81862fb5354f&table=3&order=true
             const splitted = this.result.split("?");
@@ -263,11 +268,10 @@ export class ScanPage implements OnInit {
 
 
     //
-    //    SCAN STUFF
+    //    SCAN
     //
     async scan() {
         if (this.videoElement.readyState === this.videoElement.HAVE_ENOUGH_DATA) {
-            this.loader.end();
             this.ui.showScan = true;
 
             this.canvasElement.height = this.videoElement.videoHeight;
@@ -304,13 +308,12 @@ export class ScanPage implements OnInit {
     }
     async startScan() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
+            this.stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' }
             });
 
 
-
-            this.videoElement.srcObject = stream;
+            this.videoElement.srcObject = this.stream;
             this.videoElement.setAttribute('playsinline', true);
 
             this.videoElement.play();

@@ -2,71 +2,36 @@ import { Injectable } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class LoadService {
 
-  cur: any;
-  timeout: any;
+    cur: HTMLIonLoadingElement;
+    timeout: any;
 
-  constructor(
-    private loadingCtrl: LoadingController,
-  ) { };
+    constructor(
+        private loadingCtrl: LoadingController,
+    ) { };
 
 
-  async load<T>(request: T) {
 
-    const loading = await this.loadingCtrl.create({
-      spinner: "dots",
-      mode: "ios",
-      cssClass: "loading"
-    });
-
-    await loading.present();
-
-    this.timeout = setTimeout(() => {
-      this.end();
-    }, 5000);
-
-    try {
-      const result = await request;
-
-      loading.remove();
-
-      return result;
-    } catch (error) {
-      loading.remove();
-
-      throw error;
-    }
-  }
-
-  end() {
-    if(this.cur) {
-      clearTimeout(this.timeout);
-      setTimeout(() => {
-        if(this.cur) {
-            this.cur.dismiss();
-        }
+    end() {
+        this.cur?.dismiss();
         this.cur = null;
-      }, 250);
     }
-  }
-  async start(long = false) {
-    if(this.cur) {
-      return;
-    }
-    this.cur = await this.loadingCtrl.create({
-      spinner: "dots",
-      mode: "ios",
-      cssClass: "loading",
-    });
+    async start(long: boolean = false) {
+        if (this.cur) {
+            return;
+        }
 
-    this.timeout = setTimeout(() => {
-      this.end();
-    }, long ? 300000 : 5000);
-    await this.cur.present();
-  }
+        this.cur = await this.loadingCtrl.create({
+            spinner: "dots",
+            mode: "ios",
+            cssClass: "loading",
+            duration: long ? 300000 : 5000,
+        });
+        await this.cur.present();
+    }
 
 
 }

@@ -160,7 +160,7 @@ const customer: Routes = [
     {
         path: "customer",
         loadChildren: () => import("./customer/customer.module").then(m => m.CustomerPageModule),
-        canActivate: []
+        canActivate: [LoggedGuard]
     },
     {
         path: "customer/order/:restaurantId",

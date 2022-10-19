@@ -134,12 +134,10 @@ export class DishPage implements OnInit {
                     break;
                 }
             }
-        } catch ({ status, body: { reason } }) {
+        } catch (err) {
             this.back();
+            return;
         }
-
-
-
 
         this.loader.end();
     }

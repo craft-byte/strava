@@ -21,7 +21,7 @@ export class RouterService {
 
 
   async go(path: string[], options: NavigationExtras = {}, showLoader: boolean = true) {
-    if(showLoader) {
+    if(showLoader === true) {
       await this.loader.start();
     }
     this.router.navigate(path, { replaceUrl: true, ...options});

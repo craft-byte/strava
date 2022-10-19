@@ -137,8 +137,6 @@ router.post("/check", async (req, res) => {
         return res.send({ status, token: optionals.customerToken });
     }
     
-    console.log("HERE", customerToken);
-    
     res.send({ status, token: status == "noinfo" ? customerToken : null });
 });
 
