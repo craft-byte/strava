@@ -62,6 +62,8 @@ export class OrderGuard implements CanActivate {
                         localStorage.setItem("ct", res.token);
                         subs.next(true);
                         if (res.status == "noinfo" && (!token || token != res.token)) {
+                            // has to be after subs.next() because this.route is not inited yet. after subs.next() this.route inits and function below will just add a query param
+                            // if put before subs.next() it would navigate to 'domain.com/?ct=customerToken'
                             this.router.go([], { relativeTo: this.route, replaceUrl: false, queryParams: { ct: res.token }, queryParamsHandling: "merge", }, false);
                         }
                     } else {
