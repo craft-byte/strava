@@ -58,13 +58,12 @@ export class OrderGuard implements CanActivate {
                 )
                 .subscribe(res => {
                     if (res) {
-                        if (res.status == "noinfo" && (!token || token != res.token)) {
-                            localStorage.setItem("ct", res.token);
-                            this.router.go([], { relativeTo: this.route, queryParams: { ct: res.token }, queryParamsHandling: "merge" }, false);
-                        }
-                        localStorage.removeItem("ct");
                         this.order.us = res.status;
+                        localStorage.setItem("ct", res.token);
                         subs.next(true);
+                        if (res.status == "noinfo" && (!token || token != res.token)) {
+                            this.router.go([], { relativeTo: this.route, replaceUrl: false, queryParams: { ct: res.token }, queryParamsHandling: "merge", }, false);
+                        }
                     } else {
                         this.router.go(["customer/scan"]);
                         subs.next(false);

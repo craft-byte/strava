@@ -25,14 +25,14 @@ export class CustomerService {
 
   get<T>(queryParams: { [key: string]: string; }, ...path: string[]) {
     if(this.order && this.order.us && this.order.us == "noinfo") {
-        const token = localStorage.getItem("ct") || this.route.snapshot.queryParamMap.get("ct");
+        const token = this.route.snapshot.queryParamMap.get("ct") || localStorage.getItem("ct");
         return this.http.get<T>(this.base + "/" + path.join("/"), { params: queryParams, headers: { "Customer-Token": token } }).toPromise();
     }
     return this.http.get<T>(this.base + "/" + path.join("/"), { params: queryParams }).toPromise();
   }
   post<T>(body: any, ...path: string[]) {
     if(this.order && this.order.us && this.order.us == "noinfo") {
-        const token = localStorage.getItem("ct") || this.route.snapshot.queryParamMap.get("ct");
+        const token = this.route.snapshot.queryParamMap.get("ct") || localStorage.getItem("ct");
         return this.http.post<T>(this.base + "/" + path.join("/"), body, { headers: { "Customer-Token": token } }).toPromise();
     }
     return this.http.post<T>(this.base + "/" + path.join("/"), body).toPromise();

@@ -55,7 +55,7 @@ export class MainPage implements OnInit, OnDestroy {
         private main: MainService,
         private route: ActivatedRoute,
     ) {
-        this.routerClassic.routeReuseStrategy.shouldReuseRoute = () => false;
+        // this.routerClassic.routeReuseStrategy.shouldReuseRoute = () => false;
     };
 
     @ViewChild("previewContainer", { read: ViewContainerRef }) previewContainer: ViewContainerRef;
@@ -152,13 +152,16 @@ export class MainPage implements OnInit, OnDestroy {
             const qp: any = {};
             if (table) {
                 qp.table = null;
-            } if(this.order.us != "noinfo") {
+            }
+            if(this.order.us != "noinfo") {
                 qp.ct = null;
             }
             this.router.go([], { relativeTo: this.route, queryParams: qp, queryParamsHandling: "merge" }, false);
         } catch (e) {
             if (e.status == 404) {
                 if (e.body.reason == "RestaurantNotFound") {
+                    this.router.go(["login"]);
+                } else if(e.body.reason == "OrderNotFound") {
                     this.router.go(["login"]);
                 }
             }
