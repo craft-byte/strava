@@ -1,113 +1,109 @@
 <div class="app" *ngIf="settings">
-  <div class="block" *ngIf="money as p">
-    <div class="title">
-      Payments
-    </div>
-    <div class="content payments">
-      <div class="method cash">
-        <div class="icon">
-          <ion-icon name="cash-outline"></ion-icon>
+    
+    <div class="block" *ngIf="money as p">
+        <div class="title">
+            Payments
         </div>
-        <div class="name-status">
-          <div class="status"
-            [class.status-badge-green]="p.cash == 'enabled'"
-            [class.status-badge-orange]="p.cash == 'disabled'"
-          >
-            {{ p.cash }}
-          </div>
-          <div class="name">
-            Cash
-          </div>
-        </div>
-        <div class="switch">
-          <ion-toggle (ionChange)="cashChange($event)" [checked]="p.cash == 'enabled'" mode="ios" color="green"></ion-toggle>
-        </div>
-      </div>
-      <div class="method card">
-        <div class="icon">
-          <ion-icon name="card-outline"></ion-icon>
-        </div>
-        <div class="name-status">
-          <div class="status"
-            [class.status-badge-green]="p.card == 'enabled'"
-            [class.status-badge-orange]="p.card == 'disabled'"
-            [class.status-badge-red]="p.card == 'rejected'"
-            [class.status-badge-red]="p.card == 'restricted'"
-            [class.status-badge-purple]="p.card == 'pending'"
-          >
-            {{ p.card }}
-          </div>
-          <div class="name">
-            Card
-          </div>
-        </div>
-        <div class="switch">
-          <ion-toggle (ionChange)="cardChange($event)" [disabled]="(p.card != 'enabled' && p.card != 'disabled')" [checked]="p.card == 'enabled'" mode="ios" color="green"></ion-toggle>
-        </div>
-        <div *ngIf="p.card == 'restricted'" class="restricted">
-          Finish <a (click)="continueRegistration()">restaurant registration</a> to enable card payments
-        </div>
-      </div>
-      <div class="payouts">
-        <div class="icon">
-          <ion-icon name="arrow-undo-outline"></ion-icon>
-        </div>
-        <div class="name-status">
-          <div class="status"
-            [class.status-badge-green]="p.payouts == 'enabled'"
-            [class.status-badge-orange]="p.payouts == 'disabled'"
-            [class.status-badge-red]="p.payouts == 'rejected'"
-            [class.status-badge-red]="p.payouts == 'restricted'"
-            [class.status-badge-purple]="p.payouts == 'pending'"
-          >
-            <span *ngIf="p.payouts != 'enabled'">
-              {{ p.payouts }}
-            </span>
-            <span *ngIf="p.payouts == 'enabled'">
-              daily
-            </span>
-          </div>
-          <div class="name">
-            Payouts
-          </div>
-        </div>
-        <div class="bank" *ngIf="bank" (click)="payoutsChange()">
-          <div class="name">
-            {{ bank.bank }}
-          </div>
-          <div class="line">
-            <div class="last4">
-              <span class="circles">
-                &#9679;&#9679;&#9679;&#9679;
-              </span>
-              <span class="numbers">
-                {{ bank.last4 }}
-              </span>
+        <div class="content payments">
+            <div class="method cash">
+                <div class="icon">
+                    <ion-icon name="cash-outline"></ion-icon>
+                </div>
+                <div class="name-status">
+                    <div class="status" [class.status-badge-green]="p.cash == 'enabled'"
+                        [class.status-badge-orange]="p.cash == 'disabled'">
+                        {{ p.cash }}
+                    </div>
+                    <div class="name">
+                        Cash
+                    </div>
+                </div>
+                <div class="switch">
+                    <ion-toggle (ionChange)="cashChange($event)" [checked]="p.cash == 'enabled'" mode="ios"
+                        color="green"></ion-toggle>
+                </div>
             </div>
-            <div class="currency">
-              {{ bank.currency }}
+            <div class="method card">
+                <div class="icon">
+                    <ion-icon name="card-outline"></ion-icon>
+                </div>
+                <div class="name-status">
+                    <div class="status" [class.status-badge-green]="p.card == 'enabled'"
+                        [class.status-badge-orange]="p.card == 'disabled'"
+                        [class.status-badge-red]="p.card == 'rejected'"
+                        [class.status-badge-red]="p.card == 'restricted'"
+                        [class.status-badge-purple]="p.card == 'pending'">
+                        {{ p.card }}
+                    </div>
+                    <div class="name">
+                        Card
+                    </div>
+                </div>
+                <div class="switch">
+                    <ion-toggle (ionChange)="cardChange($event)"
+                        [disabled]="(p.card != 'enabled' && p.card != 'disabled')" [checked]="p.card == 'enabled'"
+                        mode="ios" color="green"></ion-toggle>
+                </div>
+                <div *ngIf="p.card == 'restricted'" class="restricted">
+                    Finish <a (click)="continueRegistration()">restaurant registration</a> to enable card payments
+                </div>
             </div>
-          </div>
-          <div class="payedout">
-            Payed out: <span class="amount">342 </span><span class="currency">{{ bank.currency }}</span>
-          </div>
-          <div class="status"
-            [class.status-badge-purple]="bank.status == 'new'"
-            [class.status-badge-red]="bank.status == 'errored'"
-          >
-            {{ bank.status }}
-          </div>
+            <div class="payouts">
+                <div class="icon">
+                    <ion-icon name="arrow-undo-outline"></ion-icon>
+                </div>
+                <div class="name-status">
+                    <div class="status" [class.status-badge-green]="p.payouts == 'enabled'"
+                        [class.status-badge-orange]="p.payouts == 'disabled'"
+                        [class.status-badge-red]="p.payouts == 'rejected'"
+                        [class.status-badge-red]="p.payouts == 'restricted'"
+                        [class.status-badge-purple]="p.payouts == 'pending'">
+                        <span *ngIf="p.payouts != 'enabled'">
+                            {{ p.payouts }}
+                        </span>
+                        <span *ngIf="p.payouts == 'enabled'">
+                            daily
+                        </span>
+                    </div>
+                    <div class="name">
+                        Payouts
+                    </div>
+                </div>
+                <div class="bank" *ngIf="bank" (click)="payoutsChange()">
+                    <div class="name">
+                        {{ bank.bank }}
+                    </div>
+                    <div class="line">
+                        <div class="last4">
+                            <span class="circles">
+                                &#9679;&#9679;&#9679;&#9679;
+                            </span>
+                            <span class="numbers">
+                                {{ bank.last4 }}
+                            </span>
+                        </div>
+                        <div class="currency">
+                            {{ bank.currency }}
+                        </div>
+                    </div>
+                    <div class="payedout">
+                        Payed out: <span class="amount">342 </span><span class="currency">{{ bank.currency }}</span>
+                    </div>
+                    <div class="status" [class.status-badge-purple]="bank.status == 'new'"
+                        [class.status-badge-red]="bank.status == 'errored'">
+                        {{ bank.status }}
+                    </div>
+                </div>
+                <div class="restricted" *ngIf="p.payouts == 'restricted'">
+                    <span class="text button-font">
+                        Please, provide your bank account info to payout money made from customers that pay with card.
+                    </span>
+                    <button class="only-text-button" (click)="payoutsChange()">Add bank account</button>
+                </div>
+            </div>
         </div>
-        <div class="restricted" *ngIf="p.payouts == 'restricted'">
-            <span class="text button-font">
-                Please, provide your bank account info to payout money made from customers that pay with card.
-            </span>
-            <button class="only-text-button" (click)="payoutsChange()">Add bank account</button>
-        </div>
-      </div>
     </div>
-  </div>
-  <!-- <div class="block">
+    <!-- <div class="block">
     <div class="title">
       Dishes
     </div>
@@ -128,56 +124,61 @@
       </div>
     </div>
   </div> -->
-  <div class="block">
-    <div class="title">
-      Customers
-    </div>
-    <div class="content">
-      <div class="setting maxDishes">
+    <div class="block">
         <div class="title">
-          Max dishes per order
+            Customers
         </div>
-        <div class="value">
-          <input type="number" (input)="input('customers', 'maxDishes', $event)" [value]="settings.customers.maxDishes" id="max-dishes"
-            [disabled]="settings.customers.maxDishes == 'unlimited'" class="number-small-input">
-          <div class="checkbox" id="max-dishes-unlimited-box">
-            <div class="label">
-              Unlimited
+        <div class="content">
+            <div class="setting maxDishes">
+                <div class="title">
+                    Max dishes per order
+                </div>
+                <div class="value">
+                    <input type="number" (input)="input('customers', 'maxDishes', $event)"
+                        [value]="settings.customers.maxDishes" id="max-dishes"
+                        [disabled]="settings.customers.maxDishes == 'unlimited'" class="number-small-input">
+                    <div class="checkbox" id="max-dishes-unlimited-box">
+                        <div class="label">
+                            Unlimited
+                        </div>
+                        <input type="checkbox" (change)="check('customers', 'maxDishes', $event)"
+                            [checked]="settings.customers.maxDishes == 'unlimited'" name="unlimited"
+                            id="max-dishes-unlimited">
+                    </div>
+                </div>
             </div>
-            <input type="checkbox" (change)="check('customers', 'maxDishes', $event)"
-              [checked]="settings.customers.maxDishes == 'unlimited'" name="unlimited" id="max-dishes-unlimited">
-          </div>
-        </div>
-      </div>
-      <div class="setting allowTakeAway">
-        <div class="title">Allow distance orders</div>
-        <div class="value">
-          <ion-item>
-            <ion-select interface="popover" (ionChange)="select('customers', 'allowTakeAway', $event)" mode="ios"
-              [value]="settings.customers.allowTakeAway.toString()" id="allow-distance-orders">
-              <ion-select-option value="true">Allowed</ion-select-option>
-              <ion-select-option value="false">Not allowed</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </div>
-      </div>
-      <div class="setting maxCustomers">
-        <div class="title">
-          Max customers
-        </div>
-        <div class="value">
-          <input type="number" (input)="input('customers', 'maxCustomers', $event)" [value]="settings.customers.maxCustomers"
-            [disabled]="settings.customers.maxCustomers == 'unlimited'" id="max-customers" class="number-small-input">
-          <div class="checkbox" id="max-customers-unlimited-box">
-            <div class="label">
-              Unlimited
+            <div class="setting allowTakeAway">
+                <div class="title">Allow distance orders</div>
+                <div class="value">
+                    <ion-item>
+                        <ion-select interface="popover" (ionChange)="select('customers', 'allowTakeAway', $event)"
+                            mode="ios" [value]="settings.customers.allowTakeAway.toString()" id="allow-distance-orders">
+                            <ion-select-option value="true">Allowed</ion-select-option>
+                            <ion-select-option value="false">Not allowed</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                </div>
             </div>
-            <input type="checkbox" (change)="check('customers', 'maxCustomers', $event)"
-              [checked]="settings.customers.maxCustomers == 'unlimited'" name="unlimited" id="max-customers-unlimited">
-          </div>
-        </div>
-      </div>
-      <!-- <div class="setting maxPrice">
+            <div class="setting maxCustomers">
+                <div class="title">
+                    Max customers
+                </div>
+                <div class="value">
+                    <input type="number" (input)="input('customers', 'maxCustomers', $event)"
+                        [value]="settings.customers.maxCustomers"
+                        [disabled]="settings.customers.maxCustomers == 'unlimited'" id="max-customers"
+                        class="number-small-input">
+                    <div class="checkbox" id="max-customers-unlimited-box">
+                        <div class="label">
+                            Unlimited
+                        </div>
+                        <input type="checkbox" (change)="check('customers', 'maxCustomers', $event)"
+                            [checked]="settings.customers.maxCustomers == 'unlimited'" name="unlimited"
+                            id="max-customers-unlimited">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="setting maxPrice">
         <div class="title">
           Max order price
         </div>
@@ -193,18 +194,18 @@
           </div>
         </div>
       </div> -->
-      <div class="setting minPrice">
-        <div class="title">
-          Minimum order price
+            <div class="setting minPrice">
+                <div class="title">
+                    Minimum order price
+                </div>
+                <div class="value">
+                    <input type="number" [value]="settings.customers.minPrice"
+                        (input)="input('customers', 'minPrice', $event)" id="min-price" class="number-small-input">
+                </div>
+            </div>
         </div>
-        <div class="value">
-          <input type="number" [value]="settings.customers.minPrice" (input)="input('customers', 'minPrice', $event)"
-            id="min-price" class="number-small-input">
-        </div>
-      </div>
     </div>
-  </div>
-  <!-- <div class="block">
+    <!-- <div class="block">
     <div class="title">
       Work
     </div>
@@ -226,26 +227,26 @@
       </div>
     </div>
   </div> -->
-  <div class="red">
-    <div class="title">
-      Danger zone
-    </div>
-    <div class="body">
-      <div class="remove">
-        <div class="info">
-          <div class="big">
-            Remove restaurant
-          </div>
-          <div class="small">
-            All the dishes, statistics, customers data will be removed forever.
-          </div>
+    <div class="red">
+        <div class="title">
+            Danger zone
         </div>
-        <div class="button">
-          <button (click)="removeRestaurant()" class="red-button">
-            Remove
-          </button>
+        <div class="body">
+            <div class="remove">
+                <div class="info">
+                    <div class="big">
+                        Remove restaurant
+                    </div>
+                    <div class="small">
+                        All the dishes, statistics, customers data will be removed forever.
+                    </div>
+                </div>
+                <div class="button">
+                    <button (click)="removeRestaurant()" class="red-button">
+                        Remove
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
