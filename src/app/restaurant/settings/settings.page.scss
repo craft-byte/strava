@@ -1,5 +1,23 @@
 .app {
     margin-bottom: 200px;
+
+    .restaurant {
+        padding: 12px;
+        background-color: rgb(236, 236, 236);
+        .name {
+            font-size: 18px;
+        }
+        .description {
+            margin-top: 8px;
+        }
+        .location {
+            margin-top: 8px;
+            span {
+                border-bottom: 1px solid var(--orange-dark);
+                padding-bottom: 1px;
+            }
+        }
+    }
     
     .block {
         margin-top: 24px;

@@ -1,5 +1,39 @@
 <div class="app" *ngIf="settings">
-    
+    <div class="restaurant" *ngIf="restaurant">
+        <div class="name title-font">
+            <span class="text">
+                {{ restaurant.name }}
+            </span>
+            <button class="only-text-button" (click)="changeName()">Change name</button>
+        </div>
+        <div class="description">
+            {{ restaurant.description }}
+            <span *ngIf="!restaurant.description || restaurant.description == 0" class="no-description">
+                <button class="only-text-button">
+                    Add restaurant description
+                </button>
+            </span>
+        </div>
+        <div class="location">
+            <span class="country">
+                {{ restaurant.location.country }},
+            </span>
+            <span class="state">
+                {{ restaurant.location.state }},
+            </span>
+            <span class="city">
+                {{ restaurant.location.city }},
+            </span>
+            <span class="address">
+                {{ restaurant.location.line1 }}<span class="comma" *ngIf="!restaurant.location.line2">,</span>
+                {{ restaurant.location.line2 }}<span class="comma" *ngIf="restaurant.location.line2">,</span>
+            </span>
+            <span class="postal-code">
+                {{ restaurant.location.postal_code }}
+            </span>
+            <button class="only-text-button">Change location</button>
+        </div>
+    </div>
     <div class="block" *ngIf="money as p">
         <div class="title">
             Payments
@@ -250,3 +284,6 @@
         </div>
     </div>
 </div>
+
+
+<ng-container #changeNameContainer></ng-container>

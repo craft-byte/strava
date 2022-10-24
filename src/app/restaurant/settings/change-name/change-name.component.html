@@ -1,0 +1,26 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-name" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Change name
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <span class="info">
+                You are about to change your restaurant's name.
+            </span>
+            <input type="text" [(ngModel)]="newName" [class.red]="ui.message && ui.message.length > 0" placeholder="New restaurant name">
+            <span *ngIf="ui.message && ui.message.length > 0" class="message">
+                {{ ui.message }}
+            </span>
+            <div class="buttons">
+                <button class="green-button" (click)="submit()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

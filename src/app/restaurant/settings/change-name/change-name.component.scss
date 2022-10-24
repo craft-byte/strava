@@ -1,0 +1,84 @@
+.app {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 10vh;
+    z-index: 999999999999;
+    background-color: rgba(0,0,0,0.25);
+
+    .box {
+        width: 512px;
+        min-height: 128px;
+        border-radius: 8px;
+        background-color: white;
+        .header {
+            height: 38px;
+            background-color: var(--orange);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+
+            button#close-name {
+                height: 38px;
+                width: 38px;
+                background: none;
+                
+                ion-icon {
+                    font-size: 28px;
+                    color: var(--black);
+                }
+            }
+            .title {
+                display: flex;
+                align-items: center;
+                .text {
+                    font-size: 18px;
+                }
+            }
+        }
+
+        .content {
+            padding: 12px;
+
+            .info {
+                font-size: 14px;
+                color: var(--text-color);
+            }
+
+            input {
+                width: 100%;
+                height: 38px;
+                border-radius: 6px;
+                font-size: 14px;
+                border: 1px solid var(--border-color);
+                outline: none;
+                background-color: rgb(250, 250, 250);
+                margin-top: 12px;
+                padding: 8px 12px;
+
+                &:focus {
+                    border: 1px solid var(--gray);
+                }
+
+                &.red {
+                    border: 1px solid var(--red);
+                }
+            }
+
+            .message {
+                font-size: 14px;
+                color: var(--red);
+            }
+
+            .buttons {
+                display: flex;
+                justify-content: flex-end;
+            };
+        }
+    }
+}

@@ -1,3 +1,4 @@
+import { resolveSoa } from "dns";
 import { Router, urlencoded } from "express";
 import { stripe } from "../..";
 import { Locals } from "../../models/other";
@@ -15,7 +16,7 @@ const router = Router({ mergeParams: true });
  * returns restaurant settings
  * 
  */
-router.get("/", logged({ _id: 1, }), allowed({ settings: 1, money: 1, stripeAccountId: 1, }, "manager", "settings"), async (req, res) => {
+router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, stripeAccountId: 1, info: 1, }, "manager", "settings"), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
     if(!restaurant) {
@@ -38,7 +39,8 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, money: 1, stripeAcco
     res.send({
         payoutDestination,
         settings: restaurant?.settings,
-        money: restaurant.money
+        money: restaurant.money,
+        restaurant: { name: restaurant.name, ...restaurant.info, },
     });
 });
 
@@ -98,6 +100,34 @@ router.post("/card", logged({ _id: 1, }), allowed({ money: 1 }, "manager", "sett
     }
 
     res.sendStatus(403);
+});
+
+
+/**
+ * changes restaurant name
+ * 
+ * @param { string } name - new restaurant name
+ * 
+ * @returns { success: boolean; }
+ * 
+ * @throws { status: 422; reason: "InvalidInput" } - name is not provided or is invalid
+ * @throws { status: 403; reason: "NamesAreTheSame" } - new name and old name are the same
+ */
+router.post("/name", logged({ _id: 1, }), allowed({ name: 1, }, "manager", "settings"), async (req, res) => {
+    const { restaurant } = res.locals;
+    const { name } = req.body;
+
+    if(!name || typeof name != "string") {
+        return res.status(422).send({ reason: "InvalidInput" });
+    }
+
+    if(restaurant.name == name) {
+        return res.status(403).send({ reason: "NamesAreTheSame" });
+    }
+
+    const update = await Restaurant(restaurant._id).update({ $set: { name: name.trim() } });
+
+    res.send({ success: update.ok == 1 });
 });
 
 
