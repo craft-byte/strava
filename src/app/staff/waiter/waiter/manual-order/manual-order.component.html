@@ -1,0 +1,95 @@
+<div [@showUp] class="app">
+    <div class="box" (mousedown)="$event.stopPropagation()">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Manual order
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="selected">
+                <div *ngIf="(info?.out && !table) || !info?.in" class="order">
+                    Take away
+                </div>
+                <div class="table" *ngIf="info?.in">
+                    <div class="title" *ngIf="table">
+                        Table #{{table}}
+                    </div>
+                    <button class="gray-text-button" (click)="selectTable()">
+                        Select table
+                    </button>
+                </div>
+                <div class="comment">
+                    <textarea placeholder="Comment" [(ngModel)]="comment"></textarea>
+                </div>
+                <div class="title">
+                    <span class="text title-font">
+                        Selected dishes
+                    </span>
+                </div>
+                <div *ngIf="!selected || selected.length == 0" class="no-selected">
+                    <span class="text">
+                        No dishes selected
+                    </span>
+                </div>
+                <div class="list" *ngIf="selected && selected.length > 0">
+                    <div *ngFor="let i of selected" class="dish">
+                        <div class="name">
+                            {{ i.name }}
+                        </div>
+                        <div class="amount">
+                            {{ i.amount }}
+                        </div>
+                        <div class="price">
+                            ${{ i.price / 100 }}
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button [disabled]="!selected || selected.length == 0" (click)="checkout()" class="green-button">
+                        Checkout
+                        <ion-icon name="chevron-forward"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="find">
+                <div class="search">
+                    <input id="search-input" placeholder="Search..." [(ngModel)]="searchText" type="text">
+                    <button class="orange-button" (click)="find()">
+                        <ion-icon name="search"></ion-icon>
+                    </button>
+                </div>
+                <div class="dishes">
+                    <div *ngIf="!dishes || dishes.length == 0" class="not-found">
+                        <span class="text">
+                            No dishes found
+                        </span>
+                    </div>
+                    <div class="list" *ngIf="dishes && dishes.length > 0">
+                        <div *ngFor="let i of dishes" class="dish">
+                            <div class="name">
+                                {{ i.name }}
+                            </div>
+                            <div class="price">
+                                ${{ i.price / 100 }}
+                            </div>
+                            <div class="button">
+                                <button class="orange-button" (click)="go(i._id)">
+                                    <ion-icon name="chevron-forward"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-container #dishContainer></ng-container>
+<ng-container #checkoutContainer></ng-container>
+<ng-container #tableContainer></ng-container>

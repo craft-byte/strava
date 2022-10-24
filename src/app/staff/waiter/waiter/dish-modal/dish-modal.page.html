@@ -74,7 +74,7 @@
           </div>
         </span>
       </div>
-      <div class="time {{ time.color }}">
+      <div *ngIf="time" class="time {{ time.color }}">
         Ordered
         <span class="hours">
           <span class="count">

@@ -1,0 +1,117 @@
+.app {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10vh;
+
+    .box {
+        background-color: white;
+        border-radius: 8px;
+        width: 512px;
+        min-height: 124px;
+
+        .header {
+            width: 100%;
+            height: 38px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            background-color: var(--orange);
+            display: flex;
+            align-items: center;
+
+            #close-checkout {
+                background: none;
+                height: 38px;
+                width: 38px;
+            }
+
+            .title {
+                display: flex;
+                align-items: center;
+                .text {
+                    color: var(--black);
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+
+    .content {
+        padding-top: 12px;
+        .dishes {
+            padding: 6px;
+            .list {
+                .dish {
+                    display: grid;
+                    grid-template-columns: 60% 20% 20%;
+                    border-bottom: 1px solid var(--border-color);
+                    height: 28px;
+                    .name,.price,.amount {
+                        color: var(--black);
+                        display: flex;
+                        align-items: center;
+                    }
+                }
+            }
+        }
+        .order {
+            padding-left: 8px;
+            span {
+                color: var(--black);
+            }
+        }
+        .comment {
+            padding: 12px;
+            .text {
+                color: var(--black);
+            }
+        }
+        .price {
+            display: flex;
+            align-items: flex-end;
+            flex-direction: column;
+            padding: 8px;
+            
+            div {
+                color: var(--text-color);
+            }
+            .total {
+                color: var(--black);
+            }
+        }
+        .methods {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 32px;
+
+            button {
+                width: 35%;
+                height: 82px;
+                border-radius: 8px;
+                border: 2px solid var(--gray);
+                background: none;
+                margin: 3px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .text {
+                    font-size: 16px;
+                    color: var(--text-color);
+                }
+                ion-icon {
+                    color: var(--gray);
+                    font-size: 28px;
+                }
+            }
+        }
+    }
+}

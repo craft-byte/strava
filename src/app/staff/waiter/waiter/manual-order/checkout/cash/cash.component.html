@@ -1,0 +1,25 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-cash" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">Cash</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="info">
+                <div class="text">
+                    When customer payed click Payed. Order will be passed to kitchen.
+                </div>
+                <span class="text">
+                    Total: ${{ (total / 100).toFixed(2) }}
+                </span>
+            </div>
+            <div class="buttons">
+                <button class="green-button" (click)="submit()">Payed</button>
+            </div>
+        </div>
+    </div>
+</div>

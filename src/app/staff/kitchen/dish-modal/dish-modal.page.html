@@ -84,7 +84,7 @@
             {{ order.dishes }}
           </span>
         </div>
-        <div class="time {{ order.time.color }}">
+        <div *ngIf="order.time" class="time {{ order.time.color }}">
           <span class="hours" *ngIf="order.time.hours > 0">
             <span class="hours-count">
               {{ order.time.hours }}
