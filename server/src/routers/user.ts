@@ -474,7 +474,7 @@ router.get("/", logged({ status: 1, restaurants: 1, name: { first: 1, last: 1, }
         const restaurants = await Promise.all(restaurantsP);
         for(let i of user.restaurants) {
             for(let restaurant of restaurants) {
-                if(restaurant) {
+                if(restaurant && restaurant._id.equals(i.restaurantId)) {
                     result.restaurants.push({
                         name: restaurant.name!,
                         role: i.role,
