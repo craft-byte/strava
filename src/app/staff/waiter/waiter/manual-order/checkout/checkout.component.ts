@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ViewContainerRef, Injector } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { StaffService } from 'src/app/staff/staff.service';
 
@@ -8,7 +9,7 @@ import { StaffService } from 'src/app/staff/staff.service';
     templateUrl: './checkout.component.html',
     styleUrls: ['./checkout.component.scss'],
     standalone: true,
-    imports: [CommonModule]
+    imports: [CommonModule, IonicModule]
 })
 export class CheckoutComponent implements OnInit {
 

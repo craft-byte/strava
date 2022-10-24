@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import { NgxStripeModule, StripePaymentElementComponent, StripeService } from 'ngx-stripe';
 import { CustomerService } from 'src/app/customer/customer.service';
@@ -11,7 +11,7 @@ import { LoadService } from 'src/app/other/load.service';
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
     standalone: true,
-    imports: [CommonModule, NgxStripeModule],
+    imports: [CommonModule, NgxStripeModule, IonicModule],
 })
 export class CardComponent implements OnInit {
 

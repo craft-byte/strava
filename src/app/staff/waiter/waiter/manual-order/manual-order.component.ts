@@ -2,6 +2,7 @@ import { animate, group, query, style, transition, trigger } from '@angular/anim
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Injector, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { StaffService } from 'src/app/staff/staff.service';
 
@@ -10,7 +11,7 @@ import { StaffService } from 'src/app/staff/staff.service';
     templateUrl: './manual-order.component.html',
     styleUrls: ['./manual-order.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, IonicModule],
     animations: [
         trigger("showUp", [
             transition(":enter", [

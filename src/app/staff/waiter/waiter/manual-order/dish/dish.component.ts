@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { StaffService } from 'src/app/staff/staff.service';
+import { general } from 'src/assets/consts';
 import { getImage } from 'src/functions';
 
 interface ReturnedDish {
@@ -18,7 +20,7 @@ interface ReturnedDish {
     templateUrl: './dish.component.html',
     styleUrls: ['./dish.component.scss'],
     standalone: true,
-    imports: [CommonModule]
+    imports: [CommonModule, IonicModule]
 })
 export class DishComponent implements OnInit {
 
@@ -26,6 +28,8 @@ export class DishComponent implements OnInit {
 
     image: string;
     imageClass: string;
+
+    category: string;
 
     new = 0;
 
@@ -75,6 +79,12 @@ export class DishComponent implements OnInit {
                 this.imageClass = "r2";
             } else if(result.image.resolution == 1.77) {
                 this.imageClass = "r3";
+            }
+        }
+
+        for(let i of general) {
+            if(i.value == result.category) {
+                this.category = i.title;
             }
         }
 
