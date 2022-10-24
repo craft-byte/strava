@@ -1,0 +1,74 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-checkout" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title title-font">
+                <span class="text">Checkout</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="dishes">
+                <div class="list">
+                    <div *ngFor="let dish of dishes" class="dish">
+                        <div class="name">
+                            {{ dish.name }}
+                        </div>
+                        <div class="amount">
+                            {{ dish.amount }}
+                        </div>
+                        <div class="price">
+                            ${{ dish.price / 100}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="order">
+                <span class="table" *ngIf="table">
+                    Table #{{ table }}
+                </span>
+                <span *ngIf="!table" class="away">
+                    Take away
+                </span>
+            </div>
+            <div class="comment">
+                <span class="text">
+                    {{ comment }}
+                </span>
+                <span *ngIf="!comment || comment.length == 0" class="text">
+                    No comment
+                </span>
+            </div>
+            <div class="price">
+                <div class="subtotal">
+                    Subtotal: ${{ (subtotal / 100).toFixed(2) }}
+                </div>
+                <div class="hst">
+                    HST: ${{ (hst / 100).toFixed(2) }}
+                </div>
+                <div class="total">
+                    Total: ${{ (total / 100).toFixed(2) }}
+                </div>
+            </div>
+            <div class="methods">
+                <button id="cash" (click)="cash()">
+                    <span class="text">
+                        Cash
+                    </span>
+                    <ion-icon name="wallet-outline"></ion-icon>
+                </button>
+                <button id="card" (click)="card()">
+                    <span class="text">
+                        Card
+                    </span>
+                    <ion-icon name="card-outline"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-container #cardContainer></ng-container>
+<ng-container #cashContainer></ng-container>

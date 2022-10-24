@@ -329,6 +329,12 @@ function Orders(restaurantId: string | ObjectId) {
     },
     createSession: async (session: Order) => {
       try {
+        if(!session.customer || !session.customerToken) {
+            const result = await client.db(ordersDBName).collection(restaurantId!.toString())
+              .insertOne(session);
+
+            return result.acknowledged;
+        }
         let filter: Filter<Order>;
         if(session.customer) {
             filter = { customer: session.customer };

@@ -7,6 +7,8 @@ import { id } from "../utils/functions";
 import { sendMessage } from "../utils/io";
 import { getDelay } from "../utils/other";
 import { updateUser } from "../utils/users";
+import { KeyPairKeyObjectResult } from "crypto";
+import { Order } from "../models/general";
 
 
 const router = Router();
@@ -122,11 +124,16 @@ router.post("/account-webhook", e.raw({ type: 'application/json' }), async (req,
 
         if (data.metadata.orderId && data.metadata.restaurantId && (data.metadata.customerId || data.metadata.customerIp)) {
 
-            const { orderId, customerId, customerIp, restaurantId } = data.metadata;
+            const { orderId, order, customerId, restaurantId, type } = data.metadata;
 
             console.log("on order payed called");
 
-            onOrderPayed(restaurantId, orderId, customerId);
+            if(type == "manual") {
+                onManualOrderPayed(restaurantId, order);
+            } else {
+                onOrderPayed(restaurantId, orderId, customerId);
+            }
+
 
         }
 
@@ -253,6 +260,109 @@ async function onOrderPaymentFailed(restaurantId: string, orderId: string, custo
 
 
 
+async function onManualOrderPayed(restaurantId: string, order: string) {
+    if(!restaurantId || !order) {
+        throw "No restaurant id or order at onManualOrderPayed()";
+    }
+
+
+    try {
+        const obj = JSON.parse(order);
+
+        if(!obj) {
+            throw "Invalid order at onManualOrderPayed()";
+        }
+
+        if(!obj.dishes) {
+            throw "Invalid order at onManualOrderPayed(): dishes not provided";
+        } else if(!obj.money) {
+            throw "Invalid order at onManualOrderPayed(): money not provided";
+        }
+
+
+        if(typeof obj.dishes != "object" || !Array.isArray(obj.dishes)) {
+            throw "Invalid order at onManualOrderPayed(): invalid dishes";
+        }
+        if(typeof obj.money != "object" || !obj.hst || !obj.subtotal || !obj.total) {
+            throw "Invalid order at onManualOrderPayed(): invalid money";
+        }
+
+        const ids = [];
+
+        for(let i of obj.dishes) {
+            if(!i._id) {
+                throw "Invalid order at onManualOrderPayed(): no dish id";
+            }
+            ids.push(id(i._id));
+        }
+
+        const dishes = await Restaurant(restaurantId).dishes.many({ _id: { $in: ids } }).get({ projection: { price: 1, general: 1, name: 1, } });
+
+        if(obj.dishes.length != dishes) {
+            throw "Invalid order at onManualOrderPayed(): some dishes don't exist";
+        }
+
+        const od: Order["dishes"] = [];
+
+        for(let i of obj.dishes) {
+            for(let dish of dishes) {
+                if(dish._id.equals(i._id)) {
+                    od.push({
+                        _id: id(),
+                        status: "ordered",
+                        comment: null!,
+                        dishId: dish._id,
+                    });
+                }
+            }
+        }
+
+
+        const orderId = id();
+
+        const added = await Orders(restaurantId).createSession({
+            comment: obj.comment,
+            type: obj.table ? "in" : "out",
+            id: obj.table || "fjkdl;asjf;lkasd",
+            _id: orderId,
+            customer: null,
+            status: "progress",
+            dishes: od,
+            money: obj.money,
+            socketId: null!,
+            ordered: Date.now(),
+        });
+
+        const time = getDelay(Date.now());
+
+        if(added) {
+            const forKitchen = [];
+            for(let i of od) {
+                for(let dish of dishes) {
+                    if(dish._id.equals(i._id)) {
+                        forKitchen.push({
+                            orderId: orderId,
+                            ...i,
+                            time,
+                            general: dish.general
+                        });
+                    }
+                }
+            }
+
+            sendMessage([`${restaurantId}/kitchen`], "kitchen", {
+                type: "kitchen/order/new",
+                event: "kitchen",
+                data: forKitchen,
+            });
+        }
+
+        
+    } catch (e) {
+        throw "Invalid order at onManualOrderPayed()";
+    }
+
+}
 
 
 export {

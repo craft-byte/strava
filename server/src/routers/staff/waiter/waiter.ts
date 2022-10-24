@@ -11,9 +11,12 @@ import { getDelay } from "../../../utils/other";
 import { Orders, Restaurant } from "../../../utils/restaurant";
 import { getUser } from "../../../utils/users";
 import { convertDishes } from "./functions";
+import { ManualRouter } from "./manual";
 
 
 const router = Router({ mergeParams: true });
+
+router.use("/manual", ManualRouter);
 
 
 router.post("/init", logged({ _id: 1 }), allowed({ _id: 1, name: 1 }, "waiter"), async (req ,res) => {
@@ -54,8 +57,8 @@ interface Dish {
     number: string;
 }; interface User {
     name: string;
-    username: string;
-    avatar: { binary: any; };
+    avatar: any;
+    _id: string;
 }; interface RequestResult {
     comment: string;
     cook: User;
@@ -108,10 +111,20 @@ interface Dish {
             if(i.status != "cooked") {
                 return res.status(403).send({ reason: "cooked" });
             }
+            const cook = (await getUser(i.cook!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } }));
+            const user = (await getUser(order.customer!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } }));
             result.comment = i.comment;
-            result.cook = (await getUser(i.cook!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } })) as any;
-            result.user = (await getUser(order.customer!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } })) as any;
-            result.dish = (await Restaurant(restaurantId).dishes.one(i.dishId).get({ projection: { name: 1, image: { binary: 1, resolution: 1, } } })) as any
+            result.cook = {
+                name: cook?.name ? `${cook.name.first} ${cook.name.last}` : "User deleted",
+                avatar: cook?.avatar?.binary || null,
+                _id: i.cook!.toString(),
+            };
+            result.user = {
+                name: user?.name ? `${user.name?.first} ${user?.name.last}` : "User deleted",
+                avatar: cook?.avatar?.binary || null,
+                _id: order.customer?.toString() || null!,
+            };
+            result.dish = (await Restaurant(restaurantId).dishes.one(i.dishId).get({ projection: { name: 1, image: { binary: 1, resolution: 1, } } })) as any,
             result.time = getDelay(order.ordered!);
             result.timeDone = getDelay(i.cooked!);
             result.order.number = order.id!;
@@ -136,10 +149,6 @@ router.delete("/:orderId/dish/:orderDishId/served", logged({ _id: 1 }), allowed(
         } },
         { arrayFilters: [{ "dish._id": id(orderDishId) }] }
     );
-
-    console.log(result);
-
-
 
 
 
