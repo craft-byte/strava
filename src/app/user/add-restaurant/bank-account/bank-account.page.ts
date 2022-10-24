@@ -51,9 +51,10 @@ export class BankAccountPage implements OnInit {
     this.currency = c;
   }
 
-  back() {
+  skip() {
     this.router.go(["restaurant", this.restaurantId, "settings"]);
   }
+
 
   
 
@@ -61,11 +62,11 @@ export class BankAccountPage implements OnInit {
     const { target: { value } } = e;
 
     try {
-      const result: string[] = await this.service.get("add-restaurant/currencies", value);
+      const result: { currencies: string[]; showSkip: boolean; } = await this.service.get("add-restaurant/currencies", value);
 
       if (result) {
         this.currencies = [];
-        for (let i of result) {
+        for (let i of result.currencies) {
           this.currencies.push(i.toUpperCase());
         }
       }

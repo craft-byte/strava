@@ -178,6 +178,15 @@
                         }
                     }
                 }
+
+                .restricted {
+                    margin-left: 32px;
+                    width: 228px;
+                    .text {
+                        color: var(--text-color);
+                        font-size: 14px;    
+                    }
+                }
             }
         }
     }

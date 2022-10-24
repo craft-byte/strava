@@ -247,7 +247,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         },
         money: {
             card: "restricted",
-            cash: "disabled",
+            cash: "enabled",
             payouts: "restricted",
         },
         stripeAccountId,
@@ -648,17 +648,18 @@ router.get("/bank-account", logged({ name: 1, info: 1 }), async (req, res) => {
 /**
  * @returns currencies
  */
-router.get("/currencies", logged({ info: { location: { country: 1 } } }), async (req, res) => {
-
+router.get("/currencies/:restaurantId", logged({ info: { location: { country: 1 } } }), async (req, res) => {
     const { user } = res.locals as Locals;
+    const { restaurantId } = req.params;
 
     if (!user || !user.info?.location || !user.info?.location.country) {
         return res.sendStatus(404);
     }
 
     const result = await stripe.countrySpecs.retrieve(user.info?.location.country);
+    const restaurant = await Restaurant(restaurantId).get({ projection: { money: { card: 1, payouts: 1 } } });
 
-    res.send(Object.keys(result.supported_bank_account_currencies));
+    res.send({ currencies: Object.keys(result.supported_bank_account_currencies) });
 });
 
 /**

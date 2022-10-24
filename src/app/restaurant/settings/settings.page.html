@@ -98,6 +98,12 @@
             {{ bank.status }}
           </div>
         </div>
+        <div class="restricted" *ngIf="p.payouts == 'restricted'">
+            <span class="text button-font">
+                Please, provide your bank account info to payout money made from customers that pay with card.
+            </span>
+            <button class="only-text-button" (click)="payoutsChange()">Add bank account</button>
+        </div>
       </div>
     </div>
   </div>
