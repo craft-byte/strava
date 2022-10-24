@@ -238,12 +238,15 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         tables: 1,
         status: "verification",
         info: {
-            country,
-            line1: null!,
-            line2: null!,
-            state: null!,
-            city: null!,
-            postal_code: null!,
+            description: null!,
+            location: {
+                country,
+                line1: null!,
+                line2: null!,
+                state: null!,
+                city: null!,
+                postal_code: null!,
+            }
         },
         money: {
             card: "restricted",
@@ -320,7 +323,7 @@ router.post("/set/state/:restaurantId", logged({ restaurants: 1 }), owner, async
         const result = await getCities(country, state);
 
         const update = await updateUser({ _id: id(user._id) }, { $set: { "info.location.state": state, "info.location.city": result.data[0].name } });
-        const restaurantUpdate = await Restaurant(restaurantId).update({ $set: { "info.state": state, "info.city": result.data[0].name } });
+        const restaurantUpdate = await Restaurant(restaurantId).update({ $set: { "info.location.state": state, "info.location.city": result.data[0].name } });
 
         console.log("state updated: ", update!.ok == 1);
 
@@ -371,11 +374,11 @@ router.post("/set/all/:restaurantId", logged({ restaurants: 1 }), owner, async (
 
     const restaurantUpdate = await Restaurant(restaurantId).update({
         $set: {
-            "info.line1": line1,
-            "info.line2": line2,
-            "info.state": state,
-            "info.city": city,
-            "info.postal_code": postal_code,
+            "info.location.line1": line1,
+            "info.location.line2": line2,
+            "info.location.state": state,
+            "info.location.city": city,
+            "info.location.postal_code": postal_code,
         }
     });
     const userUpdate = await updateUser({ _id: id(user._id) }, {
@@ -548,9 +551,9 @@ router.get("/address/:restaurantId", logged({ restaurants: 1 }), owner, async (r
     const { restaurantId } = req.params;
     const { stripeAccountId } = res.locals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { info: 1 } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { info: { location: 1 } } });
 
-    if (!restaurant || !restaurant.info || !restaurant.info.country) {
+    if (!restaurant || !restaurant.info || !restaurant.info.location?.country) {
         return res.sendStatus(403);
     }
 
@@ -580,10 +583,10 @@ router.get("/address/:restaurantId", logged({ restaurants: 1 }), owner, async (r
 
 
     try {
-        const states = await getStates(restaurant.info.country);
+        const states = await getStates(restaurant.info.location.country);
         result.states = states.data;
         if (states.data && states.data.length > 0) {
-            const cities = await getCities(restaurant.info.country, restaurant.info.state || states.data[0].iso2);
+            const cities = await getCities(restaurant.info.location.country, restaurant.info.location.state || states.data[0].iso2);
             result.cities = cities.data;
         }
     } catch (error: any) {
@@ -592,12 +595,12 @@ router.get("/address/:restaurantId", logged({ restaurants: 1 }), owner, async (r
         throw error;
     }
 
-    result.country = restaurant.info.country!;
-    result.continue.city = restaurant.info.city!;
-    result.continue.state = restaurant.info.state!;
-    result.continue.line1 = restaurant.info.line1!;
-    result.continue.line2 = restaurant.info.line2!;
-    result.continue.postal_code = restaurant.info.line2!;
+    result.country = restaurant.info.location.country!;
+    result.continue.city = restaurant.info.location.city!;
+    result.continue.state = restaurant.info.location.state!;
+    result.continue.line1 = restaurant.info.location.line1!;
+    result.continue.line2 = restaurant.info.location.line2!;
+    result.continue.postal_code = restaurant.info.location.line2!;
 
 
     res.send(result);

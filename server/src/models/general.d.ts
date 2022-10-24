@@ -27,12 +27,15 @@ interface Restaurant {
         payouts: "enabled" | "restricted" | "rejected" | "pending";
     }
     info?: {
-        country?: string;
-        city?: string;
-        state?: string;
-        line1?: string;
-        line2?: string;
-        postal_code?: string;
+        description?: string;
+        location?: {
+            country?: string;
+            city?: string;
+            state?: string;
+            line1?: string;
+            line2?: string;
+            postal_code?: string;
+        }
     }
 }
 
