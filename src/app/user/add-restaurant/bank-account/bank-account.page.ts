@@ -52,7 +52,7 @@ export class BankAccountPage implements OnInit {
   }
 
   back() {
-    this.router.go(["add-restaurant", this.restaurantId, "choose-method"]);
+    this.router.go(["restaurant", this.restaurantId, "settings"]);
   }
 
   

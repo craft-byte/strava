@@ -1,61 +1,45 @@
 <ion-content>
-  <div class="app a-page-with-box">
-    <div class="box">
-      <div class="header">
-        <h1 id="title">
-          Ctraba
-        </h1>
-        <h2 id="subtitle">Restaurant address</h2>
-      </div>
-      <div *ngIf="ui.errorMessage.length > 0" class="error-message">
-        {{ ui.errorMessage }}
-      </div>
-      <div class="body" *ngIf="data" [formGroup]="form">
-        <div class="select-title">
-          State
+    <div class="app a-page-with-box">
+        <div class="box">
+            <div class="header">
+                <h1 id="title">
+                    Strava
+                </h1>
+                <h2 id="subtitle">Restaurant address</h2>
+            </div>
+            <div *ngIf="ui.errorMessage.length > 0" class="error-message">
+                {{ ui.errorMessage }}
+            </div>
+            <div class="body" *ngIf="data" [formGroup]="form">
+                <div class="select-title">
+                    State
+                </div>
+                <select name="State" (change)="stateUpdate($event)" formControlName="state" id="state">
+                    <option *ngFor="let i of states" [value]="i.iso2">{{ i.name }} {{ i.iso2 }}</option>
+                </select>
+                <div class="select-title">
+                    City
+                </div>
+                <select name="City" (change)="cityUpdate($event)" id="city" formControlName="city">
+                    <option *ngFor="let i of cities" [value]="i.name">{{i.name}}</option>
+                </select>
+                <input type="text" placeholder="Address line 1" formControlName="line1" id="line1">
+                <input type="text" placeholder="Address line 2" formControlName="line2" id="line2">
+                <div class="postal-code">
+                    <div class="title">
+                        Postal code
+                    </div>
+                    <input formControlName="postal_code" maxlength="6" id="postal_code">
+                </div>
+            </div>
+            <div class="buttons">
+                <button id="back" (click)="back()">
+                    Back
+                </button>
+                <button id="next" (click)="next()">
+                    Next
+                </button>
+            </div>
         </div>
-        <select name="State" (change)="stateUpdate($event)" formControlName="state" id="state">
-          <option *ngFor="let i of states" [value]="i.iso2">{{ i.name }} {{ i.iso2 }}</option>
-        </select>
-        <div class="select-title">
-          City
-        </div>
-        <select name="City" (change)="cityUpdate($event)" id="city" formControlName="city">
-          <option *ngFor="let i of cities" [value]="i.name">{{i.name}}</option>
-        </select>
-        <input type="text" placeholder="Address line 1" formControlName="line1" id="line1">
-        <input type="text" placeholder="Address line 2" formControlName="line2" id="line2">
-        <div class="postal-code">
-          <div class="title">
-            Postal code
-          </div>
-          <input formControlName="postal_code" maxlength="6" id="postal_code">
-        </div>
-      </div>
-      <div class="buttons">
-        <button id="back" (click)="back()">
-          Back
-        </button>
-        <button id="next" (click)="next()">
-          Next
-        </button>
-      </div>
     </div>
-    <div class="footer">
-      <!-- <div class="language" id="language">
-        <p id="language-title">English (Canada)</p>
-        <div class="icon">
-          <ion-icon name="caret-down-outline"></ion-icon>
-        </div>
-      </div>
-      <div class="links">
-        <div class="link">
-          <a href="">Main</a>
-        </div>
-        <div class="link">
-          <a href="">Help</a>
-        </div>
-      </div> -->
-    </div>
-  </div>
 </ion-content>

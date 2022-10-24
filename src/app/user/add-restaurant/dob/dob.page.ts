@@ -21,7 +21,7 @@ export class DobPage implements OnInit {
     year: false,
     month: false,
     day: false,
-    title: "Ctraba"
+    title: "Strava"
   }
 
   form: FormGroup;
@@ -42,7 +42,7 @@ export class DobPage implements OnInit {
       year: false,
       month: false,
       day: false,
-      title: "Ctraba"
+      title: "Strava"
     };
 
     const { year, month, day } = this.form.value; 
