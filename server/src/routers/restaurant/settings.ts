@@ -1,5 +1,6 @@
 import { resolveSoa } from "dns";
 import { Router, urlencoded } from "express";
+import { allowedNodeEnvironmentFlags } from "process";
 import { stripe } from "../..";
 import { Locals } from "../../models/other";
 import { logged } from "../../utils/middleware/logged";
@@ -126,6 +127,34 @@ router.post("/name", logged({ _id: 1, }), allowed({ name: 1, }, "manager", "sett
     }
 
     const update = await Restaurant(restaurant._id).update({ $set: { name: name.trim() } });
+
+    res.send({ success: update.ok == 1 });
+});
+
+
+/**
+ * changes restaurant description
+ * 
+ * @param { string } description - new description
+ * 
+ * @throws { status: 422; reason: "InvalidDescription" } - description is invalid
+ * @throws { status: 403; reason: "SameDescription" } - description is the same as old one
+ * 
+ * @returns { success: boolean; }
+ */
+router.post("/description", logged({ _id: 1 }), allowed({ info: { description: 1 }, }, "manager", "settings"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
+    const { description } = req.body;
+
+    if(!description || typeof description != "string") {
+        return res.status(422).send({ reason: "InvalidDescription" });
+    }
+
+    if(restaurant.info && restaurant.info.description && restaurant.info?.description == description) {
+        return res.status(403).send({ reason: "SameDescription" });
+    }
+
+    const update = await Restaurant(restaurant._id).update({ $set: { "info.description": description.trim() }});
 
     res.send({ success: update.ok == 1 });
 });

@@ -1,0 +1,28 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-description">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text">
+                    Change description
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <span class="info">
+                Description will be shown when a customer looks for your restaurant on map. Description should shortly describe your restaurant. For example "Best dumplings in the town"
+            </span>
+            <div class="form">
+                <textarea [(ngModel)]="newDescription" placeholder="New description"></textarea>
+                <div *ngIf="ui.message && ui.message.length > 0" class="message">
+                    {{ ui.message }}
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="green-button" (click)="submit()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

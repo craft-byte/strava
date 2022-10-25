@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RestaurantService } from '../../services/restaurant.service';
 
@@ -9,7 +10,7 @@ import { RestaurantService } from '../../services/restaurant.service';
     templateUrl: './change-name.component.html',
     styleUrls: ['./change-name.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, IonicModule],
 })
 export class ChangeNameComponent implements OnInit {
     newName: string;

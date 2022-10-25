@@ -9,6 +9,10 @@
         }
         .description {
             margin-top: 8px;
+
+            .text {
+                color: var(--text-color);
+            };
         }
         .location {
             margin-top: 8px;

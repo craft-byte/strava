@@ -7,12 +7,12 @@
             <button class="only-text-button" (click)="changeName()">Change name</button>
         </div>
         <div class="description">
-            {{ restaurant.description }}
-            <span *ngIf="!restaurant.description || restaurant.description == 0" class="no-description">
-                <button class="only-text-button">
-                    Add restaurant description
-                </button>
+            <span class="text">
+                {{ restaurant.description }}
             </span>
+            <button (click)="changeDescription()" class="only-text-button">
+                Add restaurant description
+            </button>
         </div>
         <div class="location">
             <span class="country">
@@ -287,3 +287,4 @@
 
 
 <ng-container #changeNameContainer></ng-container>
+<ng-container #changeDescriptionContainer></ng-container>

@@ -36,6 +36,7 @@ export class SettingsPage implements OnInit {
     ) { };
 
     @ViewChild("changeNameContainer", { read: ViewContainerRef }) changeNameContainer: ViewContainerRef;
+    @ViewChild("changeDescriptionContainer", { read: ViewContainerRef }) changeDescriptionContainer: ViewContainerRef;
 
 
     payoutsChange() {
@@ -186,6 +187,20 @@ export class SettingsPage implements OnInit {
             if(nn) {
                 this.restaurant.name = nn;
                 this.service.restaurant.name = nn;
+            }
+            component.destroy();
+        });
+    }
+    async changeDescription() {
+        const { ChangeDescriptionComponent } = await import("./change-description/change-description.component");
+
+        const component = this.changeNameContainer.createComponent(ChangeDescriptionComponent, { injector: this.injector });
+
+        component.instance.description = this.restaurant.description;
+
+        component.instance.leave.subscribe((nd: string) => {
+            if(nd) {
+                this.restaurant.description = nd;
             }
             component.destroy();
         });
