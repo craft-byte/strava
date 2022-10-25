@@ -40,7 +40,7 @@ export class SettingsPage implements OnInit {
 
 
     payoutsChange() {
-        this.router.go(["add-restaurant", this.service.restaurantId, "bank-account"]);
+        this.router.go(["restaurant", this.service.restaurantId, "conf", "bank-account"]);
     }
     continueRegistration() {
         this.router.go(["restaurant", this.service.restaurantId, "home"]);

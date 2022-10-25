@@ -42,17 +42,17 @@ const addRestaurant: Routes = [
         canActivate: [LoggedGuard],
     },
     {
-        path: "add-restaurant/:restaurantId/name",
+        path: "restaurant/:restaurantId/conf/name",
         loadChildren: () => import("./user/add-restaurant/name/name.module").then(m => m.NamePageModule),
         canActivate: [LoggedGuard],
     },
     {
-        path: 'add-restaurant/:restaurantId/dob',
+        path: 'restaurant/:restaurantId/conf/dob',
         loadChildren: () => import('./user/add-restaurant/dob/dob.module').then(m => m.DobPageModule),
         canActivate: [LoggedGuard],
     },
     {
-        path: 'add-restaurant/:restaurantId/address',
+        path: 'restaurant/:restaurantId/conf/address',
         loadChildren: () => import('./user/add-restaurant/address/address.module').then(m => m.AddressPageModule),
         canActivate: [LoggedGuard],
     },
@@ -67,12 +67,12 @@ const addRestaurant: Routes = [
     //     canActivate: [LoggedGuard],
     // },
     {
-        path: 'add-restaurant/:restaurantId/bank-account',
+        path: 'restaurant/:restaurantId/conf/bank-account',
         loadChildren: () => import('./user/add-restaurant/bank-account/bank-account.module').then(m => m.BankAccountPageModule),
         canActivate: [LoggedGuard],
     },
     {
-        path: "add-restaurant/:restaurantId/theme",
+        path: "restaurant/:restaurantId/conf/theme",
         loadChildren: () => import("./user/add-restaurant/theme/theme.module").then(m => m.ThemePageModule),
         canActivate: [LoggedGuard],
     },

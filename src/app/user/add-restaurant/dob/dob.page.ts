@@ -74,7 +74,7 @@ export class DobPage implements OnInit {
   
       
       if(result.updated) {
-        this.router.go(["add-restaurant", this.restaurantId, "address"]);
+        this.router.go(["restaurant", this.restaurantId, "conf", "address"]);
         return;
       } else {
         (await this.toast.create({

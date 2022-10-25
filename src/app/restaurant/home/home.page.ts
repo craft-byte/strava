@@ -38,7 +38,7 @@ export class HomePage implements OnInit {
 
 
   continue() {
-    this.router.go([this.data.nextUrl]);
+    this.router.go(["restaurant", this.service.restaurantId, "conf", this.data.nextUrl]);
   }
   finish() {
     this.router.go([this.data.nextEventuallyUrl]);

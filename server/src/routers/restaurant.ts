@@ -149,28 +149,28 @@ interface ReviewResult {
                 for (let i of account.requirements?.currently_due!) {
                     switch (i) {
                         case "external_account":
-                            result.nextUrl = `add-restaurant/${restaurantId}/bank-account`;
+                            result.nextUrl = `bank-account`;
                             break;
                         case "individual.address.city":
-                            result.nextUrl = `add-restaurant/${restaurantId}/address`;
+                            result.nextUrl = `address`;
                             break;
                         case "individual.address.line1":
-                            result.nextUrl = `add-restaurant/${restaurantId}/address`;
+                            result.nextUrl = `address`;
                             break;
                         case "individual.address.postal_code":
-                            result.nextUrl = `add-restaurant/${restaurantId}/address`;
+                            result.nextUrl = `address`;
                             break;
                         case "individual.address.state":
-                            result.nextUrl = `add-restaurant/${restaurantId}/address`;
+                            result.nextUrl = `address`;
                             break;
                         case "individual.dob.day":
-                            result.nextUrl = `add-restaurant/${restaurantId}/dob`;
+                            result.nextUrl = `dob`;
                             break;
                         case "individual.first_name":
-                            result.nextUrl = `add-restaurant/${restaurantId}/name`;
+                            result.nextUrl = `name`;
                             break;
                         case "individual.last_name":
-                            result.nextUrl = `add-restaurant/${restaurantId}/name`;
+                            result.nextUrl = `name`;
                             break;
                     }
                 }
@@ -183,7 +183,7 @@ interface ReviewResult {
                 for(let i of account.requirements.eventually_due) {
                     switch (i) {
                         case "individual.verification.document":
-                            result.nextEventuallyUrl = `add-restaurant/${restaurantId}/document`;
+                            result.nextEventuallyUrl = `document`;
                             break;
                     }
                 }

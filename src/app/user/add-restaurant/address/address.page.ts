@@ -117,7 +117,7 @@ export class AddressPage implements OnInit {
             const result: any = await this.service.post({ ...this.form.value, country: this.country }, "add-restaurant/set/all", this.restaurantId);
 
             if (result.updated) {
-                this.router.go(["add-restaurant", this.restaurantId, "bank-account"]);
+                this.router.go(["restaurant", this.restaurantId, "conf", "bank-account"]);
             } else {
                 (await this.toastCtrl.create({
                     color: "red",
@@ -127,8 +127,9 @@ export class AddressPage implements OnInit {
                 })).present();
             }
         } catch (e) {
+            console.log(e);
             if (e.status == 422) {
-                if (e.body.reason == "postal_code") {
+                if (e.body.reason == "PostalCodeInvalid") {
                     this.ui.errorMessage = "Invalid postal code";
                     this.loader.end();
                     return;

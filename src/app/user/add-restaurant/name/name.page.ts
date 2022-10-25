@@ -51,7 +51,7 @@ export class NamePage implements OnInit {
 
     if(result.updated) {
 
-      this.router.go(["add-restaurant", this.restaurantId, "dob"], {});
+      this.router.go(["restaurant", this.restaurantId, "conf", "dob"], {});
       
     } else {
       (await this.toastCtrl.create({
