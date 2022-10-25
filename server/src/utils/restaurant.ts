@@ -462,7 +462,7 @@ function Orders(restaurantId: string | ObjectId) {
 
 async function manyRestaurants(filter: Filter<RestaurantType>, options: FindOptions) {
   try {
-    return client.db(mainDBName).collection("restaurants").find(filter, options).toArray();
+    return client.db(mainDBName).collection<RestaurantType  >("restaurants").find(filter, options).toArray();
   } catch (e) {
     console.log("at manyRestaurants()");
     throw e

@@ -17,7 +17,30 @@ router.use("/history", HistoryRouter);
 
 router.get("/restaurants", async (req, res) => {
     
-    const result = await manyRestaurants({}, { projection: { name: 1, theme: 1, _id: 1, info: { line1: 1, line2: 1, city: 1, } } });
+    const restaurants = await manyRestaurants({ status: "enabled" }, { projection: {
+        name: 1,
+        status: 1,
+        _id: 1,
+        money: { cash: 1, card: 1, },
+        info: {
+            description: 1,
+            location: { line1: 1, line2: 1, city: 1, }
+        }
+    } });
+
+    const result = [];
+
+    for(let i of restaurants) {
+        if(i.money?.card || i.money?.cash) {
+            result.push({
+                name: i.name,
+                _id: i._id,
+                location: i.info?.location,
+                description: i.info?.description,
+                payment: (i.money?.card && i.money.cash) ? "all" : i.money.card ? "card" : "cash",
+            });
+        }
+    }
 
     res.send(result);
 });

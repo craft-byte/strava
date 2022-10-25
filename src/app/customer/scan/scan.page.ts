@@ -57,6 +57,7 @@ export class ScanPage implements OnInit {
 
     back() {
         this.router.go(["user/info"]);
+        this.stopRecording();
     }
 
 
@@ -138,6 +139,7 @@ export class ScanPage implements OnInit {
                     this.startScan();
                 }
             } else if (result.updated) {
+                this.stopRecording();
                 this.router.go(["customer", "order", restaurantId]);
             } else {
                 (await this.toastCtrl.create({
@@ -207,7 +209,7 @@ export class ScanPage implements OnInit {
         }
 
 
-        this.stream.getVideoTracks().forEach(t => t.stop());
+        this.stopRecording();
 
 
         try {
@@ -266,6 +268,10 @@ export class ScanPage implements OnInit {
         }
     }
 
+
+    stopRecording() {
+        this.stream.getVideoTracks().forEach(t => t.stop());
+    }
 
     //
     //    SCAN
