@@ -37,7 +37,7 @@ router.get("/restaurants", async (req, res) => {
                 _id: i._id,
                 location: i.info?.location,
                 description: i.info?.description,
-                payment: (i.money?.card && i.money.cash) ? "all" : i.money.card ? "card" : "cash",
+                payment: (i.money?.card == "enabled" && i.money.cash == "enabled") ? "all" : i.money.card == "enabled" ? "card" : "cash",
             });
         }
     }
