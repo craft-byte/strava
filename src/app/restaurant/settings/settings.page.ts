@@ -205,6 +205,9 @@ export class SettingsPage implements OnInit {
             component.destroy();
         });
     }
+    changeLocation() {
+        this.router.go(["restaurant", this.service.restaurantId, "conf/address"], { queryParams: { last: "settings" } });
+    }
 
     async ngOnInit() {
         await this.loader.start();
