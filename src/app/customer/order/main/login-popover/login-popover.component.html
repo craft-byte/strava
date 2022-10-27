@@ -9,13 +9,13 @@
         <div class="form">
             <div class="email">
                 <input type="email" [(ngModel)]="username" [class.invalid]="ui.emailMessage && ui.emailMessage.length > 0" placeholder="Email address">
-                <div *ngIf="ui.emailMessage && ui.emailMessage.length > 0" class="message">
+                <div *ngIf="ui.emailMessage && ui.emailMessage.length > 0" class="message" id="email-message">
                     {{ ui.emailMessage }}
                 </div>
             </div>
             <div class="password">
                 <input type="password" [(ngModel)]="password" [class.invalid]="ui.passwordMessage && ui.passwordMessage.length > 0" placeholder="Password">
-                <div *ngIf="ui.passwordMessage && ui.passwordMessage.length > 0" class="message">
+                <div *ngIf="ui.passwordMessage && ui.passwordMessage.length > 0" class="message" id="password-message">
                     {{ ui.passwordMessage }}
                 </div>
             </div>

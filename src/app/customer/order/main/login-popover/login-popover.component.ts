@@ -45,12 +45,13 @@ export class LoginPopoverComponent implements OnInit {
         if(!this.username || !format.test(this.username)) {
             this.ui.emailMessage = "Invalid email address";
             return;
-        } else if(!this.password || this.password.length < 8) {
+        }
+        this.ui.emailMessage = "";
+        if(!this.password || this.password.length < 8) {
             this.ui.passwordMessage = "Invalid password";
             return;
         }
         this.ui.passwordMessage = "";
-        this.ui.emailMessage = "";
         await this.loader.start();
 
 
