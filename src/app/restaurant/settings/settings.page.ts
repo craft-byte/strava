@@ -232,6 +232,8 @@ export class SettingsPage implements OnInit {
         this.bank = result.payoutDestination;
         this.restaurant = result.restaurant;
 
+        console.log(this.restaurant);
+
         this.loader.end();
     }
 

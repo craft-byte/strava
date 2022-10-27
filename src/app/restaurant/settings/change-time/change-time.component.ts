@@ -114,8 +114,10 @@ export class ChangeTimeComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.opens = { hours: +this.time.opens.hours, minutes: +this.time.opens.minutes, half: this.time.opens.half, red: false, };
-        this.closes = { hours: +this.time.closes.hours, minutes: +this.time.closes.minutes, half: this.time.closes.half, red: false, };
+        if(this.time) {
+            this.opens = { hours: +this.time.opens.hours, minutes: +this.time.opens.minutes, half: this.time.opens.half || "AM", red: false, };
+            this.closes = { hours: +this.time.closes.hours, minutes: +this.time.closes.minutes, half: this.time.closes.half || "PM", red: false, };
+        }
     }
 
 }

@@ -1,6 +1,4 @@
-import { resolveSoa } from "dns";
-import { Router, urlencoded } from "express";
-import { allowedNodeEnvironmentFlags } from "process";
+import { Router } from "express";
 import { stripe } from "../..";
 import { Locals } from "../../models/other";
 import { logged } from "../../utils/middleware/logged";
@@ -37,8 +35,9 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, s
         payoutDestination.bank = (result.data[0] as any).bank_name;
     }
 
-    const time: any = {};
+    let time: any;
     if(restaurant.info?.time) {
+        time = {};
         const cm = restaurant.info.time.closes.minutes.toString().length == 1 ? `0${restaurant.info.time.closes.minutes}` : restaurant.info.time.closes.minutes;
         const om = restaurant.info.time.opens.minutes.toString().length == 1 ? `0${restaurant.info.time.opens.minutes}` : restaurant.info.time.opens.minutes;
 
