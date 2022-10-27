@@ -43,6 +43,13 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, s
 
         time.opens = { ...restaurant.info.time.opens, minutes: om };
         time.closes = { ...restaurant.info.time.closes, minutes: cm };
+
+        if(time.opens.half == "PM") {
+            time.opens.hours = restaurant.info.time.opens.hours - 12;
+        }
+        if(time.closes.half == "PM") {
+            time.closes.hours = restaurant.info.time.closes.hours - 12;
+        }
     }
 
     res.send({
@@ -208,8 +215,27 @@ router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, "manager", "setti
         return res.status(422).send({ reason: "InvalidInput" });
     }
 
+    const newTime: any = {
+        opens: {
+            hours: opens.hours,
+            minutes: opens.minutes,
+            half: opens.half
+        },
+        closes: {
+            hours: closes.hours,
+            minutes: closes.minutes,
+            half: closes.half
+        }
+    };
 
-    const update = await Restaurant(restaurantId).update({ $set: { "info.time": { opens, closes } } }, { projection: { _id: 1 } });
+    if(opens.half == "PM") {
+        newTime.opens.hours = opens.hours + 12;
+    }
+    if(closes.half == "PM") {
+        newTime.closes.hours = closes.hours + 12;
+    }
+
+    const update = await Restaurant(restaurantId).update({ $set: { "info.time": newTime } }, { projection: { _id: 1 } });
 
 
     res.send({ success: update.ok == 1 });
