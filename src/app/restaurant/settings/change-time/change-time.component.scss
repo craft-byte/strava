@@ -1,0 +1,132 @@
+.app {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 10vh;
+    z-index: 999999999999;
+    background-color: rgba(0, 0, 0, 0.25);
+
+    .box {
+        width: 512px;
+        min-height: 128px;
+        border-radius: 8px;
+        background-color: white;
+
+        .header {
+            height: 38px;
+            background-color: var(--orange);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+
+            button#close-time {
+                height: 38px;
+                width: 38px;
+                background: none;
+
+                ion-icon {
+                    font-size: 28px;
+                    color: var(--black);
+                }
+            }
+
+            .title {
+                display: flex;
+                align-items: center;
+
+                .text {
+                    font-size: 18px;
+                }
+            }
+        }
+
+        .content {
+            padding: 8px;
+
+            .info {
+                .text {
+                    color: var(--text-color);
+                    font-size: 14px;
+                }
+            }
+
+            .time {
+                padding: 12px 32px;
+                display: flex;
+                gap: 24px;
+
+                .opens,
+                .closes {
+                    width: 50%;
+
+                    .title {
+                        color: var(--text-color);
+                        &.red {
+                            color: var(--red);
+                        }
+                    }
+
+                    .form {
+                        display: flex;
+                        align-items: center;
+
+                        input {
+                            width: 38px;
+                            height: 38px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 6px;
+                            outline: none;
+                            color: var(--black);
+                            text-align: center;
+
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        button {
+                            height: 32px;
+                            width: 36px;
+                            border-radius: 6px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-left: 12px;
+
+                            border: 1px solid var(--purple-dark);
+                            background-color: var(--purple-back);
+                            color: var(--purple-dark);
+                            &.am {
+                                border: 1px solid var(--orange-dark);
+                                background-color: var(--orange-back);
+                                color: var(--orange-dark);
+                            }
+                        }
+                    }
+                }
+
+                .opens .form {
+                    input:focus {
+                        border: 1px solid var(--orange);
+                    }
+                }
+
+                .closes .form {
+                    input:focus {
+                        border: 1px solid var(--purple);
+                    }
+                }
+            }
+
+            .buttons {
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    }
+}

@@ -239,6 +239,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         status: "verification",
         info: {
             description: null!,
+            time: null!,
             location: {
                 country,
                 line1: null!,

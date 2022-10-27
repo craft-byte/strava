@@ -6,12 +6,18 @@
             </span>
             <button class="only-text-button" (click)="changeName()">Change name</button>
         </div>
+        <div class="time">
+            <span class="text">
+                Opens at {{ restaurant.time.opens.hours }}:{{ restaurant.time.opens.minutes }} {{ restaurant.time.opens.half }}, closes at {{ restaurant.time.closes.hours }}:{{ restaurant.time.closes.minutes }} {{ restaurant.time.closes.half }}
+            </span>
+            <button class="only-text-button" (click)="changeTime()">Change time</button>
+        </div>
         <div class="description">
             <span class="text">
                 {{ restaurant.description }}
             </span>
             <button (click)="changeDescription()" class="only-text-button">
-                Add restaurant description
+                Change description
             </button>
         </div>
         <div class="location">
@@ -31,7 +37,7 @@
             <span class="postal-code">
                 {{ restaurant.location.postal_code }}
             </span>
-            <button class="only-text-button">Change location</button>
+            <button class="only-text-button" (click)="changeLocation()">Change location</button>
         </div>
     </div>
     <div class="block" *ngIf="money as p">

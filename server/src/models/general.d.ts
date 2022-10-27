@@ -28,6 +28,18 @@ interface Restaurant {
     }
     info?: {
         description?: string;
+        time: {
+            opens: {
+                hours: number;
+                minutes: number;
+                half: "AM" | "PM";
+            };
+            closes: {
+                hours: number;
+                minutes: number;
+                half: "AM" | "PM";
+            }
+        }
         location?: {
             country?: string;
             city?: string;

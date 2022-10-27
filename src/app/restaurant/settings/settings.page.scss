@@ -7,6 +7,12 @@
         .name {
             font-size: 18px;
         }
+        .time {
+            margin-top: 8px;
+            .text {
+                color: var(--text-color);
+            }
+        }
         .description {
             margin-top: 8px;
 

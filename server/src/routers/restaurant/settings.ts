@@ -37,11 +37,20 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, s
         payoutDestination.bank = (result.data[0] as any).bank_name;
     }
 
+    const time: any = {};
+    if(restaurant.info?.time) {
+        const cm = restaurant.info.time.closes.minutes.toString().length == 1 ? `0${restaurant.info.time.closes.minutes}` : restaurant.info.time.closes.minutes;
+        const om = restaurant.info.time.opens.minutes.toString().length == 1 ? `0${restaurant.info.time.opens.minutes}` : restaurant.info.time.opens.minutes;
+
+        time.opens = { ...restaurant.info.time.opens, minutes: om };
+        time.closes = { ...restaurant.info.time.closes, minutes: cm };
+    }
+
     res.send({
         payoutDestination,
         settings: restaurant?.settings,
         money: restaurant.money,
-        restaurant: { name: restaurant.name, ...restaurant.info, },
+        restaurant: { name: restaurant.name, ...restaurant.info, time },
     });
 });
 
@@ -155,6 +164,54 @@ router.post("/description", logged({ _id: 1 }), allowed({ info: { description: 1
     }
 
     const update = await Restaurant(restaurant._id).update({ $set: { "info.description": description.trim() }});
+
+    res.send({ success: update.ok == 1 });
+});
+
+
+/**
+ * changes restaurants open and close time
+ * 
+ * @param { half: string; hours: number; minutes: number; } opens - time restaurant opens
+ * @param { half: string; hours: number; minutes: number; } closes - time restaurant closes
+ * 
+ * @throws { status: 422; reason: "InvalidInput" } - invalid input
+ * 
+ * @returns { success: boolean; }
+ */
+router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, "manager", "settings"), async (req, res) => {
+    const { opens, closes } = req.body;
+    const { restaurantId } = req.params;
+
+    if(
+        !opens ||
+        !closes ||
+        !opens.hours ||
+        !closes.hours ||
+        typeof opens.hours != "number" ||
+        typeof closes.hours != "number" ||
+        typeof opens.minutes != "number" ||
+        typeof closes.minutes != "number" ||
+        !opens.half ||
+        !["AM", "PM"].includes(opens.half) ||
+        !closes.half ||
+        !["AM", "PM"].includes(closes.half) ||
+        opens.hours > 12 ||
+        closes.hours > 12 ||
+        opens.hours < 1 ||
+        closes.hours < 1 ||
+        opens.minutes > 60 ||
+        closes.minutes > 60 ||
+        opens.minutes < 0 ||
+        closes.minutes < 0 ||
+        (closes.half == opens.half && (closes.hours == opens.hours ? closes.minutes < opens.minutes : closes.hours < opens.hours))
+    ) {
+        return res.status(422).send({ reason: "InvalidInput" });
+    }
+
+
+    const update = await Restaurant(restaurantId).update({ $set: { "info.time": { opens, closes } } }, { projection: { _id: 1 } });
+
 
     res.send({ success: update.ok == 1 });
 });

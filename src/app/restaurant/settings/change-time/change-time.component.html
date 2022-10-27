@@ -1,0 +1,50 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-time" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text">
+                    Change time
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="info">
+                <span class="text">
+                    Users won't be able to order and scan QR code before restaurant opens of after it closes.
+                </span>
+            </div>
+            <div class="time">
+                <div class="opens">
+                    <div class="title" [class.red]="opens.red">
+                        Opens
+                    </div>
+                    <div class="form">
+                        <input type="number" [(ngModel)]="opens.hours" oninput="this.value=this.value.slice(0, 2)" placeholder="00">
+                        <span class="colon">
+                            :
+                        </span>
+                        <input type="number" [(ngModel)]="opens.minutes" placeholder="00" oninput="this.value=this.value.slice(0, 2)">
+                        <button (click)="changeHalf('opens')" [class.am]="opens.half == 'AM'">{{ opens.half }}</button>
+                    </div>
+                </div>
+                <div class="closes">
+                    <div class="title" [class.red]="closes.red">Closes</div>
+                    <div class="form">
+                        <input [(ngModel)]="closes.hours" type="number" placeholder="00" oninput="this.value=this.value.slice(0, 2)">
+                        <span class="colon">
+                            :
+                        </span>
+                        <input [(ngModel)]="closes.minutes" type="number" placeholder="00" oninput="this.value=this.value.slice(0, 2)">
+                        <button (click)="changeHalf('closes')" [class.am]="closes.half == 'AM'">{{ closes.half }}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="green-button" (click)="save()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -205,8 +205,22 @@ export class SettingsPage implements OnInit {
             component.destroy();
         });
     }
+    async changeTime() {
+        const { ChangeTimeComponent } = await import("./change-time/change-time.component");
+
+        const component = this.changeNameContainer.createComponent(ChangeTimeComponent, { injector: this.injector });
+
+        component.instance.time = this.restaurant.time;
+
+        component.instance.leave.subscribe((newTime: any) => {
+            if(newTime) {
+                this.restaurant.time = newTime;
+            }
+            component.destroy();
+        });
+    }
     changeLocation() {
-        this.router.go(["restaurant", this.service.restaurantId, "conf/address"], { queryParams: { last: "settings" } });
+        this.router.go(["restaurant", this.service.restaurantId, "conf", "address"], { queryParams: { last: "settings" } });
     }
 
     async ngOnInit() {
