@@ -8,9 +8,9 @@ import { SocketIoModule } from 'ngx-socket-io';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { HashLocationStrategy } from '@angular/common';
 import { Interceptor } from './other/interceptor';
 import { NgxStripeModule } from 'ngx-stripe';
+import { RouteReuseStrategy } from '@angular/router';
 
 const disableAnimations = () => {
 
@@ -33,7 +33,7 @@ const disableAnimations = () => {
     declarations: [AppComponent],
     imports: [
         BrowserModule,
-        BrowserAnimationsModule.withConfig({ disableAnimations: disableAnimations() }),
+        BrowserAnimationsModule.withConfig({ disableAnimations: disableAnimations(), }),
         SocketIoModule.forRoot({ url: environment.socketLink, options: {} }),
         IonicModule.forRoot({ animated: !disableAnimations() }),
         NgxStripeModule.forRoot("pk_test_51KNlK6LbfOFI72xW4xnsuE6JQRte49N0HFiLw9mfQn8JF1JuImLOr2QJZewBZwXiPRNgsS6ebeiOisn3Gebp0zLT00i143bkrp"),
@@ -41,7 +41,7 @@ const disableAnimations = () => {
         HttpClientModule,
     ],
     providers: [
-        { provide: HashLocationStrategy, useClass: IonicRouteStrategy },
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true }
     ],
     bootstrap: [AppComponent]

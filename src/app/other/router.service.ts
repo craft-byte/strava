@@ -24,6 +24,6 @@ export class RouterService {
     if(showLoader === true) {
       await this.loader.start();
     }
-    this.router.navigate(path, { replaceUrl: true, ...options});
+    this.router.navigate(path, { replaceUrl: false, ...options});
   }
 }
