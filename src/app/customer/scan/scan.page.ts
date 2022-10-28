@@ -189,14 +189,6 @@ export class ScanPage implements OnInit {
 
 
     //
-    //    WHEN RESTAURANT SELECTED
-    //
-    async selectRestaurant(restaurantId: string) {
-        await this.createSession(restaurantId, null!, false);
-    }
-
-
-    //
     //    WHEN QR CODE SCANNED
     //
     //    if url has table order created with table
@@ -270,7 +262,9 @@ export class ScanPage implements OnInit {
 
 
     stopRecording() {
-        this.stream.getVideoTracks().forEach(t => t.stop());
+        if(this.stream) {
+            this.stream.getVideoTracks().forEach(t => t.stop());
+        }
     }
 
     //

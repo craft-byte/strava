@@ -8,6 +8,7 @@ import { ScanPageRoutingModule } from './scan-routing.module';
 
 import { ScanPage } from './scan.page';
 import { TableComponent } from './table/table.component';
+import { RestaurantComponent } from './restaurant/restaurant.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { TableComponent } from './table/table.component';
     IonicModule,
     ScanPageRoutingModule
   ],
-  declarations: [ScanPage, TableComponent]
+  declarations: [ScanPage, TableComponent, RestaurantComponent]
 })
 export class ScanPageModule {}

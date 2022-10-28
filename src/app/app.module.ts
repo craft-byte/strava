@@ -42,7 +42,6 @@ const disableAnimations = () => {
     ],
     providers: [
         { provide: HashLocationStrategy, useClass: IonicRouteStrategy },
-        CookieService,
         { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true }
     ],
     bootstrap: [AppComponent]

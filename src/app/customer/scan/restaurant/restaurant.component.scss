@@ -1,0 +1,107 @@
+.app {
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    background-color: rgb(250, 250, 250);
+    margin-top: 8px;
+    transition: .2s all;
+    padding-bottom: 0;
+    
+    .top {
+        cursor: pointer;
+        padding: 12px;
+        padding-right: 24px;
+        gap: 16px;
+        display: flex;
+        justify-content: space-between;
+        .short {
+            .name-payment {
+                display: flex;
+                align-items: center;
+    
+                .name {
+                    font-size: 16px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+                .payment {
+                    margin-left: 4px;
+                    span {
+                        font-size: 12px;
+                        padding: 4px;
+                        border-radius: 6px;
+                    }
+                    .all {
+                        min-width: 85px !important;
+                    }
+                }
+            }
+            .description {
+                margin-top: 12px;
+                font-size: 14px;
+                color: var(--text-color);
+            }
+        }
+        .time {
+            gap: 8px;
+    
+            .status {
+                display: flex;
+                justify-content: flex-end;
+                span {
+                    font-size: 12px;
+                    padding: 4px;
+                    border-radius: 6px;
+                }
+            }
+            .text {
+                margin-top: 6px;
+                font-size: 14px;
+                color: var(--text-color);
+            }
+        }
+    }
+
+    .more-button {
+        display: flex;
+        justify-content: flex-start;
+
+        padding-top: 12px;
+
+        button {
+            width: 96px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            color: var(--text-color);
+            
+            ion-icon {
+                font-size: 16px;
+                color: var(--text-color);
+            }
+        }
+    }
+
+    .bottom {
+        border-top: 1px solid var(--border-color);
+        padding: 12px;
+        padding-right: 24px;
+        opacity: 1;
+        margin-top: 6px;
+        height: auto;
+
+        .address {
+            .city {
+                font-size: 14px;
+                color: var(--black);
+            }
+            .line {
+                margin-top: 6px;
+                font-size: 14px;
+                color: var(--text-color);
+            }
+        }
+    }
+}

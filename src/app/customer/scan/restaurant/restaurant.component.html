@@ -1,0 +1,60 @@
+<div class="app">
+    <div (click)="select()" class="top">
+        <div class="short">
+            <div class="name-payment">
+                <div class="name title-font">
+                    {{ name }}
+                </div>
+                <div class="payment">
+                    <span *ngIf="restaurant.payment == 'card'" class="card status-badge-purple">
+                        Only card
+                    </span>
+                    <span *ngIf="restaurant.payment == 'cash'" class="cash status-badge-orange">
+                        Only cash
+                    </span>
+                    <span *ngIf="restaurant.payment == 'all'" class="all status-badge-green">
+                        Card and cash
+                    </span>
+                </div>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
+            <div *ngIf="restaurant.description" class="description">
+                {{ restaurant.description }}
+            </div>
+        </div>
+        <div class="time" *ngIf="restaurant.time">
+            <div class="status">
+                <span *ngIf="restaurant.timeStatus == 'open'" class="status-badge-green">
+                    Open
+                </span>
+                <span *ngIf="restaurant.timeStatus == 'closed'" class="status-badge-red">
+                    Closed
+                </span>
+            </div>
+            <div class="text">
+                <div class="opens">
+                    Opens at {{ restaurant.time.opens.hours }}:{{ restaurant.time.opens.minutes }} {{ restaurant.time.opens.half }}
+                </div>
+                <div class="closes">
+                    closes at {{ restaurant.time.closes.hours }}:{{ restaurant.time.closes.minutes }} {{ restaurant.time.closes.half }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="more-button" *ngIf="!showMore" (click)="$event.stopPropagation()">
+        <button (click)="more()">More <ion-icon name="chevron-down-outline"></ion-icon> </button>
+    </div>
+    <div class="bottom" *ngIf="showMore" @slideDown>
+        <div class="address">
+            <div class="city">
+                {{ restaurant.location?.city }}
+            </div>
+            <div class="line">
+                {{ restaurant.location?.line1 }}
+            </div>
+            <div class="line">
+                {{ restaurant.location?.line2 }}
+            </div>
+        </div>
+    </div>
+</div>

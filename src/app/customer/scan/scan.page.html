@@ -21,38 +21,7 @@
                     Select restaurant
                 </div>
                 <div class="list">
-                    <div *ngFor="let i of restaurants" (click)="selectRestaurant(i._id)" class="restaurant">
-                        <div class="name-description">
-                            <div class="name">
-                                {{ i.name }}
-                            </div>
-                            <div class="payment">
-                                <span *ngIf="i.payment == 'card'" class="card status-badge-purple">
-                                    Only card
-                                </span>
-                                <span *ngIf="i.payment == 'cash'" class="cash status-badge-orange">
-                                    Only cash
-                                </span>
-                                <span *ngIf="i.payment == 'all'" class="all status-badge-green">
-                                    Card and cash
-                                </span>
-                            </div>
-                            <div *ngIf="i.description" class="description">
-                                {{ i.description }}
-                            </div>
-                        </div>
-                        <div class="address">
-                            <div class="city">
-                                {{ i.location?.city }}
-                            </div>
-                            <div class="line">
-                                {{ i.location?.line1 }}
-                            </div>
-                            <div class="line">
-                                {{ i.location?.line2 }}
-                            </div>
-                        </div>
-                    </div>
+                    <app-restaurant *ngFor="let i of restaurants" [restaurant]="i"></app-restaurant>
                 </div>
             </div>
         </div>
