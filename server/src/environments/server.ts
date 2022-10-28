@@ -10,12 +10,12 @@ export const serverEnvinroment = {
     }
 }
 
-export const mainDBName = "ctrabaTest";
+export const mainDBName = "stravaTest";
 export const ordersDBName = "ordersTest";
 export const dishesDBName = "dishesTest";
 export const historyDBName = "historyTest";
 
-// export const mainDBName = "ctraba";
+// export const mainDBName = "straba";
 // export const ordersDBName = "orders";
 // export const dishesDBName = "dishes";
 // export const historyDBName = "history";
