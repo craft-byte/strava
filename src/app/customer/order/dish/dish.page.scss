@@ -2,10 +2,11 @@
     position: absolute;
     width: 28px;
     height: 28px;
-    top: 6px;
-    left: 6px;
+    top: 10px;
+    left: 10px;
     border-radius: 100%;
-    background-color: rgb(255, 255, 255, 0.6);
+    background-color: rgb(255, 255, 255, 0.4);
+    backdrop-filter: blur(2px);
     display: flex;
     justify-content: center;
     align-items: center;
