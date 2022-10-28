@@ -118,16 +118,17 @@ export class DishPage implements OnInit {
             this.dish = result;
             this.theme = result.theme;
 
-            this.image = getImage(this.dish.image.binary) || './../../../../assets/images/no-image.jpg';
-
-            if (this.dish.image.resolution == 1) {
-                this.imageClass = "r1";
-            } else if (this.dish.image.resolution == 1.33) {
-                this.imageClass = "r2";
-            } else if (this.dish.image.resolution == 1.77) {
-                this.imageClass = "r3";
+            if(this.dish.image) {
+                this.image = getImage(this.dish.image.binary) || './../../../../assets/images/no-image.jpg';
+    
+                if (this.dish.image.resolution == 1) {
+                    this.imageClass = "r1";
+                } else if (this.dish.image.resolution == 1.33) {
+                    this.imageClass = "r2";
+                } else if (this.dish.image.resolution == 1.77) {
+                    this.imageClass = "r3";
+                }
             }
-
             for (let i of general) {
                 if (i.value == this.dish.category) {
                     this.category = i.title;

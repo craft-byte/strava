@@ -43,13 +43,15 @@ export class DishComponent implements OnInit {
       }
     }
 
-    this.image = getImage(this.dish.image.binary);
-    if(this.dish.image.resolution == 1) {
-      this.imageClass = "r1";
-    } else if(this.dish.image.resolution == 1.33) {
-      this.imageClass = "r2";
-    } else if(this.dish.image.resolution == 1.77) {
-      this.imageClass = "r3";
+    if(this.dish.image) {
+        this.image = getImage(this.dish.image.binary);
+        if(this.dish.image.resolution == 1) {
+        this.imageClass = "r1";
+        } else if(this.dish.image.resolution == 1.33) {
+        this.imageClass = "r2";
+        } else if(this.dish.image.resolution == 1.77) {
+        this.imageClass = "r3";
+        }
     }
   }
 
