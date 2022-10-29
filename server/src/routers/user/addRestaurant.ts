@@ -207,7 +207,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         },
         customers: {
             maxDishes: 10,
-            allowTakeAway: true,
+            allowTakeAway: false,
             // trust: 1,
             maxCustomers: 10,
             // maxPrice: "unlimited",
