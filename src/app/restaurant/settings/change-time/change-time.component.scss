@@ -130,3 +130,18 @@
         }
     }
 }
+
+
+@media screen and (max-width: 520px) {
+    .app {
+        padding-top: 20vh;
+        .box {
+            width: 95%;
+            .content {
+                .time {
+                    flex-direction: column;
+                }
+            }
+        }
+    }
+}

@@ -89,3 +89,16 @@
         }
     }
 }
+
+@media screen and (max-width: 520px) {
+    .app {
+        padding-top: 20vh;
+        .box {
+            width: 90%;
+            .content .form textarea {
+                width: 95%;
+                height: 88px;
+            }
+        }
+    }
+}
