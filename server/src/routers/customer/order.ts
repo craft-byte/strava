@@ -778,7 +778,7 @@ interface PaymentInfo {
     //
 
     result.hst = Number((result.subtotal > 400 ? result.subtotal * 0.13 : result.subtotal * 0.05).toFixed(2));
-    result.total = result.subtotal + result.hst;
+    result.total = Math.floor(result.subtotal + result.hst);
 
     Orders(restaurantId).one(filter).update({ $set: { money: { total: result.total, subtotal: result.subtotal, hst: result.hst } } });
 
