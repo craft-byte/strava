@@ -49,7 +49,7 @@ export class CountryPage implements OnInit {
     try {
       const result = await this.service.post<{ added: boolean; requirements: string[]; insertedId: string; }>({ country: this.country, name: this.name }, "add-restaurant/create")
       if(result.added) {
-        this.router.go(["restaurant", result.insertedId, "home"], { replaceUrl: true });
+        this.router.go(["restaurant", result.insertedId, "conf", "name"], { replaceUrl: true });
       } else {
         (await this.toastCtrl.create({
           duration: 2500,
