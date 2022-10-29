@@ -84,21 +84,14 @@ router.post("/webhook", e.raw({ type: 'application/json' }), async (req, res) =>
             }
 
 
-            // console.log(account.requirements!.currently_due);
+            const update = await Restaurant(account.metadata!.restaurantId).update({ $set: { "money.card": status } }, { projection: { status: 1 } });
 
-            // if(account.requirements!.currently_due!.length > 0) {
-            //     status = "restricted";
-            // }
-
-            console.log(status);
-
-            const update = await Restaurant(account.metadata!.restaurantId).update({ $set: { "money.card": status } });
+            if(status == "enabled" && update.restaurant.status == "verification") {
+                const update2 = await Restaurant(update.restaurant._id).update({ $set: { status: "enabled" } });
+            }
 
             console.log("restaurant capability updated: ", update!.ok == 0);
         }
-
-
-        // const status = data.capabilities?.card_payments == "active" && data.capabilities?.transfers == "active";
 
     } else if (event.type == "payment.succeed") {
 

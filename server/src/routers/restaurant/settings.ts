@@ -15,7 +15,7 @@ const router = Router({ mergeParams: true });
  * returns restaurant settings
  * 
  */
-router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, stripeAccountId: 1, info: 1, }, "manager", "settings"), async (req, res) => {
+router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, stripeAccountId: 1, info: 1, status: 1, }, "manager", "settings"), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
     if(!restaurant) {
@@ -56,7 +56,7 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, s
         payoutDestination,
         settings: restaurant?.settings,
         money: restaurant.money,
-        restaurant: { name: restaurant.name, ...restaurant.info, time },
+        restaurant: { name: restaurant.name, ...restaurant.info, time, status: restaurant.status, },
     });
 });
 
