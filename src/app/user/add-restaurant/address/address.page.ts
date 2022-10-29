@@ -40,6 +40,8 @@ export class AddressPage implements OnInit {
 
     country: string;
 
+    last: string;
+
 
     form: FormGroup;
 
@@ -103,10 +105,14 @@ export class AddressPage implements OnInit {
 
 
     back() {
+        if(this.last == "settings") {
+            this.router.go(["restaurant", this.restaurantId, "settings"], {});
+            return;
+        }
         this.router.go(["restaurant", this.restaurantId], {});
     }
 
-    async next() {
+    async submit() {
         if (!this.form.valid) {
             return;
         }
@@ -117,6 +123,9 @@ export class AddressPage implements OnInit {
             const result: any = await this.service.post({ ...this.form.value, country: this.country }, "add-restaurant/set/all", this.restaurantId);
 
             if (result.updated) {
+                if(this.last == "settings") {
+                    return this.router.go(["restaurant", this.restaurantId, "settings"]);
+                }
                 this.router.go(["restaurant", this.restaurantId, "conf", "bank-account"]);
             } else {
                 (await this.toastCtrl.create({
@@ -160,6 +169,7 @@ export class AddressPage implements OnInit {
     async ngOnInit() {
         await this.loader.start();
         this.restaurantId = this.route.snapshot.paramMap.get("restaurantId");
+        this.last = this.route.snapshot.queryParamMap.get("last");
 
 
         try {
