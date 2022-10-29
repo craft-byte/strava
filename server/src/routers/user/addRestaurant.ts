@@ -601,7 +601,7 @@ router.get("/address/:restaurantId", logged({ restaurants: 1 }), owner, async (r
     result.continue.state = restaurant.info.location.state!;
     result.continue.line1 = restaurant.info.location.line1!;
     result.continue.line2 = restaurant.info.location.line2!;
-    result.continue.postal_code = restaurant.info.location.line2!;
+    result.continue.postal_code = restaurant.info.location.postal_code!;
 
 
     res.send(result);
