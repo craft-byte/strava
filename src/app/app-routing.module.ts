@@ -92,6 +92,11 @@ const user: Routes = [
         loadChildren: () => import("./user/profile/profile.module").then(m => m.ProfilePageModule),
         canActivate: [LoggedGuard],
     },
+    {
+        path: 'user/settings',
+        loadChildren: () => import('./user/settings/settings.module').then(m => m.SettingsPageModule),
+        canActivate: [LoggedGuard],
+    },
 
     {
         path: "user/email/verification",
@@ -103,11 +108,6 @@ const user: Routes = [
     {
         path: "user/avatar/:type",
         loadChildren: () => import("./user/registration/avatar/avatar.module").then(m => m.AvatarPageModule),
-        canActivate: [LoggedGuard],
-    },
-    {
-        path: 'user/settings',
-        loadChildren: () => import('./user/settings/settings.module').then(m => m.SettingsPageModule),
         canActivate: [LoggedGuard],
     },
     {

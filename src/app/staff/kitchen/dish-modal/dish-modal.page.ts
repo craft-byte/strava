@@ -217,7 +217,7 @@ export class DishModalPage implements OnInit, OnDestroy {
       this.cooking = cooking;
       this.user = user;
 
-      this.userId = this.main.userInfo._id;
+      this.userId = this.main.user._id;
 
 
       if(this.dish.image) {

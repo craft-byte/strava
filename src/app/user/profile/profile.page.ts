@@ -39,17 +39,31 @@ export class ProfilePage implements OnInit {
         this.router.go(["user/settings"]);
     }
 
-    async ngOnInit() {
+    async init(event?: any) {
         await this.loader.start();
 
         const result = await this.service.get<Profile>("profile");
 
-        this.data = result;
+        this.main.user = { ...this.main.user, ...result };
 
-        this.avatar = getImage(result.avatar);
+        this.data = this.main.user as any; // this.main.user instead of result is because when name changes in settings it automatically will appear here as part of this.main.user
 
+        if(this.data.avatar) {
+            this.avatar = getImage(this.data.avatar);
+        }
+        
+        if(event) {
+            setTimeout(() => {
+                this.loader.end();
+                event?.target?.complete();
+            }, 500);
+        } else {
+            this.loader.end();
+        }
+    }
 
-        this.loader.end();
+    async ngOnInit() {
+        this.init();
     }
 
 }

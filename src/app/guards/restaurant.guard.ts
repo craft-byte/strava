@@ -22,7 +22,7 @@ export class RestaurantGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
 
     const observable = new Observable<boolean>(subs => {
-      if (!this.main.userInfo) {
+      if (!this.main.user) {
         return subs.next(false);
       }
 

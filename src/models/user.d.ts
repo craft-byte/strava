@@ -1,30 +1,20 @@
 
 interface User {
-    username?: string;
-    password?: string;
     email?: string;
     avatar?: any;
-    works: string[];
+    name: {
+        first: string;
+        last: string;
+        
+    }
     _id?: string;
-    phone?: string;
     restaurants?: string[];
-    invitations?: any[];
     name?: string;
-    feedbacks?: Feedback[];
-}
-
-
-interface UserInvitation {
-    restaurant: string;
-    restaurantId: string;
-    role: string;
-    date: string;
-    _id: string;
+    changedAvatar?: boolean;
 }
 
 
 
 export {
-    UserInvitation,
     User,
 }

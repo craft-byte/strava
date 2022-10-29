@@ -57,7 +57,7 @@ export class PasswordModalComponent implements OnInit {
     @Output() leave = new EventEmitter();
 
     reset() {
-        this.router.go(["user/forgot-password/email"], { queryParams: { email: this.main.userInfo.email } });
+        this.router.go(["user/forgot-password/email"], { queryParams: { email: this.main.user.email } });
     }
 
     async submit() {

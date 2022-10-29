@@ -12,8 +12,9 @@ export class AppComponent {
     constructor(
         private utilities: UtilitiesService,
         private location: Location,
+        private router: Router,
     ) {
-
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 
     @HostListener('document:click', ['$event'])

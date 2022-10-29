@@ -159,7 +159,7 @@ export class MainPage implements OnInit, OnDestroy {
 
           this.doneDish(orderDishId);
         } else if(type == "userIdRequired") {
-          this.kitchen.emit("connectWithUserId", { restaurantId: this.service.restaurantId, userId: this.main.userInfo._id, joinTo: "kitchen", })
+          this.kitchen.emit("connectWithUserId", { restaurantId: this.service.restaurantId, userId: this.main.user._id, joinTo: "kitchen", })
         } else if(type == "kitchen/dish/quitted") {
           const { orderDishId } = res.data as any;
 

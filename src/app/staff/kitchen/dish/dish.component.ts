@@ -40,7 +40,7 @@ export class DishComponent implements OnInit, OnDestroy {
     private service: StaffService,
     private main: MainService,
   ) {
-    this.userId = this.main.userInfo._id;
+    this.userId = this.main.user._id;
   };
 
   @Input() orderDish: OrderDish;

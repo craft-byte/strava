@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 })
 export class MainService {
 
-  userInfo: User;
+  user: User;
   last: { url: string, queryParams?: any };
 
 

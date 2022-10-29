@@ -99,7 +99,7 @@ router.post("/login", async (req, res) => {
  * @returns { authorized: boolean; }
  * 
  */
-router.get("/status", logged({ _id: 1, email: 1 }), (req, res) => {
+router.get("/status", logged({ _id: 1, email: 1, name: 1 }), (req, res) => {
     const { user } = res.locals as Locals;
 
     res.send({ authorized: true, user });

@@ -63,6 +63,7 @@
                 border-radius: 8px;
                 border-left: 4px solid var(--orange);
                 display: flex;
+                
                 .icon {
                     width: 82px;
                     font-size: 32px;
@@ -89,7 +90,6 @@
                     }
                 }
                 .switch {
-                    margin-left: 112px;
                     display: flex;
                     justify-content: center;
                     align-items: center;

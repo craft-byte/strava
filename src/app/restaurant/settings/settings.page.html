@@ -24,17 +24,17 @@
             <span class="country">
                 {{ restaurant.location.country }},
             </span>
-            <span class="state">
+            <span class="state" *ngIf="restaurant.location.state">
                 {{ restaurant.location.state }},
             </span>
-            <span class="city">
+            <span class="city" *ngIf="restaurant.location.city">
                 {{ restaurant.location.city }},
             </span>
-            <span class="address">
+            <span class="address" *ngIf="restaurant.location.line1">
                 {{ restaurant.location.line1 }}<span class="comma" *ngIf="!restaurant.location.line2">,</span>
                 {{ restaurant.location.line2 }}<span class="comma" *ngIf="restaurant.location.line2">,</span>
             </span>
-            <span class="postal-code">
+            <span class="postal-code" *ngIf="restaurant.location.postal_code">
                 {{ restaurant.location.postal_code }}
             </span>
             <button class="only-text-button" (click)="changeLocation()">Change location</button>

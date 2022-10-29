@@ -34,7 +34,7 @@ export class LoggedGuard implements CanActivate {
                 })
             ).subscribe(result => {
                 if (result.authorized) {
-                    this.main.userInfo = result.user as any;
+                    this.main.user = result.user as any;
                     return subs.next(true);
                 } else {
                     this.main.removeUserInfo();

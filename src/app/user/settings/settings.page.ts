@@ -35,6 +35,7 @@ export class SettingsPage implements OnInit {
         private toastCtrl: ToastController,
         private service: UserService,
         private injector: Injector,
+        private main: MainService,
     ) { };
 
     @ViewChild("passwordModalContainer", { read: ViewContainerRef }) passwordModal: ViewContainerRef;
@@ -61,8 +62,12 @@ export class SettingsPage implements OnInit {
         const result = await this.service.post<any>({ name: this.data.name, anon: this.data.anon, avatar: this.avatarChanged ? this.avatar : null }, "profile/update");
 
         if (result.success) {
+            this.main.user.name = this.data.name;
+            if(this.avatarChanged) {
+                this.main.user.avatar = this.avatar;
+                this.main.user.changedAvatar = true;
+            }
             this.back();
-            return;
         } else {
             (await this.toastCtrl.create({
                 duration: 1500,
