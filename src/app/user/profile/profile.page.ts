@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ViewWillEnter } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { MainService } from 'src/app/services/main.service';
@@ -19,7 +20,7 @@ interface Profile {
     templateUrl: './profile.page.html',
     styleUrls: ['./profile.page.scss'],
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, ViewWillEnter {
 
 
     data: Profile;
@@ -39,7 +40,11 @@ export class ProfilePage implements OnInit {
         this.router.go(["user/settings"]);
     }
 
-    async init(event?: any) {
+    ionViewWillEnter() {
+        this.init();
+    }
+
+    async init() {
         await this.loader.start();
 
         const result = await this.service.get<Profile>("profile");
@@ -51,19 +56,12 @@ export class ProfilePage implements OnInit {
         if(this.data.avatar) {
             this.avatar = getImage(this.data.avatar);
         }
-        
-        if(event) {
-            setTimeout(() => {
-                this.loader.end();
-                event?.target?.complete();
-            }, 500);
-        } else {
-            this.loader.end();
-        }
+
+        this.loader.end();
     }
 
     async ngOnInit() {
-        this.init();
+        
     }
 
 }

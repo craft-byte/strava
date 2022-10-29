@@ -129,7 +129,6 @@ export class SettingsPage implements OnInit {
 
         this.data = result;
 
-
         this.avatar = getImage(this.data.avatar);
 
         this.loader.end();
