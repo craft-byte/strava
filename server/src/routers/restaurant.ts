@@ -59,7 +59,6 @@ router.get("/init", logged({ restaurants: { role: 1, restaurantId: 1 } }), allow
  * 
  */
 interface ReviewResult {
-    nextUrl?: string;
     nextEventuallyUrl?: string;
     status?: string;
     payouts?: {
@@ -138,40 +137,6 @@ interface ReviewResult {
                         const update = await Restaurant(restaurantId).update({ $set: { "money.payouts": "restricted" } });
 
                         console.log("payouts set to restricted: ", update!.ok == 0);
-                    }
-                }
-            }
-
-            if(status == "requirements.past_due") {
-                if(result.money?.card == "enabled") {
-                    console.log("CASE: restaurant has not finished registration but card payments are enabled");
-                }
-                for (let i of account.requirements?.currently_due!) {
-                    switch (i) {
-                        case "external_account":
-                            result.nextUrl = `bank-account`;
-                            break;
-                        case "individual.address.city":
-                            result.nextUrl = `address`;
-                            break;
-                        case "individual.address.line1":
-                            result.nextUrl = `address`;
-                            break;
-                        case "individual.address.postal_code":
-                            result.nextUrl = `address`;
-                            break;
-                        case "individual.address.state":
-                            result.nextUrl = `address`;
-                            break;
-                        case "individual.dob.day":
-                            result.nextUrl = `dob`;
-                            break;
-                        case "individual.first_name":
-                            result.nextUrl = `name`;
-                            break;
-                        case "individual.last_name":
-                            result.nextUrl = `name`;
-                            break;
                     }
                 }
             }
@@ -280,63 +245,50 @@ interface Chart {
 });
 
 
+router.get("/restaurant-status", logged({ _id: 1, }), allowed({ status: 1, stripeAccountId: 1, cache: 1 }, "owner"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
 
-// router.patch("/findUsers", logged({ _id: 1 }), async (req, res) => {
-//     const { searchText } = req.body;
+    if(!restaurant.cache || !restaurant.cache.requirements) {
+        const account = await stripe.accounts.retrieve(restaurant.stripeAccountId!);
+        restaurant.cache = { ...restaurant.cache, requirements: account.requirements!.currently_due! };
+    }
 
-//     const users = await getUsers({}, { projection: { name: 1, username: 1, } });
+    if(restaurant.cache?.requirements) {
+        let verificationUrl: string;
+        for (let i of restaurant.cache.requirements) {
+            switch (i) {
+                case "external_account":
+                    verificationUrl = `bank-account`;
+                    break;
+                case "individual.address.city":
+                    verificationUrl = `address`;
+                    break;
+                case "individual.address.line1":
+                    verificationUrl = `address`;
+                    break;
+                case "individual.address.postal_code":
+                    verificationUrl = `address`;
+                    break;
+                case "individual.address.state":
+                    verificationUrl = `address`;
+                    break;
+                case "individual.dob.day":
+                    verificationUrl = `dob`;
+                    break;
+                case "individual.first_name":
+                    verificationUrl = `name`;
+                    break;
+                case "individual.last_name":
+                    verificationUrl = `name`;
+                    break;
+            }
+        }
 
-//     const ids = [];
+        return res.send({ verificationUrl: verificationUrl!, status: restaurant.status });
+    }
 
-//     for(let i of users) {
-//         if(
-//             i.name?.first.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
-//             ||
-//             i.name?.last.toLocaleLowerCase().substring(0, searchText.length) == searchText.toLocaleLowerCase()
-//         ) {
-//             ids.push(i._id!);
-//         }
-//     }
-
-//     const users2 = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, username: 1, avatar: 1 } });
-
-//     const result = [];
-
-
-//     for(let i of users2) {
-//         result.push({
-//             name: i.name?.first || "User deleted",
-//             avatar: i.avatar,
-//             _id: i._id,
-//         });
-//     }
-
-
-//     res.send(result);
-// });
-
-
-// router.get("/user/:userId", allowed("manager", "staff"), async (req, res) => {
-//     const { userId, restaurantId } = req.params;
-
-//     const user = await getUser(userId, { projection: { name: 1, username: 1 } });
-//     const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1 } } });
-    
-
-//     if(user!._id!.equals(req.user as any)) {
-//         return res.send({ works: true });
-//     }
-//     for(let i of restaurant!.staff!) {
-//         if(i.userId.equals(userId)) {
-//             return res.send({ works: true });
-//         }
-//     }
-
-//     res.send({
-//         name: user!.name?.first || "User deleted",
-//         _id: user!._id,
-//     });
-// });
+    res.send(null);
+});
 
 
 /**

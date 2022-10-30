@@ -5,7 +5,6 @@ import { RouterService } from 'src/app/other/router.service';
 import { RestaurantService } from '../services/restaurant.service';
 
 interface Result {
-  nextUrl?: string;
   nextEventuallyUrl?: string;
   status?: string;
   payouts?: {
@@ -37,9 +36,6 @@ export class HomePage implements OnInit {
   ) { };
 
 
-  continue() {
-    this.router.go(["restaurant", this.service.restaurantId, "conf", this.data.nextUrl]);
-  }
   finish() {
     this.router.go([this.data.nextEventuallyUrl]);
   }

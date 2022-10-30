@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild, ViewContainerRef, Injector } from '@angular/core';
-import { ModalController, PopoverController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantSettings } from 'src/models/components';
-import { isFunction } from 'util';
 import { RestaurantService } from '../services/restaurant.service';
 import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page';
 
@@ -219,6 +218,9 @@ export class SettingsPage implements OnInit {
             component.destroy();
         });
     }
+    // verification() {
+    //     this.router.go(["restaurant", this.service.restaurantId, "conf", this.verificationUrl ]);
+    // }
     changeLocation() {
         this.router.go(["restaurant", this.service.restaurantId, "conf", "address"], { queryParams: { last: "settings" } });
     }
@@ -232,7 +234,6 @@ export class SettingsPage implements OnInit {
         this.bank = result.payoutDestination;
         this.restaurant = result.restaurant;
 
-        console.log(this.restaurant);
 
         this.loader.end();
     }

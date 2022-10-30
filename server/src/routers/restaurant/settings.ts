@@ -52,10 +52,46 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, s
         }
     }
 
+    let verificationUrl: string;
+    if(restaurant.status != "enabled") {
+        const account = await stripe.accounts.retrieve(restaurant.stripeAccountId!);
+        if(account.requirements?.currently_due) {
+            for (let i of account.requirements?.currently_due!) {
+                switch (i) {
+                    case "external_account":
+                        verificationUrl = `bank-account`;
+                        break;
+                    case "individual.address.city":
+                        verificationUrl = `address`;
+                        break;
+                    case "individual.address.line1":
+                        verificationUrl = `address`;
+                        break;
+                    case "individual.address.postal_code":
+                        verificationUrl = `address`;
+                        break;
+                    case "individual.address.state":
+                        verificationUrl = `address`;
+                        break;
+                    case "individual.dob.day":
+                        verificationUrl = `dob`;
+                        break;
+                    case "individual.first_name":
+                        verificationUrl = `name`;
+                        break;
+                    case "individual.last_name":
+                        verificationUrl = `name`;
+                        break;
+                }
+            }
+        }
+    }
+
     res.send({
         payoutDestination,
         settings: restaurant?.settings,
         money: restaurant.money,
+        verificationUrl: verificationUrl!,
         restaurant: { name: restaurant.name, ...restaurant.info, time, status: restaurant.status, },
     });
 });

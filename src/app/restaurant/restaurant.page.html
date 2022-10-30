@@ -49,6 +49,9 @@
         </div>
     </div>
     <div class="app">
+        <div *ngIf="!!verificationUrl" class="verification">
+            <button class="orange-button" (click)="verification()">Finish restaurant verification</button>
+        </div>
         <router-outlet></router-outlet>
     </div>
 </ion-content>

@@ -16,10 +16,6 @@ interface Restaurant {
     invitations?: Invitation[];
     blacklist?: (ObjectId | string)[];
     stripeAccountId?: string;
-    customersCache?: {
-        lastUpdate: number;
-        data: any[];
-    };
     status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
     money?: {
         card: "enabled" | "disabled" | "rejected" | "restricted" | "pending";
@@ -48,6 +44,13 @@ interface Restaurant {
             line2?: string;
             postal_code?: string;
         }
+    };
+    cache?: {
+        customers?: {
+            lastUpdate: number;
+            data: any[];
+        };
+        requirements: string[];
     }
 }
 

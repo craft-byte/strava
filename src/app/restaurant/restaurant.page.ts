@@ -19,6 +19,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
     page: string = "home";
     username: string;
     routerSubs: Subscription;
+    verificationUrl: string;
 
     ui = {
         showButtonNearRestaurantName: false,
@@ -67,7 +68,11 @@ export class RestaurantPage implements OnInit, OnDestroy {
         this.router.navigate(["restaurant", this.service.restaurantId, p], { replaceUrl: true });
     }
 
-    ngOnInit() {
+    verification() {
+        this.router.navigate(["restaurant", this.service.restaurantId, "conf", this.verificationUrl]);
+    }
+
+    async ngOnInit() {
         this.username = this.main.user.email.split("@")[0];
         this.restaurant = this.service.restaurant;
         this.ui.showGoWorkButton = this.service.showGoWork;
@@ -78,7 +83,12 @@ export class RestaurantPage implements OnInit, OnDestroy {
             if (e instanceof NavigationEnd) {
                 this.page = e.url.split("/")[3] || "home";
             }
-        })
+        });
+        const result: any = await this.service.get({}, "restaurant-status");
+
+        if(result) {
+            this.verificationUrl = result.verificationUrl;
+        }
     }
 
     ngOnDestroy(): void {
