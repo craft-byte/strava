@@ -61,9 +61,7 @@
         <div class="name title-font">
             {{ restaurant?.name }}
         </div>
-        <button id="work" *ngIf="workAs && workAs == 'both'" routerLink="sraff/{{ restaurant?._id }}/solo"><ion-icon name="accessibility-outline"></ion-icon></button>
-        <button id="work" *ngIf="workAs && workAs == 'cook'" routerLink="staff/{{ restaurant?._id }}/cook"><ion-icon name="accessibility-outline"></ion-icon></button>
-        <button id="work" *ngIf="workAs && workAs == 'waiter'" routerLink="staff/{{ restaurant?._id }}/waiter"><ion-icon name="accessibility-outline"></ion-icon></button>
+        <a id="work" *ngIf="workAs" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}"><ion-icon name="accessibility-outline"></ion-icon></a>
     </div>
 </ion-header>
 

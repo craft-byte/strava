@@ -92,6 +92,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
             this.verificationUrl = result.verificationUrl;
             
             this.service.restaurantId = result.restaurant._id;
+            this.service.restaurant = result.restaurant;
         }
     }
 
