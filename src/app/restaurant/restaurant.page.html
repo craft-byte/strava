@@ -20,12 +20,12 @@
                 <a>Dishes</a>
             </div>
             <!-- (click)="go('people')" -->
-            <div routerLink="/restaurant/{{restaurant?._id}}/people" class="link people"
-                [ngClass]="{ active: page == 'people' }">
+            <div routerLink="/restaurant/{{restaurant?._id}}/staff" class="link staff"
+                [ngClass]="{ active: page == 'staff' }">
                 <a>Staff</a>
             </div>
-            <div routerLink="/restaurant/{{restaurant?._id}}/people" class="link people"
-                [ngClass]="{ active: page == 'people' }">
+            <div routerLink="/restaurant/{{restaurant?._id}}/orders" class="link orders"
+                [ngClass]="{ active: page == 'orders' }">
                 <a>Orders</a>
             </div>
             <!-- (click)="go('settings')" -->
@@ -77,7 +77,7 @@
     </div>
 </ion-content>
 
-<div class="tabs">
+<div id="tabs" class="tabs">
     <a id="home" [ngClass]="{ active: page == 'home' }" routerLink="/restaurant/{{restaurant?._id}}/home" class="tab-button">
         <ion-icon name="home"></ion-icon>
         <span class="text">
