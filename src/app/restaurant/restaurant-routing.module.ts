@@ -23,9 +23,17 @@ const routes: Routes = [
         loadChildren: () => import("./dishes-page/dishes-page.module").then(m => m.DishesPageModule)
       },
       {
-        path: 'people',
-        loadChildren: () => import('./people-page/people-page.module').then( m => m.PeoplePagePageModule)
+        path: 'staff',
+        loadChildren: () => import('./people-page/staff/staff.module').then( m => m.StaffModule)
       },
+      {
+        path: 'orders',
+        loadChildren: () => import('./people-page/orders/orders.module').then( m => m.OrdersPageModule)
+      },
+    //   {
+    //     path: 'people',
+    //     loadChildren: () => import('./people-page/people-page.module').then( m => m.PeoplePagePageModule)
+    //   },
       {
         path: 'dishes/full/:dishId',
         loadChildren: () => import('./dishes-page/full-dish/full-dish.module').then( m => m.FullDishPageModule),
@@ -36,7 +44,8 @@ const routes: Routes = [
         loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
       },
     ]
-  },  {
+  },
+  {
     path: 'dish-add',
     loadChildren: () => import('./dish-add/dish-add.module').then( m => m.DishAddPageModule)
   },

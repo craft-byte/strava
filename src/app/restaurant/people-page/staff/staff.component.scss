@@ -1,4 +1,22 @@
 .app {
+
+    .message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 50vh;
+        font-size: 18px;
+        color: var(--text-color);
+        ion-icon {
+            color: var(--text-color);
+            font-size: 28px;
+        }
+    }
+
+
+
+
     .header {
         display: grid;
         grid-template-columns: 65% 35%;

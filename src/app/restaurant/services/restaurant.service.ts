@@ -50,7 +50,7 @@ export class RestaurantService {
   init(restaurantId: string) {
     this.restaurantId = restaurantId;
 
-    return this.http.get(this.url + this.restaurantId + "/init");
+    return this.http.get(this.url + this.restaurantId + "/check");
 
 
     // const result: any = await this.get("init");

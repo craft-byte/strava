@@ -4,13 +4,14 @@
     align-items: center;
     justify-content: space-between;
     position: relative;
-    height: 48px;
+    height: 42px;
     width: 100%;
     padding: 0 412px;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 99999999999;
+
     .restaurant {
         font-size: 20px;
         font-weight: 550;
@@ -19,17 +20,17 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
-    
+
         .button {
             display: flex;
             justify-content: center;
             align-items: center;
-    
+
             ion-icon {
                 transition: all .5s;
             }
         }
-    
+
         &.active {
             .button {
                 ion-icon {
@@ -42,11 +43,13 @@
             }
         }
     }
+
     .links {
         display: flex;
         justify-content: space-between;
         gap: 12px;
         align-items: center;
+
         .link {
             width: 124px;
             height: 28px;
@@ -56,20 +59,24 @@
             align-items: center;
             border-radius: 12px;
             cursor: pointer;
+
             a {
                 transition: all .3s;
                 text-decoration: none;
                 // font-weight: 550;
                 color: black;
             }
+
             &:hover {
                 background-color: rgb(202, 202, 202);
             }
+
             &.active {
                 background-color: var(--orange);
             }
         }
     }
+
     .user {
         a {
             border: 1px solid var(--black);
@@ -83,16 +90,19 @@
             justify-content: center;
             color: black;
             font-size: 14px;
+
             // background-color: var(--orange-back);
             &:hover {
                 // color: rgb(85, 85, 85);
                 background-color: rgb(229, 229, 229);
             }
+
             ion-icon {
                 font-size: 24px;
             }
         }
     }
+
     .work {
         a {
             border: 1px solid var(--purple);
@@ -107,18 +117,50 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
+
             .show {
                 display: none;
             }
+
             &:hover {
                 color: var(--purple);
             }
+
             ion-icon {
                 font-size: 20px;
             }
         }
     }
 }
+.mobile-header {
+    height: 42px;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    background-color: white;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+
+    .name {
+        color: var(--black);
+        margin-left: 12px;
+    }
+
+    .account {
+        height: 42px;
+        width: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        #account {
+            ion-icon {
+                font-size: 26px;
+                color: var(--text-color);
+            }
+        }
+    }
+}
+
 .app {
     padding: 48px 412px;
 
@@ -126,6 +168,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
         button {
             margin: 0;
             border-top-left-radius: 0;
@@ -140,210 +183,180 @@
 }
 
 
+.tabs {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    right: 50%;
+    translate: -50%;
+    // background-color: rgba(250,250,250,0.25);
+    background: #f4f4f4;
+    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 52px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    padding: 0 6px;
+    padding-bottom: 2px;
+
+    .tab-button {
+        background: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+
+        ion-icon {
+            color: var(--text-color);
+            font-size: 22px;
+        }
+        .text {
+            margin-top: 4px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        &.active {
+            ion-icon {
+                padding-top: 2px;
+                height: 100%;
+                border-top: 2px solid #5a41a0;
+            }
+            .text, ion-icon {
+                color: #5a41a0;
+            }
+        }
+    }
+}
+
+
 @media (min-width: 1500px) {
     .app {
-        padding: 48px 252px;
+        padding: 0 252px;
     }
+
     .header {
         padding: 0 252px;
     }
+
+    #tabs {
+        display: none;
+    }
 }
+
 @media (min-width: 1150px) and (max-width: 1499px) {
     .app {
-        padding: 48px 108px;
+        padding: 0 108px;
     }
+
     .header {
         padding: 0 108px;
     }
+
+    #tabs {
+        display: none;
+    }
 }
+
 @media (min-width: 700px) and (max-width: 1149px) {
     .app {
-        padding: 48px 24px;
+        padding: 0 24px;
+
         .content {
             display: flex;
             flex-direction: column;
         }
     }
+
+    #tabs {
+        display: none;
+    }
+
     .header {
         padding: 0 24px;
+
         .title {
             font-size: 20px;
         }
+
         .links {
             gap: 6px;
+
             .link {
                 width: 108px;
             }
+
             .restaurant button:hover {
                 background: transparent;
                 color: var(--text-color);
             }
         }
+
         .user a {
             border: none;
+
             ion-icon {
                 font-size: 28px;
             }
+
             .username {
                 display: none;
             }
         }
+
         .work a {
             border: none;
             height: 36px;
             width: 36px;
+
             .hide {
                 display: none;
             }
+
             .show {
                 display: inline;
             }
+
             ion-icon {
                 font-size: 28px;
             }
+
             .title {
                 display: none;
             }
         }
     }
 }
+
 @media (min-width: 550px) and (max-width: 699px) {
     .app {
         padding: 0 12px;
+
         .content {
             display: flex;
             flex-direction: column;
         }
     }
+
     .header {
-        position: static;
-        padding: 0 24px;
-        display: inline-block;
-        height: auto;
-
-        .restaurant {
-            height: 38px;
-        }
-
-        
-        .links {
-            width: 100%;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            padding-bottom: 12px;
-            .link {
-                height: 32px;
-            }
-        }
-
-        .user {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            a {
-                border: none;
-                ion-icon {
-                    font-size: 28px;
-                }
-                .username {
-                    display: none;
-                }
-            }
-        }
-        .work {
-            position: absolute;
-            top: 6px;
-            right: 46px;
-            height: 36px;
-            width: 36px;
-            a {
-                border: none;
-                .hide {
-                    display: none;
-                }
-                .show {
-                    display: inline;
-                }
-                ion-icon {
-                    font-size: 28px;
-                }
-                .title {
-                    display: none;
-                }
-            }
-        }
+        display: none;
     }
 }
+
 @media (min-width: 300px) and (max-width: 549px) {
     .app {
         padding: 0 4px;
     }
+
     .header {
-        padding: 0 24px;
-        display: inline-block;
-        height: auto;
-        position: static;
-
-        .restaurant {
-            height: 38px;
-        }
-
-        .user {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            a {
-                border: none;
-                ion-icon {
-                    font-size: 28px;
-                }
-                .username {
-                    display: none;
-                }
-            }
-        }
-        .work {
-            position: absolute;
-            top: 6px;
-            right: 46px;
-            height: 36px;
-            width: 36px;
-            a {
-                border: none;
-                .hide {
-                    display: none;
-                }
-                .show {
-                    display: inline;
-                }
-                ion-icon {
-                    font-size: 28px;
-                }
-
-                .title {
-                    display: none;
-                }
-            }
-        }
-
-        .links {
-            width: 100%;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            padding-bottom: 12px;
-            .link {
-                font-size: 16px;
-                height: 32px;
-            }
-            #add-restaurant:hover {
-                color: var(--text-color);
-                background-color: transparent;
-            }
-        }
+        display: none;
     }
 }
+
 @media (min-width: 200px) and (max-width: 450px) {
     .app {
         padding: 0 8px;

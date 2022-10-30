@@ -18,6 +18,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
     restaurant: Restaurant;
     page: string = "home";
     username: string;
+    workAs: string;
     routerSubs: Subscription;
     verificationUrl: string;
 
@@ -74,20 +75,23 @@ export class RestaurantPage implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.username = this.main.user.email.split("@")[0];
-        this.restaurant = this.service.restaurant;
-        this.ui.showGoWorkButton = this.service.showGoWork;
-        if (this.service.restaurants?.length > 0) {
-            this.ui.showButtonNearRestaurantName = true;
-        }
         this.routerSubs = this.router.events.subscribe(e => {
             if (e instanceof NavigationEnd) {
                 this.page = e.url.split("/")[3] || "home";
             }
         });
-        const result: any = await this.service.get({}, "restaurant-status");
+
+
+        const result: { restaurant: any; workAs: string; verificationUrl: string; restaurants: any; } = await this.service.get({}, "restaurant-status");
+
+        console.log(result);
 
         if(result) {
+            this.restaurant = result.restaurant;
+            this.workAs = result.workAs;
             this.verificationUrl = result.verificationUrl;
+            
+            this.service.restaurantId = result.restaurant._id;
         }
     }
 

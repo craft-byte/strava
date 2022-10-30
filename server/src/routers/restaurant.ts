@@ -11,6 +11,7 @@ import { logged } from "../utils/middleware/logged";
 import { allowed } from "../utils/middleware/restaurantAllowed";
 import { Locals } from "../models/other";
 import { SettingsRouter } from "./restaurant/settings";
+import { Settings } from "../models/components";
 
 
 const router = Router({ mergeParams: true });
@@ -23,29 +24,18 @@ router.use("/customers", CustomersRouter);
 router.use("/settings", SettingsRouter);
 
 
-router.get("/init", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ name: 1, status: 1 }, "manager"), async (req, res) => {
-    const{ restaurantId } = req.params;
-    const { restaurant, user } = res.locals as Locals;
+router.get("/check", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ name: 1, status: 1, staff: 1, }, "manager"), async (req, res) => {
+    res.send(true);
+    // const{ restaurantId } = req.params;
+    // const { restaurant, user } = res.locals as Locals;
 
-    // const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, status: 1 } });
-    // const user = await getUser(req.user as string, { projection: { restaurants: { restaurantId: 1, role: 1 } } });
+    // // const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, status: 1 } });
+    // // const user = await getUser(req.user as string, { projection: { restaurants: { restaurantId: 1, role: 1 } } });
 
 
 
-    const promises = [];
-
-    let showGoWork = false;
-    for(let i of user!.restaurants!) {
-        if(!i.restaurantId.equals(restaurantId)) {
-            promises.push(Restaurant(i.restaurantId).get({ projection: { name: 1 } } ));
-        } else {
-            if(i.role == "manager:working" || i.role == "owner") {
-                showGoWork = true;
-                break;
-            }
-        }
-    }
-    res.send({ showGoWork, restaurant, restaurants: await Promise.all(promises) });
+    // console.log(workAs!);
+    // res.send({ workAs: workAs!, restaurant, restaurants: await Promise.all(promises) });
 });
 
 
@@ -245,16 +235,16 @@ interface Chart {
 });
 
 
-router.get("/restaurant-status", logged({ _id: 1, }), allowed({ status: 1, stripeAccountId: 1, cache: 1 }, "owner"), async (req, res) => {
-    const { restaurant } = res.locals as Locals;
+router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, name: 1, stripeAccountId: 1, cache: 1 }, "owner"), async (req, res) => {
+    const { restaurant, user } = res.locals as Locals;
 
     if(!restaurant.cache || !restaurant.cache.requirements) {
         const account = await stripe.accounts.retrieve(restaurant.stripeAccountId!);
         restaurant.cache = { ...restaurant.cache, requirements: account.requirements!.currently_due! };
     }
 
+    let verificationUrl: string;
     if(restaurant.cache?.requirements) {
-        let verificationUrl: string;
         for (let i of restaurant.cache.requirements) {
             switch (i) {
                 case "external_account":
@@ -283,11 +273,43 @@ router.get("/restaurant-status", logged({ _id: 1, }), allowed({ status: 1, strip
                     break;
             }
         }
-
-        return res.send({ verificationUrl: verificationUrl!, status: restaurant.status });
     }
 
-    res.send(null);
+    const promises = [];
+
+    let workAs: string;
+    for(let i of user!.restaurants!) {
+        if(!i.restaurantId.equals(restaurant._id)) {
+            promises.push(Restaurant(i.restaurantId).get({ projection: { name: 1 } } ));
+        } else {
+            if(i.role == "manager:working" || i.role == "owner") {
+                workAs = "both";
+                break;
+            } else {
+                for(let i of restaurant.staff!) {
+                    if(i.userId.equals(user._id)) {
+                        if(i.role == "manager") {
+                            if((i.settings as Settings.ManagerSettings).work.cook && (i.settings as Settings.ManagerSettings).work.waiter) {
+                                workAs = "both";
+                            } else if((i.settings as Settings.ManagerSettings).work.cook) {
+                                workAs = "cook"
+                            } else if((i.settings as Settings.ManagerSettings).work.waiter) {
+                                workAs = "waiter";
+                            } else {
+                                workAs = null!;
+                            }
+                            break;
+                        } else {
+                            workAs = i.role;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    res.send({ verificationUrl: verificationUrl!, restaurant: { name: restaurant.name, status: restaurant.staff, _id: restaurant._id }, workAs: workAs!, restaurants: await Promise.all(promises) });
 });
 
 

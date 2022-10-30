@@ -1,4 +1,4 @@
-<ion-content>
+<ion-header>
     <div class="header">
         <div class="restaurant {{ navClass }}" (click)="navigation($event)">
             <div class="name">
@@ -10,28 +10,32 @@
         </div>
         <div class="links">
             <!-- (click)="go('home')" -->
-            <div routerLink="/restaurant/{{restaurant._id}}/home" class="link home"
+            <div routerLink="/restaurant/{{restaurant?._id}}/home" class="link home"
                 [ngClass]="{ active: page == 'home' }">
                 <a>Home</a>
             </div>
             <!-- (click)="go('dishes')" -->
-            <div routerLink="/restaurant/{{restaurant._id}}/dishes" class="link dishes"
+            <div routerLink="/restaurant/{{restaurant?._id}}/dishes" class="link dishes"
                 [ngClass]="{ active: page == 'dishes' }">
                 <a>Dishes</a>
             </div>
             <!-- (click)="go('people')" -->
-            <div routerLink="/restaurant/{{restaurant._id}}/people" class="link people"
+            <div routerLink="/restaurant/{{restaurant?._id}}/people" class="link people"
                 [ngClass]="{ active: page == 'people' }">
-                <a>People</a>
+                <a>Staff</a>
+            </div>
+            <div routerLink="/restaurant/{{restaurant?._id}}/people" class="link people"
+                [ngClass]="{ active: page == 'people' }">
+                <a>Orders</a>
             </div>
             <!-- (click)="go('settings')" -->
-            <div routerLink="/restaurant/{{restaurant._id}}/settings" class="link settings"
+            <div routerLink="/restaurant/{{restaurant?._id}}/settings" class="link settings"
                 [ngClass]="{ active: page == 'settings' }">
                 <a class="settings">Settings</a>
             </div>
         </div>
         <div class="work" *ngIf="ui.showGoWorkButton">
-            <a routerLink="/staff/{{ restaurant._id }}/dashboard" [replaceUrl]="true">
+            <a routerLink="/staff/{{ restaurant?._id }}/dashboard" [replaceUrl]="true">
                 <span class="title">
                     Go work
                 </span>
@@ -40,7 +44,7 @@
             </a>
         </div>
         <div class="user">
-            <a routerLink="/user/info" [replaceUrl]="true">
+            <a routerLink="/user/info">
                 <span class="username">
                     {{username}}
                 </span>
@@ -48,6 +52,23 @@
             </a>
         </div>
     </div>
+    <div class="mobile-header">
+        <div class="account">
+            <a routerLink="/user/info" id="account">
+                <ion-icon name="person-circle-outline"></ion-icon>
+            </a>
+        </div>
+        <div class="name title-font">
+            {{ restaurant?.name }}
+        </div>
+        <div class="work" *ngIf="ui.workAs">
+            <button id="work"><ion-icon name="accessibility-outline"></ion-icon></button>
+        </div>
+    </div>
+</ion-header>
+
+
+<ion-content>
     <div class="app">
         <div *ngIf="!!verificationUrl" class="verification">
             <button class="orange-button" (click)="verification()">Finish restaurant verification</button>
@@ -55,3 +76,36 @@
         <router-outlet></router-outlet>
     </div>
 </ion-content>
+
+<div class="tabs">
+    <a id="home" [ngClass]="{ active: page == 'home' }" routerLink="/restaurant/{{restaurant?._id}}/home" class="tab-button">
+        <ion-icon name="home"></ion-icon>
+        <span class="text">
+            Home
+        </span>
+    </a>
+    <a id="dishes" [ngClass]="{ active: page == 'dishes' }" routerLink="/restaurant/{{restaurant?._id}}/dishes" class="tab-button">
+        <ion-icon name="fast-food"></ion-icon>
+        <span class="text">
+            Dishes
+        </span>
+    </a>
+    <a id="staff" [ngClass]="{ active: page == 'staff' }" routerLink="/restaurant/{{restaurant?._id}}/staff" class="tab-button">
+        <ion-icon name="people"></ion-icon>
+        <span class="text">
+            Staff
+        </span>
+    </a>
+    <a id="orders" [ngClass]="{ active: page == 'orders' }" routerLink="/restaurant/{{restaurant?._id}}/orders" class="tab-button">
+        <ion-icon name="file-tray-full"></ion-icon>
+        <span class="text">
+            Orders
+        </span>
+    </a>
+    <a id="settings" [ngClass]="{ active: page == 'settings' }" routerLink="/restaurant/{{restaurant?._id}}/settings" class="tab-button">
+        <ion-icon name="settings"></ion-icon>
+        <span class="text">
+            Settings
+        </span>
+    </a>
+</div>
