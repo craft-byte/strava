@@ -156,6 +156,9 @@
         border-bottom: 2px solid var(--purple);
         background: none;
         text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         ion-icon {
             color: var(--text-color);
