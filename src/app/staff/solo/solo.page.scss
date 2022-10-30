@@ -1,0 +1,10 @@
+.app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .title {
+        padding-top: 40vh;
+        font-size: 18px;
+        color: var(--text-color)
+    }
+}

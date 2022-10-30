@@ -9,6 +9,7 @@ import { StaffGuard } from './guards/staff.guard';
 import { KitchenSocketIdGuard } from './guards/kitchen-socket-id.guard';
 import { WaiterSocketIdGuard } from './guards/waiter-socket-id.guard';
 import { OrderGuard } from './guards/order.guard';
+import { SocketGuard } from './staff/solo/socket.guard';
 
 const registration: Routes = [
     {
@@ -146,7 +147,7 @@ const staff: Routes = [
         canActivate: [LoggedGuard, StaffGuard]
     },
     {
-        path: "staff/:restaurantId/kitchen",
+        path: "staff/:restaurantId/cook",
         loadChildren: () => import("./staff/kitchen/main/main.module").then(m => m.MainPageModule),
         canActivate: [LoggedGuard, StaffGuard, KitchenSocketIdGuard],
     },
@@ -154,6 +155,11 @@ const staff: Routes = [
         path: "staff/:restaurantId/waiter",
         loadChildren: () => import("./staff/waiter/waiter/waiter.module").then(m => m.WaiterPageModule),
         canActivate: [LoggedGuard, StaffGuard, WaiterSocketIdGuard],
+    },
+    {
+        path: "staff/:restaurantId/solo",
+        loadChildren: () => import("./staff/solo/solo.module").then(m => m.SoloPageModule),
+        canActivate: [LoggedGuard, StaffGuard, SocketGuard]
     }
 ];
 const customer: Routes = [

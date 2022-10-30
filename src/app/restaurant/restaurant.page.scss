@@ -138,12 +138,27 @@
     border-bottom: 1px solid var(--border-color);
     background-color: white;
     padding: 0 8px;
+    position: relative;
     display: flex;
     align-items: center;
 
     .name {
         color: var(--black);
         margin-left: 12px;
+    }
+
+    #work {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 42px;
+        height: 42px;
+        border-bottom: 2px solid var(--purple);
+        background: none;
+        ion-icon {
+            color: var(--text-color);
+            font-size: 28px;
+        }
     }
 
     .account {

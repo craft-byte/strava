@@ -34,8 +34,8 @@
                 <a class="settings">Settings</a>
             </div>
         </div>
-        <div class="work" *ngIf="ui.showGoWorkButton">
-            <a routerLink="/staff/{{ restaurant?._id }}/dashboard" [replaceUrl]="true">
+        <div class="work" *ngIf="workAs">
+            <a routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
                 <span class="title">
                     Go work
                 </span>
@@ -61,9 +61,9 @@
         <div class="name title-font">
             {{ restaurant?.name }}
         </div>
-        <div class="work" *ngIf="ui.workAs">
-            <button id="work"><ion-icon name="accessibility-outline"></ion-icon></button>
-        </div>
+        <button id="work" *ngIf="workAs && workAs == 'both'" routerLink="sraff/{{ restaurant?._id }}/solo"><ion-icon name="accessibility-outline"></ion-icon></button>
+        <button id="work" *ngIf="workAs && workAs == 'cook'" routerLink="staff/{{ restaurant?._id }}/cook"><ion-icon name="accessibility-outline"></ion-icon></button>
+        <button id="work" *ngIf="workAs && workAs == 'waiter'" routerLink="staff/{{ restaurant?._id }}/waiter"><ion-icon name="accessibility-outline"></ion-icon></button>
     </div>
 </ion-header>
 
