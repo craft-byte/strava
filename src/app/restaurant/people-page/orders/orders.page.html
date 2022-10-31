@@ -1,5 +1,5 @@
 <div class="app">
-  <!-- <div class="header">
+    <!-- <div class="header">
     <div class="search">
       <ion-searchbar mode="ios"></ion-searchbar>
       <button class="orange-button">
@@ -10,45 +10,48 @@
       <button class="orange-button">Filters</button>
     </div>
   </div> -->
-  <div *ngIf="orders && orders.length > 0" class="list">
-    <div class="example">
-      <div class="avatar">
-        
-      </div>
-      <div class="name">
-        User name
-      </div>
-      <div class="dishes">
-        Dishes
-      </div>
-      <div class="status-box">
-        
-      </div>
-      <div class="total">
-        Total
-      </div>
+    <div class="customers">
+        <button class="orange-button" (click)="customers()">Customers</button>
     </div>
-    <div class="order" (click)="fullOrder(i._id)" *ngFor="let i of orders">
-      <div class="avatar">
-        <img [src]="i.avatar">
-      </div>
-      <div class="name">
-        <span>
-          {{ i.user.name || i.user.username }}
-        </span>
-      </div>
-      <div class="dishes">
-        <span class="count">{{ i.dishes.length }}</span>
-      </div>
-      <div class="status-box">
-        <div class="status status-badge-{{i.statusColor}}">
-          {{i.status}}
+    <div *ngIf="orders && orders.length > 0" class="list">
+        <div class="example">
+            <div class="avatar">
+
+            </div>
+            <div class="name">
+                User name
+            </div>
+            <div class="dishes">
+                Dishes
+            </div>
+            <div class="status-box">
+
+            </div>
+            <div class="total">
+                Total
+            </div>
         </div>
-      </div>
-      <div class="total">
-        ${{i.total / 100}}
-      </div>
-      <!-- <div class="top">
+        <div class="order" (click)="fullOrder(i._id)" *ngFor="let i of orders">
+            <div class="avatar">
+                <img [src]="i.avatar">
+            </div>
+            <div class="name">
+                <span>
+                    {{ i.user.name || i.user.username }}
+                </span>
+            </div>
+            <div class="dishes">
+                <span class="count">{{ i.dishes.length }}</span>
+            </div>
+            <div class="status-box">
+                <div class="status status-badge-{{i.statusColor}}">
+                    {{i.status}}
+                </div>
+            </div>
+            <div class="total">
+                ${{i.total / 100}}
+            </div>
+            <!-- <div class="top">
         <div class="avatar">
           <img [src]="i.avatar" alt="">
         </div>
@@ -77,9 +80,9 @@
           <p>Total: ${{ i.total / 100 }}</p>
         </div>
       </div> -->
+        </div>
     </div>
-  </div>
-  <div *ngIf="!orders || orders.length == 0" class="no-orders title-font">
-    <span class="text">No orders yet</span>
-  </div>
+    <div *ngIf="!orders || orders.length == 0" class="no-orders title-font">
+        <span class="text">No orders yet</span>
+    </div>
 </div>

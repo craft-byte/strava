@@ -44,6 +44,9 @@ export class OrdersPage implements OnInit {
         this.router.go(["restaurant", this.service.restaurantId, "people", "order", id], { replaceUrl: false });
     }
 
+    customers() {
+        this.router.go(["restaurant", this.service.restaurantId, "customers"]);
+    }
 
     async updateOrders() {
         await this.loader.start();
