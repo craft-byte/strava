@@ -142,8 +142,10 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        position: relative;
 
                         ion-icon {
+                            position: absolute;
                             font-size: 28px;
                             color: var(--text-color);
                         }
