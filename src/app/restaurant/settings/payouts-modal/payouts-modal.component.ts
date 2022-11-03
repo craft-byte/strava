@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { RouterService } from 'src/app/other/router.service';
 
 @Component({
@@ -7,7 +8,7 @@ import { RouterService } from 'src/app/other/router.service';
     templateUrl: './payouts-modal.component.html',
     styleUrls: ['./payouts-modal.component.scss'],
     standalone: true,
-    imports: [CommonModule]
+    imports: [CommonModule, IonicModule]
 })
 export class PayoutsModalComponent implements OnInit {
 
