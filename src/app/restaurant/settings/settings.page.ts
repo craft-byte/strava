@@ -189,6 +189,14 @@ export class SettingsPage implements OnInit {
             component.destroy();
         });
     }
+    async modes() {
+        (await this.toastCtrl.create({
+            duration: 1500,
+            mode: "ios",
+            color: "red",
+            message: "Sorry, this function is not available yet.",
+        })).present();
+    }
 
 
     async ngOnInit() {

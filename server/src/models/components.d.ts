@@ -24,20 +24,20 @@ interface RestaurantSettings {
     customers: {
         maxDishes: number;
         allowTakeAway: boolean;
-        // trust: 1 | 2 | 3;
         maxCustomers: number;
-        // maxPrice: "unlimited" | number;
         minPrice: number;
     },
     work: {
-        // maxOrdersCooking: number;
+
     },
     dishes: {
-        // strictIngredients: boolean;
-        // types: 1 | 2;
+
     },
     payments: {
 
+    }
+    staff: {
+        mode: "solo" | "standart";
     }
 }
 

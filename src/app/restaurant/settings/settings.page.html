@@ -150,6 +150,36 @@
             </div>
         </div>
     </div>
+    <div class="staff" *ngIf="settings">
+        <div class="title title-font">
+            Staff
+        </div>
+        <div class="content">
+            <div class="mode">
+                <div class="new">
+                    New
+                </div>
+                <div class="name-description">
+                    <span class="name">
+                        Mode
+                    </span>
+                    <span class="description">
+                        Select suitable mode for your restaurant
+                    </span>
+                </div>
+                <div class="selected">
+                    <span class="status-badge-purple">
+                        {{ settings.staff.mode }}
+                    </span>
+                </div>
+                <div class="button">
+                    <button id="open-modes" (click)="modes()">
+                        <ion-icon name="arrow-forward"></ion-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- <div class="block">
     <div class="title">
       Dishes
