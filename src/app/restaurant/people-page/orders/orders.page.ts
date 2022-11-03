@@ -49,7 +49,7 @@ export class OrdersPage implements OnInit {
     }
 
     async updateOrders() {
-        await this.loader.start();
+        this.orders = null;
 
         try {
             this.orders = await this.service.get({}, "people", "orders");
@@ -60,15 +60,12 @@ export class OrdersPage implements OnInit {
                 }
             }
         } catch (e) {
-
+            console.error(e);
         }
-
-        this.loader.end();
     }
 
     ngOnInit() {
         this.updateOrders();
-
     }
 
 }

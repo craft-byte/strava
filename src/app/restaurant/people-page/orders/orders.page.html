@@ -82,7 +82,10 @@
       </div> -->
         </div>
     </div>
-    <div *ngIf="!orders || orders.length == 0" class="no-orders title-font">
+    <div *ngIf="orders && orders.length == 0" class="no-orders title-font">
         <span class="text">No orders yet</span>
+    </div>
+    <div *ngIf="!orders" class="loading">
+        <span class="spinner"></span>
     </div>
 </div>
