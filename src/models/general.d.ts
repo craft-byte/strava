@@ -2,19 +2,11 @@ import { Component, RestaurantSettings, Table } from "./components";
 
 
 interface Restaurant {
-    _id: string;
+    _id: ObjectId;
     name?: string;
-    owner?: string;
-    tables?: Table[];
-    staff?: Worker[];
-    payments?: string[];
-    components?: Component[];
+    theme?: string;
     settings?: RestaurantSettings;
-    tutorials?: {
-        dishes: boolean;
-        staff: boolean;
-        cooking: boolean;
-    }
+    status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
 }
 
 export {
