@@ -1,5 +1,5 @@
 <div class="app">
-  <div class="overview">
+  <div class="overview" *ngIf="dishes && dishes.length > 0">
     <div class="header">
       <div class="gap">
 
@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="dishes">
-    <div class="header">
+    <div class="header" *ngIf="dishes && dishes.length > 0">
       <ion-searchbar (ionInput)="find($event)" (ionCancel)="cancel()" showClearButton="always" mode="ios">
       </ion-searchbar>
       <div class="button">
@@ -22,8 +22,7 @@
       </div>
     </div>
     <div *ngIf="ui.showAdd" class="no-dishes">
-      Add your first dish
-      <button class="orange-button" (click)="addDish()">Add dish</button>
+      <button class="orange-button" (click)="addDish()">Add your first dish</button>
     </div>
     <div class="list" *ngIf="dishes && dishes.length > 0">
       <div class="ex">
