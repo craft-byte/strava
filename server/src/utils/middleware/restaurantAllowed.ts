@@ -72,7 +72,6 @@ export function allowed(
 
             for (let i of staff!) {
                 if (user._id.equals(i.userId)) {
-                    console.log(i.role);
                     if(i.role == "owner") {
                         console.log("OWNER ==============");
                         return next();

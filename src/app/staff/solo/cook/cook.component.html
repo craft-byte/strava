@@ -1,0 +1,13 @@
+<div class="app">
+    <div class="title">
+        <div class="text title-font">To be cooked</div>
+    </div>
+    <div *ngIf="!orderDishes || orderDishes.length == 0" class="no-dishes">
+        <ion-icon name="rose-outline"></ion-icon> <span class="text">No dishes</span> <ion-icon name="bug-outline"></ion-icon>
+    </div>
+    <div *ngIf="orderDishes && orderDishes.length > 0" class="dishes">
+        <app-dish (click)="openModal(dish)" *ngFor="let dish of orderDishes" [orderDish]="dish"></app-dish>
+    </div>
+</div>
+
+<ng-container #dishModalContainer></ng-container>

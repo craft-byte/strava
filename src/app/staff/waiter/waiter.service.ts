@@ -15,10 +15,6 @@ export class WaiterService {
     public socket: Socket
   ) { };
 
-  emit(str: string, data: any) {
-    this.socket.emit(str, data);
-  }
-
   connect() {
     this.flow = new Observable<WaiterResponse>(subs => {
       this.socket.on("waiter", (data: any) => subs.next(data));

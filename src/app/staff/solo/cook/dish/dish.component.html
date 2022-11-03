@@ -1,0 +1,21 @@
+<div class="app">
+    <div class="image">
+        <img [src]="image" alt="">
+    </div>
+    <div class="name-time">
+        <div class="name">
+            {{ dish?.name }}
+        </div>
+        <div class="time">
+            {{ dish?.info?.time }}m.
+        </div>
+    </div>
+    <div class="delay {{ orderDish.time.color }}">
+        <span *ngIf="orderDish.time.hours" class="hours">
+            {{ orderDish.time.hours }} hrs.
+        </span>
+        <span class="minutes">
+            {{ orderDish.time.minutes }} m.
+        </span>
+    </div>
+</div>

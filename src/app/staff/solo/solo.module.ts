@@ -7,6 +7,10 @@ import { IonicModule } from '@ionic/angular';
 import { SoloPageRoutingModule } from './solo-routing.module';
 
 import { SoloPage } from './solo.page';
+import { CookComponent } from './cook/cook.component';
+import { WaiterComponent } from './waiter/waiter.component';
+import { DishComponent as CookDishComponent } from './cook/dish/dish.component';
+import { DishComponent as WaiterDishComponent } from './waiter/dish/dish.component';
 
 @NgModule({
   imports: [
@@ -15,6 +19,6 @@ import { SoloPage } from './solo.page';
     IonicModule,
     SoloPageRoutingModule
   ],
-  declarations: [SoloPage]
+  declarations: [SoloPage, CookComponent, WaiterComponent, CookDishComponent, WaiterDishComponent]
 })
 export class SoloPageModule {}

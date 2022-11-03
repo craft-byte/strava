@@ -564,6 +564,7 @@ router.post("/session/dish", passUserData, passOrder({ _id: 1 }), async (req, re
                         status: "ordered",
                         _id: id()!,
                         comment: comment || null,
+                        id: (Math.floor(Math.random() * 9000) + 1000).toString(),
                     }
                 }
             }

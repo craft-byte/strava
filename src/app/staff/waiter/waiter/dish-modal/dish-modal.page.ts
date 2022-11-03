@@ -86,7 +86,7 @@ export class DishModalPage implements OnInit, OnDestroy {
     }
 
     async served() {
-        const result: any = await this.service.delete("waiter", this.data.orderId, "dish", this.data._id, "served");
+        const result: any = await this.service.delete("waiter", "order", this.data.orderId, "dish", this.data._id, "served");
 
         if(result.success) {
             this.modalCtrl.dismiss(this.data._id, "served");

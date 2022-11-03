@@ -1,0 +1,42 @@
+.app {
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 12px;
+
+    .image {
+        img {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            width: 100%;
+            aspect-ratio: 16 / 6;
+            object-fit: cover;
+        }
+    }
+    
+    .name-time {
+        display: flex;
+        align-items: center;
+        height: 32px;
+        justify-content: space-between;
+        padding: 0 6px;
+
+        .name {
+            color: var(--black);
+        }
+        .time {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+    }
+
+    .delay {
+        padding: 6px;
+        display: flex;
+        justify-content: flex-end;
+
+        &.red {
+            color: var(--red);
+        }
+    }
+}

@@ -1,0 +1,101 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button (click)="leave.emit()" id="close-modal">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <button *ngIf="data && !data.ui.taken" class="button-font" id="take" (click)="take()">
+                Take
+            </button>
+            <span *ngIf="data && data?.ui.taken">
+                <button class="button-font" id="quit" (click)="quit()">
+                    Quit
+                </button>
+                <button class="button-font" id="done" (click)="done()">
+                    Done
+                </button>
+            </span>
+        </div>
+        <div class="content">
+            <div class="dish">
+                <div class="image">
+                    <img [src]="dishImage" alt="">
+                    <button id="show-image" (click)="showImage()"><ion-icon name="search"></ion-icon></button>
+                </div>
+                <div class="info">
+                    <div class="name title-font">
+                        {{ dish.name }}
+                    </div>
+                    <div class="time">
+                        {{ dish.info?.time }} m.
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!data" class="loading">
+                <div class="spinner"></div>
+            </div>
+            <div class="order" *ngIf="data">
+                <div class="customer">
+                    <img [src]="customerAvatar" alt="">
+                    <span class="name">
+                        {{ data.customer.name }}
+                    </span>
+                </div>
+                <div class="delay {{ data.order?.time.color }}">
+                    <span class="title">
+                        Delay:
+                    </span>
+                    <span *ngIf="data.order?.time.hours" class="hours">
+                        {{ data.order.time.hours }} hrs.
+                    </span>
+                    <span *ngIf="data.order?.time.minutes" class="minutes">
+                        {{ data.order.time.minutes }} m.
+                    </span>
+                </div>
+                <div class="taken" *ngIf="data.ui.taken && data.taken">
+                    <div class="user">
+                        <img [src]="takenAvatar" alt="">
+                    <span class="name">
+                        {{ data.taken.user.name }}'s
+                    </span>
+                    <span class="text">
+                        cooking
+                    </span>
+                    </div>
+                    <span class="time" *ngIf="data.taken.time as time">
+                        <span *ngIf="time.hours" class="hours">
+                            {{ time.hours }} hrs.
+                        </span>
+                        <span *ngIf="time.minutes" class="minutes">
+                            {{ time.minutes }} m.
+                        </span>
+                    </span>
+                </div>
+                <div class="comments">
+                    <div class="dish-comment">
+                        <div class="title title-font">
+                            Dish comment
+                        </div>
+                        <div class="text">
+                            {{ data.order?.dishComment }}
+                        </div>
+                    </div>
+                    <div class="order-comment">
+                        <div class="title title-font">
+                            Order comment
+                        </div>
+                        <div class="text">
+                            {{ data.order?.comment }}
+                        </div>
+                    </div>
+                </div>
+                <div class="full-order">
+                    <button class="button-font" (click)="fullOrder()">See full order</button>
+                </div>
+                <div class="delete">
+                    <button class="button-font" (click)="deleteDish()">Delete dish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

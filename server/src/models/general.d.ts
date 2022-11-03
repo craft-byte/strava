@@ -183,6 +183,7 @@ interface Order {
         _id: ObjectId;
         dishId: ObjectId;
         comment: string;
+        id?: string;
         status: "ordered" | "cooking" | "cooked" | "served" | "removed";
 
         name?: string;

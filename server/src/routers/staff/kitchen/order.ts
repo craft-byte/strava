@@ -20,13 +20,10 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
 
     const result: any = {
         ui: {
-            showComponents: false,
-            showRecipee: false,
             showUser: false,
             taken: false,
         },
-        cooking: {},
-        user: {},
+        customer: {},
         dish: {},
         order: {},
         taken: {}
@@ -58,7 +55,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
 
     let user: User | any;
     if(ip && !customer) {
-        result.user = {
+        result.customer = {
             name: "Anonymous",
             avatar: null,
             _id: null,
@@ -67,16 +64,16 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
     } else {
         user = await getUser(customer!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
 
-        result.ui.showUser = true;
+        result.ui.showCustomer = true;
         if (user) {
-            result.user = {
+            result.customer = {
                 name: user?.name?.first,
                 avatar: user?.avatar?.binary,
                 _id: customer,
                 user: true,
             }
         } else {
-            result.user = {
+            result.customer = {
                 name: "User deleted",
                 avatar: null,
                 _id: null,
@@ -94,7 +91,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
         type,
         dishes: dishes.length,
         _id: orderId,
-        comment
+        comment,
     }
 
 
@@ -112,57 +109,57 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
         return res.sendStatus(404);
     }
 
-    const dish = await Restaurant(restaurantId).dishes.one(dishId!).get({ projection: { cooking: 1, name: 1, info: { time: 1, }, image: { binary: 1, resolution: 1, } } });
+    // const dish = await Restaurant(restaurantId).dishes.one(dishId!).get({ projection: { cooking: 1, name: 1, info: { time: 1, }, image: { binary: 1, resolution: 1, } } });
 
-    if (dish) {
-        result.dish = {
-            _id: dish._id,
-            name: dish.name,
-            image: { binary: dish.image?.binary, resolution: dish.image?.resolution == 1 ? "r1" : dish.image!.resolution == 1.33 ? "r2" : "r3" },
-            time: dish.info?.time,
-        }
-        if (dish.cooking) {
-            if (dish.cooking.components) {
-                result.ui.showComponents = true;
+    // if (dish) {
+    //     result.dish = {
+    //         _id: dish._id,
+    //         name: dish.name,
+    //         image: { binary: dish.image?.binary, resolution: dish.image?.resolution == 1 ? "r1" : dish.image!.resolution == 1.33 ? "r2" : "r3" },
+    //         time: dish.info?.time,
+    //     }
+    //     if (dish.cooking) {
+    //         if (dish.cooking.components) {
+    //             result.ui.showComponents = true;
 
-                const componentIds: ObjectId[] = [];
+    //             const componentIds: ObjectId[] = [];
 
-                for (let i of dish.cooking.components) {
-                    componentIds.push(i._id);
-                }
+    //             for (let i of dish.cooking.components) {
+    //                 componentIds.push(i._id);
+    //             }
 
-                const components = await Restaurant(restaurantId).components.getMany(componentIds, { amount: 1, name: 1, _id: 1, });
+    //             const components = await Restaurant(restaurantId).components.getMany(componentIds, { amount: 1, name: 1, _id: 1, });
 
-                if (components) {
-                    const convertedComponents = [];
+    //             if (components) {
+    //                 const convertedComponents = [];
 
-                    for (let i in components) {
-                        if (!components[i]) {
-                            console.log("NOT INPLEMETEDDDD");
-                            continue;
-                        }
-                        convertedComponents.push({
-                            name: components[i].name,
-                            amount: dish.cooking.components[i].amount,
-                            of: components[i].amount,
-                            _id: components[i]._id,
-                        });
-                    }
+    //                 for (let i in components) {
+    //                     if (!components[i]) {
+    //                         console.log("NOT INPLEMETEDDDD");
+    //                         continue;
+    //                     }
+    //                     convertedComponents.push({
+    //                         name: components[i].name,
+    //                         amount: dish.cooking.components[i].amount,
+    //                         of: components[i].amount,
+    //                         _id: components[i]._id,
+    //                     });
+    //                 }
 
-                    result.cooking.components = convertedComponents;
-                }
-            }
+    //                 result.cooking.components = convertedComponents;
+    //             }
+    //         }
 
 
-            if (dish.cooking.recipee) {
-                result.ui.showRecipee = true;
-                result.cooking.recipee = dish.cooking.recipee;
-            }
+    //         if (dish.cooking.recipee) {
+    //             result.ui.showRecipee = true;
+    //             result.cooking.recipee = dish.cooking.recipee;
+    //         }
 
-        }
-    } else {
-        return res.sendStatus(404);
-    }
+    //     }
+    // } else {
+    //     return res.sendStatus(404);
+    // }
 
     for (let i of dishes!) {
         if (i._id.equals(orderDishId)) {
@@ -178,7 +175,7 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
                     }
                 }
             }
-            result.dish.comment = i.comment;
+            result.order.dishComment = i.comment;
             break;
         }
     }
@@ -187,6 +184,13 @@ router.get("/dish/:orderDishId/info", logged({ _id: 1, }), allowed({ _id: 1 }, "
     res.send(result);
 });
 
+
+/**
+ * 
+ * changes dish status to 'cooking'
+ * customers can't remove this dish from their order anymore
+ * 
+ */
 router.post("/dish/:orderDishId/take", logged({ _id: 1, name: 1, avatar: 1, }), allowed({ _id: 1, }, "cook"), async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
     const { user } = res.locals as Locals;
@@ -215,7 +219,7 @@ router.post("/dish/:orderDishId/take", logged({ _id: 1, name: 1, avatar: 1, }), 
     
         
     res.send({
-        success: update.ok > 0,
+        success: update.ok == 1,
         taken: {
             time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
             user: {

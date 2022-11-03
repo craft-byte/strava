@@ -1,6 +1,8 @@
 import { Router } from "express";
+import { rawListeners } from "process";
 import { io } from "..";
 import { Settings } from "../models/components";
+import { Locals } from "../models/other";
 import { logged } from "../utils/middleware/logged";
 import { allowed } from "../utils/middleware/restaurantAllowed";
 import { Restaurant } from "../utils/restaurant";
@@ -10,9 +12,41 @@ import { WaiterRouter } from "./staff/waiter/waiter";
 const router = Router();
 
 
-router.use("/:restaurantId/kitchen", KitchenRouter);
+router.use("/:restaurantId/cook", KitchenRouter);
 router.use("/:restaurantId/waiter", WaiterRouter);
 
+
+router.post("/:restaurantId/solo", logged({ _id: 1, }), async (req, res, next) => {
+    const { user } = res.locals as Locals;
+    const { restaurantId } = req.params;
+    
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1, role: 1, settings: 1, }, } });
+
+    if(!restaurant) {
+        return res.status(404).send({ reason: "NoRestaurant" });
+    }
+
+    for(let i of restaurant.staff!) {
+        if(i.userId.equals(user._id)) {
+            if((i.role == "manager" && (i.settings as Settings.ManagerSettings).work.cook && (i.settings as Settings.ManagerSettings).work.waiter) || i.role == "owner") {
+                return next();
+            }
+            return res.status(403).send({ reason: "NotAllowed" });
+        }
+    }
+    return res.status(403).send({ reason: "NotMember" });
+}, async (req, res) => {
+    const { socketId } = req.body;
+    const { restaurantId } = req.params as any;
+
+    if(!socketId) {
+        return res.status(403).send({ reason: "SocketIdNotProvided" });
+    }
+
+    io.in(socketId).socketsJoin([`${restaurantId}/waiter`, `${restaurantId}/kitchen`]);
+
+    res.send(true);
+});
 router.get("/:restaurantId/dashboard", logged({ _id: 1 }), allowed({ name: 1, staff: 1 }, "staff"), async (req, res) => {
     const { restaurant, user } = res.locals;
 

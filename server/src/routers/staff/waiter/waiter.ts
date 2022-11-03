@@ -45,41 +45,48 @@ router.get("/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1, }, "waiter"), 
 });
 
 
-interface Dish {
-    _id: string;
-    name: string;
-    image: {
-        binary: any;
-        resolution: number;
-    }
-}; interface OrderLocal {
-    type: "order" | "table";
+router.get("/dishes", logged({ _id: 1 }), allowed({ _id: 1, }, "waiter"), async (req, res) => {
+    const { restaurantId } = req.params;
+
+    
+    const result = await convertDishes(restaurantId)
+
+    res.send(result);
+});
+
+
+interface OrderInfo {
+    type: "out" | "in";
     number: string;
+    comment: string;
+    customer: User;
 }; interface User {
     name: string;
     avatar: any;
     _id: string;
-}; interface RequestResult {
-    comment: string;
-    cook: User;
-    user: User;
-    dish: Dish;
-    time: Time;
-    timeDone: Time;
-    order: OrderLocal;
-}; router.get("/:orderId/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
+}; interface Response {
+    dish: {
+        comment: string;
+        cook: User;
+        ordered: Time;
+        timeDone: Time;
+    }
+    order: OrderInfo;
+}; router.get("/order/:orderId/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
 
-    const result: RequestResult = {
-        dish: null!,
-        user: null!,
-        cook: null!,
-        time: null!,
-        timeDone: null!,
-        comment: null!,
+    const result: Response = {
+        dish: {
+            cook: null!,
+            ordered: null!,
+            timeDone: null!,
+            comment: null!,
+        },
         order: {
+            customer: null!,
             type: null!,
             number: null!,
+            comment: null!,
         }
     }
 
@@ -98,6 +105,7 @@ interface Dish {
                 comment: 1,
                 cook: 1,
                 status: 1,
+                id: 1,
             }
         }
     });
@@ -113,22 +121,22 @@ interface Dish {
             }
             const cook = (await getUser(i.cook!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } }));
             const user = (await getUser(order.customer!, { projection: { name: 1, username: 1, avatar: { binary: 1 } } }));
-            result.comment = i.comment;
-            result.cook = {
-                name: cook?.name ? `${cook.name.first} ${cook.name.last}` : "User deleted",
+            result.order.comment = order.comment!;
+            result.dish.comment = i.comment;
+            result.dish.cook = {
+                name: cook?.name ? cook.name.first : "User deleted",
                 avatar: cook?.avatar?.binary || null,
                 _id: i.cook!.toString(),
             };
-            result.user = {
-                name: user?.name ? `${user.name?.first} ${user?.name.last}` : "User deleted",
+            result.order.customer = {
+                name: user?.name ? user.name?.first : "User deleted",
                 avatar: cook?.avatar?.binary || null,
                 _id: order.customer?.toString() || null!,
             };
-            result.dish = (await Restaurant(restaurantId).dishes.one(i.dishId).get({ projection: { name: 1, image: { binary: 1, resolution: 1, } } })) as any,
-            result.time = getDelay(order.ordered!);
-            result.timeDone = getDelay(i.cooked!);
+            result.dish.ordered = getDelay(order.ordered!);
+            result.dish.timeDone = getDelay(i.cooked!);
             result.order.number = order.id!;
-            result.order.type = order.type == "in" ? "table" : "order";
+            result.order.type = order.type;
 
             break;
         }
@@ -137,7 +145,7 @@ interface Dish {
     res.send(result);
 });
 
-router.delete("/:orderId/dish/:orderDishId/served", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
+router.delete("/order/:orderId/dish/:orderDishId/served", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
     const { restaurantId, orderId, orderDishId } = req.params as any;
     const { user } = res.locals as Locals;
 

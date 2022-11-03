@@ -1,0 +1,99 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button (click)="leave.emit()" id="close-modal">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </div>
+        <div class="content">
+            <div class="dish">
+                <div class="image">
+                    <img [src]="image" alt="">
+                    <button id="show-image" (click)="showImage()"><ion-icon name="search"></ion-icon></button>
+                </div>
+                <div class="name-id">
+                    <div class="name title-font">
+                        {{ dish.name }}
+                    </div>
+                    <div class="id">
+                        {{ orderDish.id }}
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!order" class="loading">
+                <span class="spinner"></span>
+            </div>
+            <div class="customer" *ngIf="orderDishInfo">
+                <div class="user">
+                    <img [src]="customerAvatar" alt="">
+                    <span class="name">
+                        {{ order.customer.name }}
+                    </span>
+                    <div class="text">
+                        ordered
+                    </div>
+                </div>
+                <div class="time {{ orderDishInfo.ordered.color }}" *ngIf="orderDishInfo.ordered">
+                    <span *ngIf="orderDishInfo.ordered.hours" class="hours">
+                        {{ orderDishInfo.ordered.hours }} hrs.
+                    </span>
+                    <span class="minutes">
+                        {{ orderDishInfo.ordered.minutes }} m.
+                    </span>
+                    ago
+                </div>
+            </div>
+            <div class="cook" *ngIf="orderDishInfo">
+                <div class="user">
+                    <img [src]="cookAvatar" alt="">
+                    <span class="name">
+                        {{ orderDishInfo.cook.name }}
+                    </span>
+                    <span class="text">
+                        cooked
+                    </span>
+                </div>
+                <div *ngIf="orderDishInfo.timeDone" class="time {{ orderDishInfo.timeDone.color }}">
+                    <span class="hours" *ngIf="orderDishInfo.timeDone.hours">
+                        {{ orderDishInfo.timeDone.hours }} hrs.
+                    </span>
+                    <span class="minutes">
+                        {{ orderDishInfo.timeDone.minutes }} m.
+                    </span>
+                    ago
+                </div>
+            </div>
+            <div *ngIf="order" class="order">
+                <div *ngIf="order.type == 'out'" class="takeout">
+                    Take away order#{{ order.number }}
+                </div>
+                <div *ngIf="order.type == 'in'" class="inside">
+                    Serve inside to table#{{ order.number }}
+                </div>
+            </div>
+            <div class="comments">
+                <div *ngIf="orderDishInfo && orderDishInfo.comment" class="dish-comment">
+                    <div class="title title-font">
+                        Dish comment
+                    </div>
+                    <div class="text">
+                        {{ orderDishInfo.comment }}
+                    </div>
+                </div>
+                <div *ngIf="order && order.comment" class="order-comment">
+                    <div class="title title-font">
+                        Order comment
+                    </div>
+                    <div class="text">
+                        {{ order.comment }}
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button id="served" class="button-font" (click)="served()">
+                    Served
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
