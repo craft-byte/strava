@@ -7,10 +7,9 @@
     height: 42px;
     width: 100%;
     padding: 0 412px;
-    position: fixed;
     top: 0;
     left: 0;
-    z-index: 99999999999;
+    z-index: 1;
 
     .restaurant {
         font-size: 20px;
@@ -141,6 +140,7 @@
     position: relative;
     display: flex;
     align-items: center;
+    z-index: 1;
 
     .name {
         color: var(--black);
@@ -183,6 +183,10 @@
 
 .app {
     padding: 48px 412px;
+    background-color: white;
+    min-height: 100vh;
+    width: 100%;
+    overflow-y: auto;
 
     .verification {
         display: flex;
@@ -221,6 +225,7 @@
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
     padding: 0 6px;
     padding-bottom: 2px;
+    z-index: 1;
 
     .tab-button {
         background: none;
@@ -254,6 +259,7 @@
 }
 
 
+
 @media (min-width: 1500px) {
     .app {
         padding: 0 252px;
@@ -261,6 +267,10 @@
 
     .header {
         padding: 0 252px;
+    }
+
+    .mobile-header {
+        display: none;
     }
 
     #tabs {
@@ -277,7 +287,8 @@
         padding: 0 108px;
     }
 
-    #tabs {
+
+    #tabs, .mobile-header {
         display: none;
     }
 }
@@ -293,6 +304,10 @@
     }
 
     #tabs {
+        display: none;
+    }
+
+    .mobile-header {
         display: none;
     }
 
