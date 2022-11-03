@@ -173,9 +173,6 @@ export class SettingsPage implements OnInit {
     }
     async payouts() {
 
-        console.log(this.money);
-        console.log(this.bank);
-
         const { PayoutsModalComponent } = await import("./payouts-modal/payouts-modal.component");
 
         const component = this.payoutsModal.createComponent(PayoutsModalComponent, { injector: this.injector });
@@ -193,16 +190,12 @@ export class SettingsPage implements OnInit {
 
 
     async ngOnInit() {
-        await this.loader.start();
         const result: any = await this.service.get({}, "settings");
 
         this.settings = result.settings;
         this.money = result.money;
         this.bank = result.payoutDestination;
         this.restaurant = result.restaurant;
-
-
-        this.loader.end();
     }
 
 }

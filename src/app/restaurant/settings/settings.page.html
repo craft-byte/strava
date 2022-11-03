@@ -1,4 +1,4 @@
-<div class="app" *ngIf="settings">
+<div class="app">
     <div class="restaurant" *ngIf="restaurant">
         <div class="status">
             <span *ngIf="restaurant.status == 'enabled'" class="status status-badge-green">
@@ -274,7 +274,7 @@
       </div>
     </div>
   </div> -->
-    <div class="red">
+    <div class="red" *ngIf="settings">
         <div class="title">
             <span class="text title-font">
                 Danger zone
@@ -297,6 +297,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div *ngIf="!restaurant || !money" class="loading">
+        <span class="spinner"></span>
     </div>
 </div>
 
