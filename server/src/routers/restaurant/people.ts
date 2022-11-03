@@ -42,7 +42,7 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
     const orders = await (await Orders(restaurantId).history.many({ }, { limit: 12 })).sort({ ordered: -1 }).toArray();
 
     if(!orders || orders.length == 0) {
-        return res.send(null);
+        return res.send([]);
     }
 
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, price: 1 });
