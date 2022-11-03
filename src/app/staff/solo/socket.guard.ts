@@ -36,7 +36,7 @@ export class SocketGuard implements CanActivate {
             if (this.soc.socketId) {
                 this.check(this.soc.socketId).subscribe(res => subs.next(res));
                 return;
-            } else if (this.soc.socket.ioSocket.id) {
+            } else if (this.soc.socket.ioSocket?.id) {
                 this.soc.socketId = this.soc.socket.ioSocket.id;
                 this.check(this.soc.socketId).subscribe(res => subs.next(res));
                 return;
