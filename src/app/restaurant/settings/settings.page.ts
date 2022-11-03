@@ -180,9 +180,11 @@ export class SettingsPage implements OnInit {
         component.instance.bank = this.bank;
         component.instance.status = this.money.payouts;
 
-        component.instance.leave.subscribe((redirect: boolean) => {
-            if(redirect) {
+        component.instance.leave.subscribe((redirect: string) => {
+            if(redirect == "bank") {
                 this.router.go(["restaurant", this.service.restaurantId, "conf", "bank-account"], { queryParams: { last: "settings" } });
+            } else if(redirect == "contact") {
+                
             }
             component.destroy();
         });

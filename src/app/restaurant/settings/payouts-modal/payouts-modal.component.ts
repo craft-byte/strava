@@ -27,7 +27,10 @@ export class PayoutsModalComponent implements OnInit {
     @Output() leave = new EventEmitter();
 
     edit() {
-        this.leave.emit(true);
+        this.leave.emit("bank");
+    }
+    contact() {
+        this.leave.emit("contact");
     }
     
     ngOnInit() { }
