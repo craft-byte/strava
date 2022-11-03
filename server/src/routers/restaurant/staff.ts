@@ -17,7 +17,7 @@ const router = Router({ mergeParams: true });
 /**
  * @returns list of restaurant staff
  */
-router.get("/", logged({ _id: 1 }), allowed({ staff: { joined: 1, userId: 1, role: 1 } }, "manager", "staff"), async (req, res) => {
+router.get("/", logged({ _id: 1 }), allowed({ staff: { joined: 1, userId: 1, role: 1 }, settings: { staff: { mode: 1 } } }, "manager", "staff"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { restaurant } = res.locals as Locals;
 
@@ -31,11 +31,11 @@ router.get("/", logged({ _id: 1 }), allowed({ staff: { joined: 1, userId: 1, rol
     const users = await getUsers({ _id: { $in: ids } }, { projection: { name: 1, avatar: 1 } });
 
 
-    const result = [];
+    const people = [];
 
     for (let i in restaurant.staff!) {
         if(users[i]) {
-            result.push({
+            people.push({
                 name: users[i].name?.first || "User deleted",
                 _id: users[i]._id,
                 date: getDate(restaurant.staff![i].joined!),
@@ -43,7 +43,7 @@ router.get("/", logged({ _id: 1 }), allowed({ staff: { joined: 1, userId: 1, rol
                 avatar: users[i].avatar?.binary,
             });    
         } else {
-            result.push({
+            people.push({
                 name: "User deleted",
                 avatar: null,
                 _id: restaurant.staff![i].userId,
@@ -55,7 +55,7 @@ router.get("/", logged({ _id: 1 }), allowed({ staff: { joined: 1, userId: 1, rol
 
 
 
-    res.send(result);
+    res.send({ people, mode: restaurant.settings?.staff.mode });
 });
 
 /**
