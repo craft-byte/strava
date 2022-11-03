@@ -9,7 +9,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99999999999999999999999999999999999999999999;
+    z-index: 2;
 
     .box {
         width: 512px;
@@ -38,6 +38,7 @@
             .title {
                 display: flex;
                 align-items: center;
+                color: var(--black);
 
                 .text {
                     font-size: 18px;

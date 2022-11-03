@@ -33,6 +33,7 @@ export class BankAccountPage implements OnInit {
     numberRed: false,
     routingRed: false,
     errorMessage: "",
+    buttonText: ""
   }
 
   form: FormGroup;
@@ -52,7 +53,12 @@ export class BankAccountPage implements OnInit {
   }
 
   skip() {
-    this.router.go(["restaurant", this.restaurantId, "settings"]);
+    const last = this.route.snapshot.queryParamMap.get("last");
+    if(last == "settings") {
+        this.router.go(["restaurant", this.restaurantId, "settings"]);
+    } else {
+        this.router.go(["restaurant", this.restaurantId, "home"]);
+    }
   }
 
 
@@ -152,6 +158,13 @@ export class BankAccountPage implements OnInit {
         name: new FormControl(result.name, Validators.required),
         country: new FormControl(result.country, Validators.required),
       });
+    }
+
+    const last = this.route.snapshot.queryParamMap.get("last");
+    if(last == "settings") {
+        this.ui.buttonText = "Back";
+    } else {
+        this.ui.buttonText = "Skip";
     }
 
     this.ui.show = true;

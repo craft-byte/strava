@@ -14,7 +14,11 @@ import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page
 export class SettingsPage implements OnInit {
 
     settings: RestaurantSettings;
-    money: any;
+    money: {
+        cash: string;
+        card: string;
+        payouts: string;
+    };
     bank: any;
     restaurant: any;
     timeout: any;
@@ -36,64 +40,13 @@ export class SettingsPage implements OnInit {
 
     @ViewChild("changeNameContainer", { read: ViewContainerRef }) changeNameContainer: ViewContainerRef;
     @ViewChild("changeDescriptionContainer", { read: ViewContainerRef }) changeDescriptionContainer: ViewContainerRef;
+    @ViewChild("payoutsModalContainer", { read: ViewContainerRef }) payoutsModal: ViewContainerRef;
 
-
-    payoutsChange() {
-        this.router.go(["restaurant", this.service.restaurantId, "conf", "bank-account"]);
-    }
     continueRegistration() {
         this.router.go(["restaurant", this.service.restaurantId, "home"]);
     }
-
-
-
-    async select(field1: string, field2: string, event: any) {
-        await this.loader.start();
-        const { target: { value } } = event;
-
-        clearTimeout(this.timeout3);
-
-        this.timeout3 = setTimeout(async () => {
-            const result: any = await this.service.post({ field1, field2, value: value == "true" ? true : false }, "settings");
-
-            this.toast(result.updated);
-
-            if (result.updated) {
-                this.settings[field1][field2] = value == "true" ? true : false;
-            }
-            this.loader.end();
-        }, 600);
-    }
-    async check(field1: string, field2: string, event: any) {
-        await this.loader.start();
-        clearTimeout(this.timeout2);
-
-        this.timeout2 = setTimeout(async () => {
-            const result: any = await this.service.post({ field1, field2, value: event.target.checked ? "unlimited" : 0 }, "settings");
-
-            this.toast(result.updated);
-
-            if (result.updated) {
-                this.settings[field1][field2] = event.target.checked ? "unlimited" : 0;
-            }
-            this.loader.end();
-        }, 600);
-    }
-    async input(field1: string, field2: string, event: any) {
-        const { target: { value } } = event;
-
-        clearTimeout(this.timeout);
-
-        this.timeout = setTimeout(async () => {
-            const result: any = await this.service.post({ field1, field2, value: Number(value) || 0 }, "settings");
-
-            this.toast(result.updated);
-
-            if (result.updated) {
-                this.settings[field1][field2] = value || 0;
-            }
-
-        }, 600);
+    changeLocation() {
+        this.router.go(["restaurant", this.service.restaurantId, "conf", "address"], { queryParams: { last: "settings" } });
     }
 
     async toast(s: boolean) { // is success true/false
@@ -218,12 +171,26 @@ export class SettingsPage implements OnInit {
             component.destroy();
         });
     }
-    // verification() {
-    //     this.router.go(["restaurant", this.service.restaurantId, "conf", this.verificationUrl ]);
-    // }
-    changeLocation() {
-        this.router.go(["restaurant", this.service.restaurantId, "conf", "address"], { queryParams: { last: "settings" } });
+    async payouts() {
+
+        console.log(this.money);
+        console.log(this.bank);
+
+        const { PayoutsModalComponent } = await import("./payouts-modal/payouts-modal.component");
+
+        const component = this.payoutsModal.createComponent(PayoutsModalComponent, { injector: this.injector });
+
+        component.instance.bank = this.bank;
+        component.instance.status = this.money.payouts;
+
+        component.instance.leave.subscribe((redirect: boolean) => {
+            if(redirect) {
+                this.router.go(["restaurant", this.service.restaurantId, "conf", "bank-account"], { queryParams: { last: "settings" } });
+            }
+            component.destroy();
+        });
     }
+
 
     async ngOnInit() {
         await this.loader.start();

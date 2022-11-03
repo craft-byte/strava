@@ -1,0 +1,68 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button (click)="leave.emit()" id="close-modal">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Payouts
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="info">
+                <span class="status">
+                    <span [class.status-badge-green]="status == 'enabled'"
+                        [class.status-badge-orange]="status == 'disabled'"
+                        [class.status-badge-red]="status == 'rejected'"
+                        [class.status-badge-red]="status == 'restricted'"
+                        [class.status-badge-purple]="status == 'pending'">
+                        <span *ngIf="status != 'enabled'">
+                            {{ status }}
+                        </span>
+                        <span *ngIf="status == 'enabled'">
+                            daily
+                        </span>
+                    </span>
+                </span>
+                <span class="text">
+                    Money earned from customers that pay with card will be sent to the bank account you've assigned to the restaurant.
+                </span>
+                <span class="text">
+                    Payed out to:
+                </span>
+            </div>
+            <div *ngIf="bank" class="bank">
+                <div class="name-currency">
+                    <span class="name title-font">
+                        {{ bank.bank }}
+                    </span>
+                    <span class="currency">
+                        {{ bank.currency }}
+                    </span>
+                </div>
+                <div class="last4-routing">
+                    <div class="last4">
+                        <span class="dots">
+                            &#9679;
+                            &#9679;
+                            &#9679;
+                            &#9679;
+                        </span>
+                        <span class="number">
+                            {{ bank.last4 }}
+                        </span>
+                    </div>
+                    <div class="routing">
+                        {{ bank.routing }}
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button class="only-text-button" (click)="edit()">Edit</button>
+                </div>
+                <!-- {{ bank.status }} -->
+            </div>
+        </div>
+    </div>
+</div>
