@@ -1,0 +1,58 @@
+<div class="app" [@showUp] (click)="leave.emit()">
+    <div class="box" (click)="$event.stopPropagation()">
+        <div class="header">
+            <button (click)="leave.emit()" id="close-modal">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text">
+                    Mode
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="title">
+                <span class="text title-font">
+                    Select suitable mode for your restaurant.
+                </span>
+            </div>
+            <div class="modes">
+                <div class="solo mode" [class.selected]="mode == 'solo'">
+                    <div class="title">
+                        <span class="text title-font">
+                            Solo
+                        </span>
+                    </div>
+                    <div class="info">
+                        <span class="text">
+                            Choose solo mode if you want to work on one device.
+                        </span>
+                    </div>
+                    <div class="buttons">
+                        <button class="orange-button" *ngIf="mode != 'solo'" (click)="select('solo')">Select</button>
+                        <button class="green-button" *ngIf="mode == 'solo'"> <ion-icon name="checkmark"></ion-icon> Selected </button>
+                    </div>
+                </div>
+                <div class="standart mode" [class.selected]="mode == 'standart'">
+                    <span class="soon status-badge-purple">Soon</span>
+                    <div class="title">
+                        <span class="text title-font">
+                            Standart
+                        </span>
+                    </div>
+                    <div class="info">
+                        <span class="text">
+                            Choose standart if you want your staff to work on their own devices.
+                        </span>
+                        <span class="text">
+                            Add your staff members to your restaurant on staff page.
+                        </span>
+                    </div>
+                    <div class="buttons">
+                        <button class="orange-button" disabled (click)="select('standart')">Select</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

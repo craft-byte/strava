@@ -41,6 +41,7 @@ export class SettingsPage implements OnInit {
     @ViewChild("changeNameContainer", { read: ViewContainerRef }) changeNameContainer: ViewContainerRef;
     @ViewChild("changeDescriptionContainer", { read: ViewContainerRef }) changeDescriptionContainer: ViewContainerRef;
     @ViewChild("payoutsModalContainer", { read: ViewContainerRef }) payoutsModal: ViewContainerRef;
+    @ViewChild("modeModalContainer", { read: ViewContainerRef }) modeModal: ViewContainerRef;
 
     continueRegistration() {
         this.router.go(["restaurant", this.service.restaurantId, "home"]);
@@ -190,12 +191,15 @@ export class SettingsPage implements OnInit {
         });
     }
     async modes() {
-        (await this.toastCtrl.create({
-            duration: 1500,
-            mode: "ios",
-            color: "red",
-            message: "Sorry, this function is not available yet.",
-        })).present();
+        const { ModeModalComponent } = await import("./mode-modal/mode-modal.component");
+
+        const component = this.modeModal.createComponent(ModeModalComponent, { injector: this.injector });
+
+        component.instance.mode = this.settings.staff.mode;
+
+        component.instance.leave.subscribe(() => {
+            component.destroy();
+        });
     }
 
 

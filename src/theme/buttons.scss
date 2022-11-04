@@ -60,12 +60,12 @@ button {
     color: var(--color);
 }
 .red-button {
-    width: 120px;
+    padding: 4px 8px;
     height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 17px;
+    font-size: 16px;
     margin: 6px;
     border-radius: 8px;
     background-color: var(--red);
@@ -84,7 +84,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 17px;
+    font-size: 16px;
     margin: 6px;
     border-radius: 8px;
     background-color: var(--orange);
@@ -96,12 +96,12 @@ button {
     }
 }
 .white-button {
-    width: 120px;
+    padding: 4px 8px;
     height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 17px;
+    font-size: 16px;
     margin: 6px;
     border-radius: 8px;
     background-color: white;
@@ -118,12 +118,12 @@ button {
     }
 }
 .green-button {
-    width: 120px;
+    padding: 4px 8px;
     height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 17px;
+    font-size: 16px;
     margin: 6px;
     border-radius: 8px;
     background-color: var(--green);
@@ -139,7 +139,7 @@ button {
     }
 }
 .purple-button {
-    width: 120px;
+    padding: 4px 8px;
     height: 32px;
     display: flex;
     justify-content: center;
@@ -156,7 +156,7 @@ button {
     }
 }
 .blue-button {
-    width: 120px;
+    padding: 4px 8px;
     height: 32px;
     display: flex;
     justify-content: center;
