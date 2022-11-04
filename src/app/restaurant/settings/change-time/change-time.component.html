@@ -1,5 +1,5 @@
-<div class="app" [@showUp]>
-    <div class="box">
+<div class="app" (click)="leave.emit()" [@showUp]>
+    <div class="box" (click)="$event.stopPropagation()">
         <div class="header">
             <button id="close-time" (click)="leave.emit()">
                 <ion-icon name="close"></ion-icon>
