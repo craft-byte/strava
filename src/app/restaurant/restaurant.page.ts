@@ -84,8 +84,6 @@ export class RestaurantPage implements OnInit, OnDestroy {
 
         const result: { restaurant: any; workAs: string; verificationUrl: string; restaurants: any; } = await this.service.get({}, "restaurant-status");
 
-        console.log(result);
-
         if(result) {
             this.restaurant = result.restaurant;
             this.workAs = result.workAs;

@@ -33,7 +33,8 @@ export class DishesListComponent implements OnInit {
     timeout: any;
 
     ui = {
-        showAdd: false
+        noDishes: false,
+        showLoading: true,
     };
 
 
@@ -42,11 +43,6 @@ export class DishesListComponent implements OnInit {
     constructor(
         private router: RouterService,
         private service: RestaurantService,
-        private popoverCtrl: PopoverController,
-        private alertCtrl: AlertController,
-        private toastCtrl: ToastController,
-        private route: ActivatedRoute,
-        private loader: LoadService,
     ) { };
 
     cancel() {
@@ -85,18 +81,19 @@ export class DishesListComponent implements OnInit {
         }
 
         this.timeout = setTimeout(async () => {
+            this.ui.showLoading = true;
             this.lastDishes = this.dishes;
             this.dishes = await this.service.patch({ searchText: value }, "dishes", "find");
+            this.ui.showLoading = false;
         }, 1000);
     }
 
     async ngOnInit() {
-        await this.loader.start();
         this.dishes = await this.service.get({}, 'dishes');
         if (this.dishes.length == 0) {
-            this.ui.showAdd = true;
+            this.ui.noDishes = true;
         }
-        this.loader.end();
+        this.ui.showLoading = false;
     }
 
 

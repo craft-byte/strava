@@ -1,60 +1,63 @@
 <div class="app">
-  <div class="overview" *ngIf="dishes && dishes.length > 0">
-    <div class="header">
-      <div class="gap">
+    <div class="overview" *ngIf="!ui.noDishes">
+        <div class="header">
+            <div class="gap">
 
-      </div>
-      <div class="buttons">
-        <button class="orange-button" id="add-dish" (click)="addDish()">
-          <ion-icon name="add-outline"></ion-icon>Add dish
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="dishes">
-    <div class="header" *ngIf="dishes && dishes.length > 0">
-      <ion-searchbar (ionInput)="find($event)" (ionCancel)="cancel()" showClearButton="always" mode="ios">
-      </ion-searchbar>
-      <div class="button">
-        <button (click)="find()" class="orange-button">
-          <ion-icon name="search-outline"></ion-icon>
-        </button>
-      </div>
-    </div>
-    <div *ngIf="ui.showAdd" class="no-dishes">
-      <button class="orange-button" (click)="addDish()">Add your first dish</button>
-    </div>
-    <div class="list" *ngIf="dishes && dishes.length > 0">
-      <div class="ex">
-        <div class="name">
-          Name
+            </div>
+            <div class="buttons">
+                <button class="orange-button" id="add-dish" (click)="addDish()">
+                    <ion-icon name="add-outline"></ion-icon>Add dish
+                </button>
+            </div>
         </div>
-        <div class="bought">
-          Bought
+    </div>
+    <div class="dishes">
+        <div class="header" *ngIf="!ui.noDishes && dishes">
+            <ion-searchbar (ionInput)="find($event)" (ionCancel)="cancel()" showClearButton="always" mode="ios">
+            </ion-searchbar>
+            <div class="button">
+                <button (click)="find()" class="orange-button">
+                    <ion-icon name="search-outline"></ion-icon>
+                </button>
+            </div>
         </div>
-        <div class="date">
-          Modified
+        <div *ngIf="ui.noDishes" class="no-dishes">
+            <button class="orange-button" (click)="addDish()">Add your first dish</button>
         </div>
-        <div class="info">
+        <div class="list" *ngIf="!ui.noDishes && dishes && dishes.length > 0">
+            <div class="ex">
+                <div class="name">
+                    Name
+                </div>
+                <div class="bought">
+                    Bought
+                </div>
+                <div class="date">
+                    Modified
+                </div>
+                <div class="info">
 
+                </div>
+            </div>
+            <div *ngFor="let i of dishes" (click)="goDish(i._id)" class="dish">
+                <div class="start">
+                    <p class="name">
+                        {{ i.name }}
+                    </p>
+                    <p class="price">
+                        ${{ i.price / 100 }}
+                    </p>
+                </div>
+                <div class="bought">
+                    {{i.bought}}
+                </div>
+                <div class="date">
+                    {{ i.modified }}
+                </div>
+            </div>
         </div>
-      </div>
-      <div *ngFor="let i of dishes" (click)="goDish(i._id)" class="dish">
-        <div class="start">
-          <p class="name">
-            {{ i.name }}
-          </p>
-          <p class="price">
-            ${{ i.price / 100 }}
-          </p>
-        </div>
-        <div class="bought">
-          {{i.bought}}
-        </div>
-        <div class="date">
-          {{ i.modified }}
-        </div>
-      </div>
     </div>
-  </div>
+    <div class="loading" *ngIf="ui.showLoading">
+        <span class="spinner"></span>
+    </div>
 </div>

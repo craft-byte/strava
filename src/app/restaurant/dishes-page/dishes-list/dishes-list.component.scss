@@ -82,4 +82,18 @@
             align-items: center;
         }
     }
+    .loading {
+        height: 124px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border-top: 2px solid var(--border-color);
+            border-radius: 100%;
+            -webkit-animation: spin 1.5s linear infinite;
+            animation: spin 1.5s linear infinite;
+        }
+    }
 }
