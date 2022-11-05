@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { rawListeners } from "process";
 import { io } from "..";
 import { Settings } from "../models/components";
 import { Locals } from "../models/other";
@@ -7,6 +6,7 @@ import { logged } from "../utils/middleware/logged";
 import { allowed } from "../utils/middleware/restaurantAllowed";
 import { Restaurant } from "../utils/restaurant";
 import { KitchenRouter } from "./staff/kitchen/kitchen";
+import { ManualOrderRouter } from "./staff/manualOrder";
 import { WaiterRouter } from "./staff/waiter/waiter";
 
 const router = Router();
@@ -14,6 +14,7 @@ const router = Router();
 
 router.use("/:restaurantId/cook", KitchenRouter);
 router.use("/:restaurantId/waiter", WaiterRouter);
+router.use("/:restaurantId/manual-order", ManualOrderRouter);
 
 
 router.post("/:restaurantId/solo", logged({ _id: 1, }), async (req, res, next) => {
