@@ -46,16 +46,19 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-
+                
                 ion-icon {
                     color: var(--black);
                     font-size: 28px;
                 }
             }
         }
-
+        
         .content {
             padding-bottom: 64px;
+            position: relative;
+            height: 100%;
+
             .dish {
                 .image {
                     position: relative;
@@ -228,7 +231,7 @@
                 }
                 .delete {
                     position: absolute;
-                    bottom: 32px;
+                    bottom: 100px;
                     left: 0;
                     width: 100%;
                     button {
