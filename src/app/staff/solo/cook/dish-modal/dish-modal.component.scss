@@ -92,10 +92,11 @@
                     justify-content: space-between;
 
                     .name {
-                        
+                        color: var(--black);
                     }
                     .time {
                         font-size: 14px;
+                        color: var(--text-color);
                     }
                 }
             }
@@ -188,6 +189,7 @@
                             align-items: center;
                             font-size: 16px;
                             padding-left: 8px;
+                            color: var(--black);
                         }
                         .text {
                             padding: 8px;
