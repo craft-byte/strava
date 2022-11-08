@@ -103,10 +103,6 @@ export class DishModalComponent implements OnInit, OnDestroy {
 
     }
 
-    deleteDish() {
-
-    }
-
     fullOrder() {
         
     }
