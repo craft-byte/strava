@@ -100,7 +100,9 @@
                     align-items: center;
                     justify-content: space-between;
 
-                    .name {}
+                    .name {
+                        color: var(--black);
+                    }
 
                     .time {
                         font-size: 14px;

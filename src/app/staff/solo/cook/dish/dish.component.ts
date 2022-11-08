@@ -27,7 +27,7 @@ export class DishComponent implements OnInit, OnDestroy {
         if(this.s.dishes[this.orderDish.dishId]) {
             this.dish = this.s.dishes[this.orderDish.dishId];
         } else {
-            this.dish = await this.service.get("kitchen/dish", this.orderDish.dishId);
+            this.dish = await this.service.get("dish", this.orderDish.dishId);
             this.s.dishes[this.dish._id] = this.dish;
         }
         this.image = getImage(this.s.dishes[this.orderDish.dishId].image.binary);

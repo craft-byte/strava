@@ -116,47 +116,6 @@ router.get("/dishes", logged({ _id: 1, }), allowed({}, "cook"), async (req, res)
 });
 
 
-// interface Taken {
-//     time: {
-//         hours: number;
-//         minutes: number;
-//         nextMinute: number;
-//         color: string;
-//     };
-//     user: {
-//         avatar: any;
-//         name: string;
-//         _id: string;
-//     }
-// }; router.get("/taken", async (req, res) => {
-
-//     const user = await getUser(req.user as string, { projection: { name: 1, username: 1, avatar: { binary: 1 } } });
-    
-//     const result: Taken = {
-//         time: { hours: 0, minutes: 0, nextMinute: 59500, color: "green" },
-//         user: {
-//             name: user.name! || user.username!,
-//             avatar: user.avatar?.binary,
-//             _id: req.user as string,
-//         }
-//     };
-
-
-//     res.send(result);
-// });
-
-
-router.get("/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1 }, "cook"), async (req, res) => {
-    const { restaurantId, dishId } = req.params as any;
-
-    const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, info: { time: 1 }, image: { binary: 1 } } });
-
-    res.send(result);
-});
-
-
-
-
 
 
 export {
