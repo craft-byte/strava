@@ -26,7 +26,6 @@ async function convertDishes(restaurantId: string | ObjectId) {
 
     for(let i of orders) {
         for(let j of i.dishes!) {
-            console.log(j);
             if(j.status == "cooked") {
                 result.push({
                     _id: j._id,

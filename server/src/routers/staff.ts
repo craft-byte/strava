@@ -7,6 +7,7 @@ import { allowed } from "../utils/middleware/restaurantAllowed";
 import { Restaurant } from "../utils/restaurant";
 import { KitchenRouter } from "./staff/kitchen/kitchen";
 import { ManualOrderRouter } from "./staff/manualOrder";
+import { OrderRouter } from "./staff/order";
 import { WaiterRouter } from "./staff/waiter/waiter";
 
 const router = Router();
@@ -15,6 +16,7 @@ const router = Router();
 router.use("/:restaurantId/cook", KitchenRouter);
 router.use("/:restaurantId/waiter", WaiterRouter);
 router.use("/:restaurantId/manual-order", ManualOrderRouter);
+router.use("/:restaurantId/order", OrderRouter);
 
 
 router.post("/:restaurantId/solo", logged({ _id: 1, }), async (req, res, next) => {
@@ -89,7 +91,6 @@ router.get("/:restaurantId/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1 }
 
     res.send(result);
 });
-
 
 
 export {

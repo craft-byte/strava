@@ -15,8 +15,9 @@
 </div>
 
 <div class="app">
-    <app-cook></app-cook>
+    <app-cook (leave)="fullOrder($event)"></app-cook>
     <app-waiter></app-waiter>
 </div>
 
 <ng-container #manualOrderModalContainer></ng-container>
+<ng-container #fullOrderModalContainer></ng-container>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, ViewContainerRef, Injector } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ViewContainerRef, Injector, Output, EventEmitter } from '@angular/core';
 import { StaffService } from '../../staff.service';
 import { SoloService } from '../solo.service';
 import { Subscription } from "rxjs";
@@ -22,6 +22,8 @@ export class CookComponent implements OnInit, OnDestroy {
     ) { };
 
     @ViewChild("dishModalContainer", { read: ViewContainerRef }) dishModal: ViewContainerRef;
+    
+    @Output() leave = new EventEmitter<string>();
 
     async openModal(orderDish: any) {
         const { DishModalComponent } = await import("./dish-modal/dish-modal.component");
@@ -31,14 +33,17 @@ export class CookComponent implements OnInit, OnDestroy {
         component.instance.dish = this.s.dishes[orderDish.dishId];
         component.instance.orderDish = orderDish;
 
-        component.instance.leave.subscribe((del: boolean) => {
-            if (del) {
+        component.instance.leave.subscribe((res: number) => {
+            if (res == 1) {
                 for (let i in this.orderDishes) {
                     if (this.orderDishes[i]._id == orderDish._id) {
                         this.orderDishes.splice(+i, 1);
                         break;
                     }
                 }
+            } else if(res == 2) {
+                this.leave.emit(orderDish.orderId);
+                return;
             }
             component.instance.subscription.unsubscribe();
             component.destroy();

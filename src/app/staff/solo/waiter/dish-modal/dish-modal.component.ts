@@ -157,6 +157,8 @@ export class DishModalComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         clearInterval(this.interval1);
         clearInterval(this.interval2);
-        this.subscription.unsubscribe();
+        if(this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 }

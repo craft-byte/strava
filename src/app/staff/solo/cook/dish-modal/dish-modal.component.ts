@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Output, Component, EventEmitter, OnInit, Input, OnDestroy } from '@angular/core';
+import { Output, Component, EventEmitter, OnInit, Input, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { StaffService } from 'src/app/staff/staff.service';
 import { getImage } from 'src/functions';
@@ -32,7 +32,7 @@ export class DishModalComponent implements OnInit, OnDestroy {
 
     @Input() dish: any;
     @Input() orderDish: any;
-    @Output() leave = new EventEmitter();
+    @Output() leave = new EventEmitter<number>();
 
     async getTakenInfo(data: any) {
         this.data.taken = data;
@@ -88,7 +88,7 @@ export class DishModalComponent implements OnInit, OnDestroy {
         const result: any = await this.service.delete("cook", "order", this.orderDish.orderId, "dish", this.orderDish._id, "done");
 
         if(result.success) {
-            this.leave.emit(true);
+            this.leave.emit(1);
         } else {
             (await this.toastCtrl.create({
                 message: "Something went wrong. Please try again",
@@ -104,7 +104,7 @@ export class DishModalComponent implements OnInit, OnDestroy {
     }
 
     fullOrder() {
-        
+        this.leave.emit(2);
     }
 
 
@@ -139,7 +139,7 @@ export class DishModalComponent implements OnInit, OnDestroy {
                 }
             } else if (res.type == "kitchen/dish/done") {
                 if ((res.data as any).orderDishId == this.orderDish._id) {
-                    this.leave.emit(true);
+                    this.leave.emit(1);
                     (await this.toastCtrl.create({
                         duration: 1500,
                         color: "green",
@@ -157,6 +157,8 @@ export class DishModalComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        if(this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 }

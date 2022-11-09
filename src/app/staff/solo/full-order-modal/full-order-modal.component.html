@@ -1,0 +1,96 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Full order
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div *ngIf="order" class="order">
+                <div class="top">
+                    <div class="type">
+                        <span *ngIf="order.type == 'in'" class="text title-font table">
+                            Table
+                        </span>
+                        <span *ngIf="order.type == 'out'" class="text title-font away">
+                            Take away
+                        </span>
+                        <span *ngIf="order.id" class="number">
+                            #{{ order.id }}
+                        </span>
+                    </div>
+                    <div class="status">
+                        <span class="status-badge-purple">
+                            in progress
+                        </span>
+                    </div>
+                </div>
+                <div class="bottom">
+                    <div class="customer">
+                        <img [src]="customerAvatar || './../../../../assets/images/plain-avatar.jpg'" alt="">
+                        <span class="name">
+                            {{ order.customer.name }}
+                        </span>
+                    </div>
+                    <div class="time {{ order.ordered.color }}">
+                        <span class="text">
+                            ordered
+                        </span>
+                        <span *ngIf="order.ordered.hours" class="hours">
+                            {{ order.ordered.hours }} hrs.
+                        </span>
+                        <span class="hours">
+                            {{ order.ordered.minutes }} m.
+                        </span>
+                        <span class="text">
+                            ago
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="order.comment" class="comment-wrap">
+                    <div class="comment">
+                        <div class="title">
+                            <span class="text title-font">
+                                Order comment
+                            </span>
+                        </div>
+                        <div class="text">
+                            {{ order.comment }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="order && dishes" class="dishes">
+                <div *ngFor="let i of order.dishes" class="dish">
+                    <div class="image">
+                        <img [src]="dishes[i.dishId].image" alt="">
+                    </div>
+                    <div class="top">
+                        <div class="name title-font">
+                            {{ dishes[i.dishId].name }}
+                        </div>
+                        <div class="status">
+                            <span
+                                [class.status-badge-green]="i.status == 'served'"
+                                [class.status-badge-orange]="i.status == 'cooked'"
+                                [class.status-badge-red]="i.status == 'removed'"
+                                [class.status-badge-purple]="i.status == 'cooking'"
+                                [class.status-badge-gray]="i.status == 'ordered'"
+                                >
+                                {{ i.status }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="loading" *ngIf="!order">
+                <span class="spinner"></span>
+            </div>
+        </div>
+    </div>
+</div>
