@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { getImage } from 'src/functions';
 import { StaffService } from '../../staff.service';
 
@@ -8,7 +9,7 @@ import { StaffService } from '../../staff.service';
     templateUrl: './full-order-modal.component.html',
     styleUrls: ['./full-order-modal.component.scss'],
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, IonicModule],
 })
 export class FullOrderModalComponent implements OnInit {
 

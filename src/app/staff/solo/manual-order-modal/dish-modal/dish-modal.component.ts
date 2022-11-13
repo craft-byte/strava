@@ -1,9 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
     selector: 'app-dish-modal',
     templateUrl: './dish-modal.component.html',
     styleUrls: ['./dish-modal.component.scss'],
+    standalone: true,
+    imports: [IonicModule],
 })
 export class DishModalComponent implements OnInit {
 

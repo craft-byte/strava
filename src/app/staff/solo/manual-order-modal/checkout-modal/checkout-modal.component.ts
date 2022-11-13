@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
     selector: 'app-checkout-modal',
     templateUrl: './checkout-modal.component.html',
     styleUrls: ['./checkout-modal.component.scss'],
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, IonicModule],
 })
 export class CheckoutModalComponent implements OnInit {
 
