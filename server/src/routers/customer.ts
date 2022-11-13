@@ -120,7 +120,7 @@ router.get("/restaurant/:restaurantId/tables", async (req, res) => {
 
 
     const orders = await Orders(restaurantId).many({
-        type: "in",
+        type: "dinein",
         $or: [
             { $and: [{ status: "ordering" }, { connected: { $gte: Date.now() - 300000 } } ] },
             { $and: [{ status: "progress" }] }
@@ -224,7 +224,8 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         const result = await Orders(restaurantId).createSession({
             customer: id(user._id)!,
             connected: Date.now(),
-            type: "out",
+            type: "takeaway",
+            by: "customer",
             id: null!,
             dishes: [],
             socketId: null!,
@@ -244,7 +245,8 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         const result = await Orders(restaurantId).createSession({
             customer: id(user._id)!,
             connected: Date.now(),
-            type: "in",
+            type: "dinein",
+            by: "customer",
             id: table?.toString(),
             dishes: [],
             socketId: null!,
@@ -256,7 +258,7 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
     }
 
     if(table) {
-        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(user._id) }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
+        const orders = await Orders(restaurantId).many({ type: "dinein", id: table.toString(), customer: { $ne: id(user._id) }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
     
         if(orders.length > 0) {
             return res.send({ other: true });
@@ -266,7 +268,8 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
     const result = await Orders(restaurantId).createSession({
         customer: id(user._id)!,
         connected: Date.now(),
-        type: "in",
+        type: "dinein",
+        by: "customer",
         id: table?.toString(),
         dishes: [],
         socketId: null!,

@@ -88,7 +88,8 @@ router.post("/check", async (req, res) => {
                 _id: id()!,
                 dishes: [],
                 id: null!,
-                type: "in",
+                type: "dinein",
+                by: "customer",
                 socketId,
                 ip: req.ip,
                 connected: Date.now(),
@@ -128,7 +129,8 @@ router.post("/check", async (req, res) => {
             _id: id()!,
             dishes: [],
             id: null!,
-            type: "in",
+            type: "dinein",
+            by: "customer",
             socketId,
             ip: req.ip,
             connected: Date.now(),
@@ -215,7 +217,7 @@ router.post("/init", passUserData, async (req, res) => {
     }
 
     if(table) {
-        const update = await Orders(restaurantId).update(filter, { $set: { type: "in", id: table } });
+        const update = await Orders(restaurantId).update(filter, { $set: { type: "dinein", id: table } });
     }
 
 
@@ -423,7 +425,7 @@ router.post("/session/table", passUserData, passOrder({ _id: 1 }), async (req, r
     }
 
     if(!force) {
-        const orders = await Orders(restaurantId).many({ type: "in", id: table.toString(), customer: { $ne: id(userId!) }, customerToken: { $ne: ct }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
+        const orders = await Orders(restaurantId).many({ type: "dinein", id: table.toString(), customer: { $ne: id(userId!) }, customerToken: { $ne: ct }, connected: { $gte: Date.now() - 60000 * 5 } }, { projection: { _id: 1 } });
 
         if(orders.length > 0) {
             console.log("CONFIRMED");
@@ -442,7 +444,7 @@ router.post("/session/table", passUserData, passOrder({ _id: 1 }), async (req, r
     const update = await Orders(restaurantId).one(filter).update({ $set: { id: table.toString(), connected: Date.now() } }, { projection: { _id: 1 } });
     res.send({ updated: update.ok == 1 });
 
-    Orders(restaurantId).update({ type: "in", customer: { $ne: id(userId!) }, customerToken: { $ne: ct }, id: table.toString(), status: "ordering" }, { $set: { id: null! }})
+    Orders(restaurantId).update({ type: "dinein", customer: { $ne: id(userId!) }, customerToken: { $ne: ct }, id: table.toString(), status: "ordering" }, { $set: { id: null! }})
 });
 
 /**
@@ -683,7 +685,7 @@ interface PaymentInfo {
     subtotal: number;
     hst: number;
     theme: string;
-    type: "in" | "out";
+    type: "dinein" | "takeaway";
     id: string | null;
     dishes: { name: string; price: number; amount: number; }[];
     clientSecret?: string;
@@ -1015,7 +1017,7 @@ router.get("/tracking", passUserData, async (req, res) => {
 
         o.push({
             dishes: order.dishes as any,
-            type: order.type == "in" ? "Table" : "Order",
+            type: order.type == "dinein" ? "Table" : "Order",
             id: order.id,
             _id: order._id,
             ordered: getDelay(order.ordered!)

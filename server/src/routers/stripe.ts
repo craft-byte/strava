@@ -315,7 +315,8 @@ async function onManualOrderPayed(restaurantId: string, order: string) {
 
         const added = await Orders(restaurantId).createSession({
             comment: obj.comment,
-            type: obj.table ? "in" : "out",
+            type: obj.table ? "dinein" : "takeaway",
+            by: "customer",
             id: obj.table || "fjkdl;asjf;lkasd",
             _id: orderId,
             customer: null,

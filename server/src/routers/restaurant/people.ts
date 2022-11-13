@@ -103,7 +103,7 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
 interface FullOrder {
     ordered: string;
     total: number;
-    type: "in" | "out";
+    type: "dinein" | "takeaway";
     id: string;
     status: string;
 

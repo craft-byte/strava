@@ -103,7 +103,7 @@ export class ManualOrderModalComponent implements OnInit {
     }
 
     async ngOnInit() {
-        const result: any = await this.service.get("manual", "dishes");
+        const result: any = await this.service.get("manual", "init");
 
         console.log(result);
 

@@ -49,7 +49,7 @@ router.get("/dishes", logged({ _id: 1 }), allowed({ _id: 1, }, "waiter"), async 
 
 
 interface OrderInfo {
-    type: "out" | "in";
+    type: "dinein" | "takeaway";
     number: string;
     comment: string;
     customer: User;

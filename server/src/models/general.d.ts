@@ -150,17 +150,25 @@ interface User {
 
 interface Order {
     _id: ObjectId;
-    status: "ordering" | "progress" | "done" | "removed" | "done:removed";
+    
     customer: ObjectId | null;
-    socketId: string;
+    onBefalf?: ObjectId;
+    
+    by: "customer" | "staff";
+    
+    status: "ordering" | "progress" | "done" | "removed" | "done:removed";
     method?: "card" | "cash";
-    type: "in" | "out";
+
+    type: "dinein" | "takeaway";
     id: string;
+    
     ordered?: number;
-    connected?: number;
     comment?: string;
+    
     ip?: string;
+    connected?: number;
     customerToken?: string;
+    socketId: string;
 
     money?: {
         hst: number;

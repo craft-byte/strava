@@ -120,7 +120,7 @@ async function getHistory(userId: ObjectId, length: number, skip: number) {
                     _id: i._id,
                     status: i.status,
                     id: i.id,
-                    type: i.type == "in" ? "Table" : "Taken away",
+                    type: i.type == "dinein" ? "Table" : "Taken away",
                     money: i.money!,
                     date: getDate(i.ordered!),
                     dishes: i.dishes.length,

@@ -119,6 +119,7 @@ router.get("/info", logged({ _id: 1, }), allowed({ tables: 1, settings: { custom
 router.post("/cash", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
     const { dishes, comment, table } = req.body;
     const { restaurantId } = req.params;
+    const { user } = res.locals;
 
     const newDishes: Order["dishes"] = [];
     const ids = [];
@@ -159,7 +160,9 @@ router.post("/cash", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (r
         status: "progress",
         dishes: newDishes,
         customer: null,
-        type: table ? "in" : "out",
+        type: table ? "dinein" : "takeaway",
+        onBefalf: id(user._id),
+        by: "staff",
         id: table,
         comment,
         ordered: Date.now(),
