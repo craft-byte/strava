@@ -47,17 +47,20 @@ const routes: Routes = [
         path: 'settings',
         loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
       },
+      {
+        path: "orders/:orderId",
+        loadChildren: () => import("./people-page/full-order/full-order.module").then(m => m.FullOrderPageModule),
+      }
     ]
   },
-  {
-    path: 'dish-add',
-    loadChildren: () => import('./dish-add/dish-add.module').then( m => m.DishAddPageModule)
-  },
-  {
-    path: 'dish-edit',
-    loadChildren: () => import('./dish-edit/dish-edit.module').then( m => m.DishEditPageModule)
-  },
-
+//   {
+//     path: 'dish-add',
+//     loadChildren: () => import('./dish-add/dish-add.module').then( m => m.DishAddPageModule)
+//   },
+//   {
+//     path: 'dish-edit',
+//     loadChildren: () => import('./dish-edit/dish-edit.module').then( m => m.DishEditPageModule)
+//   },
 ];
 
 @NgModule({

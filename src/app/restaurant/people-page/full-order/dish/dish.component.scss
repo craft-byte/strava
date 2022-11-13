@@ -52,9 +52,11 @@
                 align-items: center;
                 .hours {
                     margin-left: 4px;
+                    color: var(--black);
                 }
                 .minutes {
                     margin-left: 4px;
+                    color: var(--black);
                 }
             }
             .info {
@@ -71,7 +73,11 @@
                     }
                     .username {
                         margin-left: 6px;
+                        color: var(--text-color);
                     }
+                }
+                .label {
+                    color: var(--text-color);
                 }
             }
         }

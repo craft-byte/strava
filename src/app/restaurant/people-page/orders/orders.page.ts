@@ -41,7 +41,7 @@ export class OrdersPage implements OnInit {
     ) { };
 
     async fullOrder(id: string) {
-        this.router.go(["restaurant", this.service.restaurantId, "people", "order", id], { replaceUrl: false });
+        this.router.go(["restaurant", this.service.restaurantId, "orders", id], { replaceUrl: false });
     }
 
     customers() {

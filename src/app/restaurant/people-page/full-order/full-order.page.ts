@@ -10,91 +10,92 @@ import { RestaurantService } from '../../services/restaurant.service';
 
 
 interface Order {
-  ordered: string;
-  total: number;
-  type: "Order" | "Table";
-  id: string;
-  status: string;
-  customer: {
-    userId: any;
-    username: string;
-    avatar: any;
-  }
+    ordered: string;
+    total: number;
+    type: "in" | "out";
+    id: string;
+    status: string;
+    customer: {
+        userId: any;
+        username: string;
+        avatar: any;
+    }
 
-  dishes: {
-      name: string;
-      status: string;
-      dishId: string;
-      _id: string;
+    dishes: {
+        name: string;
+        status: string;
+        dishId: string;
+        _id: string;
 
-      taken?: Time;
-      cooked?: Time;
-      served?: Time;
+        taken?: Time;
+        cooked?: Time;
+        served?: Time;
 
 
-      cook?: {
-          username: string;
-          avatar: any;
-          userId: string;
-      };
-      waiter?: {
-          username: string;
-          avatar: any;
-          userId: string;
-      }
+        cook?: {
+            username: string;
+            avatar: any;
+            userId: string;
+        };
+        waiter?: {
+            username: string;
+            avatar: any;
+            userId: string;
+        }
 
-      removed?: {
-          username: string;
-          avatar: any;
-          time: Time;
-          role: string;
-      };
-  }[];
+        removed?: {
+            username: string;
+            avatar: any;
+            time: Time;
+            role: string;
+        };
+    }[];
 };
 
 
 @Component({
-  selector: 'app-full-order',
-  templateUrl: './full-order.page.html',
-  styleUrls: ['./full-order.page.scss'],
+    selector: 'app-full-order',
+    templateUrl: './full-order.page.html',
+    styleUrls: ['./full-order.page.scss'],
 })
 export class FullOrderPage implements OnInit {
 
-  order: Order;
+    order: Order;
 
-  customerAvatar: string;
+    customerAvatar: string;
 
-  constructor(
-    private router: RouterService,
-    private route: ActivatedRoute,
-    private service: RestaurantService,
-    private loader: LoadService,
-    private alertCtrl: AlertController,
-  ) { };
+    constructor(
+        private router: RouterService,
+        private route: ActivatedRoute,
+        private service: RestaurantService,
+        private loader: LoadService,
+        private alertCtrl: AlertController,
+    ) { };
 
-  back() {
-    const last = this.route.snapshot.queryParamMap.get("last");
-    if(last) {
-      this.router.go([last]);
-    } else {
-      this.router.go(["restaurant", this.service.restaurantId, "people", "orders"], { replaceUrl: false });
+    back() {
+        const last = this.route.snapshot.queryParamMap.get("last");
+        if (last) {
+            this.router.go([last]);
+        } else {
+            this.router.go(["restaurant", this.service.restaurantId, "people", "orders"], { replaceUrl: false });
+        }
     }
-  }
 
-  fullCustomer() {
-    this.router.go(["restaurant", this.service.restaurantId, "people", "customer", this.order.customer.userId], { queryParams: { last: this.router.url } });
-  }
+    fullCustomer() {
+        this.router.go(["restaurant", this.service.restaurantId, "people", "customer", this.order.customer.userId], { queryParams: { last: this.router.url } });
+    }
 
 
-  async ngOnInit() {
-    await this.loader.start();
-    const orderId = this.route.snapshot.paramMap.get("orderId");
+    async ngOnInit() {
+        const orderId = this.route.snapshot.paramMap.get("orderId");
 
-    this.order = await this.service.get({}, "people/order", orderId);
+        this.order = await this.service.get({}, "people/order", orderId);
 
-    this.customerAvatar = getImage(this.order.customer.avatar);
+        console.log(this.order);
 
-    this.loader.end();
-  }
+        this.customerAvatar = getImage(this.order.customer.avatar);
+
+        this.loader.end();
+    }
 
 }

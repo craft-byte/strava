@@ -24,27 +24,33 @@
             }
         }
         .date {
-            font-size: 18px;
+            font-size: 16px;
             color: var(--gray);
+            color: var(--black);
         }
         .order {
             display: flex;
             align-items: flex-end;
+            margin: 0;
             h1 {
                 margin: 0;
-                // font-weight: 550;
+                color: var(--black);
+                font-size: 20px;
             }
             .order-id {
                 color: var(--text-color);
             }
+            .no-type {
+                color: var(--text-color);
+                font-size: 18px;
+            }
         }
         .status > div {
-            padding: 8px 16px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 10px;
-            text-transform: uppercase;
             border: 1px solid var(--green);
         }
     }
@@ -99,5 +105,21 @@
             }
         }
         
+    }
+
+    .loading {
+        width: 100%;
+        height: 124px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border-radius: 100%;
+            border-top: 2px solid var(--border-color);
+            -webkit-animation: spin 1.5s linear infinite;
+            animation: spin 1.5s linear infinite;
+        }
     }
 }

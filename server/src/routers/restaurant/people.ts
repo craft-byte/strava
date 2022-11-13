@@ -103,7 +103,7 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
 interface FullOrder {
     ordered: string;
     total: number;
-    type: "ORDER" | "TABLE";
+    type: "in" | "out";
     id: string;
     status: string;
 
@@ -176,7 +176,7 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
         ordered: getDate(order.ordered!),
         dishes: [],
         total: 0,
-        type: order.type == "in" ? "TABLE" : "ORDER",
+        type: order.type,
         id: order.id,
         status: order.status,
         customer: user
