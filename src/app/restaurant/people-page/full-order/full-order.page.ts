@@ -77,7 +77,7 @@ export class FullOrderPage implements OnInit {
         if (last) {
             this.router.go([last]);
         } else {
-            this.router.go(["restaurant", this.service.restaurantId, "people", "orders"], { replaceUrl: false });
+            this.router.go(["restaurant", this.service.restaurantId, "orders"], { replaceUrl: false });
         }
     }
 
@@ -90,8 +90,6 @@ export class FullOrderPage implements OnInit {
         const orderId = this.route.snapshot.paramMap.get("orderId");
 
         this.order = await this.service.get({}, "people/order", orderId);
-
-        console.log(this.order);
 
         this.customerAvatar = getImage(this.order.customer.avatar);
 
