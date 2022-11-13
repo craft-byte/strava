@@ -12,53 +12,51 @@
 </div>
 
 
-<ion-content>
-    <div class="app">
-        <form class="box" [formGroup]="form" (ngSubmit)="submit()">
-            <div class="image">
-                <img [class]="imageClass" [src]="image?.binary || './../../../assets/images/no-image.jpg'" alt="">
-                <button type="button" class="orange-button" (click)="setImage()">Set image</button>
+<div class="app">
+    <form class="box" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="image">
+            <img [class]="imageClass" [src]="image?.binary || './../../../assets/images/no-image.jpg'" alt="">
+            <button type="button" class="orange-button" (click)="setImage()">Set image</button>
+        </div>
+        <div class="name">
+            <input type="text" formControlName="name" placeholder="Dish name">
+        </div>
+        <div class="price">
+            <div class="input">
+                <input type="number" formControlName="price" placeholder="Price">
             </div>
-            <div class="name">
-                <input type="text" formControlName="name" placeholder="Dish name">
+            <div class="info">
+                <span class="text">
+                    Price in CAD. Use decimal numbers if needed.
+                </span>
             </div>
-            <div class="price">
-                <div class="input">
-                    <input type="number" formControlName="price" placeholder="Price">
-                </div>
-                <div class="info">
-                    <span class="text">
-                        Price in CAD. Use decimal numbers if needed.
-                    </span>
-                </div>
+        </div>
+        <div class="time">
+            <div class="input">
+                <input type="number" formControlName="time" placeholder="Time">
             </div>
-            <div class="time">
-                <div class="input">
-                    <input type="number" formControlName="time" placeholder="Time">
-                </div>
-                <div class="info">
-                    <span class="text">
-                        Time cooking in minutes. Ex 5 minutes
-                    </span>
-                </div>
+            <div class="info">
+                <span class="text">
+                    Time cooking in minutes. Ex 5 minutes
+                </span>
             </div>
-            <div class="description">
-                <textarea id="" cols="30" rows="10" formControlName="description" placeholder="Description"></textarea>
-            </div>
-            <div class="category">
-                <ion-item>
-                    <ion-label>Category</ion-label>
-                    <ion-select formControlName="category" mode="ios" interface="popover" placeholder="Select">
-                        <ion-select-option [value]="i.value" *ngFor="let i of categories">{{ i.title }}</ion-select-option>
-                    </ion-select>
-                </ion-item>
-            </div>
-            <div class="submit">
-                <button type="submit" class="orange-button">Save</button>
-            </div>
-        </form>
-    </div>
-</ion-content>
+        </div>
+        <div class="description">
+            <textarea id="" cols="30" rows="10" formControlName="description" placeholder="Description"></textarea>
+        </div>
+        <div class="category">
+            <ion-item>
+                <ion-label>Category</ion-label>
+                <ion-select formControlName="category" mode="ios" interface="popover" placeholder="Select">
+                    <ion-select-option [value]="i.value" *ngFor="let i of categories">{{ i.title }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+        <div class="submit">
+            <button type="submit" class="orange-button">Save</button>
+        </div>
+    </form>
+</div>
 
 
 <ng-container #imageModalContainer></ng-container>
