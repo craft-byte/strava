@@ -1,18 +1,18 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import jsQR from 'jsqr';
 import { CustomerService } from '../customer.service';
-import { TableComponent } from './table/table.component';
 import { ActivatedRoute } from '@angular/router';
+import { TouchSequence } from 'selenium-webdriver';
 
 @Component({
     selector: 'app-scan',
     templateUrl: './scan.page.html',
     styleUrls: ['./scan.page.scss'],
 })
-export class ScanPage implements OnInit {
+export class ScanPage implements OnInit, OnDestroy {
 
     restaurants: any;
 
@@ -341,5 +341,16 @@ export class ScanPage implements OnInit {
         this.restaurants = await this.service.get({}, "restaurants");
 
         this.loader.end();
+    }
+    ngOnDestroy(): void {
+        this.stopRecording();
+    }
+    ionViewDidEnter() {
+        if(!this.stream || !this.stream.active) {
+            this.startScan();
+        }
+    }
+    ionViewDidLeave() {
+        this.stopRecording();
     }
 }
