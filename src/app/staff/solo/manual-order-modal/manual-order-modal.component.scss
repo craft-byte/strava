@@ -22,6 +22,8 @@
             background-color: var(--orange);
             display: flex;
             align-items: center;
+            position: relative;
+            
 
             .title {
                 display: flex;
@@ -31,7 +33,7 @@
                     font-size: 18px;
                 }
             }
-            #close-modal {
+            button {
                 height: 42px;
                 width: 42px;
                 background: none;
@@ -44,10 +46,165 @@
                     font-size: 28px;
                 }
             }
+
+            #submit {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
         }
 
         .content {
-            
+            .order {
+                .type {
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    .text {
+                        border-bottom: 1px solid var(--orange);
+                        color: var(--black);
+                    }
+                }
+                .no-type {
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    .text {
+                        border-bottom: 1px solid var(--red);
+                        color: var(--black);
+                    }
+                }
+                .comment {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    
+                    textarea {
+                        min-height: 124px;
+                        width: 90%;
+                        border-radius: 8px;
+                        border: 1px solid var(--border-color);
+                        color: var(--black);
+                        outline: none;
+                        padding: 8px;
+                        background-color: white;
+                        resize: vertical;
+
+                        &:focus {
+                            border: 1px solid var(--gray);
+                        }
+                    }
+                }
+                .selected-dishes {
+                    .title {
+                        display: flex;
+                        align-items: center;
+                        padding-left: 12px;
+                        height: 32px;
+
+                        .text {
+                            color: var(--black);
+                            font-size: 20px;
+                        }
+                    }
+                    .dish {
+                        width: 100%;
+                        height: 36px;
+                        border-bottom: 1px solid var(--border-color);
+                        display: grid;
+                        grid-template-columns: 60% 10% 10% 10%;
+                        
+                        .name {
+                            display: flex;
+                            align-items: center;
+                            padding-left: 8px;
+
+                            .text {
+                                color: var(--black);
+                            }
+                        }
+                        .price, .x, .amount {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--text-color);
+                        }
+                    }
+                }
+            }
+
+            .dishes {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                margin-top: 32px;
+                
+                .dish {
+                    width: 90%;
+                    border: 2px solid var(--purple);
+                    color: var(--black);
+                    border-radius: 8px;
+
+                    .image {
+                        position: relative;
+
+                        img {
+                            width: 100%;
+                            border-top-left-radius: 8px;
+                            border-top-right-radius: 8px;
+                            aspect-ratio: 16 / 5;
+                            object-fit: cover;
+                        }
+                        .time {
+                            position: absolute;
+                            bottom: 0;
+                            right: 4px;
+                            font-size: 14px;
+                            background-color: rgba(255, 255, 255, 0.7);
+                            border-top-right-radius: 4px;
+                            border-top-left-radius: 4px;
+                            color: black;
+                            padding: 3px 6px 4px 6px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                        .category {
+                            position: absolute;
+                            bottom: 0;
+                            color: black;
+                            right: 72px;
+                            background-color: rgba(255, 255, 255, 0.7);
+                            border-top-right-radius: 4px;
+                            border-top-left-radius: 4px;
+                            width: auto;
+                            height: 18px;
+                            padding: 0 4px;
+                        }
+                    }
+
+                    .name-price {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 8px;
+
+                        .name {
+                            .text {
+                                color: var(--black);
+                                font-size: 18px;
+                            }
+                        }
+                        .price {
+                            color: var(--text-color);
+                        }
+                    }
+                }
+            }
             
             .loading {
                 width: 100%;

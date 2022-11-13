@@ -1,0 +1,38 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">Checkout</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="select">
+                <button (click)="cash()" id="cash" [class.s]="mode == 'cash'" class="button-font">
+                    Cash
+                </button>
+                <button (click)="card()" id="card" [class.s]="mode == 'card'" class="button-font">
+                    Card
+                </button>
+            </div>
+            <div *ngIf="mode == 'cash'" class="cash">
+                <p class="text">
+                    Pay with cash.
+                </p>
+                <p class="text">
+                    Click submit button below when payed.
+                </p>
+                <button class="green-button" (click)="cashSubmit()">
+                    Submit
+                </button>
+            </div>
+            <div class="card" *ngIf="mode == 'card'">
+                <p class="message">
+                    Card payment is not supported here yet.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

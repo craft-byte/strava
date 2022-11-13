@@ -15,7 +15,7 @@ const router = Router();
 
 router.use("/:restaurantId/cook", KitchenRouter);
 router.use("/:restaurantId/waiter", WaiterRouter);
-router.use("/:restaurantId/manual-order", ManualOrderRouter);
+router.use("/:restaurantId/manual", ManualOrderRouter);
 router.use("/:restaurantId/order", OrderRouter);
 
 

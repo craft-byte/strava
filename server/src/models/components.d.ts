@@ -23,6 +23,7 @@ interface Cooking {
 interface RestaurantSettings {
     customers: {
         maxDishes: number;
+        allowDineIn: boolean;
         allowTakeAway: boolean;
         maxCustomers: number;
         minPrice: number;

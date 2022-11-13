@@ -1,0 +1,39 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <button id="save" (click)="save()">
+                <ion-icon name="checkmark"></ion-icon>
+            </button>
+        </div>
+        <div class="content">
+            <div class="dish">
+                <div class="image">
+                    <img [src]="dish.image" alt="">
+                </div>
+                <div class="name-price">
+                    <div class="name">
+                        <span class="text title-font">
+                            {{ dish.name }}
+                        </span>
+                    </div>
+                    <div class="price">
+                        ${{ dish.price / 100 }}
+                    </div>
+                </div>
+                <div class="description">
+                    {{ dish.description }}
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="red-button" (click)="remove()">Remove</button>
+                <span class="count">
+                    {{ amount }}
+                </span>
+                <button class="green-button" (click)="add()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>

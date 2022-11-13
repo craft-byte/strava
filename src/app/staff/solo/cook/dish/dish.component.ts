@@ -32,20 +32,22 @@ export class DishComponent implements OnInit, OnDestroy {
         }
         this.image = getImage(this.s.dishes[this.orderDish.dishId].image.binary);
 
-        setTimeout(() => {
-            this.orderDish.time.minutes++;
-            if(this.orderDish.time.minutes == 60) {
-                this.orderDish.time.hours++;
-                this.orderDish.time.minutes = 0;
-            }
-            this.interval = setInterval(() => {
+        if(this.orderDish.time) {
+            setTimeout(() => {
                 this.orderDish.time.minutes++;
                 if(this.orderDish.time.minutes == 60) {
                     this.orderDish.time.hours++;
                     this.orderDish.time.minutes = 0;
                 }
-            }, 60000);
-        }, this.orderDish.time.nextMinute);
+                this.interval = setInterval(() => {
+                    this.orderDish.time.minutes++;
+                    if(this.orderDish.time.minutes == 60) {
+                        this.orderDish.time.hours++;
+                        this.orderDish.time.minutes = 0;
+                    }
+                }, 60000);
+            }, this.orderDish.time.nextMinute);
+        }
     }
 
     ngOnDestroy(): void {

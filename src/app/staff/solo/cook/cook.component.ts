@@ -65,7 +65,6 @@ export class CookComponent implements OnInit, OnDestroy {
         this.subscription = this.s.flow.subscribe(async res => {
             const { type } = res;
 
-
             if (type == "kitchen/dish/take") {
                 const { orderDishId, taken: { user } } = res.data as any;
                 for (let i in this.delayed) {
@@ -84,7 +83,7 @@ export class CookComponent implements OnInit, OnDestroy {
                 const dishes = res.data as any[];
                 for (let i of dishes) {
                     if (!this.s.dishes[i.dishId]) {
-                        const dish = await this.service.get("kitchen/dish", i.dishId);
+                        const dish = await this.service.get("dish", i.dishId);
                         if (!dish) {
                             continue;
                         }

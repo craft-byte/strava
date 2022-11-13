@@ -23,11 +23,13 @@ export class SoloPage implements OnInit {
     }
 
     async manualOrder() {
-        return;
-        
         const { ManualOrderModalComponent } = await import("./manual-order-modal/manual-order-modal.component");
 
         const component = this.manualOrderModal.createComponent(ManualOrderModalComponent, { injector: this.injector });
+
+        component.instance.leave.subscribe(res => {
+            component.destroy();
+        });
     }
 
     async fullOrder(orderId: string) {
@@ -44,7 +46,6 @@ export class SoloPage implements OnInit {
 
 
     async ngOnInit() {
-
     }
 
 }

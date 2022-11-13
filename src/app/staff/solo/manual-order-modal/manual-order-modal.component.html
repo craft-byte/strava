@@ -9,9 +9,85 @@
                     Manual order
                 </span>
             </div>
+            <button id="submit" (click)="submit()">
+                <ion-icon name="checkmark"></ion-icon>
+            </button>
         </div>
         <div class="content">
-            
+            <div class="order" *ngIf="settings">
+                <div *ngIf="settings.allowTakeAway && !settings.allowDineIn" class="type">
+                    <span class="text title-font">
+                        Take away
+                    </span>
+                </div>
+                <div *ngIf="settings.allowDineIn && !settings.allowTakeAway" class="type">
+                    <span class="text title-font">
+                        Dine-in
+                    </span>
+                </div>
+                <div *ngIf="!settings.allowDineIn && !settings.allowTakeAway" class="no-type">
+                    <span class="text title-font">
+                        No type provided
+                    </span>
+                </div>
+                <div *ngIf="settings.allowDineIn && settings.allowTakeAway" class="both-types">
+                    <button id="take-await">
+                        Take away
+                    </button>
+                    <button id="dine-in">
+                        Dine-in
+                    </button>
+                </div>
+                <div class="comment">
+                    <textarea placeholder="Comment" [(ngModel)]="comment"></textarea>
+                </div>
+                <div class="selected-dishes" *ngIf="selected && selected.length > 0">
+                    <div class="title">
+                        <span class="text title-font">
+                            Selected:
+                        </span>
+                    </div>
+                    <div *ngFor="let i of selected" class="dish" (click)="openDishModal(i)">
+                        <div class="name">
+                            <span class="text title-font">
+                                {{ i.name }}
+                            </span>
+                        </div>
+                        <div class="price">
+                            ${{ i.price / 100 }}
+                        </div>
+                        <span class="x">
+                            x
+                        </span>
+                        <div class="amount">
+                            {{ i.amount }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dishes" *ngIf="dishes">
+                <div *ngFor="let i of dishes" class="dish" (click)="openDishModal(i)">
+                    <div class="image">
+                        <img [src]="i.image" alt="">
+                        <span class="time">
+                            {{ i.info.time }} m.
+                        </span>
+                    </div>
+                    <div class="name-price">
+                        <div class="name">
+                            <span class="text title-font">
+                                {{ i.name }}
+                            </span>
+                        </div>
+                        <div class="price">
+                            ${{ i.price / 100 }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<ng-container #dishModalContainer></ng-container>
+<ng-container #checkoutModalContainer></ng-container>
