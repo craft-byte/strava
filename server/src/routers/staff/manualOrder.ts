@@ -1,8 +1,6 @@
-import { privateDecrypt } from "crypto";
 import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { stripe } from "../..";
-import { ordersDBName } from "../../environments/server";
 import { Locals, StripeOrderMetadata } from "../../models/other";
 import { DishHashTableUltra } from "../../utils/dish";
 import { id } from "../../utils/functions";
@@ -11,7 +9,6 @@ import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
-import { user } from "../../utils/users";
 
 
 
@@ -159,7 +156,7 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
     const order = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).get({ projection: { money: 1, dishes: { dishId: 1, } } });
 
     if(!order.money) {
-        let subtotal = await calculateSubtotal(restaurant._id, order.dishes);
+        let subtotal = await calculateSubtotal(restaurant._id, { arr: order.dishes, _id: order._id });
     
         if(!subtotal) {
             return res.status(500).send({ reason: "DishesAreInvalidNotImplemented" });
@@ -264,8 +261,11 @@ router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "sta
 });
 
 
-async function calculateSubtotal(rid: any, arr: { dishId: any }[]) {
+async function calculateSubtotal(rid: any, order: { arr: { dishId: ObjectId }[]; _id: ObjectId; }) {
     const idsstr = new Set<string>();
+
+    const { arr, _id } = order;
+    
     for(let i of arr) {
         idsstr.add(i.dishId.toString());
     }
@@ -279,7 +279,37 @@ async function calculateSubtotal(rid: any, arr: { dishId: any }[]) {
     const dishes = await Restaurant(rid).dishes.many({ _id: { $in: ids } }).get({ projection: { price: 1 } });
 
     if(dishes.length != ids.length) {
-        return null;
+
+        const deleted = [];
+
+        for(let id of ids) {
+            let push = true;
+            for(let dish of dishes) {
+                if(dish._id.equals(id)) {
+                    push = false;
+                    break;
+                }
+            }
+            if(push) {
+                deleted.push(id);
+            }
+        }
+
+        const deletedDishesCheck = await Restaurant(rid).dishes.many({ _id: { $in: deleted } }).get({ projection: { price: 1 } } );
+
+        if(deletedDishesCheck.length > 0) {
+            dishes.push(...deletedDishesCheck);
+            for(let i in deleted) {
+                for(let dish of deletedDishesCheck) {
+                    if(dish._id.equals(deleted[i])) {
+                        deleted.splice(+i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+
+        const orderUpdate = await Orders(rid).one({ _id: order._id }).update({ $pull: { dishes: { dishId: { $in: deleted } } } });
     }
 
     let subtotal = 0;
