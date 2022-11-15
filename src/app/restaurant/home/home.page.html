@@ -1,84 +1,65 @@
 <div class="app">
-  <!-- <div *ngIf="data && data.nextEventuallyUrl" class="info-box">
-    <div class="title">
-      <span>
-        You'll have to provide more data in future to verify your restaurant
-      </span>
-    </div>
-    <button (click)="finish()" class="orange-button">
-      Finish now
-    </button>
-  </div> -->
-  <div *ngIf="data?.money" class="payments">
-    <div class="one" (click)="go('settings')">
-      <div class="status"
-        [class.status-badge-green]="data.money.cash == 'enabled'"
-        [class.status-badge-orange]="data.money.cash == 'disabled'">
-        <ion-icon name="checkmark-outline" *ngIf="data.money.cash == 'enabled'"></ion-icon>
-        <ion-icon name="close-outline" *ngIf="data.money.cash == 'disabled'"></ion-icon>
-        {{ data.money.cash }}
-      </div>
-      <ion-icon class="icon" name="cash-outline"></ion-icon>
-      <div class="title">
-        Cash
-      </div>
-    </div>
-    <div class="one" (click)="go('settings')">
-      <div class="status"
-        [class.status-badge-green]="data.money.card == 'enabled'"
-        [class.status-badge-orange]="data.money.card == 'disabled'"
-        [class.status-badge-red]="data.money.card == 'rejected' || data.money.card == 'restricted'"
-        [class.status-badge-purple]="data.money.card == 'pending'"
-      >
-        <ion-icon name="checkmark-outline" *ngIf="data.money.card == 'enabled'"></ion-icon>
-        <ion-icon name="close-outline" *ngIf="data.money.card == 'disabled'"></ion-icon>
-        <ion-icon name="ban-outline" *ngIf="data.money.card == 'restricted'"></ion-icon>
-        {{ data.money.card }}
-      </div>
-      <ion-icon class="icon" name="card-outline"></ion-icon>
-      <div class="title">
-        Card
-      </div>
-    </div>
-    <div class="payouts" [class.one]="!data.money.payouts">
-      <!-- [class.status-badge-orange]="data.money.payouts == 'disabled'" -->
-      <div class="status"
-        [class.status-badge-green]="data.money.payouts == 'enabled'"
-        [class.status-badge-red]="data.money.payouts == 'rejected' || data.money.payouts == 'restricted'"
-        [class.status-badge-purple]="data.money.payouts == 'pending'"
-      >
-        <ion-icon name="checkmark-outline" *ngIf="data.money.payouts == 'enabled'"></ion-icon>
-        <ion-icon name="close-outline" *ngIf="data.money.payouts == 'pending'"></ion-icon>
-        <ion-icon name="ban-outline" *ngIf="data.money.payouts == 'rejected' || data.money.payouts == 'restricted'"></ion-icon>
-        {{ data.money.payouts }}
-      </div>
-      <div class="bank" *ngIf="data.payouts">
-        <div class="last4">
-          <span class="circles">
-            &#9679;&#9679;&#9679;&#9679;
-          </span>
-          <span class="numbers">
-            {{ data.payouts.last4 }}
-          </span>
+    <div *ngIf="data?.money" class="payments">
+        <div class="one" (click)="go('settings')">
+            <div class="status" [class.status-badge-green]="data.money.cash == 'enabled'"
+                [class.status-badge-orange]="data.money.cash == 'disabled'">
+                <ion-icon name="checkmark-outline" *ngIf="data.money.cash == 'enabled'"></ion-icon>
+                <ion-icon name="close-outline" *ngIf="data.money.cash == 'disabled'"></ion-icon>
+                {{ data.money.cash }}
+            </div>
+            <ion-icon class="icon" name="cash-outline"></ion-icon>
+            <div class="title">
+                Cash
+            </div>
         </div>
-        <div class="currency">
-          {{ data.payouts.currency }}
+        <div class="one" (click)="go('settings')">
+            <div class="status" [class.status-badge-green]="data.money.card == 'enabled'"
+                [class.status-badge-orange]="data.money.card == 'disabled'"
+                [class.status-badge-red]="data.money.card == 'rejected' || data.money.card == 'restricted'"
+                [class.status-badge-purple]="data.money.card == 'pending'">
+                <ion-icon name="checkmark-outline" *ngIf="data.money.card == 'enabled'"></ion-icon>
+                <ion-icon name="close-outline" *ngIf="data.money.card == 'disabled'"></ion-icon>
+                <ion-icon name="ban-outline" *ngIf="data.money.card == 'restricted'"></ion-icon>
+                {{ data.money.card }}
+            </div>
+            <ion-icon class="icon" name="card-outline"></ion-icon>
+            <div class="title">
+                Card
+            </div>
         </div>
-      </div>
-      <ion-icon *ngIf="!data.payouts" name="arrow-undo-outline" class="icon"></ion-icon>
-      <div class="title">
-        Payouts
-      </div>
+        <div class="payouts" [class.one]="!data.money.payouts">
+            <div class="status" [class.status-badge-green]="data.money.payouts == 'enabled'"
+                [class.status-badge-red]="data.money.payouts == 'rejected' || data.money.payouts == 'restricted'"
+                [class.status-badge-purple]="data.money.payouts == 'pending'">
+                <ion-icon name="checkmark-outline" *ngIf="data.money.payouts == 'enabled'"></ion-icon>
+                <ion-icon name="close-outline" *ngIf="data.money.payouts == 'pending'"></ion-icon>
+                <ion-icon name="ban-outline"
+                    *ngIf="data.money.payouts == 'rejected' || data.money.payouts == 'restricted'"></ion-icon>
+                {{ data.money.payouts }}
+            </div>
+            <div class="bank" *ngIf="data.payouts">
+                <div class="last4">
+                    <span class="circles">
+                        &#9679;&#9679;&#9679;&#9679;
+                    </span>
+                    <span class="numbers">
+                        {{ data.payouts.last4 }}
+                    </span>
+                </div>
+                <div class="currency">
+                    {{ data.payouts.currency }}
+                </div>
+            </div>
+            <ion-icon *ngIf="!data.payouts" name="arrow-undo-outline" class="icon"></ion-icon>
+            <div class="title">
+                Payouts
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="charts">
-    <app-charts></app-charts>
-    <!-- <div class="money">
-      <div class="chart">
-        <div class="ch">
-        
-        </div>
-      </div>
-    </div> -->
-  </div>
+    <div class="charts">
+        <app-charts></app-charts>
+    </div>
+    <div class="loading" *ngIf="!data">
+        <span class="spinner"></span>
+    </div>
 </div>
