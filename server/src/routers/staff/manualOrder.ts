@@ -1,7 +1,9 @@
+import { privateDecrypt } from "crypto";
 import { Router } from "express";
 import { ObjectId } from "mongodb";
+import { stripe } from "../..";
 import { ordersDBName } from "../../environments/server";
-import { Locals } from "../../models/other";
+import { Locals, StripeOrderMetadata } from "../../models/other";
 import { DishHashTableUltra } from "../../utils/dish";
 import { id } from "../../utils/functions";
 import { sendMessage } from "../../utils/io";
@@ -112,7 +114,7 @@ router.post("/order/dish", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), as
     
     const newId = id()!;
 
-    const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $push: { dishes: { dishId: id(dishId), _id: newId, status: "ordered", comment: null!, } } });
+    const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { money: null!, }, $push: { dishes: { dishId: id(dishId), _id: newId, status: "ordered", comment: null!, } } });
 
 
     if(update.ok == 1) {
@@ -139,7 +141,7 @@ router.delete("/order/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }
     const { user } = res.locals as Locals;
 
 
-    const update = await Orders(restaurantId).one({ onBefalf: user._id, status: "ordering" }).update({ $pull: { dishes: { _id: id(orderDishId) } } });
+    const update = await Orders(restaurantId).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { money: null! }, $pull: { dishes: { _id: id(orderDishId) } } });
 
     res.send({ updated: update.ok == 1 });
 });
@@ -154,24 +156,32 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
     }
 
     
-    const order = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).get({ projection: { dishes: { dishId: 1, } } });
+    const order = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).get({ projection: { money: 1, dishes: { dishId: 1, } } });
 
-    let subtotal = await calculateSubtotal(restaurant._id, order.dishes);
+    if(!order.money) {
+        let subtotal = await calculateSubtotal(restaurant._id, order.dishes);
+    
+        if(!subtotal) {
+            return res.status(500).send({ reason: "DishesAreInvalidNotImplemented" });
+        }
+    
+        let hst = Math.floor(subtotal * 0.13);
+        let total = Math.floor(hst + subtotal);
 
-    if(!subtotal) {
-        return res.status(500).send({ reason: "DishesAreInvalidNotImplemented" });
-    }
+        order.money = {
+            hst, total, subtotal,
+        }
 
-    let hst = Math.floor(subtotal * 0.13);
-    let total = Math.floor(hst + subtotal);
-
-
-    res.send({
-        money: {
+        const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { paymentIntentId: null!, money: {
             total,
             subtotal,
             hst,
-        },
+        } } });
+    }
+
+
+    res.send({
+        money: order.money,
         methods: {
             card: restaurant.settings.money.card == "enabled",
             cash: restaurant.settings.money.cash == "enabled",
@@ -179,7 +189,48 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
     });
 });
 
+router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccountId: 1, settings: { money: 1 } }, "staff"), async (req, res) => {
+    const { restaurant, user } = res.locals as Locals;
 
+    const order = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).get({ projection: { paymentIntentId: 1, money: 1 } });
+
+    if(!order.money) {
+        return res.status(403).send({ reason: "ADDREASON" });
+    }
+
+    if(order.paymentIntentId && order.money) {
+
+        const paymentIntent = await stripe.paymentIntents.retrieve(order.paymentIntentId);
+
+        res.send({ clientSecret: paymentIntent.client_secret });
+        return;
+    }
+
+
+    try {
+        const p = await stripe.paymentIntents.create(
+            {
+                amount: order.money.total,
+                currency: "usd",
+                transfer_data: {
+                    destination: restaurant.stripeAccountId!,
+                },
+                metadata: <StripeOrderMetadata>{
+                    restaurantId: restaurant._id.toString(),
+                    orderId: order._id.toString(),
+                    by: "staff",
+                },
+            },
+        );
+
+        res.send({ clientSecret: p.client_secret });
+
+        const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { paymentIntentId: p.id } });
+    } catch (e) {
+        return res.sendStatus(500);
+    }
+
+});
 router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), async (req, res) => {
     const { user, restaurant } = res.locals as Locals;
 

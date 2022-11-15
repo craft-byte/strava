@@ -165,6 +165,7 @@ interface Order {
     connected?: number;
     customerToken?: string;
     socketId: string;
+    paymentIntentId?: string;
 
     money?: {
         hst: number;

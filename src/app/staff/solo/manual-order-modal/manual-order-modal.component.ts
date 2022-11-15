@@ -52,12 +52,8 @@ export class ManualOrderModalComponent implements OnInit {
         const component = this.checkoutModal.createComponent(CheckoutModalComponent);
 
         component.instance.leave.subscribe(async res => {
-            if(res == "cash") {
-                const result: any = await this.service.post({ method: "cash" }, "manual", "order", "confirm", "cash");
-
-                if(result && result.updated) {
-                    this.leave.emit();
-                }
+            if(res) {
+                this.leave.emit();
             }
             component.destroy();
         });

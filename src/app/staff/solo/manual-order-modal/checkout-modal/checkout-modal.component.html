@@ -10,10 +10,10 @@
         </div>
         <div class="content">
             <div class="select" *ngIf="methods">
-                <button (click)="cash()" id="cash" [class.s]="mode == 'cash'" [disabled]="!methods.cash" class="button-font">
+                <button (click)="cash()" id="cash" [class.s]="mode == 'cash' || ui.loading" [disabled]="!methods.cash" class="button-font">
                     Cash
                 </button>
-                <button (click)="card()" id="card" [class.s]="mode == 'card'" [disabled]="!methods.card" class="button-font">
+                <button (click)="card()" id="card" [class.s]="mode == 'card' || ui.loading" [disabled]="!methods.card" class="button-font">
                     Card
                 </button>
             </div>
@@ -62,12 +62,23 @@
                 </div>
             </div>
             <div class="card" *ngIf="money && mode == 'card'">
-                <p class="message">
-                    Card payment is not supported here yet.
-                </p>
+                <div class="title">
+                    <span class="text title-font">
+                        Card
+                    </span>
+                </div>
+                <div class="content">
+                    <div class="form">
+                        <ngx-stripe-payment *ngIf="elementsOptions?.clientSecret as clientSecret" [clientSecret]="clientSecret">
+                        </ngx-stripe-payment>
+                    </div>
+                    <div class="button" *ngIf="elementsOptions?.clientSecret && ui.showCardButton">
+                        <button (click)="cardSubmit()" class="green-button">PAY</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="loading" *ngIf="!methods || !money">
+            <div class="loading" *ngIf="!methods || !money || ui.loading">
                 <span class="spinner"></span>
             </div>
         </div>
