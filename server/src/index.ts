@@ -15,7 +15,7 @@ import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
 import { CustomerRouter } from "./routers/customer";
 import { errorHandler } from "./utils/middleware/errorHandler";
-import * as enforce from "express-sslify";
+import enforce from "express-sslify";
 import path from "path";
 
 export const MODE = process.argv[2] as "testing" | "prod" | "dev";
