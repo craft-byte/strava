@@ -6,6 +6,13 @@ interface Locals {
     stripeAccountId: string;
 }
 
+type StripeOrderMetadata = {
+    by: "customer" | "staff";
+    orderId: string;
+    restaurantId: string;
+}
+
 export {
-    Locals
+    Locals,
+    StripeOrderMetadata,
 }

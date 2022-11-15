@@ -16,6 +16,8 @@ import { Orders, Restaurant } from "../../utils/restaurant";
 import { getUser, user } from "../../utils/users";
 import * as crypto from "crypto";
 import * as jsonwebtoken from "jsonwebtoken";
+import { StripeOrderMetadata } from "../../models/other";
+import Stripe from "stripe";
 
 const router = Router({ mergeParams: true });
 
@@ -817,11 +819,10 @@ interface PaymentInfo {
                 automatic_payment_methods: {
                     enabled: true,
                 },            
-                metadata: {
+                metadata: <StripeOrderMetadata>{
                     restaurantId: restaurantId,
-                    customerId: user._id!.toString(),
-                    customerIp: req.ip,
                     orderId: order._id.toString(),
+                    by: "customer",
                 },
                 transfer_data: {
                     destination: restaurant.stripeAccountId!,
@@ -845,11 +846,10 @@ interface PaymentInfo {
                     transfer_data: {
                         destination: restaurant.stripeAccountId!,
                     },
-                    metadata: {
+                    metadata: <StripeOrderMetadata>{
                         restaurantId: restaurantId,
-                        customerId: user?._id.toString()!,
-                        customerIp: req.ip,
                         orderId: order._id.toString(),
+                        by: "customer",
                     },
                 },
                 );
@@ -868,11 +868,10 @@ interface PaymentInfo {
                     transfer_data: {
                         destination: restaurant.stripeAccountId!,
                     },
-                    metadata: {
+                    metadata: <StripeOrderMetadata>{
                         restaurantId: restaurantId,
-                        customerIp: req.ip,
-                        customerId: user?._id.toString()!,
                         orderId: order._id.toString(),
+                        by: "customer",
                     },
                 },
             );
