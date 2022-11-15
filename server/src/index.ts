@@ -15,6 +15,7 @@ import { readFileSync } from "fs";
 import { StripeRouter } from "./routers/stripe";
 import { CustomerRouter } from "./routers/customer";
 import { errorHandler } from "./utils/middleware/errorHandler";
+import * as enforce from "express-sslify";
 import path from "path";
 
 export const MODE = process.argv[2] as "testing" | "prod" | "dev";
@@ -35,6 +36,7 @@ export const client = new MongoClient(`mongodb+srv://bazhan:Kaliman228@cluster0.
 
 const app = express();
 app.use(compression());
+app.use(enforce.HTTPS());
 app.use(cors({
     credentials: true,
     optionsSuccessStatus: 200,
