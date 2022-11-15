@@ -25,6 +25,11 @@ export class FullOrderModalComponent implements OnInit {
     @Input() orderId: string;
     @Output() leave = new EventEmitter();
 
+    openDish(orderDish: any) {
+        // add to subscription on solo service and open dish-modal from waiter or cook components
+        // this.leave.emit(orderDish);
+    }
+
     async ngOnInit() {
         const result: any = await this.service.get("order", this.orderId);
 

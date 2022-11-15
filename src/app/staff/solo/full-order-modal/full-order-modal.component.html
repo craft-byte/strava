@@ -66,13 +66,13 @@
                 </div>
             </div>
             <div *ngIf="order && dishes" class="dishes">
-                <div *ngFor="let i of order.dishes" class="dish">
-                    <div class="image">
+                <div *ngFor="let i of order.dishes" (click)="openDish(i)" class="dish">
+                    <div class="image" *ngIf="dishes[i.dishId]?.image">
                         <img [src]="dishes[i.dishId].image" alt="">
                     </div>
                     <div class="top">
                         <div class="name title-font">
-                            {{ dishes[i.dishId].name }}
+                            {{ dishes[i.dishId]?.name || 'Deleted' }}
                         </div>
                         <div class="status">
                             <span
