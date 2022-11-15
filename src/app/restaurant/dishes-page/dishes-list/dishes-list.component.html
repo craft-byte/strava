@@ -1,5 +1,5 @@
 <div class="app">
-    <div class="overview" *ngIf="!ui.noDishes">
+    <div class="overview" *ngIf="!ui.noDishes && ui.showContent">
         <div class="header">
             <div class="gap">
 
@@ -11,7 +11,7 @@
             </div>
         </div>
     </div>
-    <div class="dishes">
+    <div class="dishes" *ngIf="ui.showContent">
         <div class="header" *ngIf="!ui.noDishes && dishes">
             <ion-searchbar (ionInput)="find($event)" (ionCancel)="cancel()" showClearButton="always" mode="ios">
             </ion-searchbar>
@@ -20,9 +20,6 @@
                     <ion-icon name="search-outline"></ion-icon>
                 </button>
             </div>
-        </div>
-        <div *ngIf="ui.noDishes" class="no-dishes">
-            <button class="orange-button" (click)="addDish()">Add your first dish</button>
         </div>
         <div class="list" *ngIf="!ui.noDishes && dishes && dishes.length > 0">
             <div class="ex">
@@ -36,7 +33,7 @@
                     Modified
                 </div>
                 <div class="info">
-
+                    
                 </div>
             </div>
             <div *ngFor="let i of dishes" (click)="goDish(i._id)" class="dish">
@@ -56,6 +53,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div *ngIf="ui.noDishes && ui.showContent" class="no-dishes">
+        <button class="orange-button" (click)="addDish()">Add your first dish</button>
     </div>
     <div class="loading" *ngIf="ui.showLoading">
         <span class="spinner"></span>

@@ -27,7 +27,6 @@ interface Dish {
 export class DishesListComponent implements OnInit {
 
     routerSubs: Subscription;
-    page: string = 'list';
     dishes: Dish[] = [];
 
     timeout: any;
@@ -35,6 +34,7 @@ export class DishesListComponent implements OnInit {
     ui = {
         noDishes: false,
         showLoading: true,
+        showContent: false,
     };
 
 
@@ -93,6 +93,7 @@ export class DishesListComponent implements OnInit {
         if (this.dishes.length == 0) {
             this.ui.noDishes = true;
         }
+        this.ui.showContent = true;
         this.ui.showLoading = false;
     }
 
