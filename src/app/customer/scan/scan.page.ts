@@ -60,7 +60,11 @@ export class ScanPage implements OnInit, OnDestroy {
         this.stopRecording();
     }
 
-
+    
+    selectRestaurant(id: string) {
+        this.router.go(["customer", "order", id]);
+        this.stopRecording();
+    }
     async confirmTable() {
         const alert = await this.alertCtrl.create({
             header: "Oops...",
@@ -89,6 +93,8 @@ export class ScanPage implements OnInit, OnDestroy {
         try {
             const result: { other: boolean; updated: boolean; } = await this.service.post({ table: table, order, force: false }, "restaurant", restaurantId, "create");
 
+            console.log(result);
+
             if (result.other) {
                 const force = await this.confirmTable();
 
@@ -98,6 +104,8 @@ export class ScanPage implements OnInit, OnDestroy {
 
                         if (result.updated) {
                             this.router.go(["customer", "order", restaurantId]);
+                            this.stopRecording();
+                            return;
                         } else {
                             (await this.toastCtrl.create({
                                 duration: 2000,
@@ -139,8 +147,8 @@ export class ScanPage implements OnInit, OnDestroy {
                     this.startScan();
                 }
             } else if (result.updated) {
-                this.stopRecording();
                 this.router.go(["customer", "order", restaurantId]);
+                this.stopRecording();
             } else {
                 (await this.toastCtrl.create({
                     duration: 2000,

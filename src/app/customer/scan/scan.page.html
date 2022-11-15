@@ -18,7 +18,7 @@
                     Select restaurant
                 </div>
                 <div class="list">
-                    <app-restaurant *ngFor="let i of restaurants" [restaurant]="i"></app-restaurant>
+                    <app-restaurant *ngFor="let i of restaurants" (leave)="selectRestaurant($event)" [restaurant]="i"></app-restaurant>
                 </div>
             </div>
         </div>

@@ -1,6 +1,5 @@
-import { animate, query, state, style, transition, trigger } from '@angular/animations';
-import { NONE_TYPE } from '@angular/compiler';
-import { Component, OnInit, Input } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { RouterService } from 'src/app/other/router.service';
 
 @Component({
@@ -25,13 +24,13 @@ export class RestaurantComponent implements OnInit {
     name: string;
 
     constructor(
-        private router: RouterService,
     ) { };
 
     @Input() restaurant: any;
+    @Output() leave = new EventEmitter();
 
     select() {
-        this.router.go(["customer", "order", this.restaurant._id]);
+        this.leave.emit(this.restaurant._id);
     }
 
     more() {
