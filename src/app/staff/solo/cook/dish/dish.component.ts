@@ -12,7 +12,7 @@ export class DishComponent implements OnInit, OnDestroy {
 
     dish: any;
     image: string;
-
+    name: string;
     interval: any;
 
     constructor(
@@ -28,9 +28,15 @@ export class DishComponent implements OnInit, OnDestroy {
             this.dish = this.s.dishes[this.orderDish.dishId];
         } else {
             this.dish = await this.service.get("dish", this.orderDish.dishId);
-            this.s.dishes[this.dish._id] = this.dish;
+            if(this.dish) {
+                this.s.dishes[this.dish?._id] = this.dish;
+            } else {
+                this.s.dishes[this.orderDish.dishId] = { name: "Deleted" };
+            }
         }
-        this.image = getImage(this.s.dishes[this.orderDish.dishId].image.binary);
+
+        this.name = this.dish?.name || this.orderDish.name || "Deleted";
+        this.image = getImage(this.dish?.image?.binary);
 
         if(this.orderDish.time) {
             setTimeout(() => {

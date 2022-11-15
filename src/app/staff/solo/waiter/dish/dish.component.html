@@ -1,10 +1,10 @@
 <div class="app">
-    <div class="image">
+    <div class="image" *ngIf="image">
         <img [src]="image" alt="">
     </div>
     <div class="name-id">
         <div class="name title-font">
-            {{ dish?.name }}
+            {{ name }}
         </div>
         <div class="id">
             {{ orderDish.id }}

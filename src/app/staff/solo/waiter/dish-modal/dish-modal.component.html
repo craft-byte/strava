@@ -8,8 +8,8 @@
         <div class="content">
             <div class="dish">
                 <div class="image">
-                    <img [src]="image" alt="">
-                    <button id="show-image" (click)="showImage()"><ion-icon name="search"></ion-icon></button>
+                    <img [src]="image || './../../../../../assets/images/no-image.jpg'" alt="">
+                    <button id="show-image" *ngIf="image" (click)="showImage()"><ion-icon name="search"></ion-icon></button>
                 </div>
                 <div class="name-id">
                     <div class="name title-font">

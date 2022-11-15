@@ -6,7 +6,7 @@ import { id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { bufferFromString } from "../../utils/other";
-import { Restaurant } from "../../utils/restaurant";
+import { Orders, Restaurant } from "../../utils/restaurant";
 
 
 const router = Router({ mergeParams: true });
@@ -151,11 +151,27 @@ router.post("/", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), a
 router.delete("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
     const { dishId, restaurantId } = req.params as any;
 
+    const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1 } });
+
+    if(!dish) {
+        return res.status(404).send({ reason: "NoDishFound" });
+    }
+
     const result = await Restaurant(restaurantId).dishes.one(dishId).remove();
 
     console.log("dish removed: ", result.deletedCount > 0);
 
     res.send({ removed: result.deletedCount > 0 });
+
+
+    const ordersUpdate = await Orders(restaurantId).update(
+        { dishes: { $elemMatch: { dishId: id(dishId) } } },
+        { $set: {
+            "dishes.$[dish].name": dish.name,
+            "dishes.$[dish].price": dish.price,
+        } },
+        { arrayFilters: [ { "dish.dishId": id(dishId) } ] }
+    );
 });
 
 

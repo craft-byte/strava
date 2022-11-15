@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { StaffService } from 'src/app/staff/staff.service';
 import { getImage } from 'src/functions';
+import { threadId } from 'worker_threads';
 import { SoloService } from '../../solo.service';
 
 @Component({
@@ -12,7 +13,7 @@ export class DishComponent implements OnInit, OnDestroy {
 
     dish: any;
     image: string;
-
+    name: string;
     interval: any;
 
     constructor(
@@ -26,10 +27,15 @@ export class DishComponent implements OnInit, OnDestroy {
         this.dish = this.s.dishes[this.orderDish.dishId];
         if(!this.dish) {
             this.dish = await this.service.get("dish", this.orderDish.dishId);
-            this.s.dishes[this.dish._id] = this.dish;
+            if(this.dish) {
+                this.s.dishes[this.orderDish.dishId] = this.dish;
+            } else {
+                this.s.dishes[this.orderDish.dishId] = { name: "Deleted" };
+            }
         }
 
-        if(this.dish.image) {
+        this.name = this.dish?.name || this.orderDish.name || "Deleted";
+        if(this.dish?.image) {
             this.image = getImage(this.dish.image.binary);
         }
 

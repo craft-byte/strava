@@ -119,7 +119,7 @@ export class DishModalComponent implements OnInit, OnDestroy {
 
 
     async ngOnInit() {
-        this.dishImage = getImage(this.dish.image.binary);
+        this.dishImage = getImage(this.dish?.image?.binary);
 
         const result: any = await this.service.get("cook", "order", this.orderDish.orderId, "dish", this.orderDish._id, "info");
 

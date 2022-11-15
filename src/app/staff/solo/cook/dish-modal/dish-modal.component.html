@@ -19,14 +19,14 @@
         <div class="content">
             <div class="dish">
                 <div class="image">
-                    <img [src]="dishImage" alt="">
-                    <button id="show-image" (click)="showImage()"><ion-icon name="search"></ion-icon></button>
+                    <img [src]="dishImage || './../../../../../assets/images/no-image.jpg'" alt="">
+                    <button id="show-image" *ngIf="dishImage" (click)="showImage()"><ion-icon name="search"></ion-icon></button>
                 </div>
                 <div class="info">
                     <div class="name title-font">
                         {{ dish.name }}
                     </div>
-                    <div class="time">
+                    <div class="time" *ngIf="dish.info?.time">
                         {{ dish.info?.time }} m.
                     </div>
                 </div>
