@@ -527,7 +527,7 @@ router.post("/set/bank-account/:restaurantId", logged({ restaurants: 1 }), owner
                 payoutsStatus = "enabled";
             }
 
-            await Restaurant(restaurantId).update({ $set: { status: "enabled", "money.payouts": payoutsStatus } });
+            await Restaurant(restaurantId).update({ $set: { status: "enabled", "settings.money.payouts": payoutsStatus } });
 
             res.send({ updated: true });
         } else {
@@ -662,7 +662,7 @@ router.get("/currencies/:restaurantId", logged({ info: { location: { country: 1 
     }
 
     const result = await stripe.countrySpecs.retrieve(user.info?.location.country);
-    const restaurant = await Restaurant(restaurantId).get({ projection: { money: { card: 1, payouts: 1 } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { settings: { money: { card: 1, payouts: 1 } } } });
 
     res.send({ currencies: Object.keys(result.supported_bank_account_currencies) });
 });
