@@ -1,34 +1,37 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { StaffService } from 'src/app/staff/staff.service';
+import { getImage } from 'src/functions';
 
 @Component({
     selector: 'app-dish-modal',
     templateUrl: './dish-modal.component.html',
     styleUrls: ['./dish-modal.component.scss'],
     standalone: true,
-    imports: [IonicModule],
+    imports: [IonicModule, CommonModule],
 })
 export class DishModalComponent implements OnInit {
 
+    dish: any;
+    image: string;
     
-    constructor() { }
+    constructor(
+        private service: StaffService,
+    ) { }
     
-    @Output() leave = new EventEmitter();
+    @Output() leave = new EventEmitter<boolean>();
     @Input() amount: number = 0;
-    @Input() dish: any;
+    @Input() dishId: any;
 
     add() {
+        this.leave.emit(true);
         this.amount++;
     }
-    remove() {
-        this.amount--;
-    }
 
-    save() {
-        this.leave.emit(this.amount);
-    }
+    async ngOnInit() {
+        this.dish = await this.service.get("dish", this.dishId);
 
-    ngOnInit() {
-
+        this.image = getImage(this.dish.image.binary);
     }
 }

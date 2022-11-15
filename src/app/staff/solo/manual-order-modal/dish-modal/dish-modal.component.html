@@ -4,14 +4,11 @@
             <button id="close-modal" (click)="leave.emit()">
                 <ion-icon name="close"></ion-icon>
             </button>
-            <button id="save" (click)="save()">
-                <ion-icon name="checkmark"></ion-icon>
-            </button>
         </div>
         <div class="content">
-            <div class="dish">
+            <div class="dish" *ngIf="dish">
                 <div class="image">
-                    <img [src]="dish.image" alt="">
+                    <img [src]="image" alt="">
                 </div>
                 <div class="name-price">
                     <div class="name">
@@ -27,12 +24,15 @@
                     {{ dish.description }}
                 </div>
             </div>
-            <div class="buttons">
-                <button class="red-button" (click)="remove()">Remove</button>
+            <div class="buttons" *ngIf="dish">
                 <span class="count">
                     {{ amount }}
                 </span>
                 <button class="green-button" (click)="add()">Add</button>
+            </div>
+
+            <div class="loading" *ngIf="!dish">
+                <span class="spinner"></span>
             </div>
         </div>
     </div>

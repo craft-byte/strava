@@ -23,7 +23,9 @@ router.get("/restaurants", async (req, res) => {
         name: 1,
         status: 1,
         _id: 1,
-        money: { cash: 1, card: 1, },
+        settings: {
+            money: { cash: 1, card: 1, },
+        },
         info: {
             description: 1,
             time: 1,
@@ -34,14 +36,14 @@ router.get("/restaurants", async (req, res) => {
     const result = [];
 
     for(let i of restaurants) {
-        if(i.money?.card || i.money?.cash) {
+        if(i.settings?.money?.card || i.settings?.money?.cash) {
             let payment;
             let time;
             let timeStatus;
 
-            if(i.money.card == "enabled" && i.money.cash == "enabled") {
+            if(i.settings?.money.card == "enabled" && i.settings?.money.cash == "enabled") {
                 payment = "all";
-            } else if(i.money.card == "enabled") {
+            } else if(i.settings?.money.card == "enabled") {
                 payment = "card";
             } else {
                 payment = "cash";

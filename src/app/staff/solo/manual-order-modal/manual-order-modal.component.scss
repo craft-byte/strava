@@ -56,47 +56,70 @@
 
         .content {
             .order {
-                .type {
-                    height: 36px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                .select-type {
+                    padding: 6px;
+                    border-bottom: 1px solid var(--border-color);
 
-                    .text {
-                        border-bottom: 1px solid var(--orange);
-                        color: var(--black);
-                    }
-                }
-                .no-type {
-                    height: 36px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-
-                    .text {
-                        border-bottom: 1px solid var(--red);
-                        color: var(--black);
-                    }
-                }
-                .comment {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    
-                    textarea {
-                        min-height: 124px;
-                        width: 90%;
-                        border-radius: 8px;
-                        border: 1px solid var(--border-color);
-                        color: var(--black);
-                        outline: none;
-                        padding: 8px;
-                        background-color: white;
-                        resize: vertical;
-
-                        &:focus {
-                            border: 1px solid var(--gray);
+                    .type {
+                        height: 36px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+    
+                        .text {
+                            border-bottom: 1px solid var(--orange);
+                            color: var(--black);
                         }
+                    }
+                    .no-type {
+                        height: 36px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+    
+                        .text {
+                            border-bottom: 1px solid var(--red);
+                            color: var(--black);
+                        }
+                    }
+                    .both-types {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-around;
+                        gap: 12px;
+                        margin: 8px;
+                        padding: 8px;
+    
+                        button {
+                            padding: 8px 14px;
+                            color: var(--black);
+                            border: 1px solid var(--purple);
+                            background: none;
+                            border-radius: 8px;
+    
+                            &.a {
+                                background-color: var(--orange);
+                            }
+                        }
+                    }
+                }
+
+                .comment {
+                    position: relative;
+                    border-bottom: 1px solid var(--border-color);
+                    padding: 8px;
+                    padding-bottom: 36px;
+
+                    p {
+                        color: var(--text-color);
+                        font-size: 14px;
+                    }
+
+                    button {
+                        position: absolute;
+
+                        bottom: 4px;
+                        right: 4px;
                     }
                 }
                 .selected-dishes {

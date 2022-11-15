@@ -9,29 +9,66 @@
             </div>
         </div>
         <div class="content">
-            <div class="select">
-                <button (click)="cash()" id="cash" [class.s]="mode == 'cash'" class="button-font">
+            <div class="select" *ngIf="methods">
+                <button (click)="cash()" id="cash" [class.s]="mode == 'cash'" [disabled]="!methods.cash" class="button-font">
                     Cash
                 </button>
-                <button (click)="card()" id="card" [class.s]="mode == 'card'" class="button-font">
+                <button (click)="card()" id="card" [class.s]="mode == 'card'" [disabled]="!methods.card" class="button-font">
                     Card
                 </button>
             </div>
-            <div *ngIf="mode == 'cash'" class="cash">
-                <p class="text">
-                    Pay with cash.
-                </p>
-                <p class="text">
-                    Click submit button below when payed.
-                </p>
-                <button class="green-button" (click)="cashSubmit()">
-                    Submit
-                </button>
+            <div *ngIf="money" class="money">
+                <div class="subtotal">
+                    <span class="title title-font">
+                        Subtotal
+                    </span>
+                    <span class="dots"></span>
+                    <span class="number">
+                        ${{ money.subtotal / 100 }}
+                    </span>
+                </div>
+                <div class="hst">
+                    <span class="title title-font">
+                        HST
+                    </span>
+                    <span class="dots"></span>
+                    <span class="number">
+                        ${{ money.hst / 100 }}
+                    </span>
+                </div>
+                <div class="total">
+                    <span class="title title-font">
+                        Total
+                    </span>
+                    <span class="dots"></span>
+                    <span class="number">
+                        ${{ money.total / 100 }}
+                    </span>
+                </div>
             </div>
-            <div class="card" *ngIf="mode == 'card'">
+            <div *ngIf="money && mode == 'cash'" class="cash">
+                <div class="title">
+                    <span class="text title-font">
+                        Cash
+                    </span>
+                </div>
+                <div class="content">
+                    <p class="text">
+                        Click submit button below when payed.
+                    </p>
+                    <button class="green-button" (click)="cashSubmit()">
+                        PAYED
+                    </button>
+                </div>
+            </div>
+            <div class="card" *ngIf="money && mode == 'card'">
                 <p class="message">
                     Card payment is not supported here yet.
                 </p>
+            </div>
+
+            <div class="loading" *ngIf="!methods || !money">
+                <span class="spinner"></span>
             </div>
         </div>
     </div>

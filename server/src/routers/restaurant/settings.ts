@@ -15,7 +15,7 @@ const router = Router({ mergeParams: true });
  * returns restaurant settings
  * 
  */
-router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, stripeAccountId: 1, info: 1, status: 1, }, "manager", "settings"), async (req, res) => {
+router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, stripeAccountId: 1, info: 1, status: 1, }, "manager", "settings"), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
     if(!restaurant) {
@@ -90,7 +90,7 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, money: 1, s
     res.send({
         payoutDestination,
         settings: restaurant?.settings,
-        money: restaurant.money,
+        money: restaurant.settings?.money,
         verificationUrl: verificationUrl!,
         restaurant: { name: restaurant.name, ...restaurant.info, time, status: restaurant.status, },
     });
@@ -140,12 +140,12 @@ router.post("/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settin
 /**
  * disable or enable card payment
  */
-router.post("/card", logged({ _id: 1, }), allowed({ money: 1 }, "manager", "settings"), async (req, res) => {
+router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "manager", "settings"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { value } = req.body;
     const { restaurant } = res.locals as Locals;
 
-    if(restaurant!.money!.card == "enabled" || restaurant!.money!.card == "disabled") {
+    if(restaurant!.settings?.money!.card == "enabled" || restaurant!.settings?.money!.card == "disabled") {
         const update = await Restaurant(restaurantId).update({ $set: { "money.card": value ? "enabled" : "disabled" } });
 
         return res.send({ updated: update!.ok == 1 });

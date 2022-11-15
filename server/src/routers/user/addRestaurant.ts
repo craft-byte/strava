@@ -202,6 +202,11 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
 
 
     const settings: RestaurantSettings = {
+        money: {
+            card: "restricted",
+            cash: "enabled",
+            payouts: "restricted",
+        },
         work: {
             maxOrdersCooking: 10,
         },
@@ -249,11 +254,6 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
                 city: null!,
                 postal_code: null!,
             }
-        },
-        money: {
-            card: "restricted",
-            cash: "enabled",
-            payouts: "restricted",
         },
         stripeAccountId,
     };

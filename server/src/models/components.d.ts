@@ -40,6 +40,12 @@ interface RestaurantSettings {
     staff: {
         mode: "solo" | "standart";
     }
+
+    money?: {
+        card: "enabled" | "disabled" | "rejected" | "restricted" | "pending";
+        cash: "enabled" | "disabled";
+        payouts: "enabled" | "restricted" | "rejected" | "pending";
+    }
 }
 
 

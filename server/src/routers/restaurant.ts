@@ -61,7 +61,7 @@ interface ReviewResult {
         cash: "enabled" | "disabled";
         payouts: "enabled" | "restricted" | "pending" | "rejected";
     };
-}; router.get("/home", logged({ restaurants: 1 }), allowed({ money: 1 }, "owner"), async (req, res) => {
+}; router.get("/home", logged({ restaurants: 1 }), allowed({ settings: { money: 1 } }, "owner"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { restaurant, user } = res.locals as Locals;
 
@@ -69,15 +69,15 @@ interface ReviewResult {
     // const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
 
 
-    if(!restaurant.money) {
+    if(!restaurant.settings?.money) {
         throw "NO restaurant.money property at /restaurant/home";
     }
     
     const result: ReviewResult = {
         money: {
-            cash: restaurant.money.cash,
-            card: restaurant.money.card,
-            payouts: restaurant.money.payouts,
+            cash: restaurant.settings.money.cash,
+            card: restaurant.settings.money.card,
+            payouts: restaurant.settings.money.payouts,
         }
     };
 

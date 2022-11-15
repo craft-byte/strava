@@ -7,7 +7,6 @@ import { id } from "../utils/functions";
 import { sendMessage } from "../utils/io";
 import { getDelay } from "../utils/other";
 import { updateUser } from "../utils/users";
-import { KeyPairKeyObjectResult } from "crypto";
 import { Order } from "../models/general";
 
 
@@ -44,7 +43,7 @@ router.post("/webhook", e.raw({ type: 'application/json' }), async (req, res) =>
                     .update({
                         $set: {
                             "status": "disabled",
-                            "money.card": "rejected"
+                            "settings.money.card": "rejected"
                         }
                     });
             }
@@ -84,7 +83,7 @@ router.post("/webhook", e.raw({ type: 'application/json' }), async (req, res) =>
             }
 
 
-            const update = await Restaurant(account.metadata!.restaurantId).update({ $set: { "money.card": status } }, { projection: { status: 1 } });
+            const update = await Restaurant(account.metadata!.restaurantId).update({ $set: { "settings.money.card": status } }, { projection: { status: 1 } });
 
             if(status == "enabled" && update.restaurant.status == "verification") {
                 const update2 = await Restaurant(update.restaurant._id).update({ $set: { status: "enabled" } });

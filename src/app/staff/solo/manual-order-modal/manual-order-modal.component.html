@@ -15,31 +15,39 @@
         </div>
         <div class="content">
             <div class="order" *ngIf="settings">
-                <div *ngIf="settings.allowTakeAway && !settings.allowDineIn" class="type">
-                    <span class="text title-font">
-                        Take away
-                    </span>
-                </div>
-                <div *ngIf="settings.allowDineIn && !settings.allowTakeAway" class="type">
-                    <span class="text title-font">
-                        Dine-in
-                    </span>
-                </div>
-                <div *ngIf="!settings.allowDineIn && !settings.allowTakeAway" class="no-type">
-                    <span class="text title-font">
-                        No type provided
-                    </span>
-                </div>
-                <div *ngIf="settings.allowDineIn && settings.allowTakeAway" class="both-types">
-                    <button id="take-await">
-                        Take away
-                    </button>
-                    <button id="dine-in">
-                        Dine-in
-                    </button>
+                <div class="select-type">
+                    <div *ngIf="settings.allowTakeAway && !settings.allowDineIn" class="type">
+                        <span class="text title-font">
+                            Take away
+                        </span>
+                    </div>
+                    <div *ngIf="settings.allowDineIn && !settings.allowTakeAway" class="type">
+                        <span class="text title-font">
+                            Dine-in
+                        </span>
+                    </div>
+                    <div *ngIf="!settings.allowDineIn && !settings.allowTakeAway" class="no-type">
+                        <span class="text title-font">
+                            No type provided
+                        </span>
+                    </div>
+                    <div *ngIf="settings.allowDineIn && settings.allowTakeAway" class="both-types">
+                        <button id="take-await" (click)="setType('takeaway')" [class.a]="type == 'takeaway'">
+                            Take away
+                        </button>
+                        <button id="dine-in" (click)="setType('dinein')" [class.a]="type == 'dinein'">
+                            Dine-in
+                        </button>
+                    </div>
                 </div>
                 <div class="comment">
-                    <textarea placeholder="Comment" [(ngModel)]="comment"></textarea>
+                    <p class="the-comment" *ngIf="comment">{{comment}}</p>
+                    <p *ngIf="!comment" class="no-comment">
+                        No comment
+                    </p>
+                    <button (click)="setComment()" class="orange-button">
+                        Set comment
+                    </button>
                 </div>
                 <div class="selected-dishes" *ngIf="selected && selected.length > 0">
                     <div class="title">
@@ -47,7 +55,7 @@
                             Selected:
                         </span>
                     </div>
-                    <div *ngFor="let i of selected" class="dish" (click)="openDishModal(i)">
+                    <div *ngFor="let i of selected" class="dish" (click)="openDishesDetails(i)">
                         <div class="name">
                             <span class="text title-font">
                                 {{ i.name }}
@@ -60,13 +68,13 @@
                             x
                         </span>
                         <div class="amount">
-                            {{ i.amount }}
+                            {{ i.orderDishes.length }}
                         </div>
                     </div>
                 </div>
             </div>
             <div class="dishes" *ngIf="dishes">
-                <div *ngFor="let i of dishes" class="dish" (click)="openDishModal(i)">
+                <div *ngFor="let i of dishes" class="dish" (click)="openDishModal(i._id)">
                     <div class="image">
                         <img [src]="i.image" alt="">
                         <span class="time">
@@ -91,3 +99,4 @@
 
 <ng-container #dishModalContainer></ng-container>
 <ng-container #checkoutModalContainer></ng-container>
+<ng-container #commentModalContainer></ng-container>

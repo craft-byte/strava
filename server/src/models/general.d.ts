@@ -17,11 +17,7 @@ interface Restaurant {
     blacklist?: (ObjectId | string)[];
     stripeAccountId?: string;
     status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
-    money?: {
-        card: "enabled" | "disabled" | "rejected" | "restricted" | "pending";
-        cash: "enabled" | "disabled";
-        payouts: "enabled" | "restricted" | "rejected" | "pending";
-    }
+    
     info?: {
         description?: string;
         time: {

@@ -718,8 +718,8 @@ interface PaymentInfo {
 
 
     const result: PaymentInfo = {
-        card: restaurant.money!.card == "enabled",
-        cash: restaurant.money!.cash == "enabled",
+        card: restaurant.settings?.money!.card == "enabled",
+        cash: restaurant.settings?.money!.cash == "enabled",
         total: 0,
         subtotal: 0,
         hst: 0,

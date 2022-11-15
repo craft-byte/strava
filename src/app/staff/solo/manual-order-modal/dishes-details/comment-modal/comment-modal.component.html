@@ -1,0 +1,20 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button (click)="leave.emit()" id="close-modal">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Add comment
+                </span>
+            </div>
+            <button id="save" (click)="save()">
+                <ion-icon name="checkmark"></ion-icon>
+            </button>
+        </div>
+        <div class="content">
+            <textarea placeholder="Dish comment..." [(ngModel)]="comment"></textarea>
+        </div>
+    </div>
+</div>

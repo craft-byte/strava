@@ -87,7 +87,7 @@ router.post("/:restaurantId/socketReconnect", logged({ _id: 1 }), allowed({ _id:
 router.get("/:restaurantId/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
-    const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, info: { time: 1 }, image: { binary: 1 } } });
+    const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1, info: { time: 1 }, image: { binary: 1 } } });
 
     res.send(result);
 });
