@@ -20,11 +20,7 @@ interface ConvertedOrder {
         name: string;
         avatar: any;
     };
-    dishes: {
-        name: string;
-        price: number;
-        _id: ObjectId;
-    }[];
+    dishes: number;
     _id: any;
     status: Order["status"];
     date: string;
@@ -83,16 +79,11 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
             _id: i._id,
             date: getDate(i.ordered!),
             user: user as any,
-            dishes: [] as any,
-            total: 0,
+            dishes: i.dishes.length,
+            total: i.money?.total!,
             statusColor: i.status == "progress" ? "purple" : i.status == "done" ? "green" : i.status == "removed" ? "red" : "orange",
             blacklisted: isBlacklisted(i.customer || i.ip!)
         };
-        for(let j of i.dishes) {
-            const dish = await dishes.get(j.dishId) as any;
-            one.dishes.push(dish);
-            one.total += dish.price;
-        }
         result.push(one);
     }
 
