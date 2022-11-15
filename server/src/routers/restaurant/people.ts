@@ -41,8 +41,6 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
         return res.send([]);
     }
 
-    const dishes = new DishHashTableUltra(restaurantId, { name: 1, price: 1 });
-
     const result = [];
 
     const isBlacklisted = (userId: string | ObjectId) => {
