@@ -48,6 +48,8 @@
         }
 
         .content {
+            overflow: auto;
+            
             .select {
                 display: flex;
                 align-items: center;

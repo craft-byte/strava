@@ -55,6 +55,8 @@
         }
 
         .content {
+            overflow: auto;
+            
             .order {
                 .select-type {
                     padding: 6px;
