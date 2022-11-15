@@ -986,11 +986,18 @@ interface Tracking {
  * @returns { Tracking }
  * 
  * @throws { status: 404; reason: "NoOrders" } - user didn't order any orders
+ * @throws { status: 404; reason: "NoRestaurant" } - user didn't order any orders
  * 
  */
 router.get("/tracking", passUserData, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { status, userId, ct } = res.locals as LocalLocals;
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1 } });
+
+    if(!restaurant) {
+        return res.status(404).send({ reason: "NoRestaurant" });
+    }
 
     let filter: Filter<Order>;
     if(status == "loggedin" || status == "loggedout") {
@@ -1037,7 +1044,7 @@ router.get("/tracking", passUserData, async (req, res) => {
     const result = {
         dishes: dishes.table,
         orders: o,
-        
+        theme: restaurant.theme
     };
 
 

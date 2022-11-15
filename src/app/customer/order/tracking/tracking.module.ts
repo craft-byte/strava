@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { TrackingPageRoutingModule } from './tracking-routing.module';
 
 import { TrackingPage } from './tracking.page';
+import { DishComponent } from './dish/dish.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { TrackingPage } from './tracking.page';
     IonicModule,
     TrackingPageRoutingModule
   ],
-  declarations: [TrackingPage]
+  declarations: [TrackingPage, DishComponent]
 })
 export class TrackingPageModule {}

@@ -3,7 +3,7 @@
         margin-top: 24px;
         .title {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             padding-left: 24px;
             border-bottom: 1px solid var(--border-color);
             height: 32px;
@@ -21,42 +21,10 @@
         .dishes {
             padding: 16px;
             .list {
-                .dish {
-                    margin-top: 24px;
-                    background-color: white;
-                    width: 100%;
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    &:first-of-type {
-                        margin-top: 0;
-                    }
-                    .image {
-                        img {
-                            height: 203px;
-                            width: 100%;
-                            object-fit: cover;
-                            border-top-left-radius: 8px;
-                            border-top-right-radius: 8px;
-                        }
-                    }
-                    .bottom {
-                        padding: 12px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        .name {
-                            font-size: 18px;
-                            color: var(--title-color);
-                        }
-                        .status {
-                            padding: 6px 8px;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            border-radius: 8px;
-                        }
-                    }
-                }
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                gap: 18px;
             }
         }
     }

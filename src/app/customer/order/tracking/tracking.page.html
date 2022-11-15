@@ -9,10 +9,12 @@
 
 <ion-content>
     <div class="app">
-        <div *ngFor="let i of data?.orders" class="order">
+        <div *ngFor="let i of orders" class="order">
             <div class="title">
                 <span class="title">
-                    {{ i.type }}
+                    <span class="text title-font">
+                        {{ i.type }}
+                    </span>
                 </span>
                 <span class="number">
                     #{{ i.id }}
@@ -20,29 +22,7 @@
             </div>
             <div class="dishes">
                 <div class="list">
-                    <div *ngFor="let dish of i.dishes" class="dish">
-                        <div class="image">
-                            <img [src]="data.dishes[dish.dishId].image" alt="">
-                        </div>
-                        <div class="bottom">
-                            <div class="name">
-                                {{ data.dishes[dish.dishId].name }}
-                            </div>
-                            <div class="status"
-                                [class.status-badge-gray]="dish.status == 'ordered'"
-                                [class.status-badge-green]="dish.status == 'served'"
-                                [class.status-badge-red]="dish.status == 'removed'"
-                                [class.status-badge-purple]="dish.status == 'cooking'"
-                                [class.status-badge-orange]="dish.status == 'cooked'">
-                                <span class="waiting" *ngIf="dish.status == 'ordered'">
-                                    waiting
-                                </span>
-                                <span class="other" *ngIf="dish.status != 'ordered'">
-                                    {{ dish.status }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    <app-dish *ngFor="let dish of i.dishes" [dish]="dishes[dish.dishId]" [orderDish]="dish"></app-dish>
                 </div>
             </div>
         </div>

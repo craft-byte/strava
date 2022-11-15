@@ -1,0 +1,25 @@
+<div class="app">
+    <div class="image" *ngIf="image">
+        <img [src]="image" alt="">
+    </div>
+    <div class="bottom">
+        <div class="name">
+            <span class="text title-font">
+                {{ name }}
+            </span>
+        </div>
+        <div class="status"
+            [class.status-badge-gray]="orderDish.status == 'ordered'"
+            [class.status-badge-green]="orderDish.status == 'served'"
+            [class.status-badge-red]="orderDish.status == 'removed'"
+            [class.status-badge-purple]="orderDish.status == 'cooking'"
+            [class.status-badge-orange]="orderDish.status == 'cooked'">
+            <span class="waiting" *ngIf="orderDish.status == 'ordered'">
+                waiting
+            </span>
+            <span class="other" *ngIf="orderDish.status != 'ordered'">
+                {{ dish.status }}
+            </span>
+        </div>
+    </div>
+</div>
