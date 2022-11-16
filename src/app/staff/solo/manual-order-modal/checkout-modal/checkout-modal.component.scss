@@ -48,8 +48,9 @@
         }
 
         .content {
-            overflow-y: scroll;
+            overflow-y: auto;
             padding-bottom: 124px;
+            height: auto;
 
             .select {
                 display: flex;
@@ -121,6 +122,7 @@
             }
 
             .cash {
+                overflow-y: auto;
                 .title {
                     height: 32px;
                     display: flex;
@@ -146,6 +148,7 @@
                 }
             }
             .card {
+                overflow-y: auto;
                 .title {
                     height: 32px;
                     display: flex;
