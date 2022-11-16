@@ -10,11 +10,10 @@
         </div>
         <div class="order">
             <h1 id="order-type" class="title-font" *ngIf="order.type">
-                {{ order.type }}
-                <span class="away" *ngIf="order.type == 'out'">
+                <span class="away" *ngIf="order.type == 'takeaway'">
                     Take away
                 </span>
-                <span *ngIf="order.type == 'in'" class="in">
+                <span *ngIf="order.type == 'dinein'" class="in">
                     Dine-in
                 </span>
             </h1>
