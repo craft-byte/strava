@@ -11,13 +11,12 @@ import { id } from "../../utils/functions";
 import { passOrder } from "../../utils/middleware/customerAllowed";
 import { passUserData } from "../../utils/middleware/logged";
 import { getDelay } from "../../utils/other";
-import { createJWT, issueJWT, PRIV_KEY } from "../../utils/passport";
+import { PRIV_KEY } from "../../utils/passport";
 import { Orders, Restaurant } from "../../utils/restaurant";
-import { getUser, user } from "../../utils/users";
+import { getUser } from "../../utils/users";
 import * as crypto from "crypto";
 import * as jsonwebtoken from "jsonwebtoken";
 import { StripeOrderMetadata } from "../../models/other";
-import Stripe from "stripe";
 
 const router = Router({ mergeParams: true });
 
@@ -467,7 +466,7 @@ router.post("/session/type", passUserData, passOrder({ _id: 1 }), async (req, re
     const { type } = req.body;
     const { status, userId, ct } = res.locals as LocalLocals;
 
-    if (!type || !["in", "out"].includes(type)) {
+    if (!type || !["takeaway", "dinein"].includes(type)) {
         return res.status(422).send({ reason: "InvalidType" });
     }
 
