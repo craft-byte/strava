@@ -39,6 +39,7 @@ export class DishEditPage implements OnInit {
 
     ui = {
         nameRed: false,
+        disable: false,
         priceRed: false,
     }
 
@@ -81,6 +82,10 @@ export class DishEditPage implements OnInit {
         if(!this.form.valid) {
             return;
         }
+
+        await this.loader.start()
+        this.ui.disable = true;
+
         const body = this.form.value;
 
         if(this.imageChanged) {
@@ -98,10 +103,8 @@ export class DishEditPage implements OnInit {
             if(e.status == 422) {
                 if(e.body.reason == "InvalidDishName") {
                     this.ui.nameRed = true;
-                    return;
                 } else if(e.body.reason == "InvalidDishPrice") {
                     this.ui.priceRed = true;
-                    return;
                 } else if(e.body.reason == "InvalidDishImage") {
                     this.setImage();
                     (await this.toastCtrl.create({
@@ -113,6 +116,10 @@ export class DishEditPage implements OnInit {
                 }
             }
         }
+
+
+        this.loader.end()
+        this.ui.disable = true;
     }
 
 

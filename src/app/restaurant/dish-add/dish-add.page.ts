@@ -22,6 +22,7 @@ export class DishAddPage implements OnInit {
     ui = {
         nameRed: false,
         priceRed: false,
+        disable: false,
     }
 
     constructor(
@@ -73,6 +74,9 @@ export class DishAddPage implements OnInit {
             return;
         }
 
+        this.ui.disable = true;
+        await this.loader.start();
+
         const body = {
             description,
             name,
@@ -87,6 +91,7 @@ export class DishAddPage implements OnInit {
 
             if(result.added) {
                 this.router.go(["restaurant", this.service.restaurantId, "dishes", "list"]);
+                return;
             } else {
                 (await this.toastCtrl.create({
                     duration: 1500,
@@ -99,10 +104,8 @@ export class DishAddPage implements OnInit {
             if(e.status == 422) {
                 if(e.body.reason == "InvalidDishName") {
                     this.ui.nameRed = true;
-                    return;
                 } else if(e.body.reason == "InvalidDishPrice") {
                     this.ui.priceRed = true;
-                    return;
                 } else if(e.body.reason == "InvalidDishImage") {
                     this.setImage();
                     (await this.toastCtrl.create({
@@ -114,6 +117,9 @@ export class DishAddPage implements OnInit {
                 }
             }
         }
+
+        this.ui.disable = false;
+        this.loader.end();
     }
 
     async ngOnInit() {

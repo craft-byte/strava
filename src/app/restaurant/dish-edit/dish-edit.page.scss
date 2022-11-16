@@ -5,8 +5,9 @@
     padding-top: 84px;
     min-height: 100vh;
     width: 100vw;
-    background-color: rgb(250, 250, 250);
+    overflow: auto;
     padding-bottom: 128px;
+    background-color: rgb(250, 250, 250);
 
     .box {
         padding: 8px;
@@ -22,6 +23,7 @@
             background-color: rgb(250, 250, 250);
             border: 1px solid var(--border-color);
             outline: none;
+            color: var(--black);
 
             &:focus {
                 border: 1px solid var(--gray);
@@ -36,6 +38,7 @@
             display: flex;
             justify-content: center;
             margin-top: 12px;
+            color: var(--black);
 
             textarea {
                 border-radius: 6px;
@@ -118,7 +121,7 @@
 
 @media screen and (max-width: 460px) {
     .app {
-        padding-top: 24px;
+        padding-top: 72px;
 
         .box {
             width: 95%;
