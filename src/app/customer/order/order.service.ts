@@ -11,7 +11,7 @@ export class OrderService {
   dishesQuantity: number;
   user: { name: string; _id: string; avatar: any; };
 
-  type: "in" | "out";
+  type: "takeaway" | "dinein";
   id: string;
 
   comment: string;

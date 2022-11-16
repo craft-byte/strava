@@ -14,15 +14,15 @@
     </div>
     <div class="place">
       <div class="box">
-        <button (click)="place('in')" class="option" [class.a]="order.type == 'in'">
-          Inside
+        <button (click)="place('dinein')" class="option" [class.a]="order.type == 'in'">
+          Dine-in
         </button>
-        <button *ngIf="order.showOut" (click)="place('out')" class="option" [class.a]="order.type == 'out'">
+        <button *ngIf="order.showOut" (click)="place('takeaway')" class="option" [class.a]="order.type == 'out'">
           Take away
         </button>
       </div>
     </div>
-    <div class="info" *ngIf="order.type == 'in'">
+    <div class="info" *ngIf="order.type == 'dinein'">
       <div class="content" *ngIf="order.id">
         <div class="title">
           <span class="text">
@@ -38,7 +38,7 @@
           Select table
         </button>
         <div class="or">or</div>
-        <button (click)="place('out')" class="orange-button" *ngIf="order.showOut">
+        <button (click)="place('takeaway')" class="orange-button" *ngIf="order.showOut">
           Take away
         </button>
       </div>

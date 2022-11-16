@@ -191,7 +191,7 @@ export class PreviewPage implements OnInit {
     //
     //  CHOOSE ORDER TYPE
     //
-    async place(p: "in" | "out") {
+    async place(p: "takeaway" | "dinein") {
         let old = this.order.type;
         this.order.id = null;
         this.order.type = p;
@@ -208,7 +208,7 @@ export class PreviewPage implements OnInit {
                     mode: "ios",
                 })).present();
             } else {
-                if (p == "out") {
+                if (p == "takeaway") {
                     this.order.id = result.id;
                 }
             }
@@ -285,7 +285,7 @@ export class PreviewPage implements OnInit {
             this.ui.redDishes = true;
             return;
         }
-        if (this.order.type == 'in' && !this.order.id) {
+        if (this.order.type == 'dinein' && !this.order.id) {
             this.ui.redTable = true;
             return;
         }
