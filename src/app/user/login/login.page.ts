@@ -75,10 +75,6 @@ export class LoginPage implements OnInit {
         }
         this.ui.disableSubmit = true;
 
-
-        await this.loader.start();
-
-
         try {
             const { username, password } = this.form.value;
             const result: { success: boolean; redirectTo: string; } = await this.main.login({ email: username, password: password });
@@ -98,7 +94,6 @@ export class LoginPage implements OnInit {
             } else {
                 this.ui.passwordMessage = "Please, check your data again";
                 this.ui.disableSubmit = false;
-                this.loader.end();
             }
         } catch (e) {
             if(e.status == 422) {
@@ -119,7 +114,6 @@ export class LoginPage implements OnInit {
                 this.ui.passwordMessage = "Incorrect data";
             }
             this.ui.disableSubmit = false;
-            this.loader.end();
         }
     }
 

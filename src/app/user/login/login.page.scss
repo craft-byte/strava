@@ -90,6 +90,23 @@
                     display: flex;
                     justify-content: center;
                     margin-top: 24px;
+
+                    .orange-button {
+                        width: 72px;
+
+                        &:disabled {
+                            background-color: var(--orange);
+                        }
+
+                        .spinner {
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 100%;
+                            border-top: 2px solid var(--black);
+                            -webkit-animation: spin 1.5s linear infinite;
+                            animation: spin 1.5s linear infinite;
+                        }
+                    }
                 }
 
                 .forgot {

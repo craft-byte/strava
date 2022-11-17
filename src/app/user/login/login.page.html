@@ -25,7 +25,12 @@
                     </div>
                     <div class="submit">
                         <button type="submit" [disabled]="ui.disableSubmit" id="submit" class="orange-button">
-                            Log in
+                            <span class="text" *ngIf="!ui.disableSubmit">
+                                Log in
+                            </span>
+                            <span *ngIf="ui.disableSubmit" class="spinner">
+
+                            </span>
                         </button>
                     </div>
                     <div class="forgot">
