@@ -1,0 +1,21 @@
+<div class="app">
+    <div class="image">
+        <img *ngIf="image" [src]="image" alt="">
+        <div class="loading" *ngIf="!image">
+            <span class="spinner"></span>
+        </div>
+        <span class="time">
+            {{ dish.info.time }} m.
+        </span>
+    </div>
+    <div class="name-price">
+        <div class="name">
+            <span class="text title-font">
+                {{ dish.name }}
+            </span>
+        </div>
+        <div class="price">
+            ${{ dish.price / 100 }}
+        </div>
+    </div>
+</div>

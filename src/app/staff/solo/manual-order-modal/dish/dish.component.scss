@@ -1,0 +1,80 @@
+.app {
+    width: 324px;
+    border: 2px solid var(--purple);
+    color: var(--black);
+    border-radius: 8px;
+
+    .image {
+        position: relative;
+
+        img {
+            width: 100%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            object-fit: cover;
+            aspect-ratio: 16 / 5;
+        }
+        .loading {
+            width: 100%;
+            aspect-ratio: 16 / 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            background-color: rgb(245, 245, 245);
+
+            .spinner {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                border-top: 2px solid var(--gray);
+                -webkit-animation: spin 1.5s linear infinite;
+                animation: spin 1.5s linear infinite;
+            }
+        }
+        .time {
+            position: absolute;
+            bottom: 0;
+            right: 4px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-top-right-radius: 4px;
+            border-top-left-radius: 4px;
+            color: black;
+            padding: 3px 6px 4px 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .category {
+            position: absolute;
+            bottom: 0;
+            color: black;
+            right: 72px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-top-right-radius: 4px;
+            border-top-left-radius: 4px;
+            width: auto;
+            height: 18px;
+            padding: 0 4px;
+        }
+    }
+
+    .name-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px;
+
+        .name {
+            .text {
+                color: var(--black);
+                font-size: 18px;
+            }
+        }
+        .price {
+            color: var(--text-color);
+        }
+    }
+}

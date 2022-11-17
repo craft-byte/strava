@@ -13,17 +13,17 @@ import { getImage } from 'src/functions';
 })
 export class DishModalComponent implements OnInit {
 
-    dish: any;
     image: string;
     
     constructor(
         private service: StaffService,
     ) { }
-    
+        
     @Output() leave = new EventEmitter<boolean>();
     @Input() amount: number = 0;
     @Input() dishId: any;
-
+    @Input() dish: any;
+        
     add() {
         this.leave.emit(true);
         this.amount++;

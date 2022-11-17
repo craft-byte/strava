@@ -5,12 +5,13 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { getImage } from 'src/functions';
 import { StaffService } from '../../staff.service';
+import { DishComponent } from './dish/dish.component';
 
 @Component({
     selector: 'app-manual-order-modal',
     templateUrl: './manual-order-modal.component.html',
     styleUrls: ['./manual-order-modal.component.scss'],
-    imports: [CommonModule, IonicModule, FormsModule],
+    imports: [CommonModule, IonicModule, FormsModule, DishComponent],
     standalone: true,
 })
 export class ManualOrderModalComponent implements OnInit {
@@ -59,7 +60,7 @@ export class ManualOrderModalComponent implements OnInit {
         });
 
     }
-    async openDishModal(dishId: string) {
+    async openDishModal(dishId: string, name: string, price: number) {
         const { DishModalComponent } = await import("./dish-modal/dish-modal.component");
 
         const component = this.dishModal.createComponent(DishModalComponent);
@@ -72,6 +73,8 @@ export class ManualOrderModalComponent implements OnInit {
                 break;
             }
         }
+
+        component.instance.dish = { name, price };
 
         component.instance.leave.subscribe(async (add: boolean) => {
             if(add) {
@@ -97,7 +100,7 @@ export class ManualOrderModalComponent implements OnInit {
                 }
 
 
-                this.selected.push({ ...component.instance.dish, amount: 1, orderDishes: [ { _id: result._id, comment: null!, } ] });
+                this.selected.push({ price: component.instance.dish.price, name: component.instance.dish.name, _id: dishId, orderDishes: [ { _id: result._id, comment: null!, } ] });
 
                 this.loader.end();
                 return;
@@ -116,7 +119,7 @@ export class ManualOrderModalComponent implements OnInit {
 
         component.instance.leave.subscribe((id: string) => {
             if(id == "open") {
-                this.openDishModal(data._id);
+                this.openDishModal(data._id, data.name, data.price);
                 return;
             }
             if(id) {
@@ -124,6 +127,14 @@ export class ManualOrderModalComponent implements OnInit {
                     if(data.orderDishes[i]._id == id) {
                         data.orderDishes.splice(+i, 1);
                         break;
+                    }
+                }
+                if(data.orderDishes.length == 0) {
+                    for(let i in this.selected) {
+                        if(this.selected[i]._id == data._id) {
+                            this.selected.splice(+i, 1);
+                            break;
+                        }
                     }
                 }
                 return;

@@ -88,8 +88,15 @@ router.get("/:restaurantId/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1 }
     const { restaurantId, dishId } = req.params as any;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1, info: { time: 1 }, image: { binary: 1 } } });
-
+    
     res.send(result);
+});
+router.get("/:restaurantId/dish/:dishId/image", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+    const { restaurantId, dishId } = req.params as any;
+
+    const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { image: { binary: 1 } } });
+
+    res.send({ ...result?.image });
 });
 
 

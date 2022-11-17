@@ -6,33 +6,42 @@
             </button>
         </div>
         <div class="content">
-            <div class="dish" *ngIf="dish">
+            <div class="dish">
                 <div class="image">
-                    <img [src]="image" alt="">
+                    <img *ngIf="image" [src]="image" alt="">
+                    <div class="loading" *ngIf="!image || !dish">
+                        <span class="spinner"></span>
+                    </div>
                 </div>
                 <div class="name-price">
                     <div class="name">
-                        <span class="text title-font">
+                        <span *ngIf="dish?.name" class="text title-font">
                             {{ dish.name }}
                         </span>
+                        <div class="loading" *ngIf="!dish">
+                            <span class="spinner"></span>
+                        </div>
                     </div>
                     <div class="price">
-                        ${{ dish.price / 100 }}
+                        <span *ngIf="dish?.price" class="text">
+                            ${{ dish.price / 100 }}
+                        </span>
+                        <div class="loading" *ngIf="!dish">
+                            <span class="spinner"></span>
+                        </div>
                     </div>
                 </div>
-                <div class="description">
-                    {{ dish.description }}
+                <div class="description" *ngIf="dish && dish.description">
+                    <span class="text">
+                        {{ dish.description }}
+                    </span>
                 </div>
             </div>
-            <div class="buttons" *ngIf="dish">
+            <div class="buttons">
                 <span class="count">
                     {{ amount }}
                 </span>
                 <button class="green-button" (click)="add()">Add</button>
-            </div>
-
-            <div class="loading" *ngIf="!dish">
-                <span class="spinner"></span>
             </div>
         </div>
     </div>

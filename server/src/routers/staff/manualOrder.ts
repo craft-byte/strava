@@ -20,7 +20,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
     const { restaurant, user } = res.locals as Locals;
 
     
-    const dishes = await Restaurant(restaurantId).dishes.many({ }).get({ projection: { image: { binary: 1, }, name: 1, price: 1, general: 1, info: { time: 1 }, } });
+    const dishes = await Restaurant(restaurantId).dishes.many({ }).get({ projection: { image: { resolution: 1, }, name: 1, price: 1, general: 1, info: { time: 1 }, } });
 
     let order = await Orders(restaurantId).one({ onBefalf: id(user._id), status: "ordering" }).get({ projection: { dishes: { _id: 1, dishId: 1, comment: 1, }, comment: 1, type: 1, } });
 
@@ -55,7 +55,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
                 name: dish.name!,
                 price: dish.price!,
                 _id: dish._id,
-                orderDishes: order.dishes,
+                orderDishes: order.dishes.filter(d => d.dishId.equals(dish._id)),
             });
         }
     }
@@ -63,7 +63,9 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
     res.send({
         order,
         selected: ds,
-        dishes,
+        dishes: dishes.map(d => {
+            return { ...d, image: undefined, hasImage: !!d.image}
+        }),
         settings: restaurant.settings?.customers,
     });
 });

@@ -63,6 +63,28 @@
                         height: auto;
                         border-radius: 8px;
                         border: 2px solid var(--orange);
+                        height: 226px;
+                    }
+                    .loading {
+                        width: 226px;
+                        height: 226px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-top-left-radius: 8px;
+                        border-top-right-radius: 8px;
+                        background-color: rgb(245, 245, 245);
+                        border: 2px solid var(--orange);
+                        border-radius: 8px;
+            
+                        .spinner {
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 50%;
+                            border-top: 2px solid var(--gray);
+                            -webkit-animation: spin 1.5s linear infinite;
+                            animation: spin 1.5s linear infinite;
+                        }
                     }
                 }
                 .name-price {
@@ -79,9 +101,33 @@
                             color: var(--black);
                             font-size: 18px;
                         }
+
+                        .loading .spinner {
+                            height: 24px;
+                            width: 24px;
+                            border-top: 1px solid var(--black);
+                        }
                     }
                     .price {
+                        .text {
+                            color: var(--text-color);
+                        }
+
+                        .loading .spinner {
+                            height: 20px;
+                            width: 20px;
+                        }
+                    }
+                }
+                .description {
+                    padding: 6px;
+                    margin: 6px 0;
+                    border-bottom: 1px solid var(--border-color);
+                    border-top: 1px solid var(--border-color);
+
+                    .text {
                         color: var(--text-color);
+                        font-size: 14px;
                     }
                 }
             }

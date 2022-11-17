@@ -74,24 +74,7 @@
                 </div>
             </div>
             <div class="dishes" *ngIf="dishes">
-                <div *ngFor="let i of dishes" class="dish" (click)="openDishModal(i._id)">
-                    <div class="image">
-                        <img [src]="i.image" alt="">
-                        <span class="time">
-                            {{ i.info.time }} m.
-                        </span>
-                    </div>
-                    <div class="name-price">
-                        <div class="name">
-                            <span class="text title-font">
-                                {{ i.name }}
-                            </span>
-                        </div>
-                        <div class="price">
-                            ${{ i.price / 100 }}
-                        </div>
-                    </div>
-                </div>
+                <app-dish *ngFor="let i of dishes" (click)="openDishModal(i._id, i.name, i.price)" [dish]="i"></app-dish>
             </div>
             <div class="loading">
                 <span class="spinner" *ngIf="!settings || !dishes"></span>
