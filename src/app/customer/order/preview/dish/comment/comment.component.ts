@@ -15,8 +15,8 @@ import { IonicModule } from '@ionic/angular';
             transition(':enter', [
                 group([
                     style({ background: "rgb(0,0,0,0)" }),
-                    animate('200ms ease-in', style({ background: "rgb(0,0,0,0.5)" })),
-                    query(".body", [
+                    animate('200ms ease-in', style({ background: "rgb(0,0,0,0.25)" })),
+                    query(".box", [
                         style({ transform: 'scale(0.7)', opacity: "0" }),
                         animate("200ms ease-in", style({ transform: 'scale(1)', opacity: "1", })),
                     ])
@@ -25,7 +25,7 @@ import { IonicModule } from '@ionic/angular';
             transition(':leave', [
                 group([
                     animate("200ms ease-in", style({ background: "rgb(0,0,0,0.0)" })),
-                    query(".body", [
+                    query(".box", [
                         animate('200ms ease-in', style({ transform: 'scale(0.75)', opacity: "0" })),
                     ])
                 ])

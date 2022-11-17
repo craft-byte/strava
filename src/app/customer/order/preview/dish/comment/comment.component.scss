@@ -7,12 +7,11 @@
     display: flex;
     justify-content: center;
     padding-top: 124px;
-    z-index: 99999999999;
-    background-color: rgb(0,0,0,0.5);
+    z-index: 99999;
+    background-color: rgb(0,0,0,0.25);
 
-    .body {
-        border-radius: 8px;
-        width: 85vw;
+    .box {
+        width: 100%;
         height: 40vh;
         background-color: white;
 
@@ -41,6 +40,21 @@
                 ion-icon {
                     font-size: 24px;
                 }
+            }
+        }
+    }
+}
+
+
+@media screen and (min-width: 500px) {
+    .app {
+        .box {
+            border-radius: 8px;
+            width: 424px;
+
+            .header {
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
             }
         }
     }
