@@ -25,7 +25,7 @@ interface InitResult {
         id: string;
         comment: string;
     };
-    showOut: boolean;
+    types: "both" | "dinein" | "takeaway";
     showTracking: boolean;
 };
 
@@ -131,7 +131,7 @@ export class MainPage implements OnInit, OnDestroy {
                 table,
             }, "order", this.service.restaurantId, "init");
 
-            const { restaurant, order, user, showOut, showTracking } = result;
+            const { restaurant, order, user, showTracking, types, } = result;
 
             this.restaurantName = restaurant.name;
             this.service.theme = restaurant.theme;
@@ -144,8 +144,8 @@ export class MainPage implements OnInit, OnDestroy {
             this.order.dishesQuantity = order.dishesQuantity;
             this.order.type = order.type as any;
             this.order.id = order.id;
-            this.order.showOut = showOut;
             this.order.user = user;
+            this.order.types = result.types;
 
 
 

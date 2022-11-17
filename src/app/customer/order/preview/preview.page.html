@@ -15,14 +15,29 @@
         </div>
         <div class="content" (click)="$event.stopPropagation()">
             <div class="place">
-                <div class="box">
+                <div class="box" *ngIf="order.types == 'both'">
                     <button (click)="place('dinein')" class="option" [class.a]="order.type == 'dinein'">
                         Dine-in
                     </button>
-                    <button *ngIf="order.showOut" (click)="place('takeaway')" class="option"
+                    <button (click)="place('takeaway')" class="option"
                         [class.a]="order.type == 'takeaway'">
                         Take away
                     </button>
+                </div>
+                <div *ngIf="order.types == 'dinein'" class="dine-in">
+                    <span class="text title-font">
+                        Dine-in
+                    </span>
+                </div>
+                <div *ngIf="order.types == 'takeaway'" class="takeaway">
+                    <span class="text title-font">
+                        Take away
+                    </span>
+                </div>
+                <div *ngIf="order.types == 'none'" class="none">
+                    <span class="text none">
+                        Your order
+                    </span>
                 </div>
             </div>
             <div class="info" *ngIf="order.type == 'dinein'">
@@ -37,13 +52,18 @@
                             </ion-icon></button>
                     </div>
                 </div>
-                <div class="scan-qr" [class.red]="ui.redTable" *ngIf="!order.id">
+                <div class="scan-qr" [class.red]="ui.redTable" *ngIf="!order.id && order.types == 'both'">
                     <button (click)="table()" class="orange-button table">
                         Select table
                     </button>
                     <div class="or">or</div>
-                    <button (click)="place('takeaway')" class="orange-button" *ngIf="order.showOut">
+                    <button (click)="place('takeaway')" class="orange-button">
                         Take away
+                    </button>
+                </div>
+                <div class="scan-qr-only" [class.red]="ui.redTable" *ngIf="!order.id && order.types == 'dinein'">
+                    <button (click)="table()" class="orange-button table">
+                        Select table
                     </button>
                 </div>
             </div>

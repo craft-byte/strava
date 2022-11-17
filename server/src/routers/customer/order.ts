@@ -162,7 +162,7 @@ interface InitResult {
         name: string;
         _id: string;
     } | null;
-    showOut: boolean;
+    types: "both" | "takeaway" | "dinein" | "none";
     showTracking: boolean;
 };
 /**
@@ -183,7 +183,7 @@ router.post("/init", passUserData, async (req, res) => {
     const { userId, ct, status } = res.locals as LocalLocals;
 
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1 } } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1, allowDineIn: 1, } } } });
 
     if (!restaurant) {
         return res.status(404).send({ reason: "RestaurantNotFound" });
@@ -279,9 +279,21 @@ router.post("/init", passUserData, async (req, res) => {
             comment: order.comment || null!,
         },
         user,
-        showOut: restaurant!.settings!.customers.allowTakeAway,
+        types: null!,
         showTracking: !!trackingOrders,
     };
+
+    if(restaurant.settings) {
+        if(restaurant.settings.customers.allowTakeAway && restaurant.settings.customers.allowDineIn) {
+            result.types = "both";
+        } else if(restaurant.settings.customers.allowDineIn) {
+            result.types = "dinein";
+        } else if(restaurant.settings.customers.allowTakeAway) {
+            result.types = "takeaway";
+        } else {
+            result.types = "none";
+        }
+    }
 
 
     res.send(result);

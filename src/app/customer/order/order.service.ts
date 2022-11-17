@@ -3,41 +3,41 @@ import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class OrderService {
 
-  dishes: { name: string; price: number; quantity: number; _id: string; }[] = [];
-  dishesQuantity: number;
-  user: { name: string; _id: string; avatar: any; };
+    dishes: { name: string; price: number; quantity: number; _id: string; }[] = [];
+    dishesQuantity: number;
+    user: { name: string; _id: string; avatar: any; };
 
-  type: "takeaway" | "dinein";
-  id: string;
+    type: "takeaway" | "dinein";
+    id: string;
 
-  comment: string;
+    comment: string;
 
-  showOut: boolean;
+    types: "both" | "dinein" | "takeaway" | "none";
 
-  us: "noinfo" | "loggedin" | "loggedout"; // user status
+    us: "noinfo" | "loggedin" | "loggedout"; // user status
 
-  constructor(
-    public socket: Socket,
-  ) { };
+    constructor(
+        public socket: Socket,
+    ) { };
 
-  
-  public get socketId(): string {
-    return this.socket.ioSocket.id;
-  }
 
-  subs() {
-    return new Observable(subs => {
-        this.socket.on("customer", data => {
-            subs.next(data);
-        });
-    })
-  }
-  
-  
+    public get socketId(): string {
+        return this.socket.ioSocket.id;
+    }
+
+    subs() {
+        return new Observable(subs => {
+            this.socket.on("customer", data => {
+                subs.next(data);
+            });
+        })
+    }
+
+
 
 
 }
