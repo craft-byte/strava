@@ -19,7 +19,7 @@ import { TableComponent } from './table/table.component';
                 group([
                     style({ background: "rgb(0,0,0,0)" }),
                     animate('350ms ease-in', style({ background: "rgb(0,0,0,0.5)" })),
-                    query(".content", [
+                    query(".box", [
                         style({ transform: 'translateY(100%)', }),
                         animate("350ms ease-in", style({ transform: 'translateY(0%)' })),
                     ])
@@ -28,7 +28,7 @@ import { TableComponent } from './table/table.component';
             transition(':leave', [
                 group([
                     animate("350ms ease-in", style({ background: "rgb(0,0,0,0.0)" })),
-                    query(".content", [
+                    query(".box", [
                         animate('350ms ease-in', style({ transform: 'translateY(100%)' })),
                     ])
                 ])
