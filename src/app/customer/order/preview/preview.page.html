@@ -8,16 +8,16 @@
         {{ order.dishesQuantity }} dishes
       </div>
       <div class="icon">
-        <ion-icon slot="end" size="large" *ngIf="order.type == 'out'" name="bag-outline"></ion-icon>
-        <ion-icon slot="end" size="large" *ngIf="order.type == 'in'" name="restaurant-outline"></ion-icon>
+        <ion-icon slot="end" size="large" *ngIf="order.type == 'takeaway'" name="bag-outline"></ion-icon>
+        <ion-icon slot="end" size="large" *ngIf="order.type == 'dinein'" name="restaurant-outline"></ion-icon>
       </div>
     </div>
     <div class="place">
       <div class="box">
-        <button (click)="place('dinein')" class="option" [class.a]="order.type == 'in'">
+        <button (click)="place('dinein')" class="option" [class.a]="order.type == 'dinein'">
           Dine-in
         </button>
-        <button *ngIf="order.showOut" (click)="place('takeaway')" class="option" [class.a]="order.type == 'out'">
+        <button *ngIf="order.showOut" (click)="place('takeaway')" class="option" [class.a]="order.type == 'takeaway'">
           Take away
         </button>
       </div>

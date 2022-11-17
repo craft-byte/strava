@@ -5,14 +5,13 @@ import { Time } from 'server/src/models/components';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
-import { threadId } from 'worker_threads';
 import { RestaurantService } from '../../services/restaurant.service';
 
 
 interface Order {
     ordered: string;
     total: number;
-    type: "in" | "out";
+    type: "dinein" | "takeaway";
     id: string;
     status: string;
     customer: {
