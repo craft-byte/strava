@@ -25,6 +25,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
     ui = {
         showButtonNearRestaurantName: false,
         showGoWorkButton: false,
+        disableAllButtons: false,
     }
 
     constructor(
@@ -36,37 +37,8 @@ export class RestaurantPage implements OnInit, OnDestroy {
         this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     };
 
-    async navigation(ev: any) {
-        if (this.service.restaurants.length == 0) {
-            return;
-        }
-        this.navClass = "active";
-
-        const popover = await this.popoverCtrl.create({
-            event: ev,
-            component: NavigationComponent,
-            mode: "ios",
-            cssClass: "popover-324"
-        });
-
-        await popover.present();
-
-        const { role, data } = await popover.onDidDismiss();
-
-        this.navClass = "";
-
-        if (data) {
-            return this.router.navigate(["restaurant", data], { replaceUrl: true });
-        }
-
-        if (role == "1") {
-            this.router.navigate(["user/info"], { replaceUrl: true });
-        }
-    }
-
-    go(p: string) {
-        this.page = p;
-        this.router.navigate(["restaurant", this.service.restaurantId, p], { replaceUrl: true });
+    redirect() {
+        this.ui.disableAllButtons = true;
     }
 
     verification() {
@@ -78,6 +50,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
         this.routerSubs = this.router.events.subscribe(e => {
             if (e instanceof NavigationEnd) {
                 this.page = e.url.split("/")[3] || "home";
+                this.ui.disableAllButtons = false;
             }
         });
 

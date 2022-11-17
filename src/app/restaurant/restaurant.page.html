@@ -1,35 +1,37 @@
 <div class="header">
-    <div class="restaurant {{ navClass }}" (click)="navigation($event)">
+    <div class="restaurant {{ navClass }}">
         <div class="name">
             {{ restaurant?.name }}
         </div>
-        <div class="button" *ngIf="ui.showButtonNearRestaurantName">
+        <!-- <div class="button" *ngIf="ui.showButtonNearRestaurantName">
             <ion-icon name="chevron-forward-outline"></ion-icon>
-        </div>
+        </div> -->
     </div>
     <div class="links">
-        <div routerLink="/restaurant/{{restaurant?._id}}/home" class="link home" [ngClass]="{ active: page == 'home' }">
-            <a>Home</a>
-        </div>
-        <div routerLink="/restaurant/{{restaurant?._id}}/dishes" class="link dishes"
-            [ngClass]="{ active: page == 'dishes' }">
-            <a>Dishes</a>
-        </div>
-        <div routerLink="/restaurant/{{restaurant?._id}}/staff" class="link staff"
-            [ngClass]="{ active: page == 'staff' }">
-            <a>Staff</a>
-        </div>
-        <div routerLink="/restaurant/{{restaurant?._id}}/orders" class="link orders"
-            [ngClass]="{ active: page == 'orders' }">
-            <a>Orders</a>
-        </div>
-        <div routerLink="/restaurant/{{restaurant?._id}}/settings" class="link settings"
-            [ngClass]="{ active: page == 'settings' }">
-            <a class="settings">Settings</a>
-        </div>
+        <a routerLink="/restaurant/{{restaurant?._id}}/home" (click)="redirect($event)"
+            class="link home button-font" [class.active]="page == 'home'" [class.disabled]="ui.disableAllButtons">
+            Home
+        </a>
+        <a routerLink="/restaurant/{{restaurant?._id}}/dishes" (click)="redirect($event)"
+            class="link dishes button-font" [class.disabled]="ui.disableAllButtons" [class.active]="page == 'dishes'">
+            Dishes
+        </a>
+        <a routerLink="/restaurant/{{restaurant?._id}}/staff" (click)="redirect($event)"
+            class="link staff button-font" [class.disabled]="ui.disableAllButtons" [class.active]="page == 'staff'">
+            Staff
+        </a>
+        <a routerLink="/restaurant/{{restaurant?._id}}/orders" (click)="redirect($event)"
+            class="link orders button-font" [class.disabled]="ui.disableAllButtons" [class.active]="page == 'orders'">
+            Orders
+        </a>
+        <a routerLink="/restaurant/{{restaurant?._id}}/settings" (click)="redirect($event)"
+            class="link settings button-font" [class.disabled]="ui.disableAllButtons"
+            [class.active]="page == 'settings'">
+            Settings
+        </a>
     </div>
     <div class="work" *ngIf="workAs">
-        <a routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
+        <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
             <span class="title">
                 Go work
             </span>
@@ -38,7 +40,7 @@
         </a>
     </div>
     <div class="user">
-        <a routerLink="/user/info">
+        <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/user/info">
             <span class="username">
                 {{username}}
             </span>
@@ -55,7 +57,7 @@
     <div class="name title-font">
         {{ restaurant?.name }}
     </div>
-    <a id="work" *ngIf="workAs" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
+    <a id="work" [class.disabled]="ui.disableAllButtons" (click)="redirect()" *ngIf="workAs" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
         <ion-icon name="accessibility-outline"></ion-icon>
     </a>
 </div>
@@ -71,35 +73,35 @@
 
 
 <div id="tabs" class="tabs">
-    <a id="home" [ngClass]="{ active: page == 'home' }" routerLink="/restaurant/{{restaurant?._id}}/home"
+    <a id="home" [class.active]="page == 'home'" (click)="redirect($event)" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/home"
         class="tab-button">
         <ion-icon name="home"></ion-icon>
         <span class="text">
             Home
         </span>
     </a>
-    <a id="dishes" [ngClass]="{ active: page == 'dishes' }" routerLink="/restaurant/{{restaurant?._id}}/dishes"
+    <a id="dishes" [class.active]="page == 'dishes'" (click)="redirect($event)" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/dishes"
         class="tab-button">
         <ion-icon name="fast-food"></ion-icon>
         <span class="text">
             Dishes
         </span>
     </a>
-    <a id="staff" [ngClass]="{ active: page == 'staff' }" routerLink="/restaurant/{{restaurant?._id}}/staff"
+    <a id="staff" [class.active]="page == 'staff'" (click)="redirect($event)" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/staff"
         class="tab-button">
         <ion-icon name="people"></ion-icon>
         <span class="text">
             Staff
         </span>
     </a>
-    <a id="orders" [ngClass]="{ active: page == 'orders' }" routerLink="/restaurant/{{restaurant?._id}}/orders"
+    <a id="orders" [class.active]="page == 'orders'" (click)="redirect($event)" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/orders"
         class="tab-button">
         <ion-icon name="file-tray-full"></ion-icon>
         <span class="text">
             Orders
         </span>
     </a>
-    <a id="settings" [ngClass]="{ active: page == 'settings' }" routerLink="/restaurant/{{restaurant?._id}}/settings"
+    <a id="settings" [class.active]="page == 'settings'" (click)="redirect($event)" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/settings"
         class="tab-button">
         <ion-icon name="settings"></ion-icon>
         <span class="text">
