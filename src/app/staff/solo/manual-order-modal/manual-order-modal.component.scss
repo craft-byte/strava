@@ -193,3 +193,20 @@
         }
     }
 }
+
+
+@media screen and(min-width: 600px) {
+    .app {
+        padding-top: 5vh;
+        .box {
+            width: 524px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            
+            .header {
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+        }
+    } 
+}

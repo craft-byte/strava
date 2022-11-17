@@ -73,3 +73,17 @@
         }
     }
 }
+
+@media screen and (min-width: 480px) {
+    .app {
+        .box {
+            width: 480px;
+            border-radius: 8px;
+
+            .header {
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+        }
+    }
+}
