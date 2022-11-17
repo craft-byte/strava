@@ -71,7 +71,6 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
                 _id: null,
             }
         }
-        i.dishes = i.dishes.slice(0, 5);
         const one: ConvertedOrder = {
             status: i.status,
             _id: i._id,
