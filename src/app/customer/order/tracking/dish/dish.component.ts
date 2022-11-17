@@ -19,7 +19,7 @@ export class DishComponent implements OnInit {
 
     ngOnInit() {
         this.name = this.dish?.name || "Deleted";
-        this.image = getImage(this.dish?.image);
+        this.image = this.dish?.image;
     }
 
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Time } from 'server/src/models/components';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
@@ -40,6 +41,7 @@ export class TrackingPage implements OnInit {
         private order: OrderService,
         private router: RouterService,
         private loader: LoadService,
+        private sanitizer: DomSanitizer,
     ) { };
 
     back() {
@@ -62,7 +64,7 @@ export class TrackingPage implements OnInit {
         
 
                 for (let i of Object.keys(result.dishes)) {
-                    this.dishes[i].image = getImage(this.dishes[i]?.image.binary) || "./../../../../assets/images/no-image.jpg";
+                    this.dishes[i].image = this.sanitizer.bypassSecurityTrustUrl(getImage(this.dishes[i]?.image.binary)) || "./../../../../assets/images/no-image.jpg";
                 }
         
                 this.order.subs().subscribe((res: any) => {
