@@ -28,9 +28,6 @@ interface RestaurantSettings {
         maxCustomers: number;
         minPrice: number;
     },
-    work: {
-
-    },
     dishes: {
 
     },
@@ -38,7 +35,10 @@ interface RestaurantSettings {
 
     }
     staff: {
-        mode: "solo" | "standart";
+        mode: "solo" | "standart" | "disabled";
+        // solo is for one device
+        // standart is for multiple devices
+        // disabled is for neither, used if restaurant wants statistics only
     }
 
     money?: {
