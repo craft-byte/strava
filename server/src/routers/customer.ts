@@ -154,46 +154,6 @@ router.get("/restaurant/:restaurantId/tables", async (req, res) => {
 
     res.send(result);
 });
-// router.post("/restaurant/:restaurantId/check", async (req, res) => {
-//     const { restaurantId } = req.params;
-//     const { table, type } = req.body;
-
-//     if((!table && type == "in") || !type || !["in", "out"].includes(type)) {
-//         return res.sendStatus(422);
-//     }
-
-//     const restaurant = await Restaurant(restaurantId).get({ projection: { tables: 1, blacklist: 1, settings: { customers: { allowDistanceOrders: 1 } } } });
-
-//     if(!restaurant) {
-//         return res.status(404).send({ reason: "restaurant" });
-//     }
-
-//     for(let i of restaurant!.blacklist!) {
-//         if(i.equals(req.user as string)) {
-//             return res.status(403).send({ reason: "blacklisted" });
-//         }
-//     }
-
-//     if(table > restaurant.tables!) {
-//         return res.status(403).send({ reason: "table" });
-//     } else if(type == "out" && !restaurant.settings!.customers!.allowDistanceOrders) {
-//         return res.status(403).send({ reason: "type" });
-//     }
-
-//     const orders = await Orders(restaurantId)
-//         .many(
-//             { type, id: table, connected: { $gte: Date.now() - 300000 } },
-//             { projection: { customer: 1, connected: 1, } }
-//         );
-
-//     const result = {
-//         other: orders.length > 0,
-//     }
-
-
-
-//     res.send(result);
-// });
 router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, res) => {
     const { restaurantId } = req.params;
     const { table, order, force } = req.body;
@@ -223,8 +183,9 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
 
 
     if(order) {
-        const result = await Orders(restaurantId).createSession({
+        const result = await Orders(restaurantId).createOrder({
             customer: id(user._id)!,
+            mode: null!,
             connected: Date.now(),
             type: "takeaway",
             by: "customer",
@@ -244,8 +205,9 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
     }
 
     if(force) {
-        const result = await Orders(restaurantId).createSession({
+        const result = await Orders(restaurantId).createOrder({
             customer: id(user._id)!,
+            mode: null!,
             connected: Date.now(),
             type: "dinein",
             by: "customer",
@@ -267,9 +229,10 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         }
     }
 
-    const result = await Orders(restaurantId).createSession({
+    const result = await Orders(restaurantId).createOrder({
         customer: id(user._id)!,
         connected: Date.now(),
+        mode: null!,
         type: "dinein",
         by: "customer",
         id: table?.toString(),

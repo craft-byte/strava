@@ -157,6 +157,8 @@ interface Order {
 
     type: "dinein" | "takeaway";
     id: string;
+
+    mode: "solo" | "standart" | "disabled";
     
     ordered?: number;
     comment?: string;

@@ -82,7 +82,7 @@ router.post("/check", async (req, res) => {
     if(status == "noinfo") {
         if(!customerToken) {
             const token = crypto.randomBytes(64).toString("hex");
-            const order = await Orders(restaurantId).createSession({
+            const order = await Orders(restaurantId).createOrder({
                 customer: null!,
                 customerToken: token,
                 status: "ordering",
@@ -94,6 +94,7 @@ router.post("/check", async (req, res) => {
                 socketId,
                 ip: req.ip,
                 connected: Date.now(),
+                mode: null!,
             });
             return res.send({ status: "noinfo", token });
         }
@@ -124,7 +125,7 @@ router.post("/check", async (req, res) => {
             optionals.customer = id(userId!);
         }
 
-        const order = await Orders(restaurantId).createSession({
+        const order = await Orders(restaurantId).createOrder({
             ...optionals,
             status: "ordering", 
             _id: id()!,
@@ -135,6 +136,7 @@ router.post("/check", async (req, res) => {
             socketId,
             ip: req.ip,
             connected: Date.now(),
+            mode: null!,
         });
 
         return res.send({ status, token: optionals.customerToken });

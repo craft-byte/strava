@@ -25,7 +25,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
     let order = await Orders(restaurantId).one({ onBefalf: id(user._id), status: "ordering" }).get({ projection: { dishes: { _id: 1, dishId: 1, comment: 1, }, comment: 1, type: 1, } });
 
     if(!order) {
-        await Orders(restaurantId).createSession({
+        await Orders(restaurantId).createOrder({
             _id: id()!,
             status: "ordering",
             onBefalf: user._id,
@@ -34,6 +34,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
             socketId: null!,
             by: "staff",
             customer: null!,
+            mode: null!,
             dishes: [],
         });
 

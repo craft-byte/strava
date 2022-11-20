@@ -207,9 +207,6 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
             cash: "enabled",
             payouts: "restricted",
         },
-        work: {
-            maxOrdersCooking: 10,
-        },
         customers: {
             maxDishes: 10,
             allowTakeAway: true,
@@ -218,9 +215,6 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
             minPrice: 100,
         },
         dishes: {
-
-        },
-        payments: {
 
         },
         staff: {
