@@ -30,22 +30,27 @@
             Settings
         </a>
     </div>
-    <div class="work" *ngIf="workAs">
-        <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
-            <span class="title">
-                Go work
-            </span>
-            <ion-icon class="hide" name="chevron-forward-outline"></ion-icon>
-            <ion-icon class="show" name="construct-outline"></ion-icon>
-        </a>
-    </div>
-    <div class="user">
-        <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/user/info">
-            <span class="username">
-                {{username}}
-            </span>
-            <ion-icon name="person-circle-outline"></ion-icon>
-        </a>
+    <div class="buttons">
+        <div class="help">
+            <a routerLink="/help" class="button-font">Help</a>
+        </div>
+        <div class="work" *ngIf="workAs">
+            <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
+                <span class="title">
+                    Go work
+                </span>
+                <ion-icon class="hide" name="chevron-forward-outline"></ion-icon>
+                <ion-icon class="show" name="construct-outline"></ion-icon>
+            </a>
+        </div>
+        <div class="user">
+            <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/user/info">
+                <span class="username">
+                    {{username}}
+                </span>
+                <ion-icon name="person-circle-outline"></ion-icon>
+            </a>
+        </div>
     </div>
 </div>
 <div class="mobile-header">
