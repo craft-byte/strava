@@ -23,17 +23,11 @@ interface RestaurantSettings {
         maxCustomers: number;
         minPrice: number;
     },
-    work: {
-
-    },
     dishes: {
 
     },
-    payments: {
-
-    }
     staff: {
-        mode: "solo" | "standart";
+        mode: "solo" | "standart" | "disabled";
     }
 }
 

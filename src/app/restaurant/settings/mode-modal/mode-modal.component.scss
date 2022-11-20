@@ -112,13 +112,19 @@
                     }
                 }
 
+                .disabled {
+                    &.selected {
+                        border: 1px solid var(--red-dark);
+                    }
+                }
+
                 .standart {
                     .soon {
                         position: absolute;
                         padding: 4px 4px;
-                        top: -10px;
+                        top: -6px;
                         right: -6px;
-                        font-size: 12px;
+                        font-size: 10px;
                         border-radius: 6px;
                         background-color: var(--purple);
                         color: white;

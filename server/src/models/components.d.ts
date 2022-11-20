@@ -31,9 +31,6 @@ interface RestaurantSettings {
     dishes: {
 
     },
-    payments: {
-
-    }
     staff: {
         mode: "solo" | "standart" | "disabled";
         // solo is for one device

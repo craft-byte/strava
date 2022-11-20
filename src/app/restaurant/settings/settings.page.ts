@@ -52,7 +52,7 @@ export class SettingsPage implements OnInit {
 
     async toast(s: boolean) { // is success true/false
         const toast = await this.toastCtrl.create({
-            message: s ? "Successfuly updated." : "Something went wrong. Try again later",
+            message: s ? "Successfuly updated." : "Something went wrong. Please try again",
             duration: 1000,
             color: s ? "green" : "red",
             mode: "ios",
@@ -197,7 +197,16 @@ export class SettingsPage implements OnInit {
 
         component.instance.mode = this.settings.staff.mode;
 
-        component.instance.leave.subscribe(() => {
+        component.instance.leave.subscribe(async (newMode: string) => {
+            if(newMode) {
+                const update: any = await this.service.post({ mode: newMode }, "settings/mode");
+
+                if(update.updated) {
+                    this.settings.staff.mode = newMode as any;
+                } else {
+                    this.toast(false);
+                }
+            }
             component.destroy();
         });
     }

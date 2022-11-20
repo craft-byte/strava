@@ -1,7 +1,7 @@
 import { animate, group, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule } from '@ionic/angular';
 
 @Component({
     selector: 'app-mode-modal',
@@ -35,15 +35,42 @@ import { IonicModule } from '@ionic/angular';
 })
 export class ModeModalComponent implements OnInit {
 
-    constructor() { }
+    constructor(
+        private alertCtrl: AlertController,
+    ) { }
 
-    @Input() mode: "solo" | "standart";
+    @Input() mode: "solo" | "standart" | "disabled";
     @Output() leave = new EventEmitter();
 
-    select(mode: "solo" | "standart") {
-
+    async select(mode: "solo" | "standart" | "disabled") {
+        if(!await this.confirm()) {
+            return;
+        }
+        this.leave.emit(mode);
     }
 
+    async confirm() {
+        const alert = await this.alertCtrl.create({
+            header: "Be certain.",
+            subHeader: "Are you sure you want to change the mode?",
+            mode: "ios",
+            buttons: [
+                {
+                    text: "Cancel"
+                },
+                {
+                    text: "Submit",
+                    role: "submit"
+                },
+            ]
+        });
+
+        await alert.present();
+
+        const { role } = await alert.onDidDismiss();
+
+        return role == "submit";
+    }
 
     ngOnInit() { }
 }

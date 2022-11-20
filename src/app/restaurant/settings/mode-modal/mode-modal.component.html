@@ -17,6 +17,23 @@
                 </span>
             </div>
             <div class="modes">
+                <div class="disabled mode" [class.selected]="mode == 'disabled'">
+                    <div class="title">
+                        <span class="text title-font">
+                            Disabled
+                        </span>
+                    </div>
+                    <div class="info">
+                        <span class="text">
+                            No cooking, no serving, no order tracking
+                        </span>
+                    </div>
+                    <div class="buttons">
+                        <button class="orange-button" *ngIf="mode != 'disabled'" (click)="select('disabled')">Select</button>
+                        <button class="red-button" *ngIf="mode == 'disabled'">Disabled </button>
+                    </div>
+                </div>
+
                 <div class="solo mode" [class.selected]="mode == 'solo'">
                     <div class="title">
                         <span class="text title-font">

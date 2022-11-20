@@ -278,6 +278,27 @@ router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, "manager", "setti
 });
 
 
+/**
+ * updates restaurant mode
+ */
+router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1, } }, "manager", "settings"), async (req, res) => {
+    const { mode } = req.body;
+    const { restaurant, } = res.locals as Locals;
+
+    if(!mode || !["standart", "solo", "disabled"].includes(mode)) {
+        return res.status(422).send({ reason: "InvalidMode" });
+    }
+
+    if(restaurant.settings?.staff.mode == mode) {
+        return res.send({ updated: false, });
+    }
+    
+    const update = await Restaurant(restaurant._id).update({ $set: { "settings.staff.mode": mode } });
+
+    res.send({ updated: update.ok == 1 });
+});
+
+
 export {
     router as SettingsRouter,
 }
