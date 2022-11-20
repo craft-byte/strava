@@ -3,12 +3,25 @@
 
     .restaurant {
         margin-top: 12px;
-        .status {
-            span {
-                font-size: 14px;
-                padding: 4px 8px;
-                border-radius: 6px;
-                margin-right: 4px;
+        
+        .status-help {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px;
+
+            .status {
+                span {
+                    font-size: 14px;
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    margin-right: 4px;
+                }
+            }
+            .help {
+                a {
+                    color: var(--black);
+                }
             }
         }
         .name {

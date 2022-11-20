@@ -1,18 +1,23 @@
 <div class="app">
     <div class="restaurant" *ngIf="restaurant">
-        <div class="status">
-            <span *ngIf="restaurant.status == 'enabled'" class="status status-badge-green">
-                Enabled
-            </span>
-            <span *ngIf="restaurant.status == 'disabled'" class="status status-badge-orange">
-                Disabled
-            </span>
-            <span *ngIf="restaurant.status == 'verification'" class="status status-badge-purple">
-                Verification
-            </span>
-            <span *ngIf="restaurant.status == 'restricted'" class="status status-badge-purple">
-                Restricted
-            </span>
+        <div class="status-help">
+            <div class="status">
+                <span *ngIf="restaurant.status == 'enabled'" class="status status-badge-green">
+                    Enabled
+                </span>
+                <span *ngIf="restaurant.status == 'disabled'" class="status status-badge-orange">
+                    Disabled
+                </span>
+                <span *ngIf="restaurant.status == 'verification'" class="status status-badge-purple">
+                    Verification
+                </span>
+                <span *ngIf="restaurant.status == 'restricted'" class="status status-badge-purple">
+                    Restricted
+                </span>
+            </div>
+            <div class="help">
+                <a routerLink="/help" class="button-font">Need help?</a>
+            </div>
         </div>
         <div class="name">
             <span class="text title-font">
