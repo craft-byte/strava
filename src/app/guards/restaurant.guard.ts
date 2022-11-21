@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, Subject, throwError } from 'rxjs';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RouterService } from '../other/router.service';
 import { SequentialRoutingGuardService } from '../other/sequential-routing-guard.service';
-import { RestaurantService } from '../restaurant/services/restaurant.service';
+import { RestaurantService } from '../restaurant/restaurant.service';
 import { MainService } from '../services/main.service';
 
 @Injectable({

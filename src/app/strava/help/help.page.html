@@ -12,13 +12,13 @@
     <div class="content">
         <div class="navigation">
             <div class="link" [class.active]="current == 'start'">
-                <a routerLink="/help/start">Get started</a>
+                <a routerLink="/help/start" queryParamsHandling="merge">Get started</a>
             </div>
             <div class="link" [class.active]="current == 'dishes'">
-                <a routerLink="/help/dishes">Add your first dish</a>
+                <a routerLink="/help/dishes" queryParamsHandling="merge">Add your first dish</a>
             </div>
             <div class="link" [class.active]="current == 'modes'">
-                <a routerLink="/help/modes">Staff modes</a>
+                <a routerLink="/help/modes" queryParamsHandling="merge">Staff modes</a>
             </div>
         </div>
         <div class="page">

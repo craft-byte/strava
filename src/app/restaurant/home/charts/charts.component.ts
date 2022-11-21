@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LegendPosition } from '@swimlane/ngx-charts';
-import { RestaurantService } from '../../services/restaurant.service';
+import { RestaurantService } from '../../restaurant.service';
 
 @Component({
   selector: 'app-charts',

@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
-import { RestaurantService } from '../../services/restaurant.service';
+import { RestaurantService } from '../../restaurant.service';
 
 @Component({
     selector: 'app-change-description',

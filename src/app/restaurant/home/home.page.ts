@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
-import { RestaurantService } from '../services/restaurant.service';
+import { RestaurantService } from '../restaurant.service';
 
 interface Result {
     nextEventuallyUrl?: string;

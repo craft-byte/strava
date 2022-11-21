@@ -1,11 +1,10 @@
-import { Component, HostListener, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Restaurant } from 'src/models/general';
 import { MainService } from '../services/main.service';
-import { NavigationComponent } from './other/navigation/navigation.component';
-import { RestaurantService } from './services/restaurant.service';
+import { RestaurantService } from './restaurant.service';
 
 @Component({
     selector: 'app-restaurant',

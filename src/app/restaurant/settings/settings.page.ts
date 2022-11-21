@@ -3,7 +3,7 @@ import { ModalController, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantSettings } from 'src/models/components';
-import { RestaurantService } from '../services/restaurant.service';
+import { RestaurantService } from '../restaurant.service';
 import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page';
 
 @Component({

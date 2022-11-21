@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { FullDishGuard } from './dishes-page/full-dish/full-dish.guard';
+import { FullDishGuard } from './dishes/full-dish/full-dish.guard';
 
 import { RestaurantPage } from './restaurant.page';
 
@@ -20,19 +20,23 @@ const routes: Routes = [
       },
       {
         path: "dishes",
-        loadChildren: () => import("./dishes-page/dishes-page.module").then(m => m.DishesPageModule)
+        loadChildren: () => import("./dishes/dishes-list/dishes-list.module").then(m => m.DishesListModule),
+      },
+      {
+        path: "dishes/:dishId",
+        loadChildren: () => import("./dishes/full-dish/full-dish.module").then(m => m.FullDishPageModule),
       },
       {
         path: 'staff',
-        loadChildren: () => import('./people-page/staff/staff.module').then( m => m.StaffModule)
+        loadChildren: () => import('./staff/staff/staff.module').then( m => m.StaffModule)
       },
       {
         path: 'orders',
-        loadChildren: () => import('./people-page/orders/orders.module').then( m => m.OrdersPageModule)
+        loadChildren: () => import('./orders/orders/orders.module').then( m => m.OrdersPageModule)
       },
       {
         path: 'customers',
-        loadChildren: () => import('./people-page/customers/customers.module').then( m => m.CustomersPageModule)
+        loadChildren: () => import('./customers/customers/customers.module').then( m => m.CustomersPageModule)
       },
     //   {
     //     path: 'people',
@@ -40,7 +44,7 @@ const routes: Routes = [
     //   },
       {
         path: 'dishes/full/:dishId',
-        loadChildren: () => import('./dishes-page/full-dish/full-dish.module').then( m => m.FullDishPageModule),
+        loadChildren: () => import('./dishes/full-dish/full-dish.module').then( m => m.FullDishPageModule),
         canActivate: [FullDishGuard],
       },
       {
@@ -49,7 +53,7 @@ const routes: Routes = [
       },
       {
         path: "orders/:orderId",
-        loadChildren: () => import("./people-page/full-order/full-order.module").then(m => m.FullOrderPageModule),
+        loadChildren: () => import("./orders/full-order/full-order.module").then(m => m.FullOrderPageModule),
       }
     ]
   },

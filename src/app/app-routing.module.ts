@@ -126,19 +126,19 @@ const restaurant: Routes = [
     },
     {
         path: "dish/:restaurantId/add",
-        loadChildren: () => import("./restaurant/dish-add/dish-add.module").then(m => m.DishAddPageModule),
+        loadChildren: () => import("./restaurant/dishes/dish-add/dish-add.module").then(m => m.DishAddPageModule),
         canActivate: [LoggedGuard, RestaurantGuard]
     },
     {
         path: "dish/:restaurantId/edit/:dishId",
-        loadChildren: () => import("./restaurant/dish-edit/dish-edit.module").then(m => m.DishEditPageModule),
+        loadChildren: () => import("./restaurant/dishes/dish-edit/dish-edit.module").then(m => m.DishEditPageModule),
         canActivate: [LoggedGuard, RestaurantGuard]
     },
-    {
-        path: "cooking/:restaurantId/:dishId",
-        loadChildren: () => import("./restaurant/dish-cooking/dish-cooking.module").then(m => m.DishCookingPageModule),
-        canActivate: [LoggedGuard, RestaurantGuard],
-    },
+    // {
+    //     path: "cooking/:restaurantId/:dishId",
+    //     loadChildren: () => import("./restaurant/dishes/dish-cooking/dish-cooking.module").then(m => m.DishCookingPageModule),
+    //     canActivate: [LoggedGuard, RestaurantGuard],
+    // },
 ];
 const staff: Routes = [
     {
