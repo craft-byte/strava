@@ -1,0 +1,28 @@
+<div class="app">
+    <div class="header">
+        <div class="title">
+            <a routerLink="/" class="text title-font">
+                Strava
+            </a>
+        </div>
+        <div class="links">
+            <a class="button-font" *ngIf="restaurantId" routerLink="/restaurant/{{ restaurantId }}">Back</a>
+        </div>
+    </div>
+    <div class="content">
+        <div class="navigation">
+            <div class="link" [class.active]="current == 'start'">
+                <a routerLink="/help/start">Get started</a>
+            </div>
+            <div class="link" [class.active]="current == 'dishes'">
+                <a routerLink="/help/dishes">Add your first dish</a>
+            </div>
+            <div class="link" [class.active]="current == 'modes'">
+                <a routerLink="/help/modes">Staff modes</a>
+            </div>
+        </div>
+        <div class="page">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

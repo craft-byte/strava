@@ -16,7 +16,7 @@
                 </span>
             </div>
             <div class="help">
-                <a routerLink="/help" class="button-font">Need help?</a>
+                <a [routerLink]="['/help']" [queryParams]="{ r: restaurant._id }" class="button-font">Need help?</a>
             </div>
         </div>
         <div class="name">

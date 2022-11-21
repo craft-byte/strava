@@ -1,0 +1,84 @@
+
+.app {
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .title {
+            color: var(--black);
+            font-size: 24px;
+        }
+    }
+    .content {
+        p {
+            color: var(--text-color);
+            margin-left: 6px;
+        }
+        .info {
+            background-color: var(--blue-back);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .warning {
+            color: var(--text-color);
+            background-color: var(--orange-back);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .gray {
+            color: var(--black);
+            background-color: var(--blue-back);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .buttons {
+            margin-top: 64px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+
+            #back {
+                .topic {
+                    ion-icon {
+                        margin-left: 0;
+                        margin-right: 8px;
+                    }
+                }
+            }
+            a {
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                padding: 12px 18px;
+                text-decoration: none;
+
+                .title {
+                    display: flex;
+                    align-items: center;
+
+                    font-family: 'Inter', sans-serif;
+                    font-size: 16px;
+                    color: var(--text-color);
+                }
+                .topic {
+                    display: flex;
+                    align-items: center;
+
+                    .text {
+                        font-size: 20px;
+                        color: var(--black);
+                    }
+                    ion-icon {
+                        margin-left: 8px;
+                        color: var(--black);
+                        font-size: 18px;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -219,6 +219,8 @@ export class SettingsPage implements OnInit {
         this.money = result.money;
         this.bank = result.payoutDestination;
         this.restaurant = result.restaurant;
+
+        this.restaurant._id = this.service.restaurantId;
     }
 
 }

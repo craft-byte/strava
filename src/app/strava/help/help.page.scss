@@ -1,0 +1,144 @@
+.app {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: white;
+
+    .header {
+        padding: 0 412px;
+        height: 42px;
+        background-color: var(--orange);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .title {
+            display: flex;
+            align-items: center;
+
+            .text {
+                color: var(--black);
+                font-size: 24px;
+                text-decoration: none;
+            }
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            a {
+                color: var(--black);
+                text-decoration: none;
+            }
+        }
+    }
+
+    .content {
+        overflow: auto;
+        padding: 0 436px;
+        display: grid;
+        padding-top: 64px;
+        height: 100%;
+        grid-template-columns: 30% 70%;
+
+        .navigation {
+            .link {
+                height: 32px;
+                display: flex;
+                align-items: center;
+                padding-left: 12px;
+                margin-top: 4px;
+
+                a {
+                    height: 32px;
+                    display: flex;
+                    width: 100%;
+                    align-items: center;
+                    border-bottom: 1px solid var(--gray-back);
+                    color: var(--black);
+                    text-decoration: none;
+                }
+                &.active {
+                    border-left: 2px solid var(--orange);
+
+                    a {
+                        color: var(--orange-dark);
+                    }
+                }
+            }
+        }
+
+        .page {
+            padding: 8px;
+            padding-bottom: 124px;
+        }
+    }
+}
+
+
+@media screen and (max-width: 1800px) {
+    .app {
+        .content {
+            padding: 32px 264px;
+            padding-bottom: 92px;
+        }
+        .header {
+            padding: 0 252px;
+        }
+    }
+}
+
+@media screen and (max-width: 1300px) {
+    .app {
+        .content {
+            padding: 32px 128px;
+            padding-bottom: 92px;
+        }
+        .header {
+            padding: 0 128px;
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .app {
+        .content {
+            padding: 32px 32px;
+            padding-bottom: 92px;
+        }
+        .header {
+            padding: 0 32px;
+        }
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .app {
+        .content {
+            padding: 32px 32px;
+            padding-bottom: 92px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        .header {
+            padding: 0 32px;
+        }
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .app {
+        .content {
+            padding: 32px 8px;
+            padding-bottom: 92px;
+            .page {
+                padding: 0;
+            }
+        }
+        .header {
+            padding: 0 32px;
+        }
+    }
+}

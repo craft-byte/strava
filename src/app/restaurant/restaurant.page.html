@@ -32,7 +32,7 @@
     </div>
     <div class="buttons">
         <div class="help">
-            <a routerLink="/help" class="button-font">Help</a>
+            <a routerLink="/help" [queryParams]="{ r: restaurant?._id }" class="button-font">Help</a>
         </div>
         <div class="work" *ngIf="workAs">
             <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">

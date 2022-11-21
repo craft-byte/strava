@@ -13,7 +13,7 @@ import { SocketGuard } from './staff/solo/socket.guard';
 
 const registration: Routes = [
     {
-      path: 'registration',
+      path: 'register',
       loadChildren: () => import('./user/registration/registration.module').then( m => m.RegistrationPageModule),
       canActivate: [LoginGuard],
     },
@@ -195,6 +195,10 @@ const routes: Routes = [
     {
         path: '',
         loadChildren: () => import("./strava/main/main.module").then(m => m.MainPageModule)
+    },
+    {
+        path: 'help',
+        loadChildren: () => import('./strava/help/help.module').then( m => m.HelpPageModule)
     },
     ...staff,
     ...user,
