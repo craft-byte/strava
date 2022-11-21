@@ -1,6 +1,6 @@
 <div class="app">
-    <div class="disabled" *ngIf="mode && mode == 'solo'">
-        Staff page is disabled for solo mode
+    <div class="disabled" *ngIf="mode && (mode == 'solo' || mode == 'disabled')">
+        Staff page is disabled for your mode
         <ion-icon name="ban"></ion-icon>
     </div>
 

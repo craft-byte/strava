@@ -38,8 +38,8 @@ export class StaffComponent implements OnInit {
 
     if(result) {
         this.mode = result.mode;
-        
-        if(result.mode != "solo") {
+
+        if(result.mode != "solo" && result.mode != "disabled") {
             for(let i of result.people) {
               this.staff.push({
                 ...i,
