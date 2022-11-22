@@ -4,7 +4,8 @@ import { Settings } from "../models/components";
 import { Locals } from "../models/other";
 import { logged } from "../utils/middleware/logged";
 import { allowed } from "../utils/middleware/restaurantAllowed";
-import { Restaurant } from "../utils/restaurant";
+import { Orders, Restaurant } from "../utils/restaurant";
+import { getUser } from "../utils/users";
 import { KitchenRouter } from "./staff/kitchen/kitchen";
 import { ManualOrderRouter } from "./staff/manualOrder";
 import { OrderRouter } from "./staff/order";
@@ -97,6 +98,72 @@ router.get("/:restaurantId/dish/:dishId/image", logged({ _id: 1 }), allowed({ _i
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { image: { binary: 1 } } });
 
     res.send({ ...result?.image });
+});
+
+
+
+interface Order {
+    time: string;
+    total: number;
+    user: {
+        name: string;
+        _id: any;
+    };
+};
+router.post("/:restaurantId/orders", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+    const { restaurantId } = req.params;
+    const { socketId } = req.body;
+
+    if(socketId) {
+        io.in(socketId).socketsJoin(restaurantId);
+    }
+
+    const date = new Date()
+
+    date.setHours(0,0,0,0);
+
+    const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: date.getTime() } }, { projection: { ordered: 1, onBehalf: 1, money: { total: 1, } } })).toArray();
+
+
+    const result: Order[] = [];
+
+    const users: Order["user"][] = [];
+
+    for(let i of orders) {
+        const date = new Date(i.ordered!);
+
+        let user: Order["user"];
+
+        for(let u of users) {
+            if(i.onBehalf?.equals(u._id)) {
+                user = u;
+                break;
+            }
+        }
+
+        if(!user!) {
+            const u = await getUser(i.onBehalf!, { projection: { name: { first: 1, } } });
+
+            if(u) {
+                user = {
+                    name: u!.name?.first || "Deleted",
+                    _id: u._id,
+                };
+                users.push(user);
+            }
+        }
+
+
+        result.push({
+            total: i.money?.total! | 0,
+            time: `${date.getHours()}:${ date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes() }`,
+            user: user!,
+        });
+    }
+    
+
+
+    res.send(result);
 });
 
 

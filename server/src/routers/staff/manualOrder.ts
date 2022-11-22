@@ -9,26 +9,27 @@ import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
+import { getUser } from "../../utils/users";
 
 
 
 const router = Router({ mergeParams: true });
 
 
-router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers: 1, } }, "staff"), async (req, res) => {
+router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers: 1, staff: { mode: 1, } } }, "staff"), async (req, res) => {
     const { restaurantId } = req.params;
     const { restaurant, user } = res.locals as Locals;
 
     
     const dishes = await Restaurant(restaurantId).dishes.many({ }).get({ projection: { image: { resolution: 1, }, name: 1, price: 1, general: 1, info: { time: 1 }, } });
 
-    let order = await Orders(restaurantId).one({ onBefalf: id(user._id), status: "ordering" }).get({ projection: { dishes: { _id: 1, dishId: 1, comment: 1, }, comment: 1, type: 1, } });
+    let order = await Orders(restaurantId).one({ onBehalf: id(user._id), status: "ordering" }).get({ projection: { dishes: { _id: 1, dishId: 1, comment: 1, }, comment: 1, type: 1, } });
 
     if(!order) {
         await Orders(restaurantId).createOrder({
             _id: id()!,
             status: "ordering",
-            onBefalf: user._id,
+            onBehalf: user._id,
             type: "dinein",
             id: null!,
             socketId: null!,
@@ -68,6 +69,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
             return { ...d, image: undefined, hasImage: !!d.image}
         }),
         settings: restaurant.settings?.customers,
+        mode: restaurant.settings?.staff.mode,
     });
 });
 
@@ -84,7 +86,7 @@ router.post("/order/type", logged({ _id: 1, }), allowed({ _id: 1, settings: { cu
         return res.status(403).send({ reason: "TypeNotAllowed"});
     }
 
-    const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { type } });
+    const update = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { type } });
     
     res.send({ updated: update.ok == 1 });
 });
@@ -98,7 +100,7 @@ router.post("/order/comment", logged({ _id: 1, }), allowed({ _id: 1, }, "staff")
     }
 
 
-    const result = await Orders(restaurantId).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { comment } });
+    const result = await Orders(restaurantId).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { comment } });
 
 
     res.send({ updated: result.ok == 1 });
@@ -114,7 +116,7 @@ router.post("/order/dish", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), as
     
     const newId = id()!;
 
-    const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { money: null!, }, $push: { dishes: { dishId: id(dishId), _id: newId, status: "ordered", comment: null!, } } });
+    const update = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { money: null!, }, $push: { dishes: { dishId: id(dishId), _id: newId, status: "ordered", comment: null!, } } });
 
 
     if(update.ok == 1) {
@@ -132,7 +134,7 @@ router.post("/order/dish/:orderDishId/comment", logged({ _id: 1, }), allowed({ _
         return res.status(422).send({ reason: "InvalidComment" });
     }
 
-    const result = await Orders(restaurantId).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { "dishes.$[dish].comment": comment == "./;" ? null! : comment } }, { arrayFilters: [ { "dish._id": id(orderDishId) } ] })
+    const result = await Orders(restaurantId).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { "dishes.$[dish].comment": comment == "./;" ? null! : comment } }, { arrayFilters: [ { "dish._id": id(orderDishId) } ] })
 
     res.send({ updated: result.ok == 1 });
 });
@@ -141,14 +143,14 @@ router.delete("/order/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }
     const { user } = res.locals as Locals;
 
 
-    const update = await Orders(restaurantId).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { money: null! }, $pull: { dishes: { _id: id(orderDishId) } } });
+    const update = await Orders(restaurantId).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { money: null! }, $pull: { dishes: { _id: id(orderDishId) } } });
 
     res.send({ updated: update.ok == 1 });
 });
 
 
 
-router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "staff"), async (req, res) => {
+router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1, staff: 1, } }, "staff"), async (req, res) => {
     const { restaurant, user, } = res.locals as Locals;
 
     if(restaurant.settings?.money?.card != "enabled" && restaurant.settings?.money?.cash != "enabled") {
@@ -156,7 +158,7 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
     }
 
     
-    const order = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).get({ projection: { money: 1, dishes: { dishId: 1, } } });
+    const order = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).get({ projection: { money: 1, dishes: { dishId: 1, } } });
 
     if(!order.money) {
         let subtotal = await calculateSubtotal(restaurant._id, { arr: order.dishes, _id: order._id });
@@ -172,7 +174,7 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
             hst, total, subtotal,
         }
 
-        const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { paymentIntentId: null!, money: {
+        const update = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { paymentIntentId: null!, money: {
             total,
             subtotal,
             hst,
@@ -182,7 +184,7 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
 
     res.send({
         money: order.money,
-        methods: {
+        methods: restaurant.settings.staff.mode == "disabled" ? null : {
             card: restaurant.settings.money.card == "enabled",
             cash: restaurant.settings.money.cash == "enabled",
         }
@@ -192,7 +194,7 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1 } },
 router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccountId: 1, settings: { money: 1 } }, "staff"), async (req, res) => {
     const { restaurant, user } = res.locals as Locals;
 
-    const order = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).get({ projection: { paymentIntentId: 1, money: 1 } });
+    const order = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).get({ projection: { paymentIntentId: 1, money: 1 } });
 
     if(!order.money) {
         return res.status(403).send({ reason: "ADDREASON" });
@@ -225,7 +227,7 @@ router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccount
 
         res.send({ clientSecret: p.client_secret });
 
-        const update = await Orders(restaurant._id).one({ onBefalf: user._id, status: "ordering" }).update({ $set: { paymentIntentId: p.id } });
+        const update = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).update({ $set: { paymentIntentId: p.id } });
     } catch (e) {
         return res.sendStatus(500);
     }
@@ -235,7 +237,7 @@ router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "sta
     const { user, restaurant } = res.locals as Locals;
 
     const update = await Orders(restaurant._id)
-        .one({ onBefalf: user._id, status: "ordering" })
+        .one({ onBehalf: user._id, status: "ordering" })
         .update(
             { $set: { status: "progress", method: "cash", ordered: Date.now() } },
             { projection: { _id: 1, ordered: 1, dishes: { _id: 1, dishId: 1, } } }
@@ -262,6 +264,42 @@ router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "sta
         data: forKitchen,
     });
 });
+router.post("/order/confirm", logged({ _id: 1, name: { first: 1, } }), allowed({ settings: { staff: 1 } }, "staff"), async (req, res) => {
+    const { restaurant, user } = res.locals as Locals;
+
+    if(!restaurant.settings || restaurant.settings.staff.mode != "disabled") {
+        return res.status(403).send({ reason: "NotAllowed" });
+    }
+
+    const update = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" })
+        .update(
+            { $set: { dishes: [], money: null! } },
+            { returnDocument: "before", }
+        );
+
+    const update2 = await Orders(restaurant._id).history.insert({
+        ...update.order,
+        status: "done",
+        ordered: Date.now(),
+        _id: id(),
+    })
+
+    res.send({ updated: update.ok == 1 && update2.acknowledged });
+
+    const time = new Date(Date.now());
+
+    const a = {
+        time: `${ time.getHours() }:${ time.getMinutes().toString().length == 1 ? "0" + time.getMinutes().toString() : time.getMinutes() }`,
+        total: update.order.money?.total,
+        user: {
+            name: user.name?.first || "Deleted",
+            _id: user._id,
+        }
+    };
+
+    sendMessage([`${restaurant._id.toString()}`], "other", { order: a, type: "new-order" });
+});
+
 
 
 async function calculateSubtotal(rid: any, order: { arr: { dishId: ObjectId }[]; _id: ObjectId; }) {
@@ -316,8 +354,12 @@ async function calculateSubtotal(rid: any, order: { arr: { dishId: ObjectId }[];
     }
 
     let subtotal = 0;
-    for(let i of dishes) {
-        subtotal += i.price!;
+    for(let i of order.arr) {
+        for(let d of dishes) {
+            if(d._id.equals(i.dishId)) {
+                subtotal += d.price!;
+            }
+        }
     }
 
     return subtotal;

@@ -235,7 +235,7 @@ interface Chart {
 });
 
 
-router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, name: 1, stripeAccountId: 1, cache: 1 }, "owner"), async (req, res) => {
+router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, name: 1, stripeAccountId: 1, cache: 1, settings: { staff: 1 } }, "owner"), async (req, res) => {
     const { restaurant, user } = res.locals as Locals;
 
     if(!restaurant.cache || !restaurant.cache.requirements) {
@@ -309,7 +309,7 @@ router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ 
         }
     }
 
-    res.send({ verificationUrl: verificationUrl!, restaurant: { name: restaurant.name, status: restaurant.staff, _id: restaurant._id }, workAs: workAs!, restaurants: await Promise.all(promises) });
+    res.send({ verificationUrl: verificationUrl!, mode: restaurant.settings?.staff.mode, restaurant: { name: restaurant.name, status: restaurant.staff, _id: restaurant._id }, workAs: workAs!, restaurants: await Promise.all(promises) });
 });
 
 

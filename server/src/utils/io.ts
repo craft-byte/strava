@@ -8,7 +8,7 @@ import { io } from "..";
  * @param event - event "customer"(received by customer) and so on
  * @param data - object that will be sent to receiver
  */
-export function sendMessage(to: string[], event: "customer" | "kitchen" | "waiter", data: any) {
+export function sendMessage(to: string[], event: "customer" | "kitchen" | "waiter" | "other", data: any) {
     for(let i of to) {
         io.to(i).emit(event, data);
     }

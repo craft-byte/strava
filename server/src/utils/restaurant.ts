@@ -330,8 +330,17 @@ function Orders(restaurantId: string | ObjectId) {
         createOrder: async (session: Order) => {
             try {
                 if (!session.customer || !session.customerToken) {
+                    const restaurant = await Restaurant(restaurantId).get({ projection: { settings: { staff: 1 } } });
+
+                    if(!restaurant || !restaurant.settings) {
+                        return false;
+                    }
+
                     const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-                        .insertOne(session);
+                        .insertOne({
+                            ...session,
+                            mode: restaurant?.settings?.staff.mode
+                        });
 
                     return result.acknowledged;
                 }

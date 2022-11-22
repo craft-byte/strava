@@ -148,7 +148,7 @@ interface Order {
     _id: ObjectId;
     
     customer: ObjectId | null;
-    onBefalf?: ObjectId;
+    onBehalf?: ObjectId;
     
     by: "customer" | "staff";
     
