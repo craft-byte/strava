@@ -97,11 +97,9 @@
             .money {
                 display: flex;
                 justify-content: center;
-                // align-items: center;
                 flex-direction: column;
 
-                padding-left: 32px;
-                padding-bottom: 32px;
+                padding: 16px 32px;
 
                 color: var(--black);
 
