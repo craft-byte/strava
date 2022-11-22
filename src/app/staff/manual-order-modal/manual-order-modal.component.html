@@ -40,7 +40,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="comment">
+                <div class="comment" *ngIf="mode != 'disabled'">
                     <p class="the-comment" *ngIf="comment">{{comment}}</p>
                     <p *ngIf="!comment" class="no-comment">
                         No comment

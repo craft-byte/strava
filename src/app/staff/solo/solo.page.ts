@@ -23,7 +23,7 @@ export class SoloPage implements OnInit {
     }
 
     async manualOrder() {
-        const { ManualOrderModalComponent } = await import("./manual-order-modal/manual-order-modal.component");
+        const { ManualOrderModalComponent } = await import("../manual-order-modal/manual-order-modal.component");
 
         const component = this.manualOrderModal.createComponent(ManualOrderModalComponent, { injector: this.injector });
 

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
+import { StringOrNumberOrDate } from '@swimlane/ngx-charts';
 import { Subscription } from 'rxjs';
 import { Restaurant } from 'src/models/general';
 import { MainService } from '../services/main.service';
@@ -17,9 +18,9 @@ export class RestaurantPage implements OnInit, OnDestroy {
     restaurant: Restaurant;
     page: string = "home";
     username: string;
-    workAs: string;
     routerSubs: Subscription;
     verificationUrl: string;
+    workUrl: string;
 
     ui = {
         showButtonNearRestaurantName: false,
@@ -54,15 +55,20 @@ export class RestaurantPage implements OnInit, OnDestroy {
         });
 
 
-        const result: { restaurant: any; workAs: string; verificationUrl: string; restaurants: any; } = await this.service.get({}, "restaurant-status");
+        const result: { restaurant: any; workAs: string; verificationUrl: string; mode: string; restaurants: any; } = await this.service.get({}, "restaurant-status");
 
         if(result) {
             this.restaurant = result.restaurant;
-            this.workAs = result.workAs;
             this.verificationUrl = result.verificationUrl;
             
             this.service.restaurantId = result.restaurant._id;
             this.service.restaurant = result.restaurant;
+
+            if(result.mode != "disabled") {
+                this.workUrl = `/staff/${ result.restaurant?._id }/${ result.workAs == 'both' ? 'solo' : result.workAs }`
+            } else {
+                this.workUrl = `/staff/${ result.restaurant?._id }`;
+            }
         }
     }
 

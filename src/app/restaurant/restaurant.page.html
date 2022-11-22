@@ -34,8 +34,8 @@
         <div class="help">
             <a routerLink="/help" [queryParams]="{ r: restaurant?._id }" class="button-font">Help</a>
         </div>
-        <div class="work" *ngIf="workAs">
-            <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
+        <div class="work" *ngIf="workUrl">
+            <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" [routerLink]="workUrl">
                 <span class="title">
                     Go work
                 </span>

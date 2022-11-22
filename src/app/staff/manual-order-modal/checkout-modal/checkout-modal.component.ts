@@ -15,7 +15,7 @@ import { StaffService } from 'src/app/staff/staff.service';
 })
 export class CheckoutModalComponent implements OnInit {
 
-    mode = "cash";
+    mode: "cash" | "card";
     money: any;
     methods: any;
 
@@ -125,6 +125,21 @@ export class CheckoutModalComponent implements OnInit {
         })).present();
         this.loader.end();
     }
+    async submit() {
+        const result: any = await this.service.post({}, "manual/order/confirm");
+
+        if(!result.updated) {
+            (await this.toastCtrl.create({
+                duration: 2000,
+                mode: "ios",
+                color: "red",
+                message: "Couldn't add order. Please try again",
+            })).present();
+            return;
+        }
+
+        this.leave.emit(true);
+    }
 
     async ngOnInit() {
         
@@ -134,10 +149,14 @@ export class CheckoutModalComponent implements OnInit {
             this.money = result.money;
             this.methods = result.methods;
 
-            if(!result.methods.card) {
-                this.mode = "cash";
-            } else if(!result.methods.cash) {
-                this.mode = "card";
+            if(result.methods) {
+                if(!result.methods.card) {
+                    this.mode = "cash";
+                } else if(!result.methods.cash) {
+                    this.mode = "card";
+                } else {
+                    this.mode = "cash";
+                }
             }
         }
 

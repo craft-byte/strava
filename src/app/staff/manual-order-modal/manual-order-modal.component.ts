@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { getImage } from 'src/functions';
-import { StaffService } from '../../staff.service';
+import { StaffService } from '../staff.service';
 import { DishComponent } from './dish/dish.component';
 
 @Component({
@@ -17,6 +17,7 @@ import { DishComponent } from './dish/dish.component';
 export class ManualOrderModalComponent implements OnInit {
 
     settings: any;
+    mode: string;
     dishes: any[] = [];
     
     selected: { _id: string; name: string; price: number; orderDishes: { _id: string; comment: string; }[] }[] = [];
@@ -195,14 +196,12 @@ export class ManualOrderModalComponent implements OnInit {
     async ngOnInit() {
         const result: any = await this.service.get("manual", "init");
 
-        console.log(result);
-        
         if(result) {
             this.comment = result.order?.comment;
             this.type = result.order?.type;
             this.settings = result.settings;
             this.selected = result.selected;
-
+            this.mode = result.mode;
 
             for(let i of result.dishes) {
                 this.dishes.push({

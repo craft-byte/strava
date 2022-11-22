@@ -77,8 +77,13 @@
                     </div>
                 </div>
             </div>
+            <div class="none" *ngIf="money && mode != 'cash' && mode != 'card'">
+                <button (click)="submit()" class="green-button">
+                    Submit
+                </button>
+            </div>
 
-            <div class="loading" *ngIf="!methods || !money || ui.loading">
+            <div class="loading" *ngIf="(!methods && !money) || ui.loading">
                 <span class="spinner"></span>
             </div>
         </div>

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoggedGuard } from './guards/logged.guard';
 import { RestaurantGuard } from './guards/restaurant.guard';
 import { LoginGuard } from './guards/login.guard';
@@ -10,6 +9,7 @@ import { KitchenSocketIdGuard } from './guards/kitchen-socket-id.guard';
 import { WaiterSocketIdGuard } from './guards/waiter-socket-id.guard';
 import { OrderGuard } from './guards/order.guard';
 import { SocketGuard } from './staff/solo/socket.guard';
+import { SocketGuardForDisabled } from './staff/disabled/socket-for-disabled.guard';
 
 const registration: Routes = [
     {
@@ -160,6 +160,11 @@ const staff: Routes = [
         path: "staff/:restaurantId/solo",
         loadChildren: () => import("./staff/solo/solo.module").then(m => m.SoloPageModule),
         canActivate: [LoggedGuard, StaffGuard, SocketGuard]
+    },
+    {
+        path: "staff/:restaurantId",
+        loadChildren: () => import("./staff/disabled/disabled.module").then(m => m.DisabledPageModule),
+        canActivate: [LoggedGuard, StaffGuard, SocketGuardForDisabled],
     }
 ];
 const customer: Routes = [

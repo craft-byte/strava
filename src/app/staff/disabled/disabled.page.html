@@ -1,0 +1,41 @@
+<div class="the-header-with-close-icon">
+    <div class="title">
+        <div class="close">
+            <button (click)="close()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </div>
+        <div class="text">
+            Today orders
+        </div>
+    </div>
+</div>
+
+<div class="app">
+    <div class="button">
+        <button (click)="add()" class="orange-button">
+            Add order
+        </button>
+    </div>
+    <div class="orders" *ngIf="orders && orders.length > 0">
+        <div *ngFor="let i of orders" class="order">
+            <div class="user-amount">
+                <span class="name title-font">
+                    {{ i.user.name }}
+                </span>
+                <span class="amount text-font">
+                    ${{ i.total / 100 }}
+                </span>
+            </div>
+            <div class="time button-font">
+                {{ i.time }}
+            </div>
+        </div>
+    </div>
+    <div class="loading" *ngIf="!orders">
+        <span class="spinner"></span>
+    </div>
+</div>
+
+
+<ng-container #addOrderModalContainer></ng-container>
