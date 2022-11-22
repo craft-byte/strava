@@ -4,9 +4,6 @@
     </div>
     <div *ngIf="orders && orders.length > 0" class="list">
         <div class="example">
-            <div class="avatar">
-
-            </div>
             <div class="name">
                 User name
             </div>
@@ -19,13 +16,13 @@
             <div class="total">
                 Total
             </div>
+            <div class="date">
+
+            </div>
         </div>
         <div class="order" (click)="fullOrder(i._id)" *ngFor="let i of orders">
-            <div class="avatar">
-                <img [src]="i.avatar">
-            </div>
             <div class="name">
-                <span>
+                <span class="text title-font">
                     {{ i.user.name || i.user.username }}
                 </span>
             </div>
@@ -38,7 +35,14 @@
                 </div>
             </div>
             <div class="total">
-                ${{i.total / 100}}
+                <span class="text text-font">
+                    ${{i.total / 100}}
+                </span>
+            </div>
+            <div class="date">
+                <span class="text text-font">
+                    {{ i.date }}
+                </span>
             </div>
         </div>
     </div>

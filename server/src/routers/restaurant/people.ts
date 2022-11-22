@@ -18,7 +18,6 @@ interface ConvertedOrder {
     user: {
         _id: any;
         name: string;
-        avatar: any;
     };
     dishes: number;
     _id: any;
@@ -58,16 +57,20 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
     for(let i of orders) {
         let user: ConvertedOrder["user"] = null!;
         if(i.customer) {
-            const userdata = await getUser(i.customer, { projection: { name: 1, username: 1, avatar: 1, } });
+            const userdata = await getUser(i.customer, { projection: { name: 1, username: 1, } });
             user = {
                 name: userdata?.name?.first || "User deleted",
-                avatar: userdata?.avatar?.binary,
+                _id: userdata?._id,
+            }
+        } else if(i.onBehalf) {
+            const userdata = await getUser(i.onBehalf, { projection: { name: 1, username: 1, } });
+            user = {
+                name: userdata?.name?.first || "User deleted",
                 _id: userdata?._id,
             }
         } else {
             user = {
                 name: "Anonymous",
-                avatar: null,
                 _id: null,
             }
         }
@@ -90,13 +93,19 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
 
 interface FullOrder {
     ordered: string;
-    total: number;
     type: "dinein" | "takeaway";
     id: string;
     status: string;
+    mode: string;
+    
+    money: {
+        total: number;
+        subtotal: number;
+        hst: number;
+    };
 
-    customer: {
-        userId: any;
+    user: {
+        _id: any;
         username: string;
         avatar: any;
     }
@@ -144,30 +153,39 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
     const { restaurantId, orderId } = req.params;
 
     const order = await Orders(restaurantId).history.one({ _id: id(orderId) });
-    let user: FullOrder["customer"] = null!;
+    let user: FullOrder["user"] = null!;
+
     if(order.customer) {
         const userdata = await getUser(order.customer, { projection: { username: 1, name: 1, avatar: { binary: 1, }}})
         user = {
             username: userdata?.name?.first || "User deleted",
             avatar: userdata?.avatar?.binary!,
-            userId: userdata?._id!.toString()
+            _id: userdata?._id!.toString()
         }
+    } else if(order.onBehalf) {
+        const userdata = await getUser(order.onBehalf!, { projection: { username: 1, name: 1, avatar: { binary: 1, }}})
+        user = {
+            username: userdata?.name?.first || "User deleted",
+            avatar: userdata?.avatar?.binary!,
+            _id: userdata?._id!.toString()
+        }   
     } else {
         user = {
             username: "Anonymous",
             avatar: null!,
-            userId: null!,
+            _id: null!,
         }
     }
 
     const result: FullOrder = {
         ordered: getDate(order.ordered!),
         dishes: [],
-        total: 0,
+        money: order.money!,
         type: order.type,
         id: order.id,
         status: order.status,
-        customer: user
+        user: user,
+        mode: order.mode,
     };
 
 
@@ -176,7 +194,7 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
 
     for(let dish of order.dishes) {
         const restaurantDish = await dishes.get(dish.dishId);
-        result.total += restaurantDish?.price || dish.price!;
+        // result.total += restaurantDish?.price || dish.price!;
 
         const one: FullOrder["dishes"][0] = {
             name: restaurantDish?.name || dish.name!,

@@ -21,7 +21,7 @@
     .list {
         .example {
             display: grid;
-            grid-template-columns: 10% 30% 20% 20% 20%;
+            grid-template-columns: 30% 17% 17% 17% 19%;
             height: 46px;
             border-bottom: 1px solid var(--border-color);
             div {
@@ -37,26 +37,21 @@
             height: 52px;
             width: 100%;
             display: grid;
-            grid-template-columns: 10% 30% 20% 20% 20%;
+            grid-template-columns: 30% 17% 17% 17% 19%;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             &:hover {
                 background-color: rgb(252, 252, 252);
             }
-            .avatar {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                img {
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 100%;
-                }
-            }
             .name {
                 display: flex;
                 align-items: center;
-                color: var(--black);
+                padding-left: 4px;
+
+                .text {
+                    color: var(--black);
+                    font-size: 18px;
+                }
             }
             .dishes {
                 display: flex;
@@ -81,23 +76,16 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                color: var(--text-color);
+                .text {
+                    color: var(--text-color);
+                }
             }
-            .button {
+            .date {
                 display: flex;
-                justify-content: center;
                 align-items: center;
-                button {
-                    background: none;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: 32px;
-                    height: 32px;
-                    ion-icon {
-                        position: absolute;
-                        font-size: 24px;
-                    }
+                justify-content: center;
+                .text {
+                    color: var(--black);
                 }
             }
         }
@@ -133,14 +121,14 @@
 
 @media screen and (max-width: 800px) {
     .app .list .order {
-        grid-template-columns: 30% 20% 20% 20% 10%;
-        .avatar {
+        grid-template-columns: 30% 23% 23% 23%;
+        .dishes {
             display: none !important;
         }
     }
     .app .list .example {
-        grid-template-columns: 30% 20% 20% 20% 10%;
-        .avatar {
+        grid-template-columns: 30% 23% 23% 23%;
+        .dishes {
             display: none !important;
         }
     }

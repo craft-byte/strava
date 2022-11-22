@@ -54,7 +54,7 @@ function getDate(d: Date | number) {
         return "Invalid date";
     }
     const date = new Date(d);
-    return `${date.getDate()} ${months[date.getMonth()]}`;
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getHours()}:${date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()}`;
 }
 
 

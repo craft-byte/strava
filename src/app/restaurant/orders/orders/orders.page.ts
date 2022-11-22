@@ -53,12 +53,6 @@ export class OrdersPage implements OnInit {
 
         try {
             this.orders = await this.service.get({}, "people", "orders");
-
-            if (this.orders && this.orders.length > 0) {
-                for (let i of this.orders) {
-                    i.avatar = getImage(i.user.avatar) || "./../../../../assets/images/plain-avatar.jpg";
-                }
-            }
         } catch (e) {
             console.error(e);
         }

@@ -1,13 +1,15 @@
 .app {
-    padding-top: 32px;
+    height: 100%;
+
     .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-top: 8px;
+
         .back {
             display: flex;
             align-items: center;
-            padding-left: 12px;
     
             button {
                 display: flex;
@@ -63,18 +65,21 @@
             height: 58px;
             border-bottom: 1px solid var(--border-color);
             img {
-                width: 42px;
-                height: 42px;
+                width: 32px;
+                height: 32px;
                 border-radius: 100%;
             }
             .username {
-                margin-left: 12px;
-                font-size: 20px;
+                margin-left: 8px;
+                font-size: 18px;
                 color: var(--text-color);
                 cursor: pointer;
                 &:hover {
                     color: var(--black);
                 }
+            }
+            .behalf {
+                color: var(--gray);
             }
         }
         .date-total {
@@ -85,26 +90,57 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size: 18px;
+                font-size: 16px;
                 color: var(--text-color);
                 border-right: 1px solid var(--border-color);
             }
-            .total {
+            .money {
                 display: flex;
-                align-items: center;
+                justify-content: center;
+                // align-items: center;
+                flex-direction: column;
+
                 padding-left: 32px;
+                padding-bottom: 32px;
+
                 color: var(--black);
-                font-size: 18px;
-                .label {
-                    color: var(--text-color);
-                }
-                .amount-and-sign {
-                    color: var(--black);
-                    margin-left: 6px;
+
+                .field {
+                    .label {
+                        color: var(--text-color);
+                        font-size: 14px;
+                    }
+                    .total {
+                        font-size: 16px;
+                        color: var(--black);
+                    }
+                    
+                    .amount-and-sign {
+                        color: var(--black);
+                        margin-left: 6px;
+                    }
                 }
             }
         }
-        
+    }
+    
+    .dishes-disabled {
+        display: flex;
+        margin-top: 32px;
+
+        .text {
+            color: var(--text-color);
+            font-size: 20px;
+        }
+        .dish {
+            padding-left: 8px;
+            .name {
+                .text {
+                    color: var(--black);
+                    font-size: 20px;
+                }
+            }
+        }    
     }
 
     .loading {

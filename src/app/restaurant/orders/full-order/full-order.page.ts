@@ -14,7 +14,7 @@ interface Order {
     type: "dinein" | "takeaway";
     id: string;
     status: string;
-    customer: {
+    user: {
         userId: any;
         username: string;
         avatar: any;
@@ -81,7 +81,7 @@ export class FullOrderPage implements OnInit {
     }
 
     fullCustomer() {
-        this.router.go(["restaurant", this.service.restaurantId, "people", "customer", this.order.customer.userId], { queryParams: { last: this.router.url } });
+        this.router.go(["restaurant", this.service.restaurantId, "people", "customer", this.order.user.userId], { queryParams: { last: this.router.url } });
     }
 
 
@@ -90,7 +90,9 @@ export class FullOrderPage implements OnInit {
 
         this.order = await this.service.get({}, "people/order", orderId);
 
-        this.customerAvatar = getImage(this.order.customer.avatar);
+        console.log(this.order);
+
+        this.customerAvatar = getImage(this.order.user.avatar);
 
         this.loader.end();
     }

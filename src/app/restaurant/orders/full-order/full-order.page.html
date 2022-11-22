@@ -3,9 +3,6 @@
         <div class="back">
             <button (click)="back()">
                 <ion-icon name="arrow-back-outline"></ion-icon>
-                <span class="text">
-                    BACK
-                </span>
             </button>
         </div>
         <div class="order">
@@ -34,22 +31,51 @@
     <div *ngIf="order" class="order">
         <div class="customer">
             <img [src]="customerAvatar || './../../../../assets/images/plain-avatar.jpg'" alt="">
-            <span class="username" (click)="fullCustomer()">
-                {{ order.customer.username }}
+            <span class="username title-font" (click)="fullCustomer()">
+                {{ order.user.username }}
+            </span>
+            <span class="text button-font behalf">
+                (staff)
             </span>
         </div>
         <div class="date-total">
             <div class="date">
-                {{ order.ordered }}
+                <span class="text text-font">
+                    {{ order.ordered }}
+                </span>
             </div>
-            <div class="total">
-                <span class="label">Total:</span> <span class="amount-and-sign">${{ order.total / 100 }} </span>
+            <div class="money">
+                <span class="field text-font">
+                    <span class="label">Subtotal:</span>
+                    <span class="amount-and-sign">${{ order.money.subtotal / 100 }}</span>
+                </span>
+                <span class="field text-font">
+                    <span class="label">HST:</span>
+                    <span class="amount-and-sign">${{ order.money.hst / 100 }}</span>
+                </span>
+                <span class="field text-font">
+                    <span class="label total">Total:</span>
+                    <span class="amount-and-sign">${{ order.money.total / 100 }}</span>
+                </span>
             </div>
         </div>
     </div>
 
-    <div class="dishes" *ngIf="order">
+    <div class="dishes" *ngIf="order && order.mode != 'disabled'">
         <app-dish *ngFor="let i of order.dishes" [dish]="i"></app-dish>
+    </div>
+
+    <div *ngIf="order && order.mode == 'disabled'" class="dishes-disabled">
+        <span class="text title-font">
+            Dishes:
+        </span>
+        <div *ngFor="let i of order.dishes" class="dish">
+            <div class="name">
+                <span class="text title-font">
+                    {{ i.name }}
+                </span>
+            </div>
+        </div>
     </div>
 
     <div class="loading" *ngIf="!order">
