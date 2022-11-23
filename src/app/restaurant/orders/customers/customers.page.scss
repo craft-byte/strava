@@ -1,108 +1,56 @@
 .app {
     .header {
-        margin-top: 24px;
-        .search {
-            width: 512px;
-            display: flex;
-            align-items: center;
-            button {
-                width: 42px;
-                height: 42px;
-            }
-        }
-    }
-    .qr-codes {
-        .top {
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-left: 8px;
-            padding-right: 8px;
-            .title {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+
+        .title {
+            .text {
+                color: var(--black);
                 font-size: 20px;
             }
-            .buttons {
-                display: flex;
-                #remove {
-                    height: 32px;
-                    width: 36px;
-                    background-color: var(--red);
-                    border-top-left-radius: 8px;
-                    border-bottom-left-radius: 8px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    color: white;
-                    ion-icon {
-                        font-size: 20px;
-                    }
-                    &:hover {
-                        background-color: var(--ion-color-red-shade);
-                    }
-                }
-                #add {
-                    height: 32px;
-                    width: 36px;
-                    background-color: var(--green);
-                    border-top-right-radius: 8px;
-                    border-bottom-right-radius: 8px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    color: white;
-                    ion-icon {
-                        font-size: 20px;
-                    }
-                    &:hover {
-                        background-color: var(--ion-color-green-shade);
-                    }
-                }
-            }
         }
-        .list {
+    }
+
+    .filters {
+        display: flex;
+        align-items: center;
+        height: 52px;
+        border-bottom: 1px solid var(--border-color);
+
+        .buttons {
             display: flex;
-            overflow-x: scroll;
-            white-space: nowrap;
-            scrollbar-width: auto;
-            scrollbar-color: var(--gray) transparent;
-            padding-bottom: 18px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
 
-
-            &::-webkit-scrollbar {
-                width: 10px;
-                height: 6px;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background-color: var(--gray);
-                border-radius: 10px;
-            }
-            .table {
-                margin-left: 8px;
-                padding-top: 8px;
-                border-radius: 8px;
-                transition: all .4s;
-                &:hover {
-                    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-                    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-                    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+            .filter {
+                background: none;
+                border: 2px dotted var(--border-color);
+                height: 26px;
+                border-radius: 24px;
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                padding: 10px 8px;
+                
+                .text {
+                    margin-left: 6px;
                 }
-                .title {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 18px;
-                    color: var(--text-color);
+                ion-icon {
+                    font-size: 16px;
+                }
+                &:hover {
+                    background-color: rgb(250, 250, 250);
                 }
             }
         }
     }
+
+
     .no-customers {
+        margin-top: 52px;
         display: flex;
         justify-content: center;
         align-items: center;

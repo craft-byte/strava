@@ -153,6 +153,11 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
     const { restaurantId, orderId } = req.params;
 
     const order = await Orders(restaurantId).history.one({ _id: id(orderId) });
+    
+    if(!order) {
+        return res.send(null);
+    }
+    
     let user: FullOrder["user"] = null!;
 
     if(order.customer) {

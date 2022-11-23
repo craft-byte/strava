@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
-import { getImage } from 'src/functions';
-import { RestaurantService } from '../../restaurant.service';
+import { RestaurantService } from 'src/app/restaurant/restaurant.service';
+
 
 interface Order {
     user: {
@@ -25,28 +24,28 @@ interface Order {
     statusColor: "green" | "red" | "purple";
 }
 
+
 @Component({
-    selector: 'app-orders',
-    templateUrl: './orders.page.html',
-    styleUrls: ['./orders.page.scss'],
+    selector: 'app-list',
+    templateUrl: './list.page.html',
+    styleUrls: ['./list.page.scss'],
 })
-export class OrdersPage implements OnInit {
+export class ListPage implements OnInit {
 
     orders: Order[];
+    restaurantId: string;
+
 
     constructor(
         private service: RestaurantService,
         private router: RouterService,
-        private loader: LoadService,
     ) { };
+
 
     async fullOrder(id: string) {
         this.router.go(["restaurant", this.service.restaurantId, "orders", id], { replaceUrl: false });
     }
-
-    customers() {
-        this.router.go(["restaurant", this.service.restaurantId, "customers"]);
-    }
+    
 
     async updateOrders() {
         this.orders = null;
@@ -59,6 +58,7 @@ export class OrdersPage implements OnInit {
     }
 
     ngOnInit() {
+        this.restaurantId = this.service.restaurantId;
         this.updateOrders();
     }
 

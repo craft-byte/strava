@@ -32,11 +32,11 @@ const routes: Routes = [
       },
       {
         path: 'orders',
-        loadChildren: () => import('./orders/orders/orders.module').then( m => m.OrdersPageModule)
+        loadChildren: () => import('./orders/orders.module').then( m => m.OrdersPageModule)
       },
       {
         path: 'customers',
-        loadChildren: () => import('./customers/customers/customers.module').then( m => m.CustomersPageModule)
+        loadChildren: () => import('./orders/customers/customers.module').then( m => m.CustomersPageModule)
       },
     //   {
     //     path: 'people',
@@ -51,10 +51,6 @@ const routes: Routes = [
         path: 'settings',
         loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
       },
-      {
-        path: "orders/:orderId",
-        loadChildren: () => import("./orders/full-order/full-order.module").then(m => m.FullOrderPageModule),
-      }
     ]
   },
 //   {

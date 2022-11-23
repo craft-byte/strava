@@ -1,0 +1,22 @@
+<div class="app">
+    <!-- <div class="customers">
+        <button class="orange-button" (click)="customers()">Customers</button>
+    </div> -->
+
+
+    <div class="navigation">
+        <div class="link" [class.a]="current == 'list'">
+            <a routerLink="/restaurant/{{ restaurantId }}/orders/list">Orders</a>
+        </div>
+        <div class="link" [class.a]="current == 'customers'">
+            <a routerLink="/restaurant/{{ restaurantId }}/orders/customers">Customers</a>
+        </div>
+        <!-- <div class="link" [class.a]="current == 'money'">
+            <a routerLink="/restaurant/{{ restaurantId }}/orders/money">Money</a>
+        </div> -->
+    </div>
+    <div class="content">
+
+        <router-outlet></router-outlet>
+    </div>
+</div>

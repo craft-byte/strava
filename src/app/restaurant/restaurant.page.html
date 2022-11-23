@@ -62,7 +62,7 @@
     <div class="name title-font">
         {{ restaurant?.name }}
     </div>
-    <a id="work" [class.disabled]="ui.disableAllButtons" (click)="redirect()" *ngIf="workAs" routerLink="/staff/{{ restaurant?._id }}/{{ workAs == 'both' ? 'solo' : workAs }}">
+    <a id="work" [class.disabled]="ui.disableAllButtons" (click)="redirect()" *ngIf="workUrl" [routerLink]="workUrl">
         <ion-icon name="accessibility-outline"></ion-icon>
     </a>
 </div>
@@ -73,7 +73,7 @@
     <div *ngIf="!!verificationUrl" class="verification">
         <button class="orange-button" (click)="verification()">Finish restaurant verification</button>
     </div>
-    <router-outlet></router-outlet>
+    <router-outlet *ngIf="restaurant"></router-outlet>
 </div>
 
 

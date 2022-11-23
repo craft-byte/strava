@@ -1,6 +1,26 @@
 <div class="app">
-    <div class="customers">
-        <button class="orange-button" (click)="customers()">Customers</button>
+    <div class="header">
+        <div class="title">
+            <span class="text title-font">
+                Orders
+            </span>
+        </div>
+    </div>
+    <div class="filters">
+        <div class="buttons">
+            <button class="filter date">
+                <ion-icon name="add"></ion-icon> <span class="text button-font">Date</span>
+            </button>
+            <button class="filter amount">
+                <ion-icon name="add"></ion-icon> <span class="text button-font">Amount</span>
+            </button>
+            <button class="filter dishes">
+                <ion-icon name="add"></ion-icon> <span class="text button-font">Dishes</span>
+            </button>
+            <button class="filter status">
+                <ion-icon name="add"></ion-icon> <span class="text button-font">Status</span>
+            </button>
+        </div>
     </div>
     <div *ngIf="orders && orders.length > 0" class="list">
         <div class="example">
@@ -11,18 +31,18 @@
                 Dishes
             </div>
             <div class="status-box">
-
+    
             </div>
             <div class="total">
                 Total
             </div>
             <div class="date">
-
+    
             </div>
         </div>
-        <div class="order" (click)="fullOrder(i._id)" *ngFor="let i of orders">
+        <div class="order" routerLink="/restaurant/{{ restaurantId }}/orders/full/{{ i._id }}" *ngFor="let i of orders">
             <div class="name">
-                <span class="text title-font">
+                <span class="text text-font">
                     {{ i.user.name || i.user.username }}
                 </span>
             </div>

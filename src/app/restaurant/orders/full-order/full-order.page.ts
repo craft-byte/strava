@@ -10,14 +10,21 @@ import { RestaurantService } from '../../restaurant.service';
 
 interface Order {
     ordered: string;
-    total: number;
     type: "dinein" | "takeaway";
     id: string;
     status: string;
+    mode: string;
+
     user: {
         userId: any;
         username: string;
         avatar: any;
+    }
+
+    money: {
+        total: number;
+        hst: number;
+        subtotal: number;
     }
 
     dishes: {

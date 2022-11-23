@@ -1,28 +1,59 @@
 .app {
+
     .header {
+        margin-top: 12px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        .search {
-            width: 512px;
-            display: flex;
-            align-items: center;
-            button {
-                height: 42px;
-                width: 42px;
-                margin: 0;
+        border-bottom: 1px solid var(--border-color);
+
+        .title {
+            .text {
+                color: var(--black);
+                font-size: 20px;
             }
         }
     }
-    .customers {
+
+    .filters {
         display: flex;
-        justify-content: center;
+        align-items: center;
+        height: 52px;
+        border-bottom: 1px solid var(--border-color);
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+
+            .filter {
+                background: none;
+                border: 2px dotted var(--border-color);
+                height: 26px;
+                border-radius: 24px;
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                padding: 10px 8px;
+                
+                .text {
+                    margin-left: 6px;
+                }
+                ion-icon {
+                    font-size: 16px;
+                }
+                &:hover {
+                    background-color: rgb(250, 250, 250);
+                }
+            }
+        }
     }
+    
     .list {
         .example {
             display: grid;
             grid-template-columns: 30% 17% 17% 17% 19%;
-            height: 46px;
+            height: 40px;
             border-bottom: 1px solid var(--border-color);
             div {
                 display: flex;
@@ -34,7 +65,7 @@
             }
         }
         .order {
-            height: 52px;
+            height: 34px;
             width: 100%;
             display: grid;
             grid-template-columns: 30% 17% 17% 17% 19%;
@@ -50,13 +81,13 @@
 
                 .text {
                     color: var(--black);
-                    font-size: 18px;
+                    font-size: 16px;
                 }
             }
             .dishes {
                 display: flex;
                 align-items: center;
-                font-size: 18px;
+                font-size: 14px;
                 color: var(--text-color);
             }
             .status-box {
@@ -78,6 +109,7 @@
                 align-items: center;
                 .text {
                     color: var(--text-color);
+                    font-size: 14px;
                 }
             }
             .date {
@@ -86,6 +118,7 @@
                 justify-content: center;
                 .text {
                     color: var(--black);
+                    font-size: 14px;
                 }
             }
         }
@@ -114,22 +147,6 @@
             border-top: 2px solid var(--border-color);
             -webkit-animation: spin 1.5s linear infinite;
             animation: spin 1.5s linear infinite;
-        }
-    }
-}
-
-
-@media screen and (max-width: 800px) {
-    .app .list .order {
-        grid-template-columns: 30% 23% 23% 23%;
-        .dishes {
-            display: none !important;
-        }
-    }
-    .app .list .example {
-        grid-template-columns: 30% 23% 23% 23%;
-        .dishes {
-            display: none !important;
         }
     }
 }
