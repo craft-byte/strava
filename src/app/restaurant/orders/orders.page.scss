@@ -18,11 +18,8 @@
             }
             &.a {
                 border-left: 2px solid var(--orange);
-                a {
-                    // color: var(--blue-dark);
-                }
             }
-            &:hover {
+            &:not(.a):hover {
                 border-left: 1px solid var(--black);
             }
         }

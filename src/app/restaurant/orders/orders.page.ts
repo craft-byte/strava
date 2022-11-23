@@ -25,7 +25,7 @@ export class OrdersPage implements OnInit, OnDestroy {
     ) {
         this.subscription = this.r.events.subscribe(e => {
             if(e instanceof NavigationEnd) {
-                this.current = e.url.split("/")[4] || "list";
+                this.current = e.url.split("/")[4]?.split("?")[0] || "list";
             }
         })
     };
@@ -36,7 +36,8 @@ export class OrdersPage implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.restaurantId = this.service.restaurantId;
-        this.current = this.router.url.split("/")[this.router.url.split("/").length - 1].split("?")[0];
+        this.current = this.router.url.split("/")[4]?.split("?")[0] || "list";
+        console.log(this.router.url);
     }
     ngOnDestroy(): void {
         if(this.subscription) {

@@ -38,7 +38,6 @@ export class CustomersPage implements OnInit {
         private service: RestaurantService,
         private toastCtrl: ToastController,
         private router: RouterService,
-        private loader: LoadService,
     ) {
     };
 
@@ -96,7 +95,6 @@ export class CustomersPage implements OnInit {
 
 
     async updateCustomers(calculate: boolean) {
-        await this.loader.start();
 
         const result: {
             customers: Customer[];
@@ -123,7 +121,6 @@ export class CustomersPage implements OnInit {
         }
 
 
-        this.loader.end();
     }
 
 
