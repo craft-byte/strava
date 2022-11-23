@@ -25,7 +25,8 @@ export class OrdersPage implements OnInit, OnDestroy {
     ) {
         this.subscription = this.r.events.subscribe(e => {
             if(e instanceof NavigationEnd) {
-                this.current = e.url.split("/")[e.url.split("/").length - 1].split("?")[0];
+                this.current = e.url.split("/")[4] || "list";
+                console.log(this.current);
             }
         })
     };
