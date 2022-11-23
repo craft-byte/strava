@@ -53,8 +53,7 @@ function getDate(d: Date | number) {
     if(!d) {
         return "Invalid date";
     }
-    const date = new Date(d);
-    return `${date.getDate()} ${months[date.getMonth()]} ${date.getHours()}:${date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()}`;
+    return new Intl.DateTimeFormat('en-US', { hour: "numeric", minute: "2-digit", day: "2-digit", weekday: "short", }).format(d);
 }
 
 

@@ -37,7 +37,6 @@ export class OrdersPage implements OnInit, OnDestroy {
     ngOnInit() {
         this.restaurantId = this.service.restaurantId;
         this.current = this.router.url.split("/")[4]?.split("?")[0] || "list";
-        console.log(this.router.url);
     }
     ngOnDestroy(): void {
         if(this.subscription) {
