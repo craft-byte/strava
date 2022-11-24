@@ -131,15 +131,17 @@ router.patch("/find", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes
         return res.send([]);
     }
 
-    const ids = [];
+    const ids = new Set<string>();
 
     for (let { name: n, _id } of dishesNames) {
-        if (n!.substring(0, searchText.length).toLowerCase() === searchText.toLowerCase()) {
-            ids.push(_id);
+        for(let i = 0; i < n!.length - searchText.length + 1 ;i ++) {
+            if (n!.substring(i, searchText.length + i).toLowerCase() === searchText.toLowerCase()) {
+                ids.add(_id.toString());
+            }
         }
     }
 
-    const dishes = await Restaurant(restaurant._id).dishes.many({ _id: { $in: ids } }).get({ projection: { name: 1, info: { modified: 1, bought: 1 }, price: 1, } })
+    const dishes = await Restaurant(restaurant._id).dishes.many({ _id: { $in: Array.from(ids).map(i => id(i)), } }).get({ projection: { name: 1, info: { modified: 1, bought: 1 }, price: 1, } })
 
     const result = [];
 
@@ -152,6 +154,7 @@ router.patch("/find", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes
             bought: i.info.bought
         });
     }
+
     
     res.send(result);
 });
