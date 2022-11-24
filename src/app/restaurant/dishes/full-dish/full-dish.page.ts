@@ -44,16 +44,10 @@ export class FullDishPage implements OnInit {
     if(last) {
       return this.router.go([last], { replaceUrl: true });
     }
-    this.router.go(["restaurant", this.service.restaurantId, "dishes", "list"], { replaceUrl: true });
+    this.router.go(["restaurant", this.service.restaurantId, "dishes"], { replaceUrl: true });
   }
   edit() {
     this.router.go(["dish", this.service.restaurantId, "edit", this.dish._id], { replaceUrl: true });
-  }
-  cooking() {
-    this.router.go(["cooking", this.service.restaurantId, this.dish._id], { replaceUrl: true });
-  }
-  component(id: string) {
-    this.router.go(["restaurant", this.service.restaurantId, "components", ""], { replaceUrl: true });
   }
 
   async remove() {
@@ -102,7 +96,6 @@ export class FullDishPage implements OnInit {
   }
 
   async ngOnInit() {
-    await this.loader.start();
     const id = this.route.snapshot.paramMap.get("dishId");
     this.dish = await this.service.get({}, "dishes", id);
     this.image = getImage(this.dish.image.binary);
@@ -114,8 +107,6 @@ export class FullDishPage implements OnInit {
     } else {
       this.imageClass = "r3";
     }
-
-    this.loader.end();
   }
 
 }

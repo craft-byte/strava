@@ -86,6 +86,7 @@ export class DishesListComponent implements OnInit {
 
     async ngOnInit() {
         this.dishes = await this.service.get({}, 'dishes');
+        
         if (this.dishes.length == 0) {
             this.ui.noDishes = true;
         }
