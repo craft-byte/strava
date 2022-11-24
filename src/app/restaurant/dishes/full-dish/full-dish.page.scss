@@ -1,9 +1,12 @@
 .app {
+    padding-bottom: 200px;
+
     .header {
-        height: 42px;
+        margin-top: 12px;
         width: 100%;
-        display: grid;
-        grid-template-columns: 20% 60% 20%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
 
         .back {
             display: flex;
@@ -25,31 +28,41 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+
+            button {
+                padding: 6px 16px;
+            }
         }
     }
     .dish {
-        margin-top: 24px;
         display: flex;
+        border-bottom: 1px solid var(--border-color);
+        
         .image {
+            padding-right: 12px;
+            padding-bottom: 12px;
+            border-right: 1px solid var(--border-color);
+
+            img {
+                border-radius: 8px;
+                border: 2px solid var(--orange);
+            }
             .r1 {
-                width: 248px;
+                min-width: 248px;
                 height: 248px;
             }
             .r2 {
-                width: 324px;
+                min-width: 324px;
                 height: 243px;
             }
             .r3 {
-                width: 324px;
+                min-width: 324px;
                 height: 183px;
-            }
-            img {
-                border-radius: 12px;
-                border: 3px solid var(--green);
             }
         }
         .details {
-            padding: 12px 12px;
+            padding: 12px;
+
             .name {
                 font-size: 18px;
                 font-weight: 550;
@@ -59,11 +72,38 @@
                 color: var(--text-color);
             }
             .description {
-                span.margin {
-                    margin: 8px;
+                margin-top: 6px;
+                span.text {
+                    font-size: 14px;
                 }
             }
         }
     }
     
+}
+
+
+@media screen and (max-width: 700px) {
+    .app {
+        .dish {
+            .image {
+                img {
+                    border-radius: 8px;
+                    border: 2px solid var(--orange);
+                }
+                .r1 {
+                    min-width: 124px;
+                    height: 124px;
+                }
+                .r2 {
+                    min-width: 152px;
+                    aspect-ratio: 4 / 3;
+                }
+                .r3 {
+                    min-width: 152px;
+                    aspect-ratio: 16 / 9;
+                }
+            }
+        }
+    }
 }

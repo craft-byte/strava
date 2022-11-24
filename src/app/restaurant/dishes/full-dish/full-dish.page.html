@@ -1,37 +1,40 @@
-<div class="app" *ngIf="dish">
+<div class="app">
     <div class="header">
         <div class="back">
             <p (click)="back()"><ion-icon name="arrow-back"></ion-icon> BACK</p>
         </div>
-        <div class="gap">
-
-        </div>
-        <div class="buttons">
+        <div class="buttons" *ngIf="dish">
             <button (click)="edit()" class="orange-button">Edit</button>
             <button (click)="remove()" class="red-button">Delete</button>
         </div>
     </div>
-    <div class="dish">
+    <div class="dish" *ngIf="dish">
         <div class="image">
             <img [src]="image" [class]="imageClass" alt="">
         </div>
         <div class="details">
             <div class="name">
-                {{ dish.name }}
+                <span class="text title-font">
+                    {{ dish.name }}
+                </span>
             </div>
             <div class="price">
-                ${{ dish.price / 100 }}
+                <span class="text text-font">
+                    ${{ dish.price / 100 }}
+                </span>
             </div>
             <div class="time">
                 <span *ngIf="dish.info.time">
-                    {{ dish.info.time }} min.
+                    <span class="text text-font">
+                        {{ dish.info.time }} min.
+                    </span>
                 </span>
                 <span *ngIf="!dish.info.time">
                     <button class="only-text-button" (click)="edit()">Add time</button>
                 </span>
             </div>
             <div class="description">
-                <span class="margin" *ngIf="dish.description">
+                <span class="text text-font" *ngIf="dish.description">
                     {{ dish.description }}
                 </span>
                 <span *ngIf="!dish.description">
