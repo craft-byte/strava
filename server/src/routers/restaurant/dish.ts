@@ -2,7 +2,7 @@ import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { Dish } from "../../models/general";
 import { Locals } from "../../models/other";
-import { id } from "../../utils/functions";
+import { getDate, id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { bufferFromString } from "../../utils/other";
@@ -36,6 +36,10 @@ router.get("/", logged({}), allowed({ _id: 1 }, "manager", "dishes"), async (req
 
     if (!result) {
         return res.sendStatus(404);
+    }
+
+    if(result.image && result.image.modified) {
+        result.image!.modified.date = getDate(result.image!.modified.date!) as any;
     }
 
     res.send(result);

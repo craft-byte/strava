@@ -11,6 +11,31 @@
     <div class="dish" *ngIf="dish">
         <div class="image">
             <img [src]="image" [class]="imageClass" alt="">
+            <div class="info button-font">
+                <span class="user">
+                    Bazhan
+                </span>
+                <span class="dot">
+                    &#8226;
+                </span>
+                <span class="date">
+                    {{ dish.image.modified.date }}
+                </span>
+                <span class="dot">
+                    &#8226;
+                </span>
+                <span class="resolution">
+                    <span *ngIf="dish.image.resolution == 1">
+                        1 / 1
+                    </span>
+                    <span *ngIf="dish.image.resolution == 1.77">
+                        16 / 9
+                    </span>
+                    <span *ngIf="dish.image.resolution == 1.33">
+                        4 / 3
+                    </span>
+                </span>
+            </div>
         </div>
         <div class="details">
             <div class="name">
