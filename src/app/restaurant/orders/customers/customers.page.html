@@ -29,42 +29,39 @@
         <ion-icon name="accessibility"></ion-icon>
     </div>
     <div *ngIf="customers && customers.length > 0" class="customers">
-        <div class="top">
-            <div class="title">
-                Customers
+        <div class="list">
+            <div class="example">
+                <div class="avatar"></div>
+                <div class="name">Name</div>
+                <div class="orders">Orders</div>
+                <div class="total">Spent</div>
+                <div class="last-visit">Last ordered</div>
             </div>
-            <div class="buttons">
-                    <button (click)="updateCustomers(true)" class="orange-button">Update</button>
-                </div>
-            </div>
-            <div class="list">
-                <div class="example">
-                    <div class="avatar"></div>
-                    <div class="name">Name</div>
-                    <div class="orders">Orders</div>
-                    <div class="last-visit">Last ordered</div>
-                    <div class="total">Total spendings</div>
-                </div>
             <div *ngFor="let i of customers" (click)="fullCustomer(i._id)" class="customer">
                 <div class="avatar">
                     <img [src]="i.avatar" alt="">
                 </div>
                 <div class="name">
-                    {{ i.name }}
+                    <span class="text title-font">{{ i.name }}</span>
                 </div>
                 <div class="orders">
-                    {{ i.orders }}
-                </div>
-                <div class="last-visit">
-                    {{ i.lastOrdered }}
+                    <span class="text text-font">
+                        {{ i.orders }}
+                    </span>
                 </div>
                 <div class="total">
-                    ${{ i.total / 100 }}
+                    <span class="text text-font">
+                        ${{ i.total / 100 }}
+                    </span>
+                </div>
+                <div class="last-visit">
+                    <span class="text text-font">
+                        {{ i.lastOrdered }}
+                    </span>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 
 
@@ -83,7 +80,7 @@
 
 
 
-<!-- <div *ngIf="ui.showQrCodes" class="qr-codes">
+    <!-- <div *ngIf="ui.showQrCodes" class="qr-codes">
     <div class="top">
         <div class="title">
             QR codes

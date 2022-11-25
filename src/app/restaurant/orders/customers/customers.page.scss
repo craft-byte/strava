@@ -65,49 +65,27 @@
         }
     }
     .customers {
-        .top {
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px;
-            // border-bottom: 1px solid var(--border-color);
-            .title {
-                font-size: 20px;
-            }
-            .buttons {
-                display: flex;
-                align-items: center;
-                .last-update {
-                    color: var(--text-color);
-                    font-size: 14px;
-                }
-                button {
-                    margin-left: 12px;
-                }
-            }
-        }
         .list {
             .example {
                 display: grid;
                 grid-template-columns: 10% 25% 20% 25% 20%;
-                height: 42px;
+                height: 40px;
                 border-bottom: 1px solid var(--border-color);
                 div {
-                    font-size: 18px;
-                    color: var(--text-color);
                     display: flex;
                     align-items: center;
+                    color: var(--text-color);
                 }
             }
             .customer {
                 display: grid;
                 grid-template-columns: 10% 25% 20% 25% 20%;
-                height: 52px;
+                height: 42px;
                 border-bottom: 1px solid var(--border-color);
                 cursor: pointer;
+                
                 &:hover {
-                    background-color: rgb(247, 247, 247);
+                    background-color: rgb(250, 250, 250);
                 }
                 .avatar {
                     display: flex;
@@ -119,25 +97,30 @@
                         border-radius: 100%;
                     }
                 }
-                .name,.orders,.last-visit,.total {
-                    font-size: 18px;
+                .name {
+                    color: var(--black);
+                    display: flex;
+                    align-items: center;
+                }
+                .orders,.last-visit,.total {
                     color: var(--text-color);
                     display: flex;
                     align-items: center;
+                    font-size: 14px;
                 }
             }
         }
     }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 700px) {
     .app {
         .customers {
             .list {
                 .example {
                     grid-template-columns: 30% 20% 25% 25%;
                     .name,.orders,.last-visit,.total {
-                        font-size: 16px;
+                        font-size: 14px;
                     }
                     .avatar {
                         display: none;
