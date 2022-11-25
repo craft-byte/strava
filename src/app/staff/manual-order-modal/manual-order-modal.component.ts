@@ -147,7 +147,7 @@ export class ManualOrderModalComponent implements OnInit {
     /**
      * Order type
      */
-    async setType(t: "takeaway" | "dinein") {
+    async setType(t: "takeout" | "dinein") {
         if(this.type != t) {
             this.type = t;
 

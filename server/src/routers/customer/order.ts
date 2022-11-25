@@ -1,8 +1,5 @@
-import e from "cors";
 import { Router } from "express";
-import { stat } from "fs";
 import { Filter, ObjectId } from "mongodb";
-import { isPromise } from "util/types";
 import { stripe } from "../..";
 import { Time } from "../../models/components";
 import { Order, User } from "../../models/general";
@@ -275,11 +272,11 @@ router.post("/init", passUserData, async (req, res) => {
     };
 
     if(restaurant.settings) {
-        if(restaurant.settings.customers.allowTakeAway && restaurant.settings.customers.allowDineIn) {
+        if(restaurant.settings.customers.allowTakeOut && restaurant.settings.customers.allowDineIn) {
             result.types = "both";
         } else if(restaurant.settings.customers.allowDineIn) {
             result.types = "dinein";
-        } else if(restaurant.settings.customers.allowTakeAway) {
+        } else if(restaurant.settings.customers.allowTakeOut) {
             result.types = "takeaway";
         } else {
             result.types = "none";
@@ -689,7 +686,7 @@ interface PaymentInfo {
     subtotal: number;
     hst: number;
     theme: string;
-    type: "dinein" | "takeaway";
+    type: "dinein" | "takeout";
     id: string | null;
     dishes: { name: string; price: number; amount: number; }[];
     clientSecret?: string;

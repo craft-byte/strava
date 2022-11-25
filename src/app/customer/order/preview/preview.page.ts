@@ -197,7 +197,7 @@ export class PreviewPage implements OnInit {
     //
     //  CHOOSE ORDER TYPE
     //
-    async place(p: "takeaway" | "dinein") {
+    async place(p: "takeout" | "dinein") {
         let old = this.order.type;
         this.order.id = null;
         this.order.type = p;
@@ -216,7 +216,7 @@ export class PreviewPage implements OnInit {
                     mode: "ios",
                 })).present();
             } else {
-                if (p == "takeaway") {
+                if (p == "takeout") {
                     this.order.id = result.id;
                 }
             }

@@ -148,7 +148,7 @@ router.get("/restaurant/:restaurantId/tables", async (req, res) => {
 
 
     const result = {
-        showOrderButton: restaurant.settings?.customers!.allowTakeAway,
+        showOrderButton: restaurant.settings?.customers!.allowTakeOut,
         tables,
     };
 
@@ -169,7 +169,7 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
         return res.sendStatus(404);
     }
 
-    if(order && !restaurant.settings!.customers.allowTakeAway) {
+    if(order && !restaurant.settings!.customers.allowTakeOut) {
         return res.status(403).send({ reason: "settings" });
     }
 
@@ -187,7 +187,7 @@ router.post("/restaurant/:restaurantId/create", logged({ _id: 1 }), async (req, 
             customer: id(user._id)!,
             mode: null!,
             connected: Date.now(),
-            type: "takeaway",
+            type: "takeout",
             by: "customer",
             id: null!,
             dishes: [],

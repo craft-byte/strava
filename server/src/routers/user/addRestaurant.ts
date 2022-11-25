@@ -209,7 +209,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         },
         customers: {
             maxDishes: 10,
-            allowTakeAway: true,
+            allowTakeOut: true,
             allowDineIn: true,
             maxCustomers: 10,
             minPrice: 100,

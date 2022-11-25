@@ -19,7 +19,7 @@ interface WaiterSettings {
 interface RestaurantSettings {
     customers: {
         maxDishes: number;
-        allowTakeAway: boolean;
+        allowTakeOut: boolean;
         maxCustomers: number;
         minPrice: number;
         allowOrderingOnline: boolean;

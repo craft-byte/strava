@@ -8,7 +8,7 @@
                 {{ order.dishesQuantity }} dishes
             </div>
             <div class="icon">
-                <ion-icon slot="end" size="large" *ngIf="order.type == 'takeaway'" name="bag-outline"></ion-icon>
+                <ion-icon slot="end" size="large" *ngIf="order.type == 'takeout'" name="bag-outline"></ion-icon>
                 <ion-icon slot="end" size="large" *ngIf="order.type == 'dinein'" name="restaurant-outline">
                 </ion-icon>
             </div>
@@ -19,8 +19,8 @@
                     <button (click)="place('dinein')" class="option" [class.a]="order.type == 'dinein'">
                         Dine-in
                     </button>
-                    <button (click)="place('takeaway')" class="option"
-                        [class.a]="order.type == 'takeaway'">
+                    <button (click)="place('takeout')" class="option"
+                        [class.a]="order.type == 'takeout'">
                         Take away
                     </button>
                 </div>
@@ -29,7 +29,7 @@
                         Dine-in
                     </span>
                 </div>
-                <div *ngIf="order.types == 'takeaway'" class="takeaway">
+                <div *ngIf="order.types == 'takeout'" class="takeout">
                     <span class="text title-font">
                         Take away
                     </span>
@@ -57,7 +57,7 @@
                         Select table
                     </button>
                     <div class="or">or</div>
-                    <button (click)="place('takeaway')" class="orange-button">
+                    <button (click)="place('takeout')" class="orange-button">
                         Take away
                     </button>
                 </div>

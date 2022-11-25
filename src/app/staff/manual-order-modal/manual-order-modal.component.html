@@ -16,24 +16,24 @@
         <div class="content">
             <div class="order" *ngIf="settings">
                 <div class="select-type">
-                    <div *ngIf="settings.allowTakeAway && !settings.allowDineIn" class="type">
+                    <div *ngIf="settings.allowTakeOut && !settings.allowDineIn" class="type">
                         <span class="text title-font">
-                            Take away
+                            Take out
                         </span>
                     </div>
-                    <div *ngIf="settings.allowDineIn && !settings.allowTakeAway" class="type">
+                    <div *ngIf="settings.allowDineIn && !settings.allowTakeOut" class="type">
                         <span class="text title-font">
                             Dine-in
                         </span>
                     </div>
-                    <div *ngIf="!settings.allowDineIn && !settings.allowTakeAway" class="no-type">
+                    <div *ngIf="!settings.allowDineIn && !settings.allowTakeOut" class="no-type">
                         <span class="text title-font">
                             No type provided
                         </span>
                     </div>
-                    <div *ngIf="settings.allowDineIn && settings.allowTakeAway" class="both-types">
-                        <button id="take-await" (click)="setType('takeaway')" [class.a]="type == 'takeaway'">
-                            Take away
+                    <div *ngIf="settings.allowDineIn && settings.allowTakeOut" class="both-types">
+                        <button id="take-await" (click)="setType('takeout')" [class.a]="type == 'takeout'">
+                            Take out
                         </button>
                         <button id="dine-in" (click)="setType('dinein')" [class.a]="type == 'dinein'">
                             Dine-in

@@ -155,7 +155,7 @@ interface Order {
     status: "ordering" | "progress" | "done" | "removed" | "done:removed";
     method?: "card" | "cash";
 
-    type: "dinein" | "takeaway";
+    type: "dinein" | "takeout";
     id: string;
 
     mode: "solo" | "standart" | "disabled";

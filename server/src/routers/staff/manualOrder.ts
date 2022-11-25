@@ -78,11 +78,11 @@ router.post("/order/type", logged({ _id: 1, }), allowed({ _id: 1, settings: { cu
     const { restaurant, user, } = res.locals as Locals;
     const { type } = req.body;
 
-    if(!type || !["takeaway", "dinein"].includes(type)) {
+    if(!type || !["takeout", "dinein"].includes(type)) {
         return res.status(422).send({ reason: "InvalidType" });
     }
 
-    if((type == "takeaway" && !restaurant.settings?.customers.allowTakeAway) || (type == "dinein" && !restaurant.settings?.customers.allowDineIn)) {
+    if((type == "takeaway" && !restaurant.settings?.customers.allowTakeOut) || (type == "dinein" && !restaurant.settings?.customers.allowDineIn)) {
         return res.status(403).send({ reason: "TypeNotAllowed"});
     }
 
