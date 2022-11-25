@@ -1,0 +1,71 @@
+.app {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.25);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 20vh;
+    z-index: 2;
+
+    .box {
+        background-color: white;
+        border-radius: 8px;
+        width: 524px;
+
+        .header {
+            width: 100%;
+            height: 42px;
+            background-color: var(--orange);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            align-items: center;
+
+            .title {
+                display: flex;
+                align-items: center;
+                .text {
+                    color: var(--black);
+                    font-size: 18px;
+                }
+            }
+
+            #close-modal {
+                width: 42px;
+                height: 42px;
+                background: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                ion-icon {
+                    color: var(--black);
+                    font-size: 28px;
+                }
+            }
+        }
+        .content {
+            padding: 12px;
+
+            p {
+                color: var(--text-color);
+
+                span {
+                    padding: 1px 6px;
+                    border-radius: 6px;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 532px) {
+    .app {
+        .box {
+            width: 95%;
+        }
+    }
+}

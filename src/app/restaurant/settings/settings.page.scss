@@ -288,6 +288,39 @@
                     align-items: center;
                 }
             }
+            .ordering-disabled {
+                border-bottom: 1px solid var(--border-color);
+                display: grid;
+                grid-template-columns: 75% 25%;
+                position: relative;
+                height: 42px;
+
+                .name-description {
+                    padding-left: 4px;
+                    display: flex;
+                    align-items: center;
+
+                    .name {
+                        color: var(--black);
+                    }
+
+                    ion-icon {
+                        color: var(--black);
+                        margin-left: 8px;
+                        font-size: 18px;
+                    }
+                }
+                .selected {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    span {
+                        padding: 4px 6px;
+                        border-radius: 8px;
+                    }
+                }
+            }
         }
     }
 

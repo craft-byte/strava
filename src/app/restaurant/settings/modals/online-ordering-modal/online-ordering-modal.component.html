@@ -1,0 +1,28 @@
+<div class="app" [@showUp] (mousedown)="leave.emit()">
+    <div class="box" (mousedown)="$event.stopPropagation()">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Online ordering
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <p>
+                Enable online ordering to let your customers order online.
+            </p>
+            <p>
+                Customers pay before the order confirmed.
+            </p>
+            <p>
+                If cash payments enabled customer can pay with cash. Waiter has to collect the cash and then confirm the order the customer ordered.
+            </p>
+            <p>
+                To <span class="status-badge-green">enable</span> online ordering your restaurant mode has to be different than <span class="status-badge-red">disabled</span>, which is recommended
+            </p>
+        </div>
+    </div>
+</div>

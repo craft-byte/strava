@@ -22,6 +22,7 @@ interface RestaurantSettings {
         allowTakeAway: boolean;
         maxCustomers: number;
         minPrice: number;
+        allowOrderingOnline: boolean;
     },
     dishes: {
 

@@ -42,6 +42,7 @@ export class SettingsPage implements OnInit {
     @ViewChild("changeDescriptionContainer", { read: ViewContainerRef }) changeDescriptionContainer: ViewContainerRef;
     @ViewChild("payoutsModalContainer", { read: ViewContainerRef }) payoutsModal: ViewContainerRef;
     @ViewChild("modeModalContainer", { read: ViewContainerRef }) modeModal: ViewContainerRef;
+    @ViewChild("onlineOrderingModalContainer", { read: ViewContainerRef }) onlineOrderingModal: ViewContainerRef;
 
     continueRegistration() {
         this.router.go(["restaurant", this.service.restaurantId, "home"]);
@@ -203,6 +204,10 @@ export class SettingsPage implements OnInit {
 
                 if(update.updated) {
                     this.settings.staff.mode = newMode as any;
+
+                    if(newMode == "disabled") {
+                        this.settings.customers.allowOrderingOnline = false;
+                    }
                 } else {
                     this.toast(false);
                 }
@@ -211,6 +216,10 @@ export class SettingsPage implements OnInit {
         });
     }
     async changeCustomersSettings(setting: "allowOrderingOnline") {
+        if(setting == "allowOrderingOnline" && this.settings.staff.mode == "disabled") {
+            return;
+        }
+
         this.settings.customers[setting] = !this.settings.customers[setting];
 
         const update: any = await this.service.post({ setting }, "settings/customers");
@@ -219,6 +228,15 @@ export class SettingsPage implements OnInit {
             this.settings.customers[setting] = !this.settings.customers[setting];
             this.toast(false);
         }
+    }
+    async allowOrderingOnline() {
+        const { OnlineOrderingModalComponent } = await import("./modals/online-ordering-modal/online-ordering-modal.component");
+
+        const component = this.onlineOrderingModal.createComponent(OnlineOrderingModalComponent);
+
+        component.instance.leave.subscribe(() => {
+            component.destroy();
+        });
     }
 
 

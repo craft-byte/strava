@@ -187,13 +187,13 @@
             Customers
         </div>
         <div class="content">
-            <div class="ordering">
+            <div class="ordering" *ngIf="settings.staff.mode != 'disabled'">
                 <div class="new">
                     New
                 </div>
                 <div class="name-description">
                     <span class="name text-font">
-                        Ordering online
+                        Online ordering
                     </span>
                 </div>
                 <div class="selected">
@@ -209,132 +209,21 @@
                         color="green"></ion-toggle>
                 </div>
             </div>
+            <div (click)="allowOrderingOnline()" *ngIf="settings.staff.mode == 'disabled'" class="ordering-disabled">
+                <div class="name-description">
+                    <span class="name text-font">
+                        Online ordering
+                    </span>
+                    <ion-icon name="chevron-forward"></ion-icon>
+                </div>
+                <div class="selected">
+                    <span class="status-badge-red">
+                        restricted
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
-    <!-- <div class="block">
-    <div class="title">
-      Dishes
-    </div>
-    <div class="content">
-      <div class="setting strictIngredients">
-        <div class="title">
-          Strict ingredient's
-        </div>
-        <div class="value">
-          <ion-item>
-            <ion-select (ionChange)="select('dishes', 'strictIngredients', $event)" interface="popover" mode="ios"
-              [value]="settings.dishes.strictIngredients.toString()" id="allow-distance-orders">
-              <ion-select-option value="true">Yes</ion-select-option>
-              <ion-select-option value="false">No</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </div>
-      </div>
-    </div>
-  </div> -->
-    <!-- <div class="block">
-        <div class="title">
-            Customers
-        </div>
-        <div class="content">
-            <div class="setting maxDishes">
-                <div class="title">
-                    Max dishes per order
-                </div>
-                <div class="value">
-                    <input type="number" (input)="input('customers', 'maxDishes', $event)"
-                        [value]="settings.customers.maxDishes" id="max-dishes"
-                        [disabled]="settings.customers.maxDishes == 'unlimited'" class="number-small-input">
-                    <div class="checkbox" id="max-dishes-unlimited-box">
-                        <div class="label">
-                            Unlimited
-                        </div>
-                        <input type="checkbox" (change)="check('customers', 'maxDishes', $event)"
-                            [checked]="settings.customers.maxDishes == 'unlimited'" name="unlimited"
-                            id="max-dishes-unlimited">
-                    </div>
-                </div>
-            </div>
-            <div class="setting allowTakeAway">
-                <div class="title">Allow distance orders</div>
-                <div class="value">
-                    <ion-item>
-                        <ion-select interface="popover" (ionChange)="select('customers', 'allowTakeAway', $event)"
-                            mode="ios" [value]="settings.customers.allowTakeAway.toString()" id="allow-distance-orders">
-                            <ion-select-option value="true">Allowed</ion-select-option>
-                            <ion-select-option value="false">Not allowed</ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                </div>
-            </div>
-            <div class="setting maxCustomers">
-                <div class="title">
-                    Max customers
-                </div>
-                <div class="value">
-                    <input type="number" (input)="input('customers', 'maxCustomers', $event)"
-                        [value]="settings.customers.maxCustomers"
-                        [disabled]="settings.customers.maxCustomers == 'unlimited'" id="max-customers"
-                        class="number-small-input">
-                    <div class="checkbox" id="max-customers-unlimited-box">
-                        <div class="label">
-                            Unlimited
-                        </div>
-                        <input type="checkbox" (change)="check('customers', 'maxCustomers', $event)"
-                            [checked]="settings.customers.maxCustomers == 'unlimited'" name="unlimited"
-                            id="max-customers-unlimited">
-                    </div>
-                </div>
-            </div>
-            <div class="setting maxPrice">
-        <div class="title">
-          Max order price
-        </div>
-        <div class="value">
-          <input type="number" (input)="input('customers', 'maxPrice', $event)" [value]="settings.customers.maxPrice"
-            [disabled]="settings.customers.maxPrice == 'unlimited'" id="max-price" class="number-small-input">
-          <div class="checkbox" id="max-price-unlimited-box">
-            <div class="label">
-              Unlimited
-            </div>
-            <input type="checkbox" (change)="check('customers', 'maxPrice', $event)"
-              [checked]="settings.customers.maxPrice == 'unlimited'" name="unlimited" id="max-price-unlimited">
-          </div>
-        </div>
-      </div>
-            <div class="setting minPrice">
-                <div class="title">
-                    Minimum order price
-                </div>
-                <div class="value">
-                    <input type="number" [value]="settings.customers.minPrice"
-                        (input)="input('customers', 'minPrice', $event)" id="min-price" class="number-small-input">
-                </div>
-            </div>
-        </div>
-    </div> --->
-    <!-- <div class="block">
-    <div class="title">
-      Work
-    </div>
-    <div class="content">
-      <div class="setting maxOrdersCooking">
-        <div class="title">
-          Max orders at the same time
-        </div>
-        <div class="value">
-          <input type="number" [disabled]="settings.work.maxOrdersCooking == 'unlimited'" (input)="input('work', 'maxOrderCooking', $event)" [value]="settings.work.maxOrdersCooking" id="max-orders" class="number-small-input">
-          <div class="checkbox" id="max-orders-unlimited-box">
-            <div class="label">
-              Unlimited
-            </div>
-            <input type="checkbox" (change)="check('work', 'maxOrdersCooking', $event)" name="unlimited"
-              id="max-orders-unlimited">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
     <div class="red" *ngIf="settings">
         <div class="title">
             <span class="text title-font">
@@ -369,3 +258,4 @@
 <ng-container #changeDescriptionContainer></ng-container>
 <ng-container #payoutsModalContainer></ng-container>
 <ng-container #modeModalContainer></ng-container>
+<ng-container #onlineOrderingModalContainer></ng-container>

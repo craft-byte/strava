@@ -282,7 +282,7 @@ router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, "manager", "setti
 /**
  * updates restaurant mode
  */
-router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1, } }, "manager", "settings"), async (req, res) => {
+router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1, customers: 1, } }, "manager", "settings"), async (req, res) => {
     const { mode } = req.body;
     const { restaurant, } = res.locals as Locals;
 
@@ -293,8 +293,16 @@ router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1,
     if(restaurant.settings?.staff.mode == mode) {
         return res.send({ updated: false, });
     }
+
+    const upd: any = {};
+
+    upd["settings.staff.mode"] = mode;
+
+    if(restaurant.settings?.customers.allowOrderingOnline && mode == "disabled") {
+        upd["settings.customers.allowOrderingOnline"] = false;
+    }
     
-    const update = await Restaurant(restaurant._id).update({ $set: { "settings.staff.mode": mode } });
+    const update = await Restaurant(restaurant._id).update({ $set: upd });
 
     res.send({ updated: update.ok == 1 });
 });
