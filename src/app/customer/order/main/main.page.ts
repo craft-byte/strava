@@ -26,7 +26,7 @@ interface InitResult {
         id: string;
         comment: string;
     };
-    types: "both" | "dinein" | "takeaway";
+    types: "both" | "dinein" | "takeout";
     showTracking: boolean;
 };
 

@@ -1,7 +1,5 @@
 import { animate, group, query, style, transition, trigger } from '@angular/animations';
-import { Platform } from '@angular/cdk/platform';
-import { Component, ElementRef, EventEmitter, Injector, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ElementRef, EventEmitter, Injector, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
@@ -54,12 +52,10 @@ export class PreviewPage implements OnInit {
     constructor(
         private router: RouterService,
         private service: CustomerService,
-        private route: ActivatedRoute,
         public order: OrderService,
         private toastCtrl: ToastController,
         private modalCtrl: ModalController,
         private loader: LoadService,
-        private platform: Platform,
         private injector: Injector,
         private alertCtrl: AlertController,
     ) {

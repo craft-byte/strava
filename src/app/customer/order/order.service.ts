@@ -16,7 +16,7 @@ export class OrderService {
 
     comment: string;
 
-    types: "both" | "dinein" | "takeaway" | "none";
+    types: "both" | "dinein" | "takeout" | "none";
 
     us: "noinfo" | "loggedin" | "loggedout"; // user status
 

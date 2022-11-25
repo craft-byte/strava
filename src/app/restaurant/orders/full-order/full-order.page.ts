@@ -10,7 +10,7 @@ import { RestaurantService } from '../../restaurant.service';
 
 interface Order {
     ordered: string;
-    type: "dinein" | "takeaway";
+    type: "dinein" | "takeout";
     id: string;
     status: string;
     mode: string;
