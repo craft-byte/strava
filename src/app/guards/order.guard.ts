@@ -36,7 +36,7 @@ export class OrderGuard implements CanActivate {
     check(restaurantId: string, socketId: string, token: string, route: ActivatedRouteSnapshot) {
         return new Observable<boolean>(subs => {
             this.service.getobs
-                <{ token: string; status: "noinfo" | "loggedin" | "loggedout"; }>
+                <{ token: string; status: "noinfo" | "loggedin" | "loggedout"; settings: any; theme: any; name: any; }>
                 ({
                     socketId: socketId,
                     customerToken: token,
@@ -59,6 +59,9 @@ export class OrderGuard implements CanActivate {
                 .subscribe(res => {
                     if (res) {
                         this.order.us = res.status;
+                        this.order.settings = res.settings;
+                        this.service.theme = res.theme;
+
                         localStorage.setItem("ct", res.token);
                         subs.next(true);
                         if (res.status == "noinfo" && (!token || token != res.token)) {

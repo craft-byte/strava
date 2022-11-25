@@ -25,6 +25,11 @@ export class DishPage implements OnInit {
 
     category: string;
 
+    ui = {
+        showDoubleButton: false,
+        showPlusOnly: false,
+    }
+
 
     constructor(
         private router: RouterService,
@@ -109,6 +114,12 @@ export class DishPage implements OnInit {
         await this.loader.start();
 
         this.theme = this.service.theme;
+        this.ui.showDoubleButton = !(this.ui.showPlusOnly = this.order.settings?.allowOrderingOnline === false);
+
+        console.log(this.order.settings);
+
+        // this.ui.showPlusOnly = this.order.settings?.allowOrderingOnline === false;
+
 
         const dishId = this.route.snapshot.paramMap.get("dishId");
 

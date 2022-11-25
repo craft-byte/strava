@@ -43,6 +43,12 @@ export class PreviewPage implements OnInit {
     ui = {
         redTable: false,
         redDishes: false,
+
+        showPlace: false,
+        showSelectTable: false,
+        showDishes: false,
+        showPay: false,
+        showComment: false,
     }
 
     constructor(
@@ -297,5 +303,11 @@ export class PreviewPage implements OnInit {
 
     async ngOnInit() {
         this.theme = this.service.theme;
+
+        this.ui.showSelectTable = this.order.type == 'dinein' && this.order.settings.allowOrderingOnline;
+        this.ui.showComment = this.order.settings.allowOrderingOnline;
+        this.ui.showDishes = true;
+        this.ui.showPay = this.order.settings.allowOrderingOnline;
+        this.ui.showPlace = this.order.settings.allowOrderingOnline;
     }
 }

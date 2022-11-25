@@ -32,8 +32,8 @@
                             </ion-row>
                         </ion-grid>
                     </ion-item>
-                    <div class="add">
-                        <ion-fab>
+                    <div class="add" [class.only-plus]="ui.showPlusOnly">
+                        <ion-fab *ngIf="ui.showDoubleButton">
                             <ion-fab-button [color]="theme">
                                 <ion-icon name="chevron-forward-outline"></ion-icon>
                             </ion-fab-button>
@@ -46,6 +46,9 @@
                                 </ion-fab-button>
                             </ion-fab-list>
                         </ion-fab>
+                        <ion-fab-button *ngIf="ui.showPlusOnly" (click)="add()" [color]="theme">
+                            <ion-icon name="add"></ion-icon>
+                        </ion-fab-button>
                     </div>
                 </div>
             </div>

@@ -20,6 +20,8 @@ export class OrderService {
 
     us: "noinfo" | "loggedin" | "loggedout"; // user status
 
+    settings: any;
+
     constructor(
         public socket: Socket,
     ) { };

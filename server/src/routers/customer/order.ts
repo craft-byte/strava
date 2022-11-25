@@ -58,25 +58,12 @@ router.post("/check", async (req, res) => {
         userId = data.userId;
     }
 
-    // let newToken: string;
-    // if(!customerToken) {
-    //     console.log("NO INFO + NO CUSTOMERTOKEN");
-    //     newToken = crypto.randomBytes(64).toString("hex");
-    //     const order = await Orders(restaurantId).createSession({
-    //         customer: null!,
-    //         customerToken: customerToken || newToken!,
-    //         status: "ordering",
-    //         _id: id()!,
-    //         dishes: [],
-    //         id: null!,
-    //         type: "in",
-    //         socketId,
-    //         ip: req.ip,
-    //         connected: Date.now(),
-    //     });
-    //     res.send({ status: "noinfo", token: customerToken || newToken! });
-    //     return;
-    // }
+    const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1, name: 1, settings: { customers: 1 } } });
+
+    if(!restaurant) {
+        return res.status(404).send({ reason: "RestaurantNotFound" });
+    }
+
 
     let filter: Filter<Order>;
     if(status == "noinfo") {
@@ -110,8 +97,8 @@ router.post("/check", async (req, res) => {
 
     await Orders(restaurantId).update({ ...filter, status: "progress" }, { $set: { socketId, connected: Date.now() } });  // update for ordered orders
     const update = await Orders(restaurantId).update({ ...filter, status: "ordering" }, { $set: { socketId, connected: Date.now() } }); // update for not ordered orders
-    // update.matchedCount == 0 means that user payed for an order and returned to ordering page - should create a new ordering order
 
+    // update.matchedCount == 0 means that user either appeared on the ordering page or payed for an order and returned to ordering page - should create a new ordering order
     if(update.matchedCount == 0 || update.modifiedCount == 0) {
 
         const optionals: { customer: ObjectId | null; customerToken: string | undefined; } = {
@@ -139,10 +126,10 @@ router.post("/check", async (req, res) => {
             mode: null!,
         });
 
-        return res.send({ status, token: optionals.customerToken });
+        return res.send({ status, theme: restaurant.theme, settings: restaurant.settings?.customers, name: restaurant.name, token: optionals.customerToken });
     }
     
-    res.send({ status, token: status == "noinfo" ? customerToken : null });
+    res.send({ status, theme: restaurant.theme, settings: restaurant.settings?.customers, name: restaurant.name, token: status == "noinfo" ? customerToken : null });
 });
 
 
@@ -151,6 +138,7 @@ interface InitResult {
         name: string;
         _id: string;
         theme: string;
+        settings: any;
     };
     order: {
         dishes: { name: string, price: number; quantity: number; _id: string; }[];
@@ -185,7 +173,7 @@ router.post("/init", passUserData, async (req, res) => {
     const { userId, ct, status } = res.locals as LocalLocals;
 
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: { allowTakeAway: 1, allowDineIn: 1, } } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: 1 } } });
 
     if (!restaurant) {
         return res.status(404).send({ reason: "RestaurantNotFound" });
@@ -272,6 +260,7 @@ router.post("/init", passUserData, async (req, res) => {
             name: restaurant.name!,
             _id: restaurantId,
             theme: restaurant.theme || "orange",
+            settings: restaurant.settings,
         },
         order: {
             dishes: await getDishes(),

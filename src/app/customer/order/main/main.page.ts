@@ -12,6 +12,7 @@ interface InitResult {
         name: string;
         _id: string;
         theme: string;
+        settings: any;
     };
     user: {
         name: string;
@@ -135,10 +136,11 @@ export class MainPage implements OnInit, OnDestroy {
 
             this.restaurantName = restaurant.name;
             this.service.theme = restaurant.theme;
-            this.theme = restaurant.theme
-
+            this.theme = restaurant.theme;
+            
             this.ui.showTracking = showTracking;
-
+            
+            this.order.settings = restaurant.settings;
             this.order.dishes = order.dishes;
             this.order.comment = order.comment;
             this.order.dishesQuantity = order.dishesQuantity;

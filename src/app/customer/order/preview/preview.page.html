@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="content" (click)="$event.stopPropagation()">
-            <div class="place">
+            <div class="place" *ngIf="ui.showPlace">
                 <div class="box" *ngIf="order.types == 'both'">
                     <button (click)="place('dinein')" class="option" [class.a]="order.type == 'dinein'">
                         Dine-in
@@ -40,7 +40,7 @@
                     </span>
                 </div>
             </div>
-            <div class="info" *ngIf="order.type == 'dinein'">
+            <div class="info" *ngIf="ui.showSelectTable">
                 <div class="content" *ngIf="order.id">
                     <div class="title">
                         <span class="text">
@@ -67,7 +67,7 @@
                     </button>
                 </div>
             </div>
-            <div class="dishes">
+            <div class="dishes" *ngIf="ui.showDishes">
                 <div class="list" *ngIf="order.dishes.length > 0">
                     <div *ngFor="let i of order.dishes" (click)="seeAllDishes(i._id)" class="dish">
                         <div class="name">
@@ -95,12 +95,12 @@
                     </div>
                 </div>
             </div>
-            <div class="comment">
+            <div class="comment" *ngIf="ui.showComment">
                 <div class="title"><span class="text">Add comment</span></div>
                 <textarea id="order-comment" #commentTextarea (click)="comment()" [value]="order.comment"
                     placeholder="Comment..." cols="30" rows="10"></textarea>
             </div>
-            <div class="pay">
+            <div class="pay" *ngIf="ui.showPay">
                 <button (click)="pay()" class="{{theme}}-button">PAY</button>
             </div>
         </div>

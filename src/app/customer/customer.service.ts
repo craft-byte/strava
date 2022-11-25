@@ -51,7 +51,4 @@ export class CustomerService {
   getobs<T>(body: any, ...path: string[]) {
     return this.http.post<T>(this.base + "/" + path.join("/"), body);
   }
-
-
-
 }
