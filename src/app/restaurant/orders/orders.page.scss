@@ -24,21 +24,9 @@
             }
         }
     }
-}
 
-
-@media screen and (max-width: 800px) {
-    .app .list .order {
-        grid-template-columns: 30% 23% 23% 23%;
-        .dishes {
-            display: none !important;
-        }
-    }
-    .app .list .example {
-        grid-template-columns: 30% 23% 23% 23%;
-        .dishes {
-            display: none !important;
-        }
+    .content {
+        overflow-y: auto;
     }
 }
 
