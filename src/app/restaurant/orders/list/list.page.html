@@ -37,7 +37,7 @@
                 Total
             </div>
             <div class="date">
-    
+                Date
             </div>
         </div>
         <div class="order" routerLink="/restaurant/{{ restaurantId }}/orders/full/{{ i._id }}" *ngFor="let i of orders">
@@ -45,9 +45,22 @@
                 <span class="text text-font">
                     {{ i.user.name || i.user.username }}
                 </span>
+                <div class="bottom">
+                    <span class="total">
+                        ${{i.total / 100}}
+                    </span>
+                    <span class="dot">
+                        &#8226;
+                    </span>
+                    <span class="count">
+                        {{ i.dishes }}
+                    </span>
+                </div>
             </div>
             <div class="dishes">
-                <span class="count">{{ i.dishes }}</span>
+                <span class="count">
+                    {{ i.dishes }}
+                </span>
             </div>
             <div class="status-box">
                 <div class="status status-badge-{{i.statusColor}}">
