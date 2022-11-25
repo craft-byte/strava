@@ -201,7 +201,9 @@ export class PreviewPage implements OnInit {
         let old = this.order.type;
         this.order.id = null;
         this.order.type = p;
-
+        
+        this.ui.showSelectTable = p == "dinein";
+        
         try {
             const result: any = await this.service.post({ type: p }, "order", this.service.restaurantId, "session", "type");
 

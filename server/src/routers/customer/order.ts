@@ -260,7 +260,7 @@ router.post("/init", passUserData, async (req, res) => {
             name: restaurant.name!,
             _id: restaurantId,
             theme: restaurant.theme || "orange",
-            settings: restaurant.settings,
+            settings: restaurant.settings?.customers,
         },
         order: {
             dishes: await getDishes(),
