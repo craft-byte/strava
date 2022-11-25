@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { stripe } from "../..";
+import { RestaurantSettings } from "../../models/components";
 import { Locals } from "../../models/other";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
@@ -297,6 +298,31 @@ router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1,
 
     res.send({ updated: update.ok == 1 });
 });
+
+
+
+
+router.post("/customers", logged({ _id: 1 }), allowed({ settings: { customers: 1 } }, "manager", "settings"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
+    const { setting } = req.body;
+
+    if(!setting || typeof setting != "string" || !["allowOrderingOnline"].includes(setting)) {
+        return res.status(422).send({ reason: "InvalidSetting" });
+    }
+    
+    const upd: any = {};
+
+    upd[`settings.customers.${setting}`] = !restaurant.settings!.customers[setting as keyof RestaurantSettings["customers"]];
+
+    const update = await Restaurant(restaurant._id).update({ $set: upd });
+
+
+    res.send({ updated: update.ok == 1 });
+});
+
+
+
+
 
 
 export {

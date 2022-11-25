@@ -210,6 +210,16 @@ export class SettingsPage implements OnInit {
             component.destroy();
         });
     }
+    async changeCustomersSettings(setting: "allowOrderingOnline") {
+        this.settings.customers[setting] = !this.settings.customers[setting];
+
+        const update: any = await this.service.post({ setting }, "settings/customers");
+
+        if(!update.updated) {
+            this.settings.customers[setting] = !this.settings.customers[setting];
+            this.toast(false);
+        }
+    }
 
 
     async ngOnInit() {

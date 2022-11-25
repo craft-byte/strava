@@ -213,6 +213,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
             allowDineIn: true,
             maxCustomers: 10,
             minPrice: 100,
+            allowOrderingOnline: true,
         },
         dishes: {
 

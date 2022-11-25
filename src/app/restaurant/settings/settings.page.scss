@@ -185,17 +185,6 @@
                 padding: 6px 0;
                 position: relative;
 
-                .new {
-                    border-radius: 6px;
-                    background-color: var(--red);
-                    padding: 4px;
-                    color: white;
-                    font-size: 10px;
-                    position: absolute;
-                    top: -10px;
-                    right: -4px;
-                }
-
                 .name-description {
                     padding-left: 4px;
                     display: flex;
@@ -240,6 +229,63 @@
                             color: var(--text-color);
                         }
                     }
+                }
+            }
+        }
+    }
+
+
+    .customers {
+        margin-top: 24px;
+        
+        & > .title {
+            font-size: 20px;
+            color: var(--black);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+        .content {
+            .ordering {
+                border-bottom: 1px solid var(--border-color);
+                display: grid;
+                grid-template-columns: 45% 30% 25%;
+                position: relative;
+                height: 42px;
+
+                .new {
+                    border-radius: 6px;
+                    background-color: var(--red);
+                    padding: 4px;
+                    color: white;
+                    font-size: 10px;
+                    position: absolute;
+                    top: -10px;
+                    right: -4px;
+                }
+
+                .name-description {
+                    padding-left: 4px;
+                    display: flex;
+                    align-items: center;
+
+                    .name {
+                        color: var(--black);
+                    }
+                }
+                .selected {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    span {
+                        padding: 4px 6px;
+                        border-radius: 8px;
+                    }
+                }
+                .button {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
             }
         }

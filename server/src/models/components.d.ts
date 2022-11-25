@@ -22,6 +22,7 @@ interface Cooking {
 }
 interface RestaurantSettings {
     customers: {
+        allowOrderingOnline: boolean;
         maxDishes: number;
         allowDineIn: boolean;
         allowTakeAway: boolean;
