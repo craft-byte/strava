@@ -7,6 +7,7 @@ import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { bufferFromString } from "../../utils/other";
 import { Orders, Restaurant } from "../../utils/restaurant";
+import { getUser } from "../../utils/users";
 
 
 const router = Router({ mergeParams: true });
@@ -24,9 +25,6 @@ router.get("/", logged({}), allowed({ _id: 1 }, "manager", "dishes"), async (req
     const { restaurantId, dishId } = req.params as any;
 
 
-
-
-
     const result = await Restaurant(restaurantId)
         .dishes.one(dishId).get(
             {
@@ -40,6 +38,9 @@ router.get("/", logged({}), allowed({ _id: 1 }, "manager", "dishes"), async (req
 
     if(result.image && result.image.modified) {
         result.image!.modified.date = getDate(result.image!.modified.date!) as any;
+        const user = await getUser(result.image.modified.userId, { projection: { name: 1 } });
+        
+        (result.image.modified as any).user = { name: user?.name?.first, _id: user?._id } as any;
     }
 
     res.send(result);

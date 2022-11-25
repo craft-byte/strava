@@ -10,7 +10,7 @@ import { RestaurantService } from '../../restaurant.service';
 interface ConvertedDish {
   name: string;
   price: number;
-  image: { binary: any; resolution: number; };
+  image: { binary: any; resolution: number; modified: { date: string; user: { name: string; _id: string }; } };
   _id: string;
   info: {
     time: string;
