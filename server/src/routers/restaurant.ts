@@ -186,7 +186,7 @@ interface Chart {
 
     const weekAgo = Date.now() - 604800000;
 
-    const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: weekAgo } }, { projection: { ordered: 1, dishes: { dishId: 1 } } })).toArray();
+    const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: weekAgo } }, { projection: { ordered: 1, dishes: { dishId: 1 }, money: 1, } })).toArray();
 
     if(orders.length == 0) {
         return res.send(null);
@@ -206,16 +206,17 @@ interface Chart {
         if(!result[day]) {
             result[day] = 0;
         }
-        for(let { dishId, price } of order.dishes) {
-            if(price) {
-                result[day] += price;
-            } else {
-                const dish = await dishes.get(dishId);
-                if(dish) {
-                    result[day] += dish.price!;
-                }
-            }
-        }
+        result[day] += order.money!.subtotal;
+        // for(let { dishId, price } of order.dishes) {
+        //     if(price) {
+        //         result[day] += price;
+        //     } else {
+        //         const dish = await dishes.get(dishId);
+        //         if(dish) {
+        //             result[day] += dish.price!;
+        //         }
+        //     }
+        // }
     }
 
 
