@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { stripe } from "../..";
 import { Locals, StripeOrderMetadata } from "../../models/other";
+import { updateDishesBought } from "../../utils/confirmOrder";
 import { DishHashTableUltra } from "../../utils/dish";
 import { id } from "../../utils/functions";
 import { sendMessage } from "../../utils/io";
@@ -296,6 +297,8 @@ router.post("/order/confirm", logged({ _id: 1, name: { first: 1, } }), allowed({
             _id: user._id,
         }
     };
+
+    updateDishesBought(restaurant._id, update.order.dishes);
 
     sendMessage([`${restaurant._id.toString()}`], "other", { order: a, type: "new-order" });
 });

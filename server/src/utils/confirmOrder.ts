@@ -11,9 +11,9 @@ import { updateUser } from "./users";
 /**
  * 
  * orders are confirmed at:
- *      - src/routers/stripe.ts
- *      - src/routers/staff/manualOrder.ts
- *      - src/routers/customers/order.ts
+ *      - src/routers/stripe.ts               used: confirmOrder
+ *      - src/routers/staff/manualOrder.ts    used: updateDishes
+ *      - src/routers/customers/order.ts      used: confirmOrder
  * 
  */
 
@@ -29,7 +29,7 @@ import { updateUser } from "./users";
  * @param { string | ObjectId } orderId
  * 
  */
-export async function confirmOrder(restaurantId: string | ObjectId, orderId: string | ObjectId, method: "card" | "cash") {
+async function confirmOrder(restaurantId: string | ObjectId, orderId: string | ObjectId, method: "card" | "cash") {
     
 
     // set order type to progress (cooking)
@@ -152,4 +152,12 @@ async function updateUserHistory(restaurantId: string | ObjectId, order: Order) 
 
     }
 
+}
+
+
+
+
+export {
+    confirmOrder,
+    updateDishes as updateDishesBought
 }
