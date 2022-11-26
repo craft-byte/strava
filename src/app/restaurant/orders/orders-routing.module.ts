@@ -25,6 +25,10 @@ const routes: Routes = [
                 path: "full/:orderId",
                 loadChildren: () => import("./full-order/full-order.module").then(m => m.FullOrderPageModule),
             },
+            {
+                path: "customer/:userId",
+                loadChildren: () => import("./customer/customer.module").then(m => m.CustomerPageModule),
+            },
         ]
     },
 

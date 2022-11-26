@@ -1,70 +1,103 @@
-<div class="app" *ngIf="user">
-  <div class="header">
-    <div class="back">
-      <button (click)="back()"><ion-icon name="arrow-back-outline"></ion-icon> <span class="text">BACK</span></button>
-    </div>
-    <div class="buttons">
-      <button class="red-button" *ngIf="!info.blacklisted" (click)="addToBlacklist()">Add to blacklist</button>
-      <button class="orange-button" *ngIf="info.blacklisted" (click)="removeFromBlacklist()">Remove from blacklist</button>
-    </div>
-  </div>
-  <div class="top">
-    <div class="user">
-      <div class="avatar">
-        <img [src]="userAvatar" alt="">
-      </div>
-      <div class="details">
-        <div class="name">
-          {{ user.name }}
+<div class="app">
+    <div class="header">
+        <div class="back">
+            <button (click)="back()">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+            </button>
         </div>
-        <div class="email">
-          {{ user.email }}
+        <div class="buttons" *ngIf="user">
+            <button class="red-button" *ngIf="!info.blacklisted" (click)="addToBlacklist()">Add to blacklist</button>
+            <button class="orange-button" *ngIf="info.blacklisted" (click)="removeFromBlacklist()">
+                Remove from blacklist
+            </button>
         </div>
-      </div>
     </div>
-    <div class="customer">
-      <div class="visits">
-        Orders ordered: <span class="count">{{ info.orders }}</span>
-      </div>
-      <div class="last">
-        Last visit: <span class="date">{{ info.lastVisit }}</span>
-      </div>
-      <div class="total">
-        Total spendings: <span class="amount">${{ info.total / 100 }}</span>
-      </div>
+    <div class="top" *ngIf="user">
+        <div class="user">
+            <div class="avatar">
+                <img [src]="userAvatar" alt="">
+            </div>
+            <div class="details">
+                <div class="name">
+                    <span class="text title-font">
+                        {{ user.name }}
+                    </span>
+                </div>
+                <div class="email">
+                    <span class="text text-font">
+                        {{ user.email }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="customer">
+            <div class="visits">
+                <span class="text text-font">
+                    Orders ordered:
+                    <span class="black">{{ info.orders }}</span>
+                </span>
+            </div>
+            <div class="last">
+                <span class="text text-font">
+                    Last visit:
+                    <span class="black">{{ info.lastVisit }}</span>
+                </span>
+            </div>
+            <div class="total">
+                <span class="text text-font">
+                    Total spendings:
+                    <span class="black">${{ info.total / 100 }}</span>
+                </span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="orders">
-    <div class="title">
-      Orders
+    <div class="orders" *ngIf="orders">
+        <div class="title">
+            <span class="text title-font">
+                Orders
+            </span>
+        </div>
+        <div class="no-orders" *ngIf="orders.length == 0">
+            <span class="text title-font">
+                User has not ordered in your restaurant yet
+            </span>
+        </div>
+        <div class="list" *ngIf="orders.length > 0">
+            <div class="example">
+                <div class="date">Date</div>
+                <div class="total">Total</div>
+                <div class="dishes">Dishes</div>
+                <div class="status"></div>
+            </div>
+            <div *ngFor="let i of orders" (click)="fullOrder(i._id)" class="order">
+                <div class="date">
+                    <span class="text text-font">
+                        {{ i.date }}
+                    </span>
+                </div>
+                <div class="total">
+                    <span class="text text-font">
+                        ${{ i.total / 100 }}
+                    </span>
+                </div>
+                <div class="dishes">
+                    <span class="text text-font">
+                        {{ i.dishes }}
+                    </span>
+                </div>
+                <div class="status">
+                    <div [class.status-badge-green]="i.status == 'done'"
+                        [class.status-badge-red]="i.status == 'removed'"
+                        [class.status-badge-orange]="i.status == 'done:removed'">
+                        {{ i.status }}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="list">
-      <div class="example">
-        <div class="date"></div>
-        <div class="total">Total</div>
-        <div class="dishes">Dishes</div>
-        <div class="status"></div>
-      </div>
-      <div *ngFor="let i of orders" (click)="fullOrder(i._id)" class="order">
-        <div class="date">
-          {{ i.date }}
-        </div>
-        <div class="total">
-          ${{ i.total / 100 }}
-        </div>
-        <div class="dishes">
-          {{ i.dishes }}
-        </div>
-        <div class="status">
-          <div
-            [class.status-badge-green]="i.status == 'done'"
-            [class.status-badge-red]="i.status == 'removed'"
-            [class.status-badge-orange]="i.status == 'done:removed'">
-            {{ i.status }}
-          </div>
-        </div>
-      </div>
+
+    <div class="loading" *ngIf="!user">
+        <span class="spinner"></span>
     </div>
-  </div>
 </div>

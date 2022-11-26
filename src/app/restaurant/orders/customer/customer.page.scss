@@ -1,4 +1,6 @@
 .app {
+    padding-bottom: 248px;
+
     .header {
         display: flex;
         justify-content: space-between;
@@ -35,7 +37,6 @@
     .top {
         display: flex;
         justify-content: space-between;
-        height: 82px;
         margin-top: 24px;
 
         .user {
@@ -52,6 +53,7 @@
                 padding: 8px;
                 .name {
                     font-size: 18px;
+                    color: var(--black);
                 }
                 .email {
                     color: var(--text-color);
@@ -61,9 +63,11 @@
         .customer {
             div {
                 height: 26px;
-                // font-size: 18px;
-                color: var(--text-color);
-                span {
+                .text {
+                    font-size: 14px;
+                    color: var(--text-color);
+                }
+                .black {
                     margin-left: 6px;
                     color: var(--black);
                 }
@@ -74,26 +78,42 @@
     .orders {
         margin-top: 24px;
         .title {
+            color: var(--black);
             font-size: 20px;
+        }
+        .no-orders {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 248px;
+            
+            .text {
+                font-size: 18px;
+                color: var(--text-color);
+            }
         }
         .list {
             .example {
-                height: 42px;
+                height: 32px;
                 border-bottom: 1px solid var(--border-color);
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr;
+                grid-template-columns: 40% 20% 20% 20%;
+
                 div {
                     display: flex;
                     align-items: center;
-                    font-size: 18px;
+                    font-size: 16px;
                     color: var(--text-color);
+                }
+                .date {
+                    padding-left: 4px;
                 }
             }
             .order {
-                height: 42px;
+                height: 38px;
                 border-bottom: 1px solid var(--border-color);
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr;
+                grid-template-columns: 40% 20% 20% 20%;
                 cursor: pointer;
                 
                 &:hover { 
@@ -102,10 +122,14 @@
                 div {
                     display: flex;
                     align-items: center;
+                    font-size: 14px;
+                }
+                .total,.dishes {
+                    color: var(--black);
                 }
                 .date {
-                    padding-left: 12px;
                     color: var(--text-color);
+                    padding-left: 4px;
                 }
                 .status {
                     justify-content: center;
@@ -114,6 +138,38 @@
                         border-radius: 6px;
                     }
                 }
+            }
+        }
+    }
+
+    .loading {
+        width: 100%;
+        height: 124px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border-radius: 100%;
+            border-top: 2px solid var(--border-color);
+            -webkit-animation: spin 1.5s linear infinite;
+            animation: spin 1.5s linear infinite;
+        }
+    }
+}
+
+
+@media screen and (max-width: 700px) {
+    .app {
+        .top {
+            flex-direction: column;
+
+            .user {
+                border-bottom: 1px solid var(--border-color);
+            }
+            .customer {
+                margin-top: 8px;
             }
         }
     }

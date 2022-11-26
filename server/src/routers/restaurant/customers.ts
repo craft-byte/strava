@@ -142,12 +142,12 @@ router.delete("/blacklist/:userId", logged({ _id: 1 }), allowed({ _id: 1, }, "ma
 
     const restaurant = await Restaurant(restaurantId).update({ $addToSet: { blacklist: id(userId)! } });
 
-    const user = await updateUser(userId, { $addToSet: { blacklisted: id(restaurantId)! } });
+    const user = await updateUser({ _id: id(userId)}, { $addToSet: { blacklisted: id(restaurantId)! } });
 
-    console.log("user added to blacklist: ", restaurant!.ok == 0);
+    console.log("user added to blacklist: ", restaurant!.ok == 1);
     console.log("restaurant added to banned: ", user!.ok == 1);
 
-    res.send({ updated: restaurant!.ok == 0 && user.ok == 1 });
+    res.send({ updated: restaurant!.ok == 1 && user.ok == 1 });
 });
 
 /**
@@ -158,12 +158,12 @@ router.delete("/unblacklist/:userId", logged({ _id: 1, }), allowed({ _id: 1 }, "
     const { restaurantId, userId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).update({ $pull: { blacklist: id(userId)! } });
-    const user = await updateUser(userId, { $pull: { blacklisted: id(restaurantId)! } });
+    const user = await updateUser({ _id: id(userId)}, { $pull: { blacklisted: id(restaurantId)! } });
 
 
-    console.log("removed from blacklist: ", restaurant!.ok == 0 && user!.ok == 1);
+    console.log("removed from blacklist: ", restaurant!.ok == 1 && user!.ok == 1);
 
-    res.send({ updated: restaurant!.ok == 0 && user!.ok == 1 });
+    res.send({ updated: restaurant!.ok == 1 && user!.ok == 1 });
 });
 
 
@@ -191,7 +191,7 @@ interface Result {
 /**
  * @returns { Result } a customer and a customer's all orders
  */
-router.get("/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
+router.get("/info/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, email: 1, blacklisted: 1 } });
