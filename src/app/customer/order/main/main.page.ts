@@ -166,6 +166,10 @@ export class MainPage implements OnInit, OnDestroy {
                 } else if(e.body.reason == "OrderNotFound") {
                     this.router.go(["login"]);
                 }
+            } else if(e.status == 403) {
+                if(e.body.reason == "Blacklisted") {
+                    this.router.go(["customer", "scan"], { replaceUrl: true });
+                }
             }
         }
     }
