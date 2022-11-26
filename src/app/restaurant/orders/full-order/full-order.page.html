@@ -34,7 +34,7 @@
             <span class="username title-font" (click)="fullCustomer()">
                 {{ order.user.username }}
             </span>
-            <span class="text button-font behalf">
+            <span class="text button-font behalf" *ngIf="order.buyer == 'staff'">
                 (staff)
             </span>
         </div>

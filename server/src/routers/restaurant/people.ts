@@ -21,6 +21,7 @@ interface ConvertedOrder {
     };
     dishes: number;
     _id: any;
+    mode: string;
     status: Order["status"];
     date: string;
     total: number;
@@ -33,8 +34,9 @@ interface ConvertedOrder {
 router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { restaurant } = res.locals;
+    const { skip } = req.query;
 
-    const orders = await (await Orders(restaurantId).history.many({ }, { limit: 12 })).sort({ ordered: -1 }).toArray();
+    const orders = await (await Orders(restaurantId).history.many({ }, { limit: 12, skip: (Number(skip || 0) || 0) * 12 })).sort({ ordered: -1, }).toArray();
 
     if(!orders || orders.length == 0) {
         return res.send([]);
@@ -57,13 +59,13 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
     for(let i of orders) {
         let user: ConvertedOrder["user"] = null!;
         if(i.customer) {
-            const userdata = await getUser(i.customer, { projection: { name: 1, username: 1, } });
+            const userdata = await getUser(i.customer, { projection: { name: 1, } });
             user = {
                 name: userdata?.name?.first || "User deleted",
                 _id: userdata?._id,
             }
         } else if(i.onBehalf) {
-            const userdata = await getUser(i.onBehalf, { projection: { name: 1, username: 1, } });
+            const userdata = await getUser(i.onBehalf, { projection: { name: 1, } });
             user = {
                 name: userdata?.name?.first || "User deleted",
                 _id: userdata?._id,
@@ -78,6 +80,7 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
             status: i.status,
             _id: i._id,
             date: getDate(i.ordered!),
+            mode: i.onBehalf ? "staff" : "customer",
             user: user as any,
             dishes: i.dishes.length,
             total: i.money?.total!,
@@ -97,6 +100,7 @@ interface FullOrder {
     id: string;
     status: string;
     mode: string;
+    buyer: string;
     
     money: {
         total: number;
@@ -191,6 +195,7 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
         status: order.status,
         user: user,
         mode: order.mode,
+        buyer: order.onBehalf ? "staff" : "customer",
     };
 
 

@@ -80,10 +80,12 @@ router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklis
     while(!stop) {
         const search = { customer: { $in: customerIds } };
         const orders = await (await Orders(restaurantId).history
-            .many(customerIds.length == 10 ? search : {}, { projection: { customer: 1, ordered: 1, dishes: { price: 1, dishId: 1, } } })).skip((limit - 1) * 10).limit(limit * 10).toArray();
+            .many(customerIds.length == 10 ? search : {}, { projection: { customer: 1, ordered: 1, money: { total: 1 }, dishes: { price: 1, dishId: 1, } } })).skip((limit - 1) * 20).limit(20).toArray();
+
+
 
         limit++;
-        if(orders.length < 6) {
+        if(orders.length < 20) {
             stop = true;
         }
 
@@ -103,16 +105,7 @@ router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklis
                     }
                 }
                 customers[i.customer.toString()].orders++;
-                for(let { dishId, price } of i.dishes) {
-                    if(price) {
-                        customers[i.customer.toString()].total += price!;
-                    } else {
-                        const dish = await dishes.get(dishId);
-                        if(dish) {
-                            customers[i.customer.toString()].total += dish!.price!;
-                        }
-                    }
-                }
+                customers[i.customer.toString()].total += i.money?.total || 0;
             } else {
                 /////// add anonymous people
             }

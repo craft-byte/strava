@@ -44,6 +44,9 @@
             <div class="name">
                 <span class="text text-font">
                     {{ i.user.name || i.user.username }}
+                    <span class="staff" *ngIf="i.mode == 'staff'">
+                        (staff)
+                    </span>
                 </span>
                 <div class="bottom">
                     <span class="total">
@@ -79,6 +82,21 @@
             </div>
         </div>
     </div>
+
+    <div class="nav" *ngIf="orders && orders.length > 0">
+        <div class="count">
+            {{ orders.length }} results
+        </div>
+        <div class="buttons">
+            <button (click)="prev()" [disabled]="ui.disablePrev" class="white-button">
+                Previous
+            </button>
+            <button (click)="next()" [disabled]="ui.disableNext" class="white-button">
+                Next
+            </button>
+        </div>
+    </div>
+
     <div *ngIf="orders && orders.length == 0" class="no-orders title-font">
         <span class="text">No orders yet</span>
     </div>

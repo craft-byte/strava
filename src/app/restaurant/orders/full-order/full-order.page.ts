@@ -14,6 +14,7 @@ interface Order {
     id: string;
     status: string;
     mode: string;
+    buyer: string;
 
     user: {
         userId: any;
