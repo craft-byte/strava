@@ -196,7 +196,7 @@ router.get("/info/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "
 
     const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, email: 1, blacklisted: 1 } });
 
-    const orders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { ordered: 1, status: 1, _id: 1, dishes: { dishId: 1, price: 1 } }})).limit(7).toArray();
+    const orders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { ordered: 1, status: 1, money: { total: 1 }, _id: 1, dishes: { dishId: 1, price: 1 } }})).sort({ ordered: -1 }).toArray();
     const allOrders = await (await Orders(restaurantId).history.many({ customer: id(userId) }, { projection: { _id: 1 } })).toArray();
 
     const blacklisted = () => {
@@ -239,23 +239,25 @@ router.get("/info/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "
         if(lastVisit < i.ordered!) {
             lastVisit = i.ordered!;
         }
-        const index = result.orders!.push({
+        result.orders!.push({
             date: getDate(i.ordered!)!,
             _id: i._id,
             dishes: i.dishes.length,
             status: i.status,
-            total: 0,
-        }) - 1;
-        for(let { dishId, price } of i.dishes) {
-            const dish = await dishes.get(dishId);
-            if(dish) {
-                result.orders![index].total += dish.price!;
-                result.info!.total += dish.price!;
-            } else {
-                result.orders![index].total += price!;
-                result.info!.total += price!;
-            }
-        }
+            total: i.money?.total!,
+        });
+        result.info!.total += i.money?.total!;
+
+        // for(let { dishId, price } of i.dishes) {
+        //     const dish = await dishes.get(dishId);
+        //     if(dish) {
+        //         result.orders![index].total += dish.price!;
+        //         result.info!.total += dish.price!;
+        //     } else {
+        //         result.orders![index].total += price!;
+        //         result.info!.total += price!;
+        //     }
+        // }
     }
 
     result.info!.lastVisit = getDate(lastVisit);

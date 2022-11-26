@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { getImage } from 'src/functions';
 import { RestaurantService } from '../../restaurant.service';
