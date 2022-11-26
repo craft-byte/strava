@@ -1,6 +1,7 @@
 .app {
     display: grid;
     grid-template-columns: 20% 80%;
+    height: 100%;
     
     .navigation {
         padding-top: 52px;
@@ -23,10 +24,6 @@
                 border-left: 1px solid var(--black);
             }
         }
-    }
-
-    .content {
-        overflow-y: auto;
     }
 }
 
