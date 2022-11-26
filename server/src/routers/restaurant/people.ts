@@ -21,10 +21,10 @@ interface ConvertedOrder {
     };
     dishes: number;
     _id: any;
-    mode: string;
     status: Order["status"];
     date: string;
     total: number;
+    by: string;
     blacklisted: boolean;
     statusColor: "green" | "red" | "purple" | "orange";
 };
@@ -80,7 +80,7 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
             status: i.status,
             _id: i._id,
             date: getDate(i.ordered!),
-            mode: i.onBehalf ? "staff" : "customer",
+            by: i.onBehalf ? "staff" : "customer",
             user: user as any,
             dishes: i.dishes.length,
             total: i.money?.total!,

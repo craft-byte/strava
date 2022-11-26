@@ -15,7 +15,8 @@ interface Order {
         name: string;
         price: number;
         _id: string;
-    }[]
+    }[];
+    by: string;
     date: string;
     status: string;
     total: number;
