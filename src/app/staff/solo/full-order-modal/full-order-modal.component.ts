@@ -48,8 +48,6 @@ export class FullOrderModalComponent implements OnInit {
             }
         }
 
-
-        console.log(result);
     }
 
 }

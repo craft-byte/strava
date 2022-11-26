@@ -14,11 +14,11 @@
             <div *ngIf="order" class="order">
                 <div class="top">
                     <div class="type">
-                        <span *ngIf="order.type == 'in'" class="text title-font table">
+                        <span *ngIf="order.type == 'dinein'" class="text title-font table">
                             Table
                         </span>
-                        <span *ngIf="order.type == 'out'" class="text title-font away">
-                            Take away
+                        <span *ngIf="order.type == 'takeout'" class="text title-font away">
+                            Take out
                         </span>
                         <span *ngIf="order.id" class="number">
                             #{{ order.id }}
