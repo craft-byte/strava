@@ -466,7 +466,7 @@ router.post("/session/type", passUserData, passOrder({ _id: 1 }), async (req, re
     const { type } = req.body;
     const { status, userId, ct } = res.locals as LocalLocals;
 
-    if (!type || !["takeaway", "dinein"].includes(type)) {
+    if (!type || !["takeout", "dinein"].includes(type)) {
         return res.status(422).send({ reason: "InvalidType" });
     }
 
@@ -477,7 +477,7 @@ router.post("/session/type", passUserData, passOrder({ _id: 1 }), async (req, re
         filter = { status: "ordering", customerToken: ct };
     }
 
-    if (type == "out") {
+    if (type == "takeout") {
         const oid = Math.floor(Math.random() * 1000).toString();
         const update = await Orders(restaurantId).one(filter).update({ $set: { type, id: oid } });
 

@@ -77,6 +77,10 @@ async function main(client: MongoClient) {
         app.use("/api/customer", CustomerRouter);
         app.use("/api/stripe", StripeRouter);
 
+        app.get("/.well-known/apple-developer-merchantid-domain-association", (req, res) => {
+            res.sendFile(path.join(__dirname, "..", "src", "/assets/apple-developer-merchantid-domain-association"));
+        });
+
         app.get("**", (req, res) => {
             res.sendFile(path.join(__dirname, "..", "..", "www", "index.html"));
         });

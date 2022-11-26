@@ -63,10 +63,10 @@ export class CheckoutPage implements OnInit, OnDestroy {
     @ViewChild(StripePaymentElementComponent) paymentElement: StripePaymentElementComponent;
 
     back() {
-        this.router.go(["customer", "order", this.service.restaurantId]);
+        this.router.go(["customer", "order", this.service.restaurantId], { replaceUrl: true });
     }
     tracking() {
-        this.router.go(["customer", "tracking", this.service.restaurantId]);
+        this.router.go(["customer", "tracking", this.service.restaurantId], { replaceUrl: true });
     }
 
     //

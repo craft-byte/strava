@@ -47,6 +47,7 @@ async function confirmOrder(restaurantId: string | ObjectId, orderId: string | O
                     onBefalf: 1,
                     socketId: 1,
                     customer: 1,
+                    ordered: 1,
                 }
             }
         );
