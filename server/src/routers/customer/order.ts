@@ -808,6 +808,10 @@ interface PaymentInfo {
         }
     }
 
+    if(!result.total || result.total < 1) {
+        return res.status(500).send({ reason: "InvalidFunds" });
+    }
+
     try {
         if(user && user.stripeCustomerId) {
             const p = await stripe.paymentIntents.create({

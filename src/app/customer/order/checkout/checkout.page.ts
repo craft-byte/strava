@@ -16,7 +16,7 @@ interface PaymentInfo {
     subtotal: number;
     hst: number;
     paymentIntentId: string;
-    type: "in" | "out";
+    type: "dinein" | "takeout";
     id: string | null;
     clientSecret: string;
     dishes: { name: string; price: number; amount: number; }[];
@@ -208,6 +208,16 @@ export class CheckoutPage implements OnInit, OnDestroy {
                     })).present();
                 }
                 this.router.go(["customer", "order", this.service.restaurantId]);
+            } else if(e.status == 500) {
+                if(e.body.reason == "InvalidFunds") {
+                    
+                }
+                this.back();
+                (await this.toastCtrl.create({
+                    duration: 1000,
+                    mode: "ios",
+                    message: "Something went wrong. Please try again",
+                })).present();
             }
         }
 

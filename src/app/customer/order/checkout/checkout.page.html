@@ -14,10 +14,10 @@
         <div class="top-wrap">
             <div class="top">
                 <div class="type">
-                    <span *ngIf="data?.type == 'out'" class="title">
-                        Order
+                    <span *ngIf="data?.type == 'takeout'" class="title">
+                        Take out
                     </span>
-                    <span class="title" *ngIf="data?.type == 'in'">Table</span>
+                    <span class="title" *ngIf="data?.type == 'dinein'">Table</span>
                     <span class="number">#{{ data?.id }}</span>
                 </div>
                 <div class="dishes">
