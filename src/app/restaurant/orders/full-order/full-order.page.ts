@@ -17,7 +17,7 @@ interface Order {
     buyer: string;
 
     user: {
-        userId: any;
+        _id: any;
         username: string;
         avatar: any;
     }
@@ -89,7 +89,7 @@ export class FullOrderPage implements OnInit {
     }
 
     fullCustomer() {
-        this.router.go(["restaurant", this.service.restaurantId, "people", "customer", this.order.user.userId], { queryParams: { last: this.router.url } });
+        this.router.go(["restaurant", this.service.restaurantId, "orders", "customer", this.order.user._id], { queryParams: { last: this.router.url } });
     }
 
 
