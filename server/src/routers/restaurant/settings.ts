@@ -4,7 +4,7 @@ import { RestaurantSettings } from "../../models/components";
 import { Locals } from "../../models/other";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
-import { Restaurant } from "../../utils/restaurant";
+import { Orders, Restaurant } from "../../utils/restaurant";
 
 
 const router = Router({ mergeParams: true });
@@ -305,6 +305,9 @@ router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1,
     const update = await Restaurant(restaurant._id).update({ $set: upd });
 
     res.send({ updated: update.ok == 1 });
+
+
+    const ordersUpdate = await Orders(restaurant._id).update({ }, { $set: { mode: mode } });
 });
 
 
