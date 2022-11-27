@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { showUp } from 'src/app/other/animations';
 
 @Component({
     selector: 'app-dishes',
@@ -8,6 +9,7 @@ import { FormsModule } from '@angular/forms';
     styleUrls: ['./dishes.component.scss'],
     standalone: true,
     imports: [CommonModule, FormsModule],
+    animations: showUp,
 })
 export class DishesComponent implements OnInit {
 
