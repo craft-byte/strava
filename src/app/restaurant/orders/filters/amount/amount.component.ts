@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { showUp } from 'src/app/other/animations';
 
 @Component({
@@ -8,7 +9,7 @@ import { showUp } from 'src/app/other/animations';
     templateUrl: './amount.component.html',
     styleUrls: ['./amount.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, IonicModule],
     animations: showUp,
 })
 export class AmountComponent implements OnInit {
