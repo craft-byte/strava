@@ -19,13 +19,14 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 52px;
+        height: auto;
+        padding: 8px 0;
         border-bottom: 1px solid var(--border-color);
 
         .buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-wrap: wrap;
+
             gap: 8px;
 
             .filter {
@@ -56,6 +57,7 @@
                     background-color: var(--orange-back);
                     color: var(--orange-dark);
                     border: 2px dotted var(--orange-dark);
+                    width: auto;
                 }
             }
         }
@@ -64,6 +66,8 @@
                 background: none;
                 display: flex;
                 align-items: center;
+                margin-left: 8px;
+                min-width: 126px;
 
                 ion-icon {
                     color: var(--black);
