@@ -1,0 +1,36 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Filter by the total amount
+                </span>
+            </div>
+            <button (click)="leave.emit('clear')" id="clear">
+                Clear filters
+            </button>
+        </div>
+        <div class="content">
+            <div class="mode">
+                <select [(ngModel)]="mode">
+                    <option value="gt">is more than</option>
+                    <option value="lt">is less than</option>
+                    <!-- <option value="eq">is equal to</option>
+                    <option value="b">is between</option> -->
+                    <option value="gte">is more than or equal</option>
+                    <option value="lte">is less than or equal</option>
+                    <option value="eq">is equal</option>
+                </select>
+            </div>
+            <div class="amount1">
+                <input type="number" placeholder="Amount" [(ngModel)]="amount1">
+            </div>
+            <div class="buttons">
+                <button class="orange-button" (click)="save()">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>

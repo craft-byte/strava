@@ -1,0 +1,35 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Filter by date
+                </span>
+            </div>
+            <button (click)="leave.emit('clear')" id="clear">
+                Clear filters
+            </button>
+        </div>
+        <div class="content">
+            <div class="mode">
+                <select [(ngModel)]="mode">
+                    <option value="lt">is before</option>
+                    <option value="gt">is after</option>
+                    <!-- <option value="eq">is equal to</option>
+                    <option value="b">is between</option> -->
+                    <option value="lte">is on or before</option>
+                    <option value="gte">is on or after</option>
+                </select>
+            </div>
+            <div class="before" *ngIf="mode != 'b'">
+                <ion-datetime color="orange" presentation="date" (ionChange)="time1Change($event)"></ion-datetime>
+            </div>
+            <div class="buttons">
+                <button class="orange-button" (click)="save()">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>

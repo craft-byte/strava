@@ -34,9 +34,11 @@ interface ConvertedOrder {
 router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { restaurant } = res.locals;
-    const { skip } = req.query;
+    const { p: skip } = req.query;
 
-    const orders = await (await Orders(restaurantId).history.many({ }, { limit: 12, skip: (Number(skip || 0) || 0) * 12 })).sort({ ordered: -1, }).toArray();
+    const filter = parseQuery(req.query as any);
+
+    const orders = await (await Orders(restaurantId).history.many(filter, { limit: 12, skip: (Number(skip || 0) || 0) * 12 })).sort({ ordered: -1, }).toArray();
 
     if(!orders || orders.length == 0) {
         return res.send([]);
@@ -91,7 +93,7 @@ router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "
     }
 
 
-    res.send(result);
+    res.send({ orders: result, });
 });
 
 interface FullOrder {
@@ -325,4 +327,66 @@ router.get("/user/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", '
 
 export {
     router as PeopleRouter
+}
+
+
+
+
+
+
+
+function parseQuery(ps: { [key: string]: string }) {
+    const result: any = {};
+
+    for(let i of Object.keys(ps)) {
+        const filterName = i.split("-")[0];
+        if(filterName == "ordered") {
+            const func = i.split("-")[1]
+
+            if(func && func && ["lt", "gt", "gte", "lte"].includes(func)) {
+                if(!result["ordered"]) {
+                    result["ordered"] = {};
+                }
+                if(ps[i] && !isNaN(Number(ps[i]))) {
+                    result["ordered"][`$${func}`] = Number(ps[i]);
+                }
+            }
+        } else if(filterName == "amount") {
+            const func = i.split("-")[1]
+
+            if(func && func && ["lt", "gt", "gte", "lte", "eq"].includes(func)) {
+                if(!result["money.total"]) {
+                    result["money.total"] = {};
+                }
+                if(ps[i] && !isNaN(Number(ps[i]))) {
+                    result["money.total"][`$${func}`] = Number(ps[i]);
+                }
+            }
+        } else if(filterName == "dishes") {
+            const func = i.split("-")[1]
+
+            if(func && func && ["lt", "gt", "gte", "lte", "eq"].includes(func)) {
+                if(!result["$expr"]) {
+                    result["$expr"] = {};
+                }
+                if(ps[i] && !isNaN(Number(ps[i]))) {
+                    result["$expr"][`$${func}`] = [
+                        {
+                            $size: "$dishes"
+                        },
+                        Number(ps[i])
+                    ];
+                }
+            }
+        } else if(filterName == "status") {
+            const status = ps[i];
+            if(["done"].includes(status)) {
+                result["status"] = status;
+            }
+        }
+    }
+
+    console.log(result);
+
+    return result;
 }

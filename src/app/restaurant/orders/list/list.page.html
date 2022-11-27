@@ -8,17 +8,38 @@
     </div>
     <div class="filters">
         <div class="buttons">
-            <button class="filter date">
-                <ion-icon name="add"></ion-icon> <span class="text button-font">Date</span>
+            <button class="filter date" [class.active]="!!ui.filters?.date" (click)="filters.date()">
+                <ion-icon name="add"></ion-icon>
+                <span class="text button-font">Date</span>
+                <span class="filter-text button-font" *ngIf="ui.filters?.date">
+                    {{ ui.filters.date }}
+                </span>
             </button>
-            <button class="filter amount">
-                <ion-icon name="add"></ion-icon> <span class="text button-font">Amount</span>
+            <button class="filter amount" [class.active]="!!ui.filters?.amount" (click)="filters.amount()">
+                <ion-icon name="add"></ion-icon>
+                <span class="text button-font">Amount</span>
+                <span class="filter-text button-font" *ngIf="ui.filters?.amount">
+                    {{ ui.filters.amount }}
+                </span>
             </button>
-            <button class="filter dishes">
-                <ion-icon name="add"></ion-icon> <span class="text button-font">Dishes</span>
+            <button class="filter dishes" [class.active]="!!ui.filters?.dishes" (click)="filters.dishes()">
+                <ion-icon name="add"></ion-icon>
+                <span class="text button-font">Dishes</span>
+                <span class="filter-text button-font" *ngIf="ui.filters?.dishes">
+                    {{ ui.filters.dishes }}
+                </span>
             </button>
-            <button class="filter status">
-                <ion-icon name="add"></ion-icon> <span class="text button-font">Status</span>
+            <button class="filter status" [class.active]="!!ui.filters?.status" (click)="filters.status()">
+                <ion-icon name="add"></ion-icon>
+                <span class="text button-font">Status</span>
+                <span class="filter-text button-font" *ngIf="ui.filters?.status">
+                    {{ ui.filters.status }}
+                </span>
+            </button>
+        </div>
+        <div class="clear-filters">
+            <button (click)="filters.clear()" [disabled]="!ui.filters.status && !ui.filters.amount && !ui.filters.date && !ui.filters.dishes">
+                <ion-icon name="close"></ion-icon> <span class="text button-font">Clear filters</span>
             </button>
         </div>
     </div>
@@ -104,3 +125,6 @@
         <span class="spinner"></span>
     </div>
 </div>
+
+
+<ng-container #dateContainer></ng-container>

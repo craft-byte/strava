@@ -1,0 +1,27 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close-modal" (click)="leave.emit()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Filter by the amount of dishes
+                </span>
+            </div>
+            <button (click)="leave.emit('clear')" id="clear">
+                Clear filters
+            </button>
+        </div>
+        <div class="content">
+            <div class="mode">
+                <select [(ngModel)]="status" class="button-font">
+                    <option value="done">Done</option>
+                </select>
+            </div>
+            <div class="buttons">
+                <button class="orange-button" (click)="save()">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
