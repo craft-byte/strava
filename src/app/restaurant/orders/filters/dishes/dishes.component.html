@@ -1,5 +1,5 @@
-<div class="app" [@showUp]>
-    <div class="box">
+<div class="app" [@showUp] (mousedown)="leave.emit()">
+    <div class="box" (mousedown)="$event.stopPropagation()">
         <div class="header">
             <button id="close-modal" (click)="leave.emit()">
                 <ion-icon name="close"></ion-icon>
