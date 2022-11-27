@@ -78,3 +78,13 @@
         }
     };
 }
+
+
+@media screen and (max-width: 512px) {
+    .app {
+        .box {
+            width: 100%;
+            border-radius: 0;
+        }
+    }
+}
