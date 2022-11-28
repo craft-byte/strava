@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
-import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page';
+import { RestaurantRemovePage } from './modals/restaurant-remove/restaurant-remove.page';
 
 @NgModule({
   imports: [

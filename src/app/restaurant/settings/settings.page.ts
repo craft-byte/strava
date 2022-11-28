@@ -4,7 +4,7 @@ import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantSettings } from 'src/models/components';
 import { RestaurantService } from '../restaurant.service';
-import { RestaurantRemovePage } from './restaurant-remove/restaurant-remove.page';
+import { RestaurantRemovePage } from './modals/restaurant-remove/restaurant-remove.page';
 
 @Component({
     selector: 'app-settings',
@@ -131,7 +131,7 @@ export class SettingsPage implements OnInit {
         }
     }
     async changeName() {
-        const { ChangeNameComponent } = await import("./change-name/change-name.component");
+        const { ChangeNameComponent } = await import("./modals/change-name/change-name.component");
 
         const component = this.changeNameContainer.createComponent(ChangeNameComponent, { injector: this.injector });
 
@@ -146,7 +146,7 @@ export class SettingsPage implements OnInit {
         });
     }
     async changeDescription() {
-        const { ChangeDescriptionComponent } = await import("./change-description/change-description.component");
+        const { ChangeDescriptionComponent } = await import("./modals/change-description/change-description.component");
 
         const component = this.changeNameContainer.createComponent(ChangeDescriptionComponent, { injector: this.injector });
 
@@ -160,7 +160,7 @@ export class SettingsPage implements OnInit {
         });
     }
     async changeTime() {
-        const { ChangeTimeComponent } = await import("./change-time/change-time.component");
+        const { ChangeTimeComponent } = await import("./modals/change-time/change-time.component");
 
         const component = this.changeNameContainer.createComponent(ChangeTimeComponent, { injector: this.injector });
 
@@ -175,7 +175,7 @@ export class SettingsPage implements OnInit {
     }
     async payouts() {
 
-        const { PayoutsModalComponent } = await import("./payouts-modal/payouts-modal.component");
+        const { PayoutsModalComponent } = await import("./modals/payouts-modal/payouts-modal.component");
 
         const component = this.payoutsModal.createComponent(PayoutsModalComponent, { injector: this.injector });
 
@@ -192,7 +192,7 @@ export class SettingsPage implements OnInit {
         });
     }
     async modes() {
-        const { ModeModalComponent } = await import("./mode-modal/mode-modal.component");
+        const { ModeModalComponent } = await import("./modals/mode-modal/mode-modal.component");
 
         const component = this.modeModal.createComponent(ModeModalComponent, { injector: this.injector });
 

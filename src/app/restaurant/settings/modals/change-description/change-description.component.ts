@@ -1,15 +1,15 @@
 import { animate, group, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
-import { RestaurantService } from '../../restaurant.service';
+import { RestaurantService } from '../../../restaurant.service';
 
 @Component({
-    selector: 'app-change-name',
-    templateUrl: './change-name.component.html',
-    styleUrls: ['./change-name.component.scss'],
+    selector: 'app-change-description',
+    templateUrl: './change-description.component.html',
+    styleUrls: ['./change-description.component.scss'],
     standalone: true,
     imports: [CommonModule, FormsModule, IonicModule],
     animations: [
@@ -36,8 +36,9 @@ import { RestaurantService } from '../../restaurant.service';
         ])
     ]
 })
-export class ChangeNameComponent implements OnInit {
-    newName: string;
+export class ChangeDescriptionComponent implements OnInit {
+
+    newDescription: string;
 
     ui = {
         message: "",
@@ -46,42 +47,42 @@ export class ChangeNameComponent implements OnInit {
     constructor(
         private service: RestaurantService,
         private loader: LoadService,
-    ) { }
+    ) { };
 
-    @Input() name: string;
+    @Input() description: string;
     @Output() leave = new EventEmitter();
 
     async submit() {
-        if(this.newName == this.name) {
-            this.ui.message = "New name can't be the same as old";
+        if (this.newDescription == this.description) {
+            this.ui.message = "New description is the same as the old one";
             return;
         }
 
+        await this.loader.start();
+
         try {
-            await this.loader.start();
-            const update: { success: boolean; } = await this.service.post({ name: this.newName.trim() }, "settings/name");
+            const update: { success: boolean; } = await this.service.post({ description: this.newDescription }, "settings/description");
 
             if(update.success) {
-                this.leave.emit(this.newName);
+                this.leave.emit(this.newDescription);
                 this.loader.end();
                 return;
             }
         } catch (e) {
-            if(e.status == 403) {
-                if(e.reason == "NamesAreTheSame") {
-                    this.ui.message = "New name can't be the same as old";
-                }
-            } else if(e.status == 422) {
-                if(e.reason == "InvalidInput") {
-                    this.ui.message = "Invalid name. Please try again";
+            if(e.status == 422) {
+                this.ui.message = "Description is invalid. Please try again";
+            } else if(e.status == 403) {
+                if(e.body.reason == "SameDescription") {
+                    this.ui.message = "New description is the same as the old one";
                 }
             }
             this.loader.end();
         }
 
+  }
+
+    ngOnInit() {
 
     }
-
-    ngOnInit() { }
 
 }

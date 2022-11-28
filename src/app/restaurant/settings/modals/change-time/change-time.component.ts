@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { RestaurantService } from '../../restaurant.service';
+import { RestaurantService } from '../../../restaurant.service';
 
 @Component({
     selector: 'app-change-time',
