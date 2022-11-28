@@ -15,7 +15,7 @@ export const ordersDBName = "ordersTest";
 export const dishesDBName = "dishesTest";
 export const historyDBName = "historyTest";
 
-// export const mainDBName = "straba";
+// export const mainDBName = "strava";
 // export const ordersDBName = "orders";
 // export const dishesDBName = "dishes";
 // export const historyDBName = "history";

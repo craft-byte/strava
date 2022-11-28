@@ -161,6 +161,9 @@ router.post("/create", async (req, res) => {
             code: ${code}
             `
         );
+
+
+        sendEmail("bazhantt@gmail.com", "SOMEONE REGISTERED ON STRAVA", `<h1> ${newUser.name?.first} ${newUser.name?.last} </h1> <h2>just registered!!!</h2>`);
     }
 
     const auth = issueJWT(userId.toString());
