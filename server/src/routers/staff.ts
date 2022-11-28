@@ -122,7 +122,7 @@ router.post("/:restaurantId/orders", logged({ _id: 1 }), allowed({ _id: 1 }, "st
 
     date.setHours(0,0,0,0);
 
-    const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: date.getTime() }, mode: "disabled" }, { projection: { ordered: 1, onBehalf: 1, money: { total: 1, } } })).toArray();
+    const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: date.getTime() }, mode: "disabled" }, { projection: { ordered: 1, onBehalf: 1, money: { total: 1, } } })).sort({ ordered: -1 }).toArray();
 
 
     const result: Order[] = [];

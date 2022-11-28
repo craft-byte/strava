@@ -58,7 +58,7 @@ export class DisabledPage implements OnInit {
 
         this.subscription = this.soc.flow.subscribe(res => {
             if(res.type == "new-order") {
-                this.orders.push(res.order);
+                this.orders.unshift(res.order);
             }
         });
     }
