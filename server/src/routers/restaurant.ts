@@ -345,6 +345,58 @@ router.delete("/", logged({ _id: 1, }), allowed({ owner: 1, staff: 1, stripeAcco
 });
 
 
+
+interface QRCodesResult {
+    link: string;
+    tables: { index: number; link: string; }[];
+}
+router.get("/qr-codes", logged({ _id: 1 }), allowed({ tables: 1 }, "manager"), async (req, res) => {
+    const { restaurant, } = res.locals as Locals;
+
+
+    const result: QRCodesResult = {
+        link: `${req.protocol}://${req.get("host")}/customer/order/${restaurant._id.toString()}`,
+        tables: []
+    }
+
+
+    for(let i = 0; i < restaurant!.tables!; i++) {
+        result.tables.push({
+            index: i + 1,
+            link: `${req.protocol}://${req.get("host")}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
+        });
+    }
+
+    res.send(result);
+});
+
+
+/**
+ * remove table
+ */
+ router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
+    const { restaurantId } = req.params;
+
+    const result = await Restaurant(restaurantId).update({ $inc: { tables: -1 } });
+
+    res.send({ updated: result!.ok == 1 });
+});
+
+/**
+ * add table
+ */
+router.post("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
+    const { restaurantId } = req.params;
+
+    const result = await Restaurant(restaurantId).update({ $inc: { tables: 1 } }, { projection: { tables: 1 } });
+
+    console.log(result.restaurant);
+
+
+    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurantId}?table=${result.restaurant?.tables}`, index: result.restaurant.tables });
+});
+
+
 export {
     router as RadminRouter
 }

@@ -50,6 +50,9 @@ export class SettingsPage implements OnInit {
     changeLocation() {
         this.router.go(["restaurant", this.service.restaurantId, "conf", "address"], { queryParams: { last: "settings" } });
     }
+    qrCodes() {
+        this.router.go(["restaurant", this.service.restaurantId, "qr-codes"], { queryParams: { last: this.router.url } } );
+    }
 
     async toast(s: boolean) { // is success true/false
         const toast = await this.toastCtrl.create({

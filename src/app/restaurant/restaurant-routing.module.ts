@@ -51,8 +51,13 @@ const routes: Routes = [
         path: 'settings',
         loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
       },
+      {
+        path: 'qr-codes',
+        loadChildren: () => import('./qr-codes/qr-codes.module').then( m => m.QrCodesPageModule)
+      },
     ]
   },
+
 //   {
 //     path: 'dish-add',
 //     loadChildren: () => import('./dish-add/dish-add.module').then( m => m.DishAddPageModule)

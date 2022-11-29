@@ -28,15 +28,6 @@ router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklis
     const { calculate } = req.query;
     const { restaurant } = res.locals as Locals;
 
-    const qrCodes = [];
-    for(let i = 0; i < restaurant!.tables!; i++) {
-        qrCodes.push({
-            table: i + 1,
-            link: `${req.protocol}://${req.get("host")}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
-            downloadUrl: null,
-        });
-    }
-
     const isBlacklisted = (id: string | ObjectId) => {
         for(let i of restaurant!.blacklist!) {
             if(typeof i != "string") {
@@ -118,7 +109,7 @@ router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklis
         customersResult.push(customers[i]);
     }
 
-    res.send({ customers: customersResult, qrCodes, lastUpdate: getDate(Date.now()) });
+    res.send({ customers: customersResult, lastUpdate: getDate(Date.now()) });
 
     const cache = [];
     for(let i of customersResult) {
@@ -267,31 +258,6 @@ router.get("/info/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "
     res.send(result);
 });
 
-
-/**
- * remove table
- */
-router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
-    const { restaurantId } = req.params;
-
-    const result = await Restaurant(restaurantId).update({ $inc: { tables: -1 } });
-
-    res.send({ updated: result!.ok == 1 });
-});
-
-/**
- * add table
- */
-router.post("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
-    const { restaurantId } = req.params;
-
-    const result = await Restaurant(restaurantId).update({ $inc: { tables: 1 } }, { projection: { tables: 1 } });
-
-    console.log(result.restaurant);
-
-
-    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurantId}?table=${result.restaurant?.tables}` });
-});
 
 export {
     router as CustomersRouter

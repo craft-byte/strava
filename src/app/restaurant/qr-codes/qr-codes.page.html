@@ -1,0 +1,115 @@
+<div class="app">
+    <div class="header">
+        <div class="back">
+            <button id="back-button" (click)="back()">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="title">
+            <span class="text title-font">
+                QR Codes
+            </span>
+        </div>
+    </div>
+    <div class="content">
+        <div class="qr-codes" id="one">
+            <div class="header">
+                <div class="title">
+                    <span class="text title-font">
+                        QR Code
+                    </span>
+                    <span class="text text-font">
+                        Not connected to any tables and persons
+                    </span>
+                </div>
+            </div>
+            <div class="list">
+                <div class="qr-code" *ngIf="data?.link">
+                    <div class="name text-font">
+                        Menu QR code
+                    </div>
+                    <div class="image">
+                        <qrcode [width]="148" [qrdata]="data.link" (qrCodeURL)="onMenuQREmitted($event)"
+                            [errorCorrectionLevel]="'M'" cssClass="the-qr-code-wrap" [margin]="2" [elementType]="img"></qrcode>
+                    </div>
+                    <div class="bottom">
+                        <input type="checkbox">
+                        <a [href]="data.menuDownloadUrl" download="{{ restaurantName }}-qrcode-for-menu">
+                            <ion-icon name="download-outline"></ion-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="qr-codes" id="tables">
+            <div class="header">
+                <div class="title">
+                    <span class="text title-font">
+                        Table QR Codes
+                    </span>
+                    <span class="text text-font">
+                        Connected to tables only
+                    </span>
+                </div>
+                <div class="button">
+                    <button id="expand-tables" class="expand">
+                        <ion-icon name="chevron-down-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="list" *ngIf="data?.tables">
+                <div class="qr-code" *ngFor="let i of data?.tables">
+                    <div class="name text-font">
+                        Table {{ i.index }}
+                    </div>
+                    <div class="image">
+                        <qrcode [width]="148" [qrdata]="i.link" (qrCodeURL)="onTableQREmitted($event, i.index)"
+                            [errorCorrectionLevel]="'M'" cssClass="the-qr-code-wrap" [margin]="2" [elementType]="img"></qrcode>
+                    </div>
+                    <div class="bottom">
+                        <input type="checkbox">
+                        <a *ngIf="i.downloadUrl" [href]="i.downloadUrl" download="{{ restaurantName }}-qrcode-for-table-{{ i.index }}">
+                            <ion-icon name="download-outline"></ion-icon>
+                        </a>
+                    </div>
+                </div>
+                <div class="new">
+                    <div class="icon" (click)="add()" *ngIf="!adding">
+                        <ion-icon name="add"></ion-icon>
+                    </div>
+                    <div class="loading" *ngIf="adding">
+                        <span class="spinner"></span>
+                    </div>
+                </div>
+                <div class="new">
+                    <div class="icon" (click)="remove()" *ngIf="!removing">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </div>
+                    <div class="loading" *ngIf="removing">
+                        <span class="spinner"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="qr-codes" id="tables-persons">
+            <div class="header">
+                <div class="title">
+                    <span class="text title-font">
+                        Specific QR Code
+                    </span>
+                    <span class="text text-font">
+                        Connected to tables and persons
+                    </span>
+                </div>
+                <div class="button">
+                    <button id="expand-tables-persons" class="expand">
+                        <ion-icon name="chevron-down-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="list">
+                
+            </div>
+        </div> -->
+    </div>
+</div>
