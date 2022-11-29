@@ -1,31 +1,33 @@
-<ion-header>
-  <ion-toolbar [color]="theme">
-    <ion-buttons slot="start">
-      <ion-button (click)="cancel()">Cancel</ion-button>
-    </ion-buttons>
-    <ion-title>
-      Select table
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content>
-  <div class="app">
-    <div class="scanner" *ngIf="ui.showScanner">
-      <div class="vid">
-        <video #video [hidden]="!ui.showScan"></video>
-      </div>
-      <div class="buttons" *ngIf="!ui.showScan">
-        <button class="orange-button" (click)="startScan()"><ion-icon name="refresh"></ion-icon>re-scan</button>
-      </div>
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button (click)="close()" id="close-modal">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Scan QR Code
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="scanner" *ngIf="ui.showScanner">
+                <div class="vid">
+                <video #video [hidden]="!ui.showScan"></video>
+                </div>
+                <div class="buttons" *ngIf="!ui.showScan">
+                <button class="orange-button" (click)="startScan()"><ion-icon name="refresh"></ion-icon>re-scan</button>
+                </div>
+            </div>
+            <!-- <div class="list">
+                <div *ngFor="let i of tables" (click)="select(i)" class="table" [class.selected]="i.id == table" [class.taken]="i.taken">
+                {{ i.id }}
+                </div>
+            </div> -->
+        </div>
     </div>
-    <div class="list">
-      <div *ngFor="let i of tables" (click)="select(i)" class="table" [class.selected]="i.id == table" [class.taken]="i.taken">
-        {{ i.id }}
-      </div>
-    </div>
-  </div>
-</ion-content>
+</div>
 
 
 

@@ -1,5 +1,6 @@
 import { animate, group, query, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, EventEmitter, Injector, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
@@ -54,8 +55,7 @@ export class PreviewPage implements OnInit {
         private service: CustomerService,
         public order: OrderService,
         private toastCtrl: ToastController,
-        private modalCtrl: ModalController,
-        private loader: LoadService,
+        private route: ActivatedRoute,
         private injector: Injector,
         private alertCtrl: AlertController,
     ) {
@@ -65,6 +65,7 @@ export class PreviewPage implements OnInit {
     @ViewChild("dishModalContainer", { read: ViewContainerRef }) dishModal: ViewContainerRef;
     @ViewChild("commentModalContainer", { read: ViewContainerRef }) commentModal: ViewContainerRef;
     @ViewChild("tableConfirmModalContainer", { read: ViewContainerRef }) tableConfirmModal: ViewContainerRef;
+    @ViewChild("tableScanModalContainer", { read: ViewContainerRef }) tableScanModal: ViewContainerRef;
     @ViewChild("commentTextarea") commentTextarea: ElementRef;
 
     @Output() leave = new EventEmitter();
@@ -78,90 +79,35 @@ export class PreviewPage implements OnInit {
     //  CHOOSE TABLE
     //
     async table() {
-        await this.loader.start();
 
-        const result: any = await this.service.get({ session: "no" }, "restaurant", this.service.restaurantId, "tables");
+        const { TableComponent } = await import("./table/table.component");
 
-        const modal = await this.modalCtrl.create({
-            component: TableComponent,
-            mode: "ios",
-            componentProps: {
-                tables: result.tables,
-                theme: this.theme,
-                table: this.order.id
-            },
-        });
+        const component = this.tableScanModal.createComponent(TableComponent);
 
-        await modal.present();
 
-        this.loader.end();
+        component.instance.leave.subscribe(async (table: string) => {
 
-        const { data } = await modal.onDidDismiss();
+            if(table) {
+                const update: { updated: boolean; confirm: boolean; } = await this.service.post({ table: table, force: false, }, "order", this.service.restaurantId, "session/table");
 
-        if (data && data != this.order.id) {
-            try {
-                const update: any = await this.service.post({ table: data, force: false }, "order", this.service.restaurantId, "session", "table");
+                if(update.confirm) {
+                    const result = await this.confirmTable();
 
-                if (update.confirm) {
-                    const force = await this.confirmTable();
+                    if(result) {
+                        const update: { updated: boolean; confirm: boolean; } = await this.service.post({ table: table, force: true, }, "order", this.service.restaurantId, "session/table");
 
-                    if (force) {
-                        try {
-                            const update: any = await this.service.post({ table: data, force: true }, "order", this.service.restaurantId, "session", "table");
-
-                            if (update.updated) {
-                                this.order.id = data;
-                            } else {
-                                (await this.toastCtrl.create({
-                                    duration: 1500,
-                                    color: "red",
-                                    mode: "ios",
-                                    message: "Something went wrong. Please try again",
-                                })).present();
-                            }
-                        } catch (e) {
-                            if(e.status == 403) {
-                                if(e.body.reason == "table") {
-                                    (await this.toastCtrl.create({
-                                        duration: 1500,
-                                        mode: "ios",
-                                        color: "red",
-                                        message: "The chosen table is not valid",
-                                    }));
-                                    this.table();
-                                }
-                            }
-                            return;
+                        if(update.updated) {
+                            this.order.id = table;
                         }
-                    } else {
-                        this.table();
                     }
                 } else {
-                    if (update.updated) {
-                        this.order.id = data;
-                    } else {
-                        (await this.toastCtrl.create({
-                            duration: 1500,
-                            color: "red",
-                            mode: "ios",
-                            message: "Something went wrong. Please try again",
-                        })).present();
-                    }
+                    this.order.id = table;
                 }
-            } catch (e) {
-                if(e.status == 403) {
-                    if(e.body.reason == "table") {
-                        (await this.toastCtrl.create({
-                            duration: 1500,
-                            mode: "ios",
-                            color: "red",
-                            message: "The chosen table is not valid",
-                        }));
-                        this.table();
-                    }
-                }
+
             }
-        }
+
+            component.destroy();
+        });
     }
     async confirmTable() {
         const alert = await this.alertCtrl.create({

@@ -30,7 +30,7 @@
                     </div>
                     <div class="image">
                         <qrcode [width]="148" [qrdata]="data.link" (qrCodeURL)="onMenuQREmitted($event)"
-                            [errorCorrectionLevel]="'M'" cssClass="the-qr-code-wrap" [margin]="2" [elementType]="img"></qrcode>
+                            [errorCorrectionLevel]="'M'" cssClass="the-qr-code-wrap" [margin]="2" [elementType]="'img'"></qrcode>
                     </div>
                     <div class="bottom">
                         <input type="checkbox">
@@ -64,7 +64,7 @@
                     </div>
                     <div class="image">
                         <qrcode [width]="148" [qrdata]="i.link" (qrCodeURL)="onTableQREmitted($event, i.index)"
-                            [errorCorrectionLevel]="'M'" cssClass="the-qr-code-wrap" [margin]="2" [elementType]="img"></qrcode>
+                            [errorCorrectionLevel]="'M'" cssClass="the-qr-code-wrap" [margin]="2" [elementType]="'img'"></qrcode>
                     </div>
                     <div class="bottom">
                         <input type="checkbox">

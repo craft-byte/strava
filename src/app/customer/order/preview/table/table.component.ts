@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { IonicModule, ModalController, Platform, ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import jsQR from 'jsqr';
@@ -21,6 +21,7 @@ export class TableComponent implements OnInit {
 
     result: string = null!;
 
+    stream: MediaStream;
 
     ui = {
         showScan: false,
@@ -29,7 +30,6 @@ export class TableComponent implements OnInit {
     }
 
     constructor(
-        private modalCtrl: ModalController,
         private plt: Platform,
         private loader: LoadService,
         private toastCtrl: ToastController,
@@ -49,14 +49,13 @@ export class TableComponent implements OnInit {
     @Input() theme: string;
     @Input() table: string; /// chosen table
 
-    cancel() {
-        this.modalCtrl.dismiss();
-    }
 
-    select(t: any) {
-        this.modalCtrl.dismiss(t.id);
-    }
+    @Output() leave = new EventEmitter();
 
+    close() {
+        this.stopRecording();
+        this.leave.emit();
+    }
 
     async onScanned() {
         if (!this.result) {
@@ -66,24 +65,19 @@ export class TableComponent implements OnInit {
 
 
         try {
-            // ex.    https://ctraba.com/doesn't-matter/what-matters-are-query-params?restaurantId=63000acd4ebc81862fb5354f&table=3&order=true
+            // ex.    https://ctraba.com/doesn't-matter/what-matters-are-query-params/{{ restaurantId }}?table=3&order=true
+            
             const splitted = this.result.split("?");
-            const query = splitted[1];  // result    --=  restaurantId=63000acd4ebc81862fb5354f&table=3&order=true  =--
-            const queries = query.split("&");    // result    ['restaurantId=63000acd4ebc81862fb5354f', 'table=3', 'order=true']
+            const query = splitted[1];  // result    --=  table=2&someother=staff  =--
+            const queries = query.split("&");    // result    ['notUsedParam=notused', 'table=3', 'somethignelse=false']
 
             let table: number;
-            let restaurantId: string;
+            let restaurantId: string = splitted[0].split("/")[splitted[0].split("/").length - 1];;
 
             for (let i of queries) {
                 const [name, value] = i.split("=");
                 if (!name || !value) {
                     continue;
-                }
-                if (name == "restaurantId") {
-                    if (value.length != 24) {
-                        throw 'invalid';
-                    }
-                    restaurantId = value;
                 } else if (name == "table") {
                     table = Number(value);
                     if (isNaN(table)) {
@@ -97,7 +91,8 @@ export class TableComponent implements OnInit {
                 throw 'invalid';
             }
 
-            this.modalCtrl.dismiss(table);
+            this.leave.emit(table);
+            this.stopRecording();
         } catch (e) {
             if (e == 'invalid') {
                 (await this.toastCtrl.create({
@@ -149,11 +144,11 @@ export class TableComponent implements OnInit {
     }
     async startScan() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
+            this.stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' }
             });
 
-            this.videoElement.srcObject = stream;
+            this.videoElement.srcObject = this.stream;
             this.videoElement.setAttribute('playsinline', true);
 
             await this.loader.start();
@@ -165,6 +160,12 @@ export class TableComponent implements OnInit {
             this.ui.showOther = true;
         }
 
+    }
+
+    stopRecording() {
+        if(this.stream) {
+            this.stream.getVideoTracks().forEach(t => t.stop());
+        }
     }
 
     async ngAfterViewInit() {

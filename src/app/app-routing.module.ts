@@ -177,6 +177,7 @@ const customer: Routes = [
         path: "customer/order/:restaurantId",
         loadChildren: () => import("./customer/order/main/main.module").then(m => m.MainPageModule),
         canActivate: [OrderGuard],
+        runGuardsAndResolvers: "always"
     },
     {
         path: "customer/order/:restaurantId/dish/:dishId",

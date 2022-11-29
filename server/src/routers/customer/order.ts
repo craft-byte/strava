@@ -262,7 +262,7 @@ router.post("/init", passUserData, async (req, res) => {
         order: {
             dishes: await getDishes(),
             dishesQuantity: order.dishes.length,
-            type: table ? "in" : order.type,
+            type: table ? "dinein" : order.type,
             id: table ? table : order.id,
             comment: order.comment || null!,
         },

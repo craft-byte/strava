@@ -5,7 +5,6 @@ import { RouterService } from 'src/app/other/router.service';
 import jsQR from 'jsqr';
 import { CustomerService } from '../customer.service';
 import { ActivatedRoute } from '@angular/router';
-import { TouchSequence } from 'selenium-webdriver';
 
 @Component({
     selector: 'app-scan',
@@ -35,7 +34,6 @@ export class ScanPage implements OnInit, OnDestroy {
         private router: RouterService,
         private loader: LoadService,
         private service: CustomerService,
-        private modalCtrl: ModalController,
         private plt: Platform,
         private alertCtrl: AlertController,
         private toastCtrl: ToastController,
@@ -89,110 +87,8 @@ export class ScanPage implements OnInit, OnDestroy {
         }
         return false;
     }
-    async createSession(restaurantId: string, table: number, order: boolean) {
-        try {
-            const result: { other: boolean; updated: boolean; } = await this.service.post({ table: table, order, force: false }, "restaurant", restaurantId, "create");
-
-            console.log(result);
-
-            if (result.other) {
-                const force = await this.confirmTable();
-
-                if (force) {
-                    try {
-                        const result: { updated: boolean; } = await this.service.post({ table: table, order, force: true }, "restaurant", restaurantId, "create");
-
-                        if (result.updated) {
-                            this.router.go(["customer", "order", restaurantId]);
-                            this.stopRecording();
-                            return;
-                        } else {
-                            (await this.toastCtrl.create({
-                                duration: 2000,
-                                color: "red",
-                                mode: "ios",
-                                message: "Something went wrong. Please try again"
-                            })).present();
-                            this.startScan();
-                        }
-                    } catch (e) {
-                        if (e.status == 404) {
-                            this.startScan();
-                            (await this.toastCtrl.create({
-                                duration: 1000,
-                                message: "Restaurant not found",
-                                color: "red",
-                                mode: "ios",
-                            })).present();
-                        } else if (e.status == 403) {
-                            if (e.body.reason == "settings") {
-                                (await this.toastCtrl.create({
-                                    duration: 1000,
-                                    message: "Sorry, restaurant disabled take away orders.",
-                                    color: "orange",
-                                    mode: "ios",
-                                })).present();
-                            } else if (e.body.reason == "blacklisted") {
-                                (await this.toastCtrl.create({
-                                    duration: 1000,
-                                    message: "Sorry, you were blacklisted in this restaurant.",
-                                    color: "orange",
-                                    mode: "ios",
-                                })).present();
-                            }
-                            this.startScan();
-                        }
-                    }
-                } else {
-                    this.startScan();
-                }
-            } else if (result.updated) {
-                this.router.go(["customer", "order", restaurantId]);
-                this.stopRecording();
-            } else {
-                (await this.toastCtrl.create({
-                    duration: 2000,
-                    color: "red",
-                    mode: "ios",
-                    message: "Something went wrong. Please try again"
-                })).present();
-                this.startScan();
-            }
-        } catch (e) {
-            if (e.status == 404) {
-                this.startScan();
-                (await this.toastCtrl.create({
-                    duration: 1000,
-                    message: "Restaurant not found",
-                    color: "red",
-                    mode: "ios",
-                })).present();
-            } else if (e.status == 403) {
-                if (e.body.reason == "settings") {
-                    (await this.toastCtrl.create({
-                        duration: 1000,
-                        message: "Sorry, restaurant disabled take away orders.",
-                        color: "orange",
-                        mode: "ios",
-                    })).present();
-                } else if (e.body.reason == "blacklisted") {
-                    (await this.toastCtrl.create({
-                        duration: 1000,
-                        message: "Sorry, you were blacklisted in this restaurant.",
-                        color: "orange",
-                        mode: "ios",
-                    })).present();
-                }
-                this.startScan();
-            } else if(e.status == 422) {
-                (await this.toastCtrl.create({
-                    duration: 1000,
-                    message: "Something went wrong. Please try again (422)",
-                    color: "red",
-                    mode: "ios",
-                })).present();
-            }
-        }
+    async redirect(restaurantId: string, table: number, order: boolean) {
+        this.router.go(["customer", "order", restaurantId], { queryParams: { table: table } });
     }
 
 
@@ -213,12 +109,18 @@ export class ScanPage implements OnInit, OnDestroy {
 
 
         try {
-            // ex.    https://ctraba.com/doesn't-matter/what-matters-are-query-params?restaurantId=63000acd4ebc81862fb5354f&table=3&order=true
-            const splitted = this.result.split("?");
-            const query = splitted[1];  // result    --=  restaurantId=63000acd4ebc81862fb5354f&table=3&order=true  =--
-            const queries = query.split("&");    // result    ['restaurantId=63000acd4ebc81862fb5354f', 'table=3', 'order=true']
 
-            let restaurantId: string;
+            // ex.    https://stravamenu.com/doesnt-matter/at-all/{{ restaurantId }}?table=2
+            const splitted = this.result.split("?");
+            const query = splitted[1];  // result    --=  table=2&someother=staff  =--
+            const queries = query.split("&");    // result    ['notUsedParam=notused', 'table=3', 'somethignelse=false']
+
+            let restaurantId = splitted[0].split("/")[splitted[0].split("/").length - 1];
+
+            if(restaurantId.length != 24) {
+                throw "restaurantId";
+            }
+
             let table: number;
             let order: boolean = false;
 
@@ -226,12 +128,6 @@ export class ScanPage implements OnInit, OnDestroy {
                 const [name, value] = i.split("=");
                 if (!name || !value) {
                     continue;
-                }
-                if (name == "restaurantId") {
-                    if (value.length != 24) {
-                        throw 'restaurantId';
-                    }
-                    restaurantId = value;
                 } else if (name == "table") {
                     table = Number(value);
                     if (isNaN(table)) {
@@ -255,7 +151,7 @@ export class ScanPage implements OnInit, OnDestroy {
                 }
             }
 
-            this.createSession(restaurantId, table, order);
+            this.redirect(restaurantId, table, order);
         } catch (e) {
             if (e == 'restaurantId') {
                 (await this.toastCtrl.create({
@@ -264,6 +160,7 @@ export class ScanPage implements OnInit, OnDestroy {
                     message: "Scanned url is invalid",
                     mode: "ios",
                 })).present();
+                this.startScan();
             }
         }
     }
