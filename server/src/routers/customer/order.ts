@@ -55,7 +55,7 @@ router.post("/check", async (req, res) => {
         userId = data.userId;
     }
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1, name: 1, settings: { customers: 1 } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { info: { theme: 1, name: 1, }, settings: { customers: 1 } } });
 
     if(!restaurant) {
         return res.status(404).send({ reason: "RestaurantNotFound" });
@@ -123,10 +123,10 @@ router.post("/check", async (req, res) => {
             mode: null!,
         });
 
-        return res.send({ status, theme: restaurant.theme, settings: restaurant.settings?.customers, name: restaurant.name, token: optionals.customerToken });
+        return res.send({ status, theme: restaurant.info?.theme, settings: restaurant.settings?.customers, name: restaurant.info?.name, token: optionals.customerToken });
     }
     
-    res.send({ status, theme: restaurant.theme, settings: restaurant.settings?.customers, name: restaurant.name, token: status == "noinfo" ? customerToken : null });
+    res.send({ status, theme: restaurant.info?.theme, settings: restaurant.settings?.customers, name: restaurant.info?.name, token: status == "noinfo" ? customerToken : null });
 });
 
 
@@ -170,7 +170,7 @@ router.post("/init", passUserData, async (req, res) => {
     const { userId, ct, status } = res.locals as LocalLocals;
 
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, blacklist: 1, theme: 1, settings: { customers: 1 } } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { info: { name: 1, theme: 1, }, blacklist: 1, settings: { customers: 1 } } });
 
     if (!restaurant) {
         return res.status(404).send({ reason: "RestaurantNotFound" });
@@ -254,9 +254,9 @@ router.post("/init", passUserData, async (req, res) => {
 
     const result: InitResult = {
         restaurant: {
-            name: restaurant.name!,
+            name: restaurant.info?.name!,
             _id: restaurantId,
-            theme: restaurant.theme || "orange",
+            theme: restaurant.info?.theme || "orange",
             settings: restaurant.settings?.customers,
         },
         order: {
@@ -370,7 +370,7 @@ router.get("/dish/:dishId", passUserData, passOrder({ dishes: { dishId: 1, } }),
             image: { binary: 1, resolution: 1, }
         }
     });
-    const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1 } });
+    // const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1 } });
 
     if (!dish) {
         return res.sendStatus(404);
@@ -389,7 +389,7 @@ router.get("/dish/:dishId", passUserData, passOrder({ dishes: { dishId: 1, } }),
         ...dish,
         category: dish.general,
         quantity,
-        theme: restaurant?.theme
+        // theme: restaurant?.info?.theme
     })
 });
 
@@ -421,7 +421,7 @@ router.post("/session/table", passUserData, passOrder({ _id: 1 }), async (req, r
         return res.status(404).send({ reason: "RestaurantNotFound" });
     }
 
-    if(table > restaurant.tables!) {
+    if(table > restaurant.info?.tables!) {
         return res.status(403).send({ reason: "InvalidTable" });
     }
 
@@ -729,7 +729,7 @@ interface PaymentInfo {
         dishes: [],
         methods: [],
         _id: order._id,
-        theme: restaurant.theme || "orange",
+        theme: restaurant.info?.theme || "orange",
         savePaymentMethod: status != "noinfo",
     };
 
@@ -996,7 +996,7 @@ router.get("/tracking", passUserData, async (req, res) => {
     const { restaurantId } = req.params as any;
     const { status, userId, ct } = res.locals as LocalLocals;
 
-    const restaurant = await Restaurant(restaurantId).get({ projection: { theme: 1 } });
+    const restaurant = await Restaurant(restaurantId).get({ projection: { info: { theme: 1 } } });
 
     if(!restaurant) {
         return res.status(404).send({ reason: "NoRestaurant" });
@@ -1047,7 +1047,7 @@ router.get("/tracking", passUserData, async (req, res) => {
     const result = {
         dishes: dishes.table,
         orders: o,
-        theme: restaurant.theme
+        theme: restaurant.info?.theme
     };
 
 

@@ -51,7 +51,7 @@ router.post("/:restaurantId/solo", logged({ _id: 1, }), async (req, res, next) =
 
     res.send(true);
 });
-router.get("/:restaurantId/dashboard", logged({ _id: 1 }), allowed({ name: 1, staff: 1 }, "staff"), async (req, res) => {
+router.get("/:restaurantId/dashboard", logged({ _id: 1 }), allowed({ info: { name: 1 }, staff: 1 }, "staff"), async (req, res) => {
     const { restaurant, user } = res.locals;
 
 

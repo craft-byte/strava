@@ -5,11 +5,6 @@ import { Worker } from "./worker";
 
 interface Restaurant {
     _id: ObjectId;
-    name?: string;
-    theme?: string;
-    created?: Date;
-    owner?: ObjectId;
-    tables?: number;
     staff?: Worker[];
     settings?: RestaurantSettings;
     components?: Component[];
@@ -17,9 +12,16 @@ interface Restaurant {
     blacklist?: (ObjectId | string)[];
     stripeAccountId?: string;
     status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
+
     
     info?: {
         description?: string;
+        name?: string;
+        theme?: string;
+        created?: number;
+        owner?: ObjectId;
+        tables?: number;
+
         time: {
             opens: {
                 hours: number;

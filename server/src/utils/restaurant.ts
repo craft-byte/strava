@@ -13,7 +13,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
     return {
         remove: async () => {
             try {
-                const restaurant = await Restaurant(restaurantId).get({ projection: { staff: 1, owner: 1, invitations: 1 } });
+                const restaurant = await Restaurant(restaurantId).get({ projection: { staff: 1, info: { owner: 1 }, invitations: 1 } });
 
                 if (!restaurant) {
                     return null;
@@ -31,7 +31,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
                     console.log("user invitation deleted: ", result.ok == 1);
                 }
 
-                const result1 = await updateUser({ _id: (restaurant.owner!) }, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
+                const result1 = await updateUser({ _id: (restaurant.info?.owner!) }, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
 
                 console.log("owner restaurant removed: ", result1.ok == 1);
 

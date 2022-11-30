@@ -16,7 +16,7 @@ const router = Router({ mergeParams: true });
  * returns restaurant settings
  * 
  */
-router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, stripeAccountId: 1, info: 1, status: 1, }, "manager", "settings"), async (req, res) => {
+router.get("/", logged({ _id: 1, }), allowed({ settings: 1, stripeAccountId: 1, info: 1, status: 1, }, "manager", "settings"), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
     if(!restaurant) {
@@ -93,7 +93,7 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, name: 1, stripeAccou
         settings: restaurant?.settings,
         money: restaurant.settings?.money,
         verificationUrl: verificationUrl!,
-        restaurant: { name: restaurant.name, ...restaurant.info, time, status: restaurant.status, },
+        restaurant: { name: restaurant.info?.name, ...restaurant.info, time, status: restaurant.status, },
     });
 });
 
@@ -166,7 +166,7 @@ router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "m
  * @throws { status: 422; reason: "InvalidInput" } - name is not provided or is invalid
  * @throws { status: 403; reason: "NamesAreTheSame" } - new name and old name are the same
  */
-router.post("/name", logged({ _id: 1, }), allowed({ name: 1, }, "manager", "settings"), async (req, res) => {
+router.post("/name", logged({ _id: 1, }), allowed({ info: { name: 1 }, }, "manager", "settings"), async (req, res) => {
     const { restaurant } = res.locals;
     const { name } = req.body;
 

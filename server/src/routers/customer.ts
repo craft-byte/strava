@@ -20,13 +20,13 @@ router.use("/history", HistoryRouter);
 router.get("/restaurants", async (req, res) => {
     
     const restaurants = await manyRestaurants({ status: "enabled" }, { projection: {
-        name: 1,
         status: 1,
         _id: 1,
         settings: {
             money: { cash: 1, card: 1, },
         },
         info: {
+            name: 1,
             description: 1,
             time: 1,
             location: { line1: 1, line2: 1, city: 1, }
@@ -89,7 +89,7 @@ router.get("/restaurants", async (req, res) => {
             }
 
             result.push({
-                name: i.name,
+                name: i.info?.name,
                 _id: i._id,
                 location: i.info?.location,
                 description: i.info?.description,

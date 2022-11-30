@@ -116,8 +116,6 @@ export class DishPage implements OnInit {
         this.theme = this.service.theme;
         this.ui.showDoubleButton = !(this.ui.showPlusOnly = this.order.settings?.allowOrderingOnline === false);
 
-        console.log(this.order.settings);
-
         // this.ui.showPlusOnly = this.order.settings?.allowOrderingOnline === false;
 
 
@@ -127,7 +125,6 @@ export class DishPage implements OnInit {
             const result: any = await this.service.get({}, "order", this.service.restaurantId, "dish", dishId);
 
             this.dish = result;
-            this.theme = result.theme;
 
             if(this.dish.image) {
                 this.image = getImage(this.dish.image.binary) || './../../../../assets/images/no-image.jpg';

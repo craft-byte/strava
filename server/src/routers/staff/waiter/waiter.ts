@@ -19,7 +19,7 @@ const router = Router({ mergeParams: true });
 router.use("/manual", ManualRouter);
 
 
-router.post("/init", logged({ _id: 1 }), allowed({ _id: 1, name: 1 }, "waiter"), async (req ,res) => {
+router.post("/init", logged({ _id: 1 }), allowed({ _id: 1, info: { name: 1 } }, "waiter"), async (req ,res) => {
     const { restaurantId } = req.params as any;
     const { socketId } = req.body;
     const { restaurant } = res.locals as Locals;

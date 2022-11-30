@@ -134,7 +134,6 @@ export class MainPage implements OnInit, OnDestroy {
 
             const { restaurant, order, user, showTracking, types, } = result;
 
-            console.log(result);
 
             this.restaurantName = restaurant.name;
             this.service.theme = restaurant.theme;

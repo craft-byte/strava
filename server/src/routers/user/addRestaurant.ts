@@ -227,19 +227,19 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
 
     const newRestaurant: RestaurantType = {
         _id: restaurantId,
-        name,
-        owner: user._id,
         staff: [{ userId: user._id, role: "owner", joined: Date.now(), settings: {} }],
-        created: new Date(),
-        theme: "orange",
         invitations: [],
         settings,
         components: [],
         blacklist: [],
-        tables: 1,
         status: "verification",
         info: {
+            name,
+            tables: 1,
+            owner: user._id,
             description: null!,
+            created: Date.now(),
+            theme: "orange",
             time: null!,
             location: {
                 country,

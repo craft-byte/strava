@@ -44,7 +44,14 @@ export function allowed(
             return res.sendStatus(401);
         }
 
-        const options = { projection: { ...projection, owner: 1 } };
+        const options = { projection: { ...projection, }, };
+
+        if(!options.projection.info) {
+            options.projection.info = { owner: 1 };
+        } else if(options.projection.info && options.projection.info != 1) {
+            (options.projection.info as any).owner = 1;
+        }
+
 
         if(!options.projection.staff) {
             options.projection.staff = { userId: 1, settings: 1, role: 1 };
@@ -59,12 +66,12 @@ export function allowed(
 
             if (!restaurant) {
                 return res.status(404).send({ reason: "NoRestaurant" });
-            } else if (!restaurant.owner) {
+            } else if (!restaurant.info?.owner) {
                 return res.status(403).send({ redirect: true });
             }
 
             
-            const { owner, staff } = restaurant;
+            const { info: { owner, }, staff } = restaurant;
 
             if (owner.equals(user._id)) {
                 return next();

@@ -472,14 +472,14 @@ router.get("/", logged({ status: 1, restaurants: 1, name: { first: 1, last: 1, }
     if(user.restaurants) {
         const restaurantsP: Promise<RestaurantType | null>[] = [];
         for(let i of user.restaurants) {
-            restaurantsP.push(Restaurant(i.restaurantId).get({ projection: { name: 1, } }));
+            restaurantsP.push(Restaurant(i.restaurantId).get({ projection: { info: { name: 1 }, } }));
         }
         const restaurants = await Promise.all(restaurantsP);
         for(let i of user.restaurants) {
             for(let restaurant of restaurants) {
                 if(restaurant && restaurant._id.equals(i.restaurantId)) {
                     result.restaurants.push({
-                        name: restaurant.name!,
+                        name: restaurant.info?.name!,
                         role: i.role,
                         _id: i.restaurantId,
                         redirectTo: i.role == "staff" ? "" : `restaurant/${i.restaurantId.toString()}`,

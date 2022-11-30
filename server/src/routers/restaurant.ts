@@ -24,7 +24,7 @@ router.use("/customers", CustomersRouter);
 router.use("/settings", SettingsRouter);
 
 
-router.get("/check", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ name: 1, status: 1, staff: 1, }, "manager"), async (req, res) => {
+router.get("/check", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ info: { name: 1 }, status: 1, staff: 1, }, "manager"), async (req, res) => {
     res.send(true);
     // const{ restaurantId } = req.params;
     // const { restaurant, user } = res.locals as Locals;
@@ -236,7 +236,7 @@ interface Chart {
 });
 
 
-router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, name: 1, stripeAccountId: 1, cache: 1, settings: { staff: 1 } }, "owner"), async (req, res) => {
+router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, info: { name: 1 }, stripeAccountId: 1, cache: 1, settings: { staff: 1 } }, "owner"), async (req, res) => {
     const { restaurant, user } = res.locals as Locals;
 
     if(!restaurant.cache || !restaurant.cache.requirements) {
@@ -279,11 +279,11 @@ router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ 
     const promises = [];
 
     let workAs: string;
-    for(let i of user!.restaurants!) {
-        if(!i.restaurantId.equals(restaurant._id)) {
-            promises.push(Restaurant(i.restaurantId).get({ projection: { name: 1 } } ));
+    for(let workIn of user!.restaurants!) {
+        if(!workIn.restaurantId.equals(restaurant._id)) {
+            promises.push(Restaurant(workIn.restaurantId).get({ projection: { name: 1 } } ));
         } else {
-            if(i.role == "manager:working" || i.role == "owner") {
+            if(workIn.role == "manager:working" || workIn.role == "owner") {
                 workAs = "both";
                 break;
             } else {
@@ -310,7 +310,7 @@ router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ 
         }
     }
 
-    res.send({ verificationUrl: verificationUrl!, mode: restaurant.settings?.staff.mode, restaurant: { name: restaurant.name, status: restaurant.staff, _id: restaurant._id }, workAs: workAs!, restaurants: await Promise.all(promises) });
+    res.send({ verificationUrl: verificationUrl!, mode: restaurant.settings?.staff.mode, restaurant: { name: restaurant.info?.name, status: restaurant.staff, _id: restaurant._id }, workAs: workAs!, restaurants: await Promise.all(promises) });
 });
 
 
@@ -319,7 +319,7 @@ router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ 
  * for development only
  * should be reconsidered
  */
-router.delete("/", logged({ _id: 1, }), allowed({ owner: 1, staff: 1, stripeAccountId: 1 }, "owner"), async (req, res) => {
+router.delete("/", logged({ _id: 1, }), allowed({ info: { owner: 1 }, staff: 1, stripeAccountId: 1 }, "owner"), async (req, res) => {
     const { restaurantId } = req.params;
     const { restaurant } = res.locals as Locals;
 
@@ -350,7 +350,7 @@ interface QRCodesResult {
     link: string;
     tables: { index: number; link: string; }[];
 }
-router.get("/qr-codes", logged({ _id: 1 }), allowed({ tables: 1 }, "manager"), async (req, res) => {
+router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "manager"), async (req, res) => {
     const { restaurant, } = res.locals as Locals;
 
 
@@ -360,7 +360,7 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ tables: 1 }, "manager"), a
     }
 
 
-    for(let i = 0; i < restaurant!.tables!; i++) {
+    for(let i = 0; i < restaurant!.info?.tables!; i++) {
         result.tables.push({
             index: i + 1,
             link: `${req.protocol}://${req.get("host")}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
@@ -377,7 +377,7 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ tables: 1 }, "manager"), a
  router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params;
 
-    const result = await Restaurant(restaurantId).update({ $inc: { tables: -1 } });
+    const result = await Restaurant(restaurantId).update({ $inc: { "info.tables": -1 } });
 
     res.send({ updated: result!.ok == 1 });
 });
@@ -388,12 +388,10 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ tables: 1 }, "manager"), a
 router.post("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params;
 
-    const result = await Restaurant(restaurantId).update({ $inc: { tables: 1 } }, { projection: { tables: 1 } });
-
-    console.log(result.restaurant);
+    const result = await Restaurant(restaurantId).update({ $inc: { "info.tables": 1 } }, { projection: { info: { tables: 1, } } });
 
 
-    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurantId}?table=${result.restaurant?.tables}`, index: result.restaurant.tables });
+    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurantId}?table=${result.restaurant?.info?.tables}`, index: result.restaurant?.info?.tables });
 });
 
 

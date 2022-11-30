@@ -23,7 +23,7 @@ interface Customer {
 /**
  * @returns { Customer[] } - list of customers
  */
-router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklist: 1, tables: 1 }, "manager", "customers"), async (req, res) => {
+router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklist: 1, info: { tables: 1 } }, "manager", "customers"), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { calculate } = req.query;
     const { restaurant } = res.locals as Locals;

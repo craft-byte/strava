@@ -136,7 +136,7 @@ interface WorkerResult {
  * @returns { WorkerResult }
  * @throws { status: 404; reason: "NotWorker" } - not member of restaurant staff
  */
-router.get("/:userId", logged({ _id: 1 }), allowed({ name: 1, staff: 1 }, "manager", "staff"), async (req, res) => {
+router.get("/:userId", logged({ _id: 1 }), allowed({ info: { name: 1 }, staff: 1 }, "manager", "staff"), async (req, res) => {
     const { userId, restaurantId } = req.params;
     const { calculate } = req.query;
     const { restaurant } = res.locals as Locals;    
@@ -158,7 +158,7 @@ router.get("/:userId", logged({ _id: 1 }), allowed({ name: 1, staff: 1 }, "manag
     const user = await getUser(userId, { projection: { avatar: 1, username: 1, name: 1, email: 1 } });
 
     const result: WorkerResult = {
-        restaurantName: restaurant!.name,
+        restaurantName: restaurant!.info?.name,
         user: {
             avatar: user?.avatar?.binary,
             name: user?.name?.first || "User deleted",
