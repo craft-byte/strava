@@ -89,7 +89,7 @@
                     </div>
                 </div>
             </div>
-            <div class="buttons">
+            <div class="buttons" *ngIf="order">
                 <button id="served" class="button-font" (click)="served()">
                     Served
                 </button>

@@ -216,9 +216,6 @@
             }
 
             .buttons {
-                position: absolute;
-                bottom: 100px;
-                left: 0;
                 width: 100%;
 
                 #served {
@@ -258,22 +255,18 @@
 
 
 
-@-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-    }
 
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-@keyframes spin {
-    0% {
-        rotate: 0deg;
-    }
-
-    100% {
-        rotate: 360deg;
+@media screen and (min-width: 512px) {
+    .app {
+        .box {
+            width: 512px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+    
+            .header {
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+        }
     }
 }
