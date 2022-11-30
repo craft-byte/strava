@@ -73,7 +73,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="new">
+                <div class="new" *ngIf="data.tables && data.tables.length < 30">
                     <div class="icon" (click)="add()" *ngIf="!adding">
                         <ion-icon name="add"></ion-icon>
                     </div>
@@ -81,7 +81,7 @@
                         <span class="spinner"></span>
                     </div>
                 </div>
-                <div class="new">
+                <div class="new" *ngIf="data.tables && data.tables.length > 0">
                     <div class="icon" (click)="remove()" *ngIf="!removing">
                         <ion-icon name="trash-outline"></ion-icon>
                     </div>

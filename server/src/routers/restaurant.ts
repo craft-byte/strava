@@ -374,10 +374,14 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "ma
 /**
  * remove table
  */
- router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
-    const { restaurantId } = req.params;
+ router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1, info: { tables: 1 } }, "manager", "customers"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
 
-    const result = await Restaurant(restaurantId).update({ $inc: { "info.tables": -1 } });
+    if(restaurant.info?.tables! < 1) {
+        return res.send(null);
+    }
+
+    const result = await Restaurant(restaurant._id).update({ $inc: { "info.tables": -1 } });
 
     res.send({ updated: result!.ok == 1 });
 });
@@ -385,13 +389,19 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "ma
 /**
  * add table
  */
-router.post("/table", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
-    const { restaurantId } = req.params;
-
-    const result = await Restaurant(restaurantId).update({ $inc: { "info.tables": 1 } }, { projection: { info: { tables: 1, } } });
+router.post("/table", logged({ _id: 1 }), allowed({ info: { tables: 1, } }, "manager", "customers"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
 
 
-    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurantId}?table=${result.restaurant?.info?.tables}`, index: result.restaurant?.info?.tables });
+    if(restaurant.info?.tables! > 30) {
+        return res.status(403).send({ reason: "LimitExceeded" });
+    }
+
+
+    const result = await Restaurant(restaurant._id).update({ $inc: { "info.tables": 1 } }, { projection: { info: { tables: 1, } } });
+
+
+    res.send({ updated: result!.ok == 1, link: `${req.headers.origin}/customer/order/${restaurant._id.toString()}?table=${result.restaurant?.info?.tables}`, index: result.restaurant?.info?.tables });
 });
 
 

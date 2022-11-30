@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantService } from '../restaurant.service';
 
@@ -25,6 +26,7 @@ export class QrCodesPage implements OnInit {
         private router: RouterService,
         private route: ActivatedRoute,
         private service: RestaurantService,
+        private toastCtrl: ToastController,
     ) { }
 
 
@@ -55,13 +57,33 @@ export class QrCodesPage implements OnInit {
     async add() {
         this.adding = true;
 
-        const result: { updated: boolean; link?: string; index?: number; } = await this.service.post({}, "table");
+        try {
+            const result: { updated: boolean; link?: string; index?: number; } = await this.service.post({}, "table");
 
-        if(result.updated) {
-            this.data.tables.push({
-                link: result.link,
-                index: result.index
-            });
+            if(result.updated) {
+                this.data.tables.push({
+                    link: result.link,
+                    index: result.index
+                });
+            }
+        } catch (e) {
+            if(e.status == 403) {
+                if(e.body.reason == "LimitExceeded") {
+                    (await this.toastCtrl.create({
+                        duration: 2000,
+                        message: "Limit 30 tables exceeded",
+                        mode: "ios",
+                        color: "red",
+                    })).present();
+                } else {
+                    (await this.toastCtrl.create({
+                        duration: 2000,
+                        message: "You're not allowed to do it",
+                        mode: "ios",
+                        color: "red",
+                    })).present();
+                }
+            }
         }
 
         this.adding = false;
