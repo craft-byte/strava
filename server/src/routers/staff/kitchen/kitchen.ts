@@ -31,7 +31,7 @@ interface Dish {
         io.in(socketId).socketsJoin(`${restaurantId}/kitchen`);
     }
 
-    const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1 } } });
+    const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1, id: 1 } } });
 
 
     const dishes = new DishHashTableUltra(restaurantId, { name: 1, image: { binary: 1, resolution: 1, }, info: { time: 1 }, general: 1 });
@@ -79,7 +79,7 @@ interface Dish {
 router.get("/dishes", logged({ _id: 1, }), allowed({}, "cook"), async (req, res) => {
     const { restaurantId } = req.params;
 
-    const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1 } } });
+    const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1, id: 1 } } });
 
 
     
@@ -98,6 +98,7 @@ router.get("/dishes", logged({ _id: 1, }), allowed({}, "cook"), async (req, res)
                     orderId: i._id,
                     time: getDelay(i.ordered!),
                     taken: d.takenBy,
+                    id: d.id,
                 };
                 
                 all.push(converted);

@@ -2,17 +2,16 @@
     <div class="image" *ngIf="image">
         <img [src]="image" alt="">
     </div>
-    <div class="name-time">
+    <div class="name-id">
         <div class="name">
             <span class="text title-font">
                 {{ name }}
             </span>
         </div>
-        <div class="time" *ngIf="dish?.time">
-            {{ dish?.time }}m.
-        </div>
-        <div *ngIf="!dish?.time" class="no-time time">
-
+        <div class="id" *ngIf="orderDish?.id">
+            <span class="text text-font">
+                #{{ orderDish?.id }}
+            </span>
         </div>
     </div>
     <div class="delay {{ orderDish.time?.color }}">

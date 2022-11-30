@@ -42,7 +42,8 @@ router.get("/dishes", logged({ _id: 1 }), allowed({ _id: 1, }, "waiter"), async 
     const { restaurantId } = req.params;
 
     
-    const result = await convertDishes(restaurantId)
+    const result = await convertDishes(restaurantId);
+
 
     res.send(result);
 });
@@ -63,6 +64,7 @@ interface OrderInfo {
         cook: User;
         ordered: Time;
         timeDone: Time;
+        id: string;
     }
     order: OrderInfo;
 }; router.get("/order/:orderId/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }, "waiter"), async (req, res) => {
@@ -74,6 +76,7 @@ interface OrderInfo {
             ordered: null!,
             timeDone: null!,
             comment: null!,
+            id: null!,
         },
         order: {
             customer: null!,
@@ -130,6 +133,7 @@ interface OrderInfo {
             result.dish.timeDone = getDelay(i.cooked!);
             result.order.number = order.id!;
             result.order.type = order.type;
+            result.dish.id = i.id!;
 
             break;
         }

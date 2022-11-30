@@ -32,7 +32,7 @@ async function convertDishes(restaurantId: string | ObjectId) {
                     dishId: j.dishId,
                     time: getDelay(i.ordered!),
                     orderId: i._id,
-                    id: i.id,
+                    id: j.id,
                 });
             }
         }

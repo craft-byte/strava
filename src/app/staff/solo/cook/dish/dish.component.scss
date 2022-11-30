@@ -14,7 +14,7 @@
         }
     }
     
-    .name-time {
+    .name-id {
         display: flex;
         align-items: center;
         height: 32px;
@@ -24,7 +24,7 @@
         .name {
             color: var(--black);
         }
-        .time {
+        .id {
             font-size: 14px;
             color: var(--text-color);
         }

@@ -24,6 +24,9 @@ export class DishComponent implements OnInit, OnDestroy {
     @Input() orderDish: any;
 
     async ngOnInit() {
+
+        console.log(this.orderDish);
+
         this.dish = this.s.dishes[this.orderDish.dishId];
         if(!this.dish) {
             this.dish = await this.service.get("dish", this.orderDish.dishId);
