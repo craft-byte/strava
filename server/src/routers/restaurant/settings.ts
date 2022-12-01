@@ -132,8 +132,10 @@ router.post("/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settin
     const { restaurantId } = req.params as any;
     const { value } = req.body;
 
+    console.log(value);
+
     const result = await Restaurant(restaurantId)
-        .update({ $set: { "money.cash": value ? "enabled" : "disabled" } });
+        .update({ $set: { "settings.money.cash": value ? "enabled" : "disabled" } });
 
     res.send({ updated: result!.ok == 1 });
 });
@@ -147,7 +149,7 @@ router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "m
     const { restaurant } = res.locals as Locals;
 
     if(restaurant!.settings?.money!.card == "enabled" || restaurant!.settings?.money!.card == "disabled") {
-        const update = await Restaurant(restaurantId).update({ $set: { "money.card": value ? "enabled" : "disabled" } });
+        const update = await Restaurant(restaurantId).update({ $set: { "settings.money.cash": value ? "enabled" : "disabled" } });
 
         return res.send({ updated: update!.ok == 1 });
     }
