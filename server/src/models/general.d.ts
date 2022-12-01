@@ -109,6 +109,7 @@ interface User {
     password?: string;
     _id: ObjectId;
     status: "enabled" | "deleted" | "restricted";
+    online: number;
     avatar?: {
         binary: Buffer;
         modified: number;
