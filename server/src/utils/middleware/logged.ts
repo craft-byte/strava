@@ -1,9 +1,10 @@
-import { getUser } from "../users";
+import { getUser, updateUser } from "../users";
 import * as jsonwebtoken from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { FindOptions } from "mongodb";
 import { User } from "../../models/general";
 import { PRIV_KEY } from "../passport";
+import { id } from "../functions";
 
 
 type UserProjection = {
@@ -45,13 +46,13 @@ export function logged(projection: UserProjection) {
             return res.status(401).send({ reason: "TokenInvalid", redirect: true });
         }
 
-        const user = await getUser(data.userId, { projection });
+        const update = await updateUser({ _id: id(data.userId), }, { $set: { online: Date.now() } }, { projection });
 
-        if (!user) {
+        if (!update.user || update.ok != 1) {
             return res.status(401).send({ reason: "UserNotFound", redirect: true });
         }
 
-        res.locals.user = user;
+        res.locals.user = update.user;
 
         return next();
     };
