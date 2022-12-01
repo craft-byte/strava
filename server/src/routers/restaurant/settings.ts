@@ -128,16 +128,18 @@ router.post("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings")
 /**
  * enable or disable cash payment
  */
-router.post("/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings"), async (req, res) => {
-    const { restaurantId } = req.params as any;
+router.post("/cash", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "manager", "settings"), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
     const { value } = req.body;
 
-    console.log(value);
+    if(restaurant.settings?.money?.card == "enabled") {
+        const result = await Restaurant(restaurant._id)
+            .update({ $set: { "settings.money.cash": value ? "enabled" : "disabled" } });
 
-    const result = await Restaurant(restaurantId)
-        .update({ $set: { "settings.money.cash": value ? "enabled" : "disabled" } });
+        return res.send({ updated: result!.ok == 1 });
+    }
 
-    res.send({ updated: result!.ok == 1 });
+    res.sendStatus(403);
 });
 
 /**
@@ -148,8 +150,9 @@ router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "m
     const { value } = req.body;
     const { restaurant } = res.locals as Locals;
 
-    if(restaurant!.settings?.money!.card == "enabled" || restaurant!.settings?.money!.card == "disabled") {
-        const update = await Restaurant(restaurantId).update({ $set: { "settings.money.cash": value ? "enabled" : "disabled" } });
+
+    if(restaurant!.settings?.money!.cash == "enabled") {
+        const update = await Restaurant(restaurantId).update({ $set: { "settings.money.card": value ? "enabled" : "disabled" } });
 
         return res.send({ updated: update!.ok == 1 });
     }

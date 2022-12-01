@@ -142,6 +142,7 @@ router.post("/create", async (req, res) => {
         blacklisted: [],
         anonymously: false,
         password: makePassword(password)!,
+        online: Date.now(),
         name: {
             first: firstName,
             last: lastName,

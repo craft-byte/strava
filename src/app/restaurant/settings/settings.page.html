@@ -92,7 +92,7 @@
                     </span>
                 </div>
                 <div class="switch">
-                    <ion-toggle (ionChange)="cashChange($event)" [checked]="p.cash == 'enabled'" mode="ios"
+                    <ion-toggle (ionChange)="cashChange($event)" [disabled]="p.card == 'disabled' && p.cash == 'enabled'" [checked]="p.cash == 'enabled'" mode="ios"
                         color="green"></ion-toggle>
                 </div>
             </div>
@@ -117,7 +117,7 @@
                 </div>
                 <div class="switch">
                     <ion-toggle (ionChange)="cardChange($event)"
-                        [disabled]="(p.card != 'enabled' && p.card != 'disabled')" [checked]="p.card == 'enabled'"
+                        [disabled]="(p.card == 'enabled' && p.cash == 'disabled')" [checked]="p.card == 'enabled'"
                         mode="ios" color="green"></ion-toggle>
                 </div>
                 <!-- <div *ngIf="p.card == 'restricted'" class="restricted">
@@ -209,19 +209,6 @@
                         color="green"></ion-toggle>
                 </div>
             </div>
-            <div class="qr-codes">
-                <div class="name-description">
-                    <ion-icon name="qr-code"></ion-icon>
-                    <span class="name text-font">
-                        QR Codes
-                    </span>
-                </div>
-                <div class="button">
-                    <button id="open-qr-codes" (click)="qrCodes()">
-                        <ion-icon name="arrow-forward"></ion-icon>
-                    </button>
-                </div>
-            </div>
             <div (click)="allowOrderingOnline()" *ngIf="settings.staff.mode == 'disabled'" class="ordering-disabled">
                 <div class="name-description">
                     <span class="name text-font">
@@ -233,6 +220,19 @@
                     <span class="status-badge-red">
                         restricted
                     </span>
+                </div>
+            </div>
+            <div class="qr-codes">
+                <div class="name-description">
+                    <ion-icon name="qr-code"></ion-icon>
+                    <span class="name text-font">
+                        QR Codes
+                    </span>
+                </div>
+                <div class="button">
+                    <button id="open-qr-codes" (click)="qrCodes()">
+                        <ion-icon name="arrow-forward"></ion-icon>
+                    </button>
                 </div>
             </div>
         </div>

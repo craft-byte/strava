@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ViewContainerRef, Injector } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
+import { unwatchFile } from 'fs';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
 import { RestaurantSettings } from 'src/models/components';
@@ -67,23 +68,63 @@ export class SettingsPage implements OnInit {
 
     async cashChange(e: any) {
         this.money.cash = e.target.checked ? "enabled" : "disabled";
-        const result: any = await this.service.post({ value: e.target.checked }, "settings/cash");
 
-        if (!result.updated) {
-            this.money.cash = e.target.checked ? "disabled" : "enabled";
-            await this.toast(false);
+        if(this.money.cash == "disabled" && this.money.card == "disabled") {
+            this.money.cash = "enabled";
+            (await this.toastCtrl.create({
+                duration: 2000,
+                mode: "ios",
+                message: "At least one of methods has to be enabled.",
+                color: "orange",
+            })).present();
+            return;
+        }
+        try {
+            const result: any = await this.service.post({ value: e.target.checked }, "settings/cash");
+    
+            if (!result.updated) {
+                this.money.cash = e.target.checked ? "disabled" : "enabled";
+                await this.toast(false);
+            }
+        } catch (e) {
+            this.money.card = e.target.checked ? "disabled" : "enabled";
+            (await this.toastCtrl.create({
+                duration: 2000,
+                mode: "ios",
+                message: "At least one of methods has to be enabled.",
+                color: "orange",
+            })).present();
         }
     }
     async cardChange(e: any) {
-        if (this.money.card == "enabled" || this.money.card == "disabled") {
+        if (this.money.cash == "enabled" || this.money.card == "disabled") {
             this.money.card = e.target.checked ? "enabled" : "disabled";
 
-            const result: any = await this.service.post({ value: e.target.checked }, "settings/card");
+            try {
+                const result: any = await this.service.post({ value: e.target.checked }, "settings/card");
 
-            if (!result.updated) {
-                this.money.card == e.target.checked ? "disabled" : "enabled";
-                this.toast(false);
+                if (!result.updated) {
+                    this.money.card == e.target.checked ? "disabled" : "enabled";
+                    this.toast(false);
+                }
+                return;
+            } catch (e) {
+                this.money.card = e.target.checked ? "disabled" : "enabled";
+                (await this.toastCtrl.create({
+                    duration: 2000,
+                    mode: "ios",
+                    message: "At least one of methods has to be enabled.",
+                    color: "orange",
+                })).present();
             }
+        } else {
+            this.money.card = e.target.checked ? "disabled" : "enabled";
+            (await this.toastCtrl.create({
+                duration: 2000,
+                mode: "ios",
+                message: "At least one of methods has to be enabled.",
+                color: "orange",
+            })).present();
         }
     }
     async removeRestaurant() {
