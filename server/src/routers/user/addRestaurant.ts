@@ -109,7 +109,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
     const { name, country } = req.body;
     const { user } = res.locals as Locals;
 
-    if (!name || name.length < 4 || !country || country.length < 2) {
+    if (!name || name.length < 4 || !country || typeof country != "string" || country.length < 2) {
         return res.sendStatus(422);
     }
 
@@ -242,7 +242,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
             theme: "orange",
             time: null!,
             location: {
-                country,
+                country: country.toUpperCase(),
                 line1: null!,
                 line2: null!,
                 state: null!,
@@ -630,8 +630,6 @@ router.get("/bank-account", logged({ name: 1, info: 1 }), async (req, res) => {
 
     const { user } = res.locals as Locals;
 
-    console.log(user);
-
     if (!user || !user.info?.location || !user.info?.location.country || !user.name) {
         return res.sendStatus(404);
     }
@@ -665,15 +663,19 @@ router.get("/currencies/:restaurantId", logged({ info: { location: { country: 1 
 /**
  * @returns currencies
  */
-router.get("/currencies/:country", logged({ _id: 1 }), async (req, res) => {
+router.get("/currencies/country/:country", logged({ _id: 1 }), async (req, res) => {
     const { country } = req.params;
 
     try {
         const result = await stripe.countrySpecs.retrieve(country);
 
+
+        console.log(result.supported_bank_account_currencies);
+
+
         res.send(Object.keys(result.supported_bank_account_currencies));
     } catch (error: any) {
-        console.log("GETTING CURRENCIES BY COUNTRY");
+        console.error("GETTING CURRENCIES BY COUNTRY");
         if (error.raw.type == "invalid_request_error" && error.raw.param == "country") {
             return res.sendStatus(400);
         }

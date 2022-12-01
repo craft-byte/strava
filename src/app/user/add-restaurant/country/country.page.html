@@ -10,9 +10,10 @@
             <div class="body">
 
                 <select id="country" (change)="update()" [(ngModel)]="country">
-                    <option *ngFor="let i of countries" [selected]="country == i.code" [value]="i.code">
+                    <option value="CA">Canada</option>
+                    <!-- <option *ngFor="let i of countries" [selected]="country == i.code" [value]="i.code">
                         {{ i.name }}
-                    </option>
+                    </option> -->
                 </select>
 
                 <div class="message">

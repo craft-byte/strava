@@ -68,11 +68,11 @@ export class BankAccountPage implements OnInit {
     const { target: { value } } = e;
 
     try {
-      const result: { currencies: string[]; showSkip: boolean; } = await this.service.get("add-restaurant/currencies", value);
+      const result: string[] = await this.service.get("add-restaurant/currencies/country", value);
 
       if (result) {
         this.currencies = [];
-        for (let i of result.currencies) {
+        for (let i of result) {
           this.currencies.push(i.toUpperCase());
         }
       }

@@ -16,7 +16,7 @@ export class CountryPage implements OnInit {
 
   countries = countries;
 
-  country: string;
+  country: string = "CA";
   name: string;
 
   ui = {
