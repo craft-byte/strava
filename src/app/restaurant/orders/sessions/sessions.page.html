@@ -1,0 +1,14 @@
+<div class="app">
+    <div class="header">
+        <span class="text title-font">
+            Ongoing sessions
+        </span>
+    </div>
+    <div class="list">
+        <div *ngFor="let i of sessions" class="one">
+            {{ i.type }}#{{ i.id }}
+            {{ i.status }}
+            {{ i.dishesAmount }}
+        </div>
+    </div>
+</div>

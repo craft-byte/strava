@@ -1,0 +1,74 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close" (click)="close()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+
+            <div class="icon">
+                <ion-icon name="restaurant-outline" *ngIf="order.type != 'takeout'"></ion-icon>
+                <ion-icon name="bag-handle-outline" *ngIf="order.type == 'takeout'"></ion-icon>
+            </div>
+        </div>
+        <div class="content">
+            <div class="type">
+                <div class="select" [class.both]="order.settings.allowDineIn && order.settings.allowTakeOut">
+                    <button (click)="setType('dinein')" *ngIf="order.settings.allowDineIn" [disabled]="order.type == 'dinein'" [class.selected]="order.type == 'dinein'">
+                        Dine in
+                    </button>
+                    <button (click)="setType('takeout')" *ngIf="order.settings.allowTakeOut" [disabled]="order.type == 'takeout'" [class.selected]="order.type == 'takeout'">
+                        Take out
+                    </button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <div *ngIf="order.type == 'dinein'" class="table">
+                    <div class="title">
+                        <span *ngIf="order.id" class="text text-font">
+                            Table<span class="small">#{{ order.id }}</span>
+                        </span>
+                        <span *ngIf="!order.id" class="text text-font">
+                            Select table
+                        </span>
+                    </div>
+                    <div class="button">
+                        <button (click)="selectTable()" class="orange-button"><ion-icon name="qr-code-outline"></ion-icon> Scan</button>
+                    </div>
+                </div>
+            </div>
+            <div class="dishes" *ngIf="order.dishes">
+                <app-selected-dish *ngFor="let dish of order.dishes" [dish]="dish" (emitter)="onSelectedDishEmitter($event)"></app-selected-dish>
+
+                <div *ngIf="!order.dishes || order.dishes.length == 0" class="no-dishes">
+                    <span class="title-font text">
+                        No dishes selected
+                    </span>
+                </div>
+            </div>
+
+            <div class="comment-wrap" [class.no-comment]="!order.comment">
+                <span class="text" *ngIf="order.comment">
+                    {{ order.comment }}
+                </span>
+                <button (click)="setComment()" class="orange-button">
+                    <span *ngIf="order.comment">
+                        Change
+                    </span>
+                    <span *ngIf="!order.comment">
+                        Add comment
+                    </span>
+                </button>
+            </div>
+
+            <div class="checkout">
+                <button class="orange-button" [disabled]="order.dishes.length < 1 || !order.id" (click)="openCheckout()">
+                    Checkout <ion-icon name="arrow-forward-outline"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-container #selectTableContainer></ng-container>
+<ng-container #checkoutContainer></ng-container>

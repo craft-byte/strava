@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SequentialRoutingGuardService } from '../other/sequential-routing-guard.service';
-import { MainService } from '../services/main.service';
+import { MainService } from '../other/main.service';
 
 @Injectable({
   providedIn: 'root'

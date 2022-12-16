@@ -4,7 +4,7 @@ import { Component, OnInit, Output, EventEmitter, } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { RouterService } from 'src/app/other/router.service';
-import { MainService } from 'src/app/services/main.service';
+import { MainService } from 'src/app/other/main.service';
 import { UserService } from '../../user.service';
 
 @Component({

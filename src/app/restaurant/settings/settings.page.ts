@@ -46,13 +46,13 @@ export class SettingsPage implements OnInit {
     @ViewChild("onlineOrderingModalContainer", { read: ViewContainerRef }) onlineOrderingModal: ViewContainerRef;
 
     continueRegistration() {
-        this.router.go(["restaurant", this.service.restaurantId, "home"]);
+        this.router.go(["restaurant", this.service.restaurant._id, "home"]);
     }
     changeLocation() {
-        this.router.go(["restaurant", this.service.restaurantId, "conf", "address"], { queryParams: { last: "settings" } });
+        this.router.go(["restaurant", this.service.restaurant._id, "conf", "address"], { queryParams: { last: "settings" } });
     }
     qrCodes() {
-        this.router.go(["restaurant", this.service.restaurantId, "qr-codes"], { queryParams: { last: this.router.url } } );
+        this.router.go(["restaurant", this.service.restaurant._id, "qr-codes"], { queryParams: { last: this.router.url } } );
     }
 
     async toast(s: boolean) { // is success true/false
@@ -228,7 +228,7 @@ export class SettingsPage implements OnInit {
 
         component.instance.leave.subscribe((redirect: string) => {
             if(redirect == "bank") {
-                this.router.go(["restaurant", this.service.restaurantId, "conf", "bank-account"], { queryParams: { last: "settings" } });
+                this.router.go(["restaurant", this.service.restaurant._id, "conf", "bank-account"], { queryParams: { last: "settings" } });
             } else if(redirect == "contact") {
                 
             }
@@ -292,7 +292,7 @@ export class SettingsPage implements OnInit {
         this.bank = result.payoutDestination;
         this.restaurant = result.restaurant;
 
-        this.restaurant._id = this.service.restaurantId;
+        this.restaurant._id = this.service.restaurant._id;
     }
 
 }

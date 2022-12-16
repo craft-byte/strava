@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
-import { MainService } from 'src/app/services/main.service';
+import { MainService } from 'src/app/other/main.service';
 import { UserService } from '../user.service';
 
 @Component({
@@ -84,7 +84,7 @@ export class RegistrationPage implements OnInit {
                 this.ui.disableSubmit = true;
                 return;
             } else {
-                this.main.setUserInfo(result.auth.token);
+                this.main.setUserInfo(result.auth.token, result.auth.expires);
                 this.router.go(["user/info"]);
                 return;
             }

@@ -1,0 +1,38 @@
+<div class="app" (click)="open()">
+    <div class="box">
+        <div class="image">
+            <img [src]="image" *ngIf="image" [class]="imageClass">
+    
+            <div class="loading" *ngIf="ui.imageLoading">
+                <span class="spinner"></span>
+            </div>
+    
+            <div class="time-category">
+                <div class="time">
+                    <span class="text button-font">
+                        {{ dish.time }} m.
+                    </span>
+                </div>
+                <div class="category" *ngIf="showCategory">
+                    <span class="text button-font">
+                        {{ category }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="info">
+            <div class="name">
+                <span class="text text-font">
+                    {{ dish.name }}
+                </span>
+            </div>
+            <div class="price">
+                <span class="text text-font">
+                    ${{ dish.price / 100 }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-container #modalContainer></ng-container>

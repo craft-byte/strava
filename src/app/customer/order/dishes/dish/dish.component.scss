@@ -1,0 +1,108 @@
+.app {
+    width: 324px;
+    
+    .box {
+        border: 1px solid var(--border-color);
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        border-radius: 8px;
+
+
+        .image {
+            display: flex;
+            justify-content: center;
+            position: relative;
+    
+            .loading {
+                height: 183px;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+    
+                .spinner {
+                    width: 32px;
+                    height: 32px;
+                    border-top: 2px solid var(--border-color);
+                    border-radius: 100%;
+                    -webkit-animation: spin 1.5s linear infinite;
+                    animation: spin 1.5s linear infinite;
+                }
+            }
+    
+            img {
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                width: 324px;
+                object-fit: cover;
+    
+                &.r1 {
+                    width: 100%;
+                    height: 278px;
+                }
+    
+                &.r2 {
+                    height: 244px;
+                }
+    
+                &.r3 {
+                    height: 183px;
+                }
+            }
+    
+            .time-category {
+                position: absolute;
+                width: 100%;
+                bottom: 0;
+                left: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding-right: 8px;
+                gap: 6px;
+    
+                .time, .category {
+                    padding: 2px 4px;
+                    background-color: rgba(255, 255, 255, 0.6);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-top-left-radius: 4px;
+                    border-top-right-radius: 4px;
+    
+                    .text {
+                        font-size: 12px;
+                        color: var(--black);
+                    }
+                }
+            }
+        }
+    
+        .info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            padding: 0 12px;
+    
+            .name {
+                font-size: 18px;
+    
+                .text {
+                    color: var(--black);
+                }
+            }
+    
+            .price {
+                
+                .text {
+                    color: var(--text-color);
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+}
+
+

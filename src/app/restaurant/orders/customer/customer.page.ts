@@ -48,7 +48,7 @@ export class CustomerPage implements OnInit {
     ) { };
 
     fullOrder(id: string) {
-        this.router.go(["restaurant", this.service.restaurantId, "orders", "full", id], { queryParams: { last: this.router.url } });
+        this.router.go(["restaurant", this.service.restaurant._id, "orders", "full", id], { queryParams: { last: this.router.url } });
     }
 
     async addToBlacklist() {
@@ -137,7 +137,7 @@ export class CustomerPage implements OnInit {
         if (last) {
             this.router.go([last]);
         } else {
-            this.router.go(["restaurant", this.service.restaurantId, "orders", "customers"]);
+            this.router.go(["restaurant", this.service.restaurant._id, "orders", "customers"]);
         }
     }
 
@@ -149,7 +149,7 @@ export class CustomerPage implements OnInit {
 
 
         if (!result) {
-            return this.router.go(["restaurant", this.service.restaurantId, "people", "customers"], { replaceUrl: true });
+            return this.router.go(["restaurant", this.service.restaurant._id, "people", "customers"], { replaceUrl: true });
         }
 
         const { orders, user, info } = result;

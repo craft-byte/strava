@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { ToastController } from "@ionic/angular";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
+import { MainService } from "./main.service";
 import { RouterService } from "./router.service";
 
 @Injectable()
@@ -15,6 +16,7 @@ export class Interceptor implements HttpInterceptor {
         private routerAngular: Router,
         private location: Location,
         private toastCtrl: ToastController,
+        private main: MainService,
     ) { };
 
     async toast() {
@@ -45,6 +47,7 @@ export class Interceptor implements HttpInterceptor {
                 if(err instanceof HttpErrorResponse) {
                     if(err.status == 401) {
                         if(err.error.redirect) {
+                            this.main.removeUserInfo();
                             this.router.go(["login"], { replaceUrl: true, queryParams: { last: this.router.url } }, false);
                         }
                     } else if(err.status == 403) {

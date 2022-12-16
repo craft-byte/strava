@@ -1,15 +1,17 @@
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { io } from "..";
-import { Settings } from "../models/components";
+import { Worker } from "../models/worker";
 import { Locals } from "../models/other";
 import { logged } from "../utils/middleware/logged";
 import { allowed } from "../utils/middleware/restaurantAllowed";
-import { Orders, Restaurant } from "../utils/restaurant";
+import { Restaurant } from "../utils/restaurant";
+import { Orders } from "../utils/orders";
 import { getUser } from "../utils/users";
 import { KitchenRouter } from "./staff/kitchen/kitchen";
 import { ManualOrderRouter } from "./staff/manualOrder";
 import { OrderRouter } from "./staff/order";
 import { WaiterRouter } from "./staff/waiter/waiter";
+import { join } from "../utils/io";
 
 const router = Router();
 
@@ -20,26 +22,7 @@ router.use("/:restaurantId/manual", ManualOrderRouter);
 router.use("/:restaurantId/order", OrderRouter);
 
 
-router.post("/:restaurantId/solo", logged({ _id: 1, }), async (req, res, next) => {
-    const { user } = res.locals as Locals;
-    const { restaurantId } = req.params;
-    
-    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1, role: 1, settings: 1, }, } });
-
-    if(!restaurant) {
-        return res.status(404).send({ reason: "NoRestaurant" });
-    }
-
-    for(let i of restaurant.staff!) {
-        if(i.userId.equals(user._id)) {
-            if((i.role == "manager" && (i.settings as Settings.ManagerSettings).work.cook && (i.settings as Settings.ManagerSettings).work.waiter) || i.role == "owner") {
-                return next();
-            }
-            return res.status(403).send({ reason: "NotAllowed" });
-        }
-    }
-    return res.status(403).send({ reason: "NotMember" });
-}, async (req, res) => {
+router.post("/:restaurantId/solo", logged({ _id: 1, }), SoloMiddleware, async (req, res) => {
     const { socketId } = req.body;
     const { restaurantId } = req.params as any;
 
@@ -47,12 +30,12 @@ router.post("/:restaurantId/solo", logged({ _id: 1, }), async (req, res, next) =
         return res.status(403).send({ reason: "SocketIdNotProvided" });
     }
 
-    io.in(socketId).socketsJoin([`${restaurantId}/waiter`, `${restaurantId}/kitchen`]);
+    join(restaurantId, socketId);
 
     res.send(true);
 });
-router.get("/:restaurantId/dashboard", logged({ _id: 1 }), allowed({ info: { name: 1 }, staff: 1 }, "staff"), async (req, res) => {
-    const { restaurant, user } = res.locals;
+router.get("/:restaurantId/dashboard", logged({ _id: 1 }), SoloMiddleware, async (req, res) => {
+    const { restaurant, user } = res.locals as Locals;
 
 
     const ui: any = {
@@ -63,18 +46,18 @@ router.get("/:restaurantId/dashboard", logged({ _id: 1 }), allowed({ info: { nam
 
     console.log(restaurant.staff);
 
-    for(let i of restaurant?.staff!) {
-        if(user._id.equals(i.userId)) {
-            ui.showKitchen = i.role == "cook" || i.role == "owner" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.cook : false);
-            ui.showWaiter = i.role == "waiter" || i.role == "owner" || (i.role == "manager" ? (i.settings as Settings.ManagerSettings).work.waiter : false);
-            ui.role = i.role;
+    for(let worker of restaurant?.staff!) {
+        if(user._id.equals(worker.userId)) {
+            ui.showCook = worker.settings.work?.cook;
+            ui.showWaiter = worker.settings.work?.waiter;
+            break;
         }
     }
 
     res.send({ restaurant, user: ui });
 });
 
-router.post("/:restaurantId/socketReconnect", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.post("/:restaurantId/socketReconnect", logged({ _id: 1 }), SoloMiddleware, async (req, res) => {
     const { id, joinTo } = req.body;
     const { restaurantId } = req.params;
 
@@ -85,14 +68,14 @@ router.post("/:restaurantId/socketReconnect", logged({ _id: 1 }), allowed({ _id:
     res.send(null);
 });
 
-router.get("/:restaurantId/dish/:dishId", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.get("/:restaurantId/dish/:dishId", logged({ _id: 1 }), SoloMiddleware, async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1, info: { time: 1 }, image: { binary: 1 } } });
     
     res.send(result);
 });
-router.get("/:restaurantId/dish/:dishId/image", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.get("/:restaurantId/dish/:dishId/image", logged({ _id: 1 }), SoloMiddleware, async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { image: { binary: 1 } } });
@@ -110,7 +93,7 @@ interface Order {
         _id: any;
     };
 };
-router.post("/:restaurantId/orders", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.post("/:restaurantId/orders", logged({ _id: 1 }), SoloMiddleware, async (req, res) => {
     const { restaurantId } = req.params;
     const { socketId } = req.body;
 
@@ -169,4 +152,43 @@ router.post("/:restaurantId/orders", logged({ _id: 1 }), allowed({ _id: 1 }, "st
 
 export {
     router as StaffRouter
+}
+
+
+
+
+
+async function SoloMiddleware(req: Request, res: Response, next: NextFunction) {
+    const { user } = res.locals as Locals;
+    const { restaurantId } = req.params;
+    
+
+    const restaurant = await Restaurant(restaurantId).get({ projection: { staff: { userId: 1, role: 1, settings: 1, }, settings: { staff: 1 } } });
+
+
+    if(!restaurant) {
+        return res.status(404).send({ reason: "NoRestaurant" });
+    }
+
+
+    if(restaurant.settings?.staff.mode != "solo") {
+        return res.status(403).send({ reason: "RestaurantMode" });
+    }
+
+
+    for(let worker of restaurant.staff!) {
+        if(worker.userId.equals(user._id)) {
+            if(!worker.settings || !worker.settings.work) {
+                return res.status(403).send({ reason: "NotAllowed" });
+            }
+
+            if(worker.settings.isOwner || ((worker.settings as Worker["settings"]).work!.cook || (worker.settings as Worker["settings"]).work!.waiter)) {
+                return next();
+            }
+
+            return res.status(403).send({ reason: "NotAllowed" });
+        }
+    }
+
+    return res.status(403).send({ reason: "NotMember" });
 }

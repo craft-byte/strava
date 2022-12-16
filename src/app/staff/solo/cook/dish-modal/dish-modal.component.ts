@@ -5,6 +5,7 @@ import { StaffService } from 'src/app/staff/staff.service';
 import { getImage } from 'src/functions';
 import { SoloService } from '../../solo.service';
 import { Subscription } from "rxjs";
+import { CookData } from 'server/src/models/messages';
 
 @Component({
     selector: 'app-dish-modal',
@@ -132,13 +133,21 @@ export class DishModalComponent implements OnInit, OnDestroy {
             this.takenAvatar = getImage(this.data.taken.user.avatar);
         }
 
-        this.subscription = this.s.flow.subscribe(async res => {
-            if (res.type == "kitchen/dish/take") {
-                if ((res.data as any).orderDishId == this.orderDish._id) {
+        this.subscription = this.s.cook.subscribe(async res => {
+            if (res.type == "dish/taken") {
+                const data = res.data as CookData.Dish;
+
+
+                if (data._id == this.orderDish._id) {
                     this.getTakenInfo((res.data as any).taken);
                 }
-            } else if (res.type == "kitchen/dish/done") {
-                if ((res.data as any).orderDishId == this.orderDish._id) {
+            }
+            
+            else if (res.type == "dish/done") {
+                const data = res.data as CookData.Dish;
+
+
+                if (data._id == this.orderDish._id) {
                     this.leave.emit(1);
                     (await this.toastCtrl.create({
                         duration: 1500,
@@ -147,8 +156,12 @@ export class DishModalComponent implements OnInit, OnDestroy {
                         mode: "ios",
                     })).present();
                 }
-            } else if (res.type == "kitchen/dish/quitted") {
-                if ((res.data as any).orderDishId == this.orderDish._id) {
+            }
+            
+            else if (res.type == "dish/quitted") {
+                const data = res.data as CookData.Dish;
+
+                if (data._id == this.orderDish._id) {
                     this.data.taken = null;
                     this.data.ui.taken = false;
                 }

@@ -11,11 +11,8 @@
     "build": "npm run build:web && npm run build:server",
     "build:server": "cd ./server && npm run build",
     "build:web": "ng build --configuration production",
-
-    "web": "ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''",
-    "testing": "ionic serve --configuration=testing --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''",
     "server:start": "cd ./server && npm run start",
-    "web:npx": "npx ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''"
+    "web": "npx ionic serve --ssl --ssl-key 'C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.key' --ssl-cert ''C:/Files/projects/ctraba-project/ctraba/src/environments/localhost.crt''"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +41,7 @@
     "ionic-rating-component": "^1.2.1",
     "js-cookie": "^3.0.1",
     "jsqr": "^1.4.0",
+    "ng-swipe": "^2.0.1",
     "ngx-cookie-service": "^13.0.0",
     "ngx-image-cropper": "^6.1.0",
     "ngx-socket-io": "^4.1.0",

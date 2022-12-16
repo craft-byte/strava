@@ -1,0 +1,22 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close" (click)="close()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Scan the QR code on your table
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="video-wrapper">
+                <video #videoElement [hidden]="!ui.showVideo" id="camera-video"></video>
+            </div>
+            <div class="spinner-loading" *ngIf="ui.showLoading">
+                <span class="spinner"></span>
+            </div>
+        </div>
+    </div>
+</div>

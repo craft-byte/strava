@@ -230,7 +230,7 @@ export class ListPage implements OnInit {
 
 
     async fullOrder(id: string) {
-        this.router.go(["restaurant", this.service.restaurantId, "orders", id], { replaceUrl: false });
+        this.router.go(["restaurant", this.service.restaurant._id, "orders", id], { replaceUrl: false });
     }
 
     next() {
@@ -259,7 +259,7 @@ export class ListPage implements OnInit {
     }
 
     ngOnInit() {
-        this.restaurantId = this.service.restaurantId;
+        this.restaurantId = this.service.restaurant._id;
         const skip = this.route.snapshot.queryParamMap.get("p");
         if (!skip || Number(skip) == 0) {
             this.ui.disablePrev = true;

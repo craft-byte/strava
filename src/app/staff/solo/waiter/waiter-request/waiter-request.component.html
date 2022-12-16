@@ -1,0 +1,27 @@
+<div class="app">
+    <div class="customer">
+        <img [src]="avatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+        <span class="name text-font">
+            {{ request.customer.name }}
+        </span>
+    </div>
+    <div class="reason">
+        <span *ngIf="request.reason == 'cash'" class="text text-font cash">
+            <ion-icon name="cash-outline"></ion-icon> wants to pay with cash <ion-icon name="cash-outline"></ion-icon>
+        </span>
+        <span *ngIf="request.reason == 'payment.error'" class="text text-font cash">
+            has problems paying
+        </span>
+        <span *ngIf="request.reason == 'other'" class="text text-font cash">
+            wants to talk to waiter
+        </span>
+    </div>
+    <div class="buttons">
+        <button (click)="cancel()" class="cancel button-font">
+            Cancel
+        </button>
+        <button (click)="accept()" class="orange-button">
+            Accept
+        </button>
+    </div>
+</div>

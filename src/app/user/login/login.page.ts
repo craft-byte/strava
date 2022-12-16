@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MainService } from 'src/app/services/main.service';
+import { MainService } from 'src/app/other/main.service';
 import { ActivatedRoute } from '@angular/router';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
@@ -80,12 +80,11 @@ export class LoginPage implements OnInit {
             const result: { success: boolean; redirectTo: string; } = await this.main.login({ email: username, password: password });
 
 
-
             if (result.success) {
                 const last = this.route.snapshot.queryParamMap.get("last");
 
                 if (last) {
-                    this.router.go([last], { replaceUrl: true });
+                    this.router.r.navigateByUrl(last, { replaceUrl: true  });
                 } else if (result.redirectTo) {
                     this.router.go([result.redirectTo], { replaceUrl: true });
                 } else {

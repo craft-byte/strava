@@ -3,7 +3,8 @@ import { ObjectId } from "mongodb";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
-import { Orders, Restaurant } from "../../utils/restaurant";
+import { Restaurant } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
 import { getUser, updateUser } from "../../utils/users";
 import { logged } from "../../utils/middleware/logged";
 import { Locals } from "../../models/other";
@@ -23,7 +24,7 @@ interface Customer {
 /**
  * @returns { Customer[] } - list of customers
  */
-router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklist: 1, info: { tables: 1 } }, "manager", "customers"), async (req, res) => {
+router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklist: 1, info: { tables: 1 } }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { calculate } = req.query;
     const { restaurant } = res.locals as Locals;
@@ -128,7 +129,7 @@ router.get("/", logged({ _id: 1 }), allowed({ cache: { customers: 1, }, blacklis
  * add to blacklist
  * @returns { updated: boolean; }
  */
-router.delete("/blacklist/:userId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager", "staff"), async (req, res) => {
+router.delete("/blacklist/:userId", logged({ _id: 1 }), allowed({ _id: 1, }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).update({ $addToSet: { blacklist: id(userId)! } });
@@ -145,7 +146,7 @@ router.delete("/blacklist/:userId", logged({ _id: 1 }), allowed({ _id: 1, }, "ma
  * remove from blacklist
  * @returns { updated: boolean; }
  */
-router.delete("/unblacklist/:userId", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "staff"), async (req, res) => {
+router.delete("/unblacklist/:userId", logged({ _id: 1, }), allowed({ _id: 1 }, { restaurant: { staff: true } }), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const restaurant = await Restaurant(restaurantId).update({ $pull: { blacklist: id(userId)! } });
@@ -182,7 +183,7 @@ interface Result {
 /**
  * @returns { Result } a customer and a customer's all orders
  */
-router.get("/info/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "customers"), async (req, res) => {
+router.get("/info/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurantId, userId } = req.params as any;
 
     const user = await getUser(userId, { projection: { name: 1, username: 1, avatar: 1, email: 1, blacklisted: 1 } });

@@ -11,6 +11,8 @@ import { CookComponent } from './cook/cook.component';
 import { WaiterComponent } from './waiter/waiter.component';
 import { DishComponent as CookDishComponent } from './cook/dish/dish.component';
 import { DishComponent as WaiterDishComponent } from './waiter/dish/dish.component';
+import { WaiterRequestComponent } from './waiter/waiter-request/waiter-request.component';
+
 
 @NgModule({
   imports: [
@@ -19,6 +21,6 @@ import { DishComponent as WaiterDishComponent } from './waiter/dish/dish.compone
     IonicModule,
     SoloPageRoutingModule
   ],
-  declarations: [SoloPage, CookComponent, WaiterComponent, CookDishComponent, WaiterDishComponent]
+  declarations: [SoloPage, CookComponent, WaiterComponent, CookDishComponent, WaiterDishComponent, WaiterRequestComponent]
 })
 export class SoloPageModule {}

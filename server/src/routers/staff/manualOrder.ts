@@ -5,19 +5,20 @@ import { Locals, StripeOrderMetadata } from "../../models/other";
 import { updateDishesBought } from "../../utils/confirmOrder";
 import { DishHashTableUltra } from "../../utils/dish";
 import { id } from "../../utils/functions";
-import { sendMessage } from "../../utils/io";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../utils/other";
-import { Orders, Restaurant } from "../../utils/restaurant";
-import { getUser } from "../../utils/users";
+import { Restaurant } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
+import { sendMessageToCook } from "../../utils/io";
+import { ParsedOrderDish } from "../../models/staff";
 
 
 
 const router = Router({ mergeParams: true });
 
 
-router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers: 1, staff: { mode: 1, } } }, "staff"), async (req, res) => {
+router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers: 1, staff: { mode: 1, } } }, { work: { waiter: true } }), async (req, res) => {
     const { restaurantId } = req.params;
     const { restaurant, user } = res.locals as Locals;
 
@@ -27,7 +28,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
     let order = await Orders(restaurantId).one({ onBehalf: id(user._id), status: "ordering" }).get({ projection: { dishes: { _id: 1, dishId: 1, comment: 1, }, comment: 1, type: 1, } });
 
     if(!order) {
-        await Orders(restaurantId).createOrder({
+        await Orders(restaurantId).createSession({
             _id: id()!,
             status: "ordering",
             onBehalf: user._id,
@@ -38,6 +39,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
             customer: null!,
             mode: null!,
             dishes: [],
+            waiterRequests: []
         });
 
         order = { dishes: [], type: "dinein", comment: null! } as any;
@@ -75,7 +77,7 @@ router.get("/init", logged({ _id: 1 }), allowed({ _id: 1, settings: { customers:
 });
 
 
-router.post("/order/type", logged({ _id: 1, }), allowed({ _id: 1, settings: { customers: 1, } }, "staff"), async (req, res) => {
+router.post("/order/type", logged({ _id: 1, }), allowed({ _id: 1, settings: { customers: 1, } }, { work: { waiter: true } }), async (req, res) => {
     const { restaurant, user, } = res.locals as Locals;
     const { type } = req.body;
 
@@ -91,7 +93,7 @@ router.post("/order/type", logged({ _id: 1, }), allowed({ _id: 1, settings: { cu
     
     res.send({ updated: update.ok == 1 });
 });
-router.post("/order/comment", logged({ _id: 1, }), allowed({ _id: 1, }, "staff"), async (req, res) => {
+router.post("/order/comment", logged({ _id: 1, }), allowed({ _id: 1, }, { work: { waiter: true } }), async (req, res) => {
     const { restaurantId } = req.params;
     const { comment } = req.body;
     const { user } = res.locals as Locals;
@@ -106,7 +108,7 @@ router.post("/order/comment", logged({ _id: 1, }), allowed({ _id: 1, }, "staff")
 
     res.send({ updated: result.ok == 1 });
 });
-router.post("/order/dish", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.post("/order/dish", logged({ _id: 1, }), allowed({ _id: 1 }, { work: { waiter: true } }), async (req, res) => {
     const { dishId } = req.body;
     const { restaurant, user } = res.locals as Locals;
 
@@ -126,7 +128,7 @@ router.post("/order/dish", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), as
 
     res.send(null);
 });
-router.post("/order/dish/:orderDishId/comment", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.post("/order/dish/:orderDishId/comment", logged({ _id: 1, }), allowed({ _id: 1 }, { work: { waiter: true } }), async (req, res) => {
     const { orderDishId, restaurantId } = req.params;
     const { user } = res.locals as Locals;
     const { comment } = req.body;
@@ -139,7 +141,7 @@ router.post("/order/dish/:orderDishId/comment", logged({ _id: 1, }), allowed({ _
 
     res.send({ updated: result.ok == 1 });
 });
-router.delete("/order/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.delete("/order/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }, { work: { waiter: true } }), async (req, res) => {
     const { orderDishId, restaurantId } = req.params;
     const { user } = res.locals as Locals;
 
@@ -151,7 +153,7 @@ router.delete("/order/dish/:orderDishId", logged({ _id: 1 }), allowed({ _id: 1 }
 
 
 
-router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1, staff: 1, } }, "staff"), async (req, res) => {
+router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1, staff: 1, } }, { work: { waiter: true } }), async (req, res) => {
     const { restaurant, user, } = res.locals as Locals;
 
     if(restaurant.settings?.money?.card != "enabled" && restaurant.settings?.money?.cash != "enabled") {
@@ -192,7 +194,7 @@ router.get("/checkout", logged({ _id: 1, }), allowed({ settings: { money: 1, sta
     });
 });
 
-router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccountId: 1, settings: { money: 1 } }, "staff"), async (req, res) => {
+router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccountId: 1, settings: { money: 1 } }, { work: { waiter: true } }), async (req, res) => {
     const { restaurant, user } = res.locals as Locals;
 
     const order = await Orders(restaurant._id).one({ onBehalf: user._id, status: "ordering" }).get({ projection: { paymentIntentId: 1, money: 1 } });
@@ -220,7 +222,7 @@ router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccount
                 },
                 metadata: <StripeOrderMetadata>{
                     restaurantId: restaurant._id.toString(),
-                    orderId: order._id.toString(),
+                    sessionId: order._id.toString(),
                     by: "staff",
                 },
             },
@@ -234,7 +236,7 @@ router.get("/order/payment-intent", logged({ _id: 1, }), allowed({ stripeAccount
     }
 
 });
-router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "staff"), async (req, res) => {
+router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, { work: { waiter: true } }), async (req, res) => {
     const { user, restaurant } = res.locals as Locals;
 
     const update = await Orders(restaurant._id)
@@ -248,7 +250,7 @@ router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "sta
         
     res.send({ updated: update.ok == 1 });
         
-    const forKitchen = [];
+    const forKitchen: ParsedOrderDish[] = [];
 
     const time = getDelay(update.order.ordered!);
     for (let i in update.order.dishes!) {
@@ -259,13 +261,9 @@ router.post("/order/confirm/cash", logged({ _id: 1, }), allowed({ _id: 1 }, "sta
         });
     }
 
-    sendMessage([`${restaurant._id.toString()}/kitchen`], "kitchen", {
-        type: "kitchen/order/new",
-        event: "kitchen",
-        data: forKitchen,
-    });
+    sendMessageToCook(restaurant._id.toString(), "order/new", forKitchen);
 });
-router.post("/order/confirm", logged({ _id: 1, name: { first: 1, } }), allowed({ settings: { staff: 1 } }, "staff"), async (req, res) => {
+router.post("/order/confirm", logged({ _id: 1, name: { first: 1, } }), allowed({ settings: { staff: 1 } }, { work: { waiter: true }}), async (req, res) => {
     const { restaurant, user } = res.locals as Locals;
 
     if(!restaurant.settings || restaurant.settings.staff.mode != "disabled") {
@@ -287,20 +285,8 @@ router.post("/order/confirm", logged({ _id: 1, name: { first: 1, } }), allowed({
 
     res.send({ updated: update.ok == 1 && update2.acknowledged });
 
-    const time = new Date(Date.now());
-
-    const a = {
-        time: `${ time.getHours() }:${ time.getMinutes().toString().length == 1 ? "0" + time.getMinutes().toString() : time.getMinutes() }`,
-        total: update.order.money?.total,
-        user: {
-            name: user.name?.first || "Deleted",
-            _id: user._id,
-        }
-    };
 
     updateDishesBought(restaurant._id, update.order.dishes);
-
-    sendMessage([`${restaurant._id.toString()}`], "other", { order: a, type: "new-order" });
 });
 
 

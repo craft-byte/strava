@@ -8,11 +8,8 @@
     "build": "echo 'SERVER BUILD STAGE' && npm run prod:install && npm run prod:build",
     "prod:install": "echo 'INSTALLING PACKAGES' && npm ci --only:prod",
     "prod:build": "echo 'BUILDING PROJECT' && tsc -p tsconfig.prod.json && echo 'PROJECT BUILT'",
-    "dev:build": "tsc -p tsconfig.dev.json -w",
-    "dev:start": "nodemon dev/index.js dev",
-    "dev:build:npx": "npx tsc -p tsconfig.dev.json -w",
-    "dev:start:npx": "npx nodemon dev/index.js dev",
-    "dev:testing": "nodemon dev/index.js testing"
+    "dev:build": "npx tsc -p tsconfig.dev.json -w",
+    "dev:start": "npx nodemon dev/index.js dev"
   },
   "author": "Bazhan Nagnybida",
   "license": "ISC",
@@ -39,7 +36,7 @@
     "express": "^4.17.3",
     "express-session": "^1.17.2",
     "express-sslify": "^1.2.0",
-    "mongodb": "^4.4.1",
+    "mongodb": "^4.12.1",
     "morgan": "^1.10.0",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.20",

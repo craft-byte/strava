@@ -1,0 +1,68 @@
+.app {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(1px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 20vh;
+
+    .box {
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 24px 18px;
+        width: 80%;
+        max-width: 400px;
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            .text {
+                font-size: 20px;
+                color: var(--black);
+            }
+        }
+        
+        .content {
+            .waiter {
+                margin-top: 12px;
+                display: flex;
+                align-items: center;
+
+                img {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 100%;
+                    object-fit: cover;
+                    border: 1px solid var(--orange);
+                }
+                .name {
+                    color: var(--black);
+                    margin-left: 8px;
+                }
+            }
+        }
+        
+        .buttons {
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    .canceled {
+        border: 2px solid var(--red-dark);
+    }
+
+    .accepted {
+        border: 2px solid var(--green-dark);
+    }
+}

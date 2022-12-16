@@ -1,0 +1,53 @@
+<div class="app" (mousedown)="close()">
+    <div class="box" (mousedown)="$event.stopPropagation()">
+        <div class="header">
+            <span class="text">
+                Strava
+            </span>
+        </div>
+        <div class="content">
+            <div class="logged-in" *ngIf="userStatus == 'loggedin' || userStatus == 'loggedout' && user">
+                <div class="user">
+                    <img [src]="user.avatar || './../../../../assets/images/plain-avatar.jpg'" alt="">
+                    <span class="name text title-font">
+                        {{ user.name.first }} {{ user.name.last }}
+                    </span>
+                </div>
+                <div class="functions">
+                    <button (click)="goAccount()"> <ion-icon name="person-outline"></ion-icon> <span class="text button-font">Your account</span> </button>
+                    <button (click)="signOut()"> <ion-icon name="log-out-outline"></ion-icon> <span class="text button-font">Sign out</span> </button>
+                </div>
+                <div class="text">
+                    <span class="text text-font">
+                        Orders will be saved to this account.
+                    </span> <br>
+                    <span class="text text-font">
+                        Sign out to order anonymously. Orders will not be saved.
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="userStatus == 'noinfo'" class="no-info">
+                <div class="info">
+                    <span class="text text-font">
+                        Login to save your order.
+                    </span>
+                </div>
+                <div class="button">
+                    <button (click)="login()" class="orange-button">
+                        Login
+                    </button>
+                </div>
+                <div class="info margin">
+                    <span class="text text-font">
+                        Create an account to save and track favorite orders, get personalized recommendations and track dining history, enjoy valuable insights and statistics about your dining habits.
+                    </span>
+                </div>
+                <div class="button">
+                    <button (click)="signUp()" class="blue-button">
+                        Sign up
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

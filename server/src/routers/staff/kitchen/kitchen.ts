@@ -5,8 +5,10 @@ import { id } from "../../../utils/functions";
 import { logged } from "../../../utils/middleware/logged";
 import { allowed } from "../../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../../utils/other";
-import { Orders, Restaurant } from "../../../utils/restaurant";
+import { Restaurant } from "../../../utils/restaurant";
+import { Orders } from "../../../utils/orders";
 import { OrderRouter } from "./order";
+import { join } from "../../../utils/io";
 
 
 const router = Router({ mergeParams: true });
@@ -21,14 +23,14 @@ interface Dish {
     orderId: string;
     time: number;
     dishId: string;
-}; router.post("/init", logged({ _id: 1 }), allowed({}, "cook"), async (req, res) => {
+}; router.post("/init", logged({ _id: 1 }), allowed({}, { work: { cook: true } }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { socketId } = req.body;
 
     if(!socketId) {
         console.log("NO SOCKET ID: DANGER");
     } else {
-        io.in(socketId).socketsJoin(`${restaurantId}/kitchen`);
+        join(restaurantId, socketId);
     }
 
     const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1, id: 1 } } });
@@ -76,7 +78,7 @@ interface Dish {
 });
 
 
-router.get("/dishes", logged({ _id: 1, }), allowed({}, "cook"), async (req, res) => {
+router.get("/dishes", logged({ _id: 1, }), allowed({}, { work: { cook: true } }), async (req, res) => {
     const { restaurantId } = req.params;
 
     const orders = await Orders(restaurantId).many({ status: "progress" }, { projection: { ordered: 1, _id: 1, dishes: { status: 1, takenBy: 1, dishId: 1, _id: 1, id: 1 } } });

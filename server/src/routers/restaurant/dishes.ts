@@ -18,7 +18,7 @@ router.use("/:dishId", DishRouter);
 /**
  * @returns first 10 dishes of restaurant
  */
-router.get("/", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
+router.get("/", logged({ _id: 1 }), allowed({ _id: 1 }, { restaurant: { dishes: true } }), async (req, res) => {
     const { restaurantId } = req.params;
 
     const dishes = await Restaurant(restaurantId).dishes.many({ }).get({ limit: 10, projection: { name: 1, info: { modified: 1, bought: 1 }, price: 1, } });
@@ -58,7 +58,7 @@ router.get("/", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), as
  * @throws { status: 422; reason: "InvalidDishDescription" } - dish description is invalid
  * @throws { status: 422; reason: "InvalidDishCategory" } - dish category is invalid or not provided
  */
-router.post("/", logged({ _id: 1 }), allowed({  }, "manager", "dishes"), async (req, res) => {
+router.post("/", logged({ _id: 1 }), allowed({  }, { restaurant: { dishes: true } }), async (req, res) => {
     const { restaurantId } = req.params;
     const { name, price, image, description, time, category } = req.body;
     const { user } = res.locals as Locals;
@@ -121,7 +121,7 @@ router.post("/", logged({ _id: 1 }), allowed({  }, "manager", "dishes"), async (
  *
  * @returns { dishes } - found dishes
  */
-router.patch("/find", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
+router.patch("/find", logged({ _id: 1 }), allowed({ _id: 1 }, { restaurant: { dishes: true } }), async (req, res) => {
     const { searchText } = req.body;
     const { restaurant, } = res.locals as Locals;
     

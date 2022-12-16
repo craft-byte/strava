@@ -41,7 +41,7 @@ export class HomePage implements OnInit {
     }
 
     go(page: string) {
-        this.router.go(["restaurant", this.service.restaurantId, page]);
+        this.router.go(["restaurant", this.service.restaurant._id, page]);
     }
 
     async ngOnInit() {

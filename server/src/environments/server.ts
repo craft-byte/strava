@@ -11,11 +11,11 @@ export const serverEnvinroment = {
 }
 
 export const mainDBName = "stravaTest";
-export const ordersDBName = "ordersTest";
+export const sessionsDBName = "sessionsTest";
 export const dishesDBName = "dishesTest";
-export const historyDBName = "historyTest";
+export const historyDBName = "ordersTest";
 
 // export const mainDBName = "strava";
-// export const ordersDBName = "orders";
+// export const ordersDBName = "sessions";
 // export const dishesDBName = "dishes";
 // export const historyDBName = "history";

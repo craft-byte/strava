@@ -1,9 +1,8 @@
-import { AggregateOptions, AnyBulkWriteOperation, Filter, FindOneAndUpdateOptions, FindOptions, ModifyResult, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
-import { resourceLimits } from "worker_threads";
+import { AggregateOptions, AnyBulkWriteOperation, Filter, FindOneAndUpdateOptions, FindOptions, ObjectId, UpdateFilter, UpdateOptions, UpdateResult } from "mongodb";
 import { client } from "..";
-import { dishesDBName, historyDBName, mainDBName, ordersDBName } from "../environments/server";
-import { Component, Id } from "../models/components";
-import { Dish, Restaurant as RestaurantType, Order } from "../models/general";
+import { dishesDBName, historyDBName, mainDBName, sessionsDBName } from "../environments/server";
+import { Dish } from "../models/general";
+import { Restaurant as RestaurantType } from "../models/Restaurant";
 import { id } from "./functions";
 import { updateUser } from "./users";
 
@@ -25,11 +24,11 @@ function Restaurant(restaurantId?: string | ObjectId) {
                     console.log("user works deleted: ", result.ok == 1);
                 }
 
-                for (let i of restaurant.invitations!) {
-                    const result = await updateUser(i._id, { $pull: { invitations: { _id: id(i._id) } } });
+                // for (let i of restaurant.invitations!) {
+                //     const result = await updateUser(i._id, { $pull: { invitations: { _id: id(i._id) } } });
 
-                    console.log("user invitation deleted: ", result.ok == 1);
-                }
+                //     console.log("user invitation deleted: ", result.ok == 1);
+                // }
 
                 const result1 = await updateUser({ _id: (restaurant.info?.owner!) }, { $pull: { restaurants: { restaurantId: id(restaurantId)! } } });
 
@@ -42,7 +41,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
 
 
 
-                const result3 = await client.db(ordersDBName).dropCollection(restaurantId!.toString());
+                const result3 = await client.db(sessionsDBName).dropCollection(restaurantId!.toString());
                 const result4 = await client.db(dishesDBName).dropCollection(restaurantId!.toString());
                 const result5 = await client.db(historyDBName).dropCollection(restaurantId!.toString());
 
@@ -56,7 +55,7 @@ function Restaurant(restaurantId?: string | ObjectId) {
                 throw e;
             }
         },
-        aggregate: async <T>(pipeline: any[]): Promise<T[]> => {
+        aggregate: async <T extends Document>(pipeline: any[]): Promise<T[]> => {
             try {
                 return await client.db(mainDBName).collection("restaurants")
                     .aggregate<T>([
@@ -188,59 +187,6 @@ function Restaurant(restaurantId?: string | ObjectId) {
                 }
             }
         },
-        components: {
-            getAll: async (projection?: any): Promise<Component[]> => {
-                try {
-                    const result = await client.db(mainDBName).collection("restaurants").findOne<RestaurantType>({ _id: id(restaurantId) }, { projection: { components: projection } });
-
-                    return result?.components!;
-                } catch (err) {
-                    console.log(err);
-                    throw new Error("at Restaurant().components.getAll()");
-                }
-            },
-            substract: async (componentId: string | ObjectId, amount: number): Promise<UpdateResult | null> => {
-                if (!restaurantId) {
-                    return null;
-                }
-                const result = await client.db(mainDBName).collection("restaurants").updateOne(
-                    { _id: id(restaurantId) },
-                    { $inc: { "components.$[component].amount": amount } },
-                    {
-                        arrayFilters: [{ "component._id": id(componentId) }]
-                    }
-                );
-
-                return result;
-            },
-            getMany: async (ids: ObjectId[], projection?: any) => {
-                try {
-                    const result = await client.db(mainDBName).collection("restaurants").aggregate([
-                        { $match: { _id: id(restaurantId) } },
-                        { $unwind: "$components" },
-                        { $match: { "components._id": { $in: ids } } },
-                        {
-                            $group: {
-                                _id: "$_id",
-                                components: {
-                                    $push: "$components"
-                                }
-                            }
-                        },
-                        { $project: { components: projection || { name: 1, _id: 1 } } }
-                    ]).toArray();
-
-                    if (result.length == 0 || !result[0]) {
-                        return null;
-                    }
-
-                    return (result as any)[0].components as Component[];
-                } catch (e) {
-                    console.error(e);
-                    throw new Error("at Restaurant().components.getMany()");
-                }
-            }
-        },
         staff: {
             // remove: async (userId: string | ObjectId, reason: string, stars: number): Promise<null> => {
             //   if (!restaurantId) {
@@ -298,188 +244,6 @@ function Restaurant(restaurantId?: string | ObjectId) {
     }
 }
 
-
-function Orders(restaurantId: string | ObjectId) {
-    return {
-        update: async (search: Filter<Order>, update: UpdateFilter<Order>, options: UpdateOptions = {}) => {                 /////// check
-            try {
-                return await client.db(ordersDBName).collection<Order>(restaurantId.toString())
-                    .updateMany(search, update, options);
-            } catch (e) {
-                console.error("at Orders().update()");
-                throw e;
-            }
-        },
-        deleteMany: async (search: Filter<Order>) => {
-            try {
-                return await client.db(ordersDBName).collection(restaurantId.toString()).deleteMany(search);
-            } catch (e) {
-                console.error("at Orders().deleteMany()");
-                throw e;
-            }
-        },
-        aggregate: async (pipeline: any) => {
-            try {
-                const result = await client.db(ordersDBName).collection(restaurantId.toString()).aggregate(pipeline).toArray();
-
-                return result;
-            } catch (e) {
-                throw e;
-            }
-        },
-        createOrder: async (session: Order) => {
-            try {
-                if (!session.customer || !session.customerToken) {
-                    const restaurant = await Restaurant(restaurantId).get({ projection: { settings: { staff: 1 } } });
-
-                    if(!restaurant || !restaurant.settings) {
-                        return false;
-                    }
-
-                    const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-                        .insertOne({
-                            ...session,
-                            mode: restaurant?.settings?.staff.mode
-                        });
-
-                    return result.acknowledged;
-                }
-                let filter: Filter<Order>;
-                if (session.customer) {
-                    filter = { customer: session.customer };
-                } else {
-                    if (!session.customerToken) {
-                        throw "customer token missed";
-                    }
-                    filter = { customerToken: session.customerToken };
-                }
-                const exists = await client.db(ordersDBName).collection(restaurantId!.toString())
-                    .findOne({ ...filter, status: "ordering" }, { projection: { _id: 1, type: 1 } });
-
-                if (exists) {
-                    const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-                        .updateOne(
-                            { ...filter, status: "ordering" },
-                            {
-                                $set: {
-                                    socketId: session.socketId,
-                                    connected: session.connected,
-                                    id: session.id,
-                                    type: session.type,
-                                    ip: session.ip,
-                                    customerToken: session.customerToken,
-                                }
-                            });
-
-                    return result.modifiedCount > 0;
-                } else {
-                    const restaurant = await Restaurant(restaurantId).get({ projection: { settings: { staff: 1 } } });
-
-                    if(!restaurant || !restaurant.settings) {
-                        return false;
-                    }
-
-                    const result = await client.db(ordersDBName).collection(restaurantId!.toString())
-                        .insertOne({
-                            ...session,
-                            mode: restaurant?.settings?.staff.mode
-                        });
-
-                    return result.acknowledged;
-                }
-            } catch (e) {
-                throw e;
-            }
-        },
-
-        many: async (search: Filter<Order>, options?: FindOptions<Order>) => {
-            try {
-                const result = await client.db(ordersDBName).collection<Order>(restaurantId.toString())
-                    .find<Order>(search, options).toArray();
-
-                return result;
-            } catch (err) {
-                console.error("at Orders().all()");
-                throw err;
-            }
-        },
-        one: (search: Filter<Order>) => {
-            return {
-                get: async (options: FindOptions<Order> = {}): Promise<Order> => {
-                    try {
-                        const result = await client.db(ordersDBName).collection(restaurantId.toString())
-                            .findOne<Order>(search, options);
-
-                        return result as any;
-                    } catch (err) {
-                        console.error(err);
-                        throw new Error("at Orders.one().get()");
-                    }
-                },
-                update: async (update: UpdateFilter<Order>, options: FindOneAndUpdateOptions = {}): Promise<{ order: Order; ok: 1 | 0 }> => {
-                    try {
-                        const result = await client.db(ordersDBName).collection<Order>(restaurantId.toString())
-                            .findOneAndUpdate(
-                                search,
-                                update,
-                                { returnDocument: "after", ...options }
-                            );
-
-                        return { order: result.value as any, ok: result.ok };
-                    } catch (e) {
-                        console.error(e);
-                        throw new Error("at Orders().one().update");
-                    }
-                },
-                remove: async () => {
-                    try {
-                        const result = await client.db(ordersDBName).collection<Order>(restaurantId.toString())
-                            .findOneAndDelete(search);
-
-                        return result;
-                    } catch (e) {
-                        console.error(e);
-                        throw new Error("at Orders().one().remove()");
-                    }
-                }
-            }
-        },
-        history: {
-            insert: async (order: Order) => {
-                try {
-                    return await client.db(historyDBName).collection<Order>(restaurantId.toString()).insertOne(order);
-                } catch (e) {
-                    console.error("at Orders.hisotry.insert()")
-                    throw e;
-                }
-            },
-            many: async (search: Filter<Order>, options?: FindOptions<Order>) => {
-                try {
-                    const result = client.db(historyDBName).collection<Order>(restaurantId.toString())
-                        .find<Order>(search, options);
-
-                    return result;
-                } catch (err) {
-                    console.error("at Orders().all()");
-                    throw err;
-                }
-            },
-            one: async (search: Filter<Order>, options: FindOptions<Order> = {}): Promise<Order> => {
-                try {
-                    const result = await client.db(historyDBName).collection(restaurantId.toString())
-                        .findOne<Order>(search, options);
-
-                    return result as any;
-                } catch (err) {
-                    console.error(err);
-                    throw new Error("at Orders.one().get()");
-                }
-            },
-        }
-    };
-}
-
-
 async function manyRestaurants(filter: Filter<RestaurantType>, options: FindOptions) {
     try {
         return client.db(mainDBName).collection<RestaurantType>("restaurants").find(filter, options).toArray();
@@ -491,6 +255,5 @@ async function manyRestaurants(filter: Filter<RestaurantType>, options: FindOpti
 
 export {
     Restaurant,
-    Orders,
     manyRestaurants,
 }

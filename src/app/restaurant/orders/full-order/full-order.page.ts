@@ -84,12 +84,12 @@ export class FullOrderPage implements OnInit {
         if (last) {
             this.router.go([last]);
         } else {
-            this.router.go(["restaurant", this.service.restaurantId, "orders"], { replaceUrl: false });
+            this.router.go(["restaurant", this.service.restaurant._id, "orders"], { replaceUrl: false });
         }
     }
 
     fullCustomer() {
-        this.router.go(["restaurant", this.service.restaurantId, "orders", "customer", this.order.user._id], { queryParams: { last: this.router.url } });
+        this.router.go(["restaurant", this.service.restaurant._id, "orders", "customer", this.order.user._id], { queryParams: { last: this.router.url } });
     }
 
 

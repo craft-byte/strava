@@ -6,7 +6,7 @@
             </button>
         </div>
         <div class="text">
-            Cook and waiter
+            Kitchen
         </div>
     </div>
     <div class="buttons">
@@ -15,8 +15,8 @@
 </div>
 
 <div class="app">
-    <app-cook (leave)="fullOrder($event)"></app-cook>
     <app-waiter></app-waiter>
+    <app-cook (leave)="fullOrder($event)"></app-cook>
 </div>
 
 <ng-container #manualOrderModalContainer></ng-container>

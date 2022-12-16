@@ -6,6 +6,7 @@ import { StaffService } from 'src/app/staff/staff.service';
 import { getImage } from 'src/functions';
 import { SoloService } from '../../solo.service';
 import { Subscription } from "rxjs";
+import { WaiterData } from 'server/src/models/messages';
 
 
 
@@ -28,6 +29,21 @@ interface OrderInfo {
     order: OrderInfo;
 };
 
+interface OrderDish {
+    dishId: string;
+    _id: string;
+    id: string;
+    orderId: string;
+    
+    cooked?: {
+        time: any;
+        user: {
+            name: string;
+            avatar: any;
+            _id: string;
+        };
+    }
+}
 
 
 @Component({
@@ -58,7 +74,7 @@ export class DishModalComponent implements OnInit, OnDestroy {
         private toastCtrl: ToastController
     ) { };
 
-    @Input() orderDish: any;
+    @Input() orderDish: OrderDish;
     @Output() leave = new EventEmitter();
 
 
@@ -104,14 +120,14 @@ export class DishModalComponent implements OnInit, OnDestroy {
             this.customerAvatar = getImage(result.order.customer.avatar);
         }
 
-        this.subscription = this.s.flow.subscribe(async res => {
+        this.subscription = this.s.waiter.subscribe(async res => {
             const { type } = res;
 
 
-            if (type == "waiter/dish/served") {
-                const { orderDishId, dishId } = res.data as any;
+            if (type == "dish/served") {
+                const { _id, dishId } = res.data as WaiterData.Dish;
 
-                if(this.orderDish._id == orderDishId) {
+                if(this.orderDish._id == _id) {
                     this.leave.emit(true);
                     (await this.toastCtrl.create({
                         duration: 1500,

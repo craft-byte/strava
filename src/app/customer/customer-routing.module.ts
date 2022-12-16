@@ -26,7 +26,11 @@ const routes: Routes = [
         loadChildren: () => import('./history/history.module').then( m => m.HistoryPageModule)
       },
     ]
+  },  {
+    path: 'tracking',
+    loadChildren: () => import('./tracking/tracking.module').then( m => m.TrackingPageModule)
   },
+
 ];
 
 @NgModule({

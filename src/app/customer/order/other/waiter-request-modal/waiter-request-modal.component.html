@@ -1,0 +1,47 @@
+<div class="app">
+    <div class="box" *ngIf="!request.canceled && !request.accepted">
+        <div class=" header">
+            <span class="text title-font">
+                Waiting for a waiter...
+            </span>
+        </div>
+        <div class="content">
+            <div class="buttons">
+                <button (click)="cancel()" class="orange-button">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="box canceled" *ngIf="request.canceled">
+        <div class="header">
+            <span class="text title-font">
+                Waiter request was canceled
+            </span>
+        </div>
+        <div class="content">
+            <div class="buttons">
+                <button (click)="close()" class="orange-button">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="box accepted" *ngIf="request.accepted">
+        <div class="header">
+            <span class="text title-font">
+                Waiter request was accepted
+            </span>
+        </div>
+        <div class="content">
+            <div *ngIf="request.waiter" class="waiter">
+                <img [src]="waiterAvatar || './../../../../../assets/images/plain-avatar.jpg'" alt="">
+                <span class="name text-font">
+                    {{ request.waiter.name }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-container #paymentProgressModal></ng-container>

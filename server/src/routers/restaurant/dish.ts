@@ -6,7 +6,8 @@ import { getDate, id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { bufferFromString } from "../../utils/other";
-import { Orders, Restaurant } from "../../utils/restaurant";
+import { Restaurant } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
 import { getUser } from "../../utils/users";
 
 
@@ -21,7 +22,7 @@ const router = Router({ mergeParams: true });
  * 
  * @returns full dish
  */
-router.get("/", logged({}), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
+router.get("/", logged({}), allowed({ _id: 1 }, { restaurant: { dishes: true } }), async (req, res) => {
     const { restaurantId, dishId } = req.params as any;
 
 
@@ -77,7 +78,7 @@ interface DishUpdate {
  *
  *
  */
-router.post("/", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
+router.post("/", logged({ _id: 1 }), allowed({ _id: 1 }, { restaurant: { dishes: true } }), async (req, res) => {
     const { restaurantId, dishId } = req.params;
     const { user } = res.locals as Locals;
     const { price, name, time, image, category, description } = req.body;
@@ -137,7 +138,7 @@ router.post("/", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), a
 
 
 
-    const result = await Restaurant(restaurantId).dishes.one(dishId).update({ $set: update });
+    const result = await Restaurant(restaurantId).dishes.one(dishId).update({ $set: update as any });
 
     console.log("dish updated: ", result.modifiedCount > 0);
 
@@ -153,7 +154,7 @@ router.post("/", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", "dishes"), a
  * @returns { removed: boolean; }
  * 
  */
-router.delete("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "dishes"), async (req, res) => {
+router.delete("/", logged({ _id: 1, }), allowed({ _id: 1 }, { restaurant: { dishes: true } }), async (req, res) => {
     const { dishId, restaurantId } = req.params as any;
 
     const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { name: 1, price: 1 } });
@@ -182,85 +183,205 @@ router.delete("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "dishes")
 
 
 
-// router.get("/cooking", allowed({}, "manager", "dishes"), async (req, res) => {
-//     const { restaurantId, dishId } = req.params;
-
-//     const result = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { cooking: 1, name: 1 } });
-
-//     if(!result) {
-//         return res.sendStatus(404);
-//     }
-
-
-//     const components = await Restaurant(restaurantId).components.getAll({ name: 1, _id: 1 });
-
-//     let cooking: any = null;
-//     if(result.cooking) {
-//         cooking = {};
-//         cooking.recipee = result.cooking.recipee;
-//         if(result.cooking.components) {
-//             cooking.components = [];
-//             const getComponent = (id: ObjectId) => {
-//                 for(let i of components!) {
-//                     if(i._id!.equals(id)) {
-//                         return i;
-//                     }
-//                 }
-//             }
-//             for(let i of result.cooking.components) {
-//                 const cmp = getComponent(i._id);
-//                 cooking.components.push({ name: cmp?.name, amount: i.amount, _id: cmp?._id });
-//             }
-//         }
-//     }
-
-//     delete result.cooking;
-
-//     res.send({ cooking, dish: result });
-// });
 
 
 
-// router.post("/cooking/component", allowed("manager", "dishes"), async (req, res) => {
-//     const { dishId, restaurantId } = req.params;
-//     const { amount, componentId } = req.body;
+router.get("/analytics", logged({ _id: 1, }), allowed({ _id: 1, }, { restaurant: { dishes: true } }), async (req, res) => {
+    const { restaurant } = res.locals as Locals;
+    const { dishId } = req.params;
 
-//     const result = await Restaurant(restaurantId).dishes.one(dishId).update({ $push: { "cooking.components": { _id: id(componentId), amount, added: new Date(), modified: new Date() } } });
+    // day in milliseconds
+    const day = 86_400_000;
+    
+    // last week, last 7 days
+    const week = new Date(Date.now() - day * 7)
+    week.setHours(0, 0, 0);
 
-//     res.send({ updated: result.modifiedCount > 0 });
-// });
-// router.delete("/cooking/component/:componentId", allowed("manager", "dishes"), async (req, res) => {
-//     const { restaurantId, dishId, componentId } = req.params;
+    // last month, last 30 days
+    const month = new Date(Date.now() - day * 30);
+    month.setHours(0, 0, 0);
 
-//     const update = await Restaurant(restaurantId).dishes.one(dishId).update({ $pull: { "cooking.components": { _id: id(componentId) } } });
-
-//     res.send({ removed: update.modifiedCount > 0 });
-// });
-// router.patch("/cooking/component/:componentId", allowed("manager", "dishes"), async (req, res) => {
-//     const { dishId, restaurantId, componentId } = req.params;
-//     const { amount } = req.body;
-
-//     const result = await Restaurant(restaurantId).dishes.one(dishId).update(
-//         { $set: { "cooking.components.$[componentId].amount": amount } },
-//         { arrayFilters: [ { "componentId._id": id(componentId) } ] }
-//     );
-
-//     res.send({ updated: result.modifiedCount > 0 });
-// });
+    const orders = await Orders(restaurant._id).history.many(
+        { ordered: { $gt: month.getTime() }, dishes: { $elemMatch: { dishId: id(dishId) } } },
+        { projection: { _id: 1, type: 1, ordered: 1, dishes: { dishId: 1, removed: 1 } } }
+    ).toArray();
 
 
-// router.post("/cooking/recipee", allowed("manager", "dishes"), async (req, res) => {
-//     const { recipee } = req.body;
-//     const { dishId, restaurantId } = req.params;
+    const result = {
+        boughtWeek: 0,
+        boughtMonth: 0,
+        type: {
+            weekDinein: 0,
+            weekTakeout: 0,
+            monthDinein: 0,
+            monthTakeout: 0,
+        },
+        week: <{ [dayName: string]: number }>{ },
+        month: <{ [date: string]: number }>{ },
+    }
 
-//     const update = await Restaurant(restaurantId).dishes.one(dishId).update({ $set: { "cooking.recipee": (recipee as string).trim() } })
+    for(let order of orders) {
 
-//     res.send({ updated: update.modifiedCount > 0 });
-// });
+        // get weekday name: "Mon", "Wed", "Fri"
+        const dayName = weekday(order.ordered!);
+        const date = Intl.DateTimeFormat("en-CA", { day: "2-digit" }).format(order.ordered);
+
+        // if result.week[dayName] exists leave it like that, else make it 0
+        result.week[dayName] = result.week[dayName] || 0;
+
+        // if result.month[date] exists leave it like that, else make it 0
+        result.month[date] = result.month[date] || 0;
+
+        if(order.type == "dinein") {
+            // if the order was ordered within last week
+            if(order.ordered! > week.getTime()) {
+                result.type.monthDinein++;
+            }
+
+            // if the order was ordered within last month
+            if(order.ordered! > month.getTime()) {
+                result.type.monthDinein++;
+            }
+        } else if(order.type == "takeout") {
+            // if the order was ordered within last week
+            if(order.ordered! > week.getTime()) {
+                result.type.monthTakeout++;
+            }
+
+            // if the order was ordered within last month
+            if(order.ordered! > month.getTime()) {
+                result.type.monthTakeout++;
+            }
+        }
+
+        // find dish with the right id
+        for(let dish of order.dishes) {
+            if(dish.dishId.equals(dishId)) {
+
+                // if the order was ordered within last week
+                if(order.ordered! > week.getTime()) {
+                    result.boughtWeek ++;
+                    result.week[dayName]++;
+                }
+
+                // if the order was ordered within last month
+                if(order.ordered! > month.getTime()) {
+                    result.boughtMonth ++;
+                    result.month[date]++;
+                }
+            }
+        }
+    }
 
 
+
+    res.send({
+        boughtWeek: result.boughtWeek,
+        boughtMonth: result.boughtMonth,
+        month: convertMonth(result.month),
+        week: convertWeek(result.week),
+        weekType: [
+            {
+                name: "Dine-in",
+                value: result.type.weekDinein,
+            },
+            {
+                name: "Take out",
+                value: result.type.weekTakeout,
+            }
+        ],
+        monthType: [
+            {
+                name: "Dine-in",
+                value: result.type.monthDinein,
+            },
+            {
+                name: "Take out",
+                value: result.type.monthTakeout,
+            }
+        ]
+    });
+
+
+    setDishRating(restaurant._id, dishId, result.boughtWeek / Object.keys(result.week).length, null!);
+});
+
+
+
+function convertWeek(obj: { [key: string]: number; }) {    
+    const result = [];
+
+    for(let date of Object.keys(obj)) {
+        result.push({
+            name: date,
+            value: obj[date],
+        });
+    }
+
+
+    return result;
+}
+function convertMonth(obj: { [key: string]: number; }) {    
+    const result = [];
+
+    for(let i = +Object.keys(obj)[0]; i < +Object.keys(obj)[Object.keys(obj).length - 1]; i++) {
+        if(!obj[i]) {
+            obj[i] = 0;
+        }
+    }
+
+    for(let date of Object.keys(obj)) {
+        result.push({
+            name: date,
+            value: obj[date],
+        });
+    }
+
+
+    return result;
+}
+
+function weekday(time: number) {
+    const date = new Date(time);
+
+    // Get the day of the week as a number (0-6)
+    const dayOfWeek = date.getDay();
+
+    // Define an array of weekday names
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    // Get the name of the weekday
+    return weekdays[dayOfWeek];
+}
+
+
+
+async function setDishRating(
+    restaurantId: ObjectId,
+    dishId: string,
+    avgBoughtPerDay: number,
+    avgCustomerRating: number,
+) {
+
+
+    if(!avgCustomerRating) {
+        return;
+    }
+
+    const dish = await Restaurant(restaurantId).dishes.one(dishId).get({ projection: { price: 1, info: { time: 1, } } });
+
+    if(!dish || !dish.price || !dish.info?.time) {
+        return;
+    }
+
+
+    const rating = avgBoughtPerDay * avgCustomerRating / dish.price * dish.info.time;
+
+    await Restaurant(restaurantId).dishes.one(dishId).update({ $set: { "info.rating": rating } })
+}
 
 
 export {
     router as DishRouter,
 }
+

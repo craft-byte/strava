@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { stripe } from "../..";
-import { RestaurantSettings } from "../../models/components";
 import { Locals } from "../../models/other";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
-import { Orders, Restaurant } from "../../utils/restaurant";
+import { Restaurant } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
+import { RestaurantSettings } from "../../models/Restaurant";
 
 
 const router = Router({ mergeParams: true });
@@ -16,7 +17,7 @@ const router = Router({ mergeParams: true });
  * returns restaurant settings
  * 
  */
-router.get("/", logged({ _id: 1, }), allowed({ settings: 1, stripeAccountId: 1, info: 1, status: 1, }, "manager", "settings"), async (req, res) => {
+router.get("/", logged({ _id: 1, }), allowed({ settings: 1, stripeAccountId: 1, info: 1, status: 1, }, { restaurant: { settings: true } }), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
     if(!restaurant) {
@@ -107,7 +108,7 @@ router.get("/", logged({ _id: 1, }), allowed({ settings: 1, stripeAccountId: 1, 
  * @param { any } value - value of a setting ex. 'unlimited'
  * 
  */
-router.post("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings"), async (req, res) => {
+router.post("/", logged({ _id: 1, }), allowed({ _id: 1 }, { restaurant: { settings: true } }), async (req, res) => {
     const { field1, field2, value } = req.body;
     const { restaurantId } = req.params as any;
 
@@ -128,7 +129,7 @@ router.post("/", logged({ _id: 1, }), allowed({ _id: 1 }, "manager", "settings")
 /**
  * enable or disable cash payment
  */
-router.post("/cash", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "manager", "settings"), async (req, res) => {
+router.post("/cash", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, { restaurant: { settings: true } }), async (req, res) => {
     const { restaurant } = res.locals as Locals;
     const { value } = req.body;
 
@@ -145,7 +146,7 @@ router.post("/cash", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "m
 /**
  * disable or enable card payment
  */
-router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "manager", "settings"), async (req, res) => {
+router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, { restaurant: { settings: true } }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { value } = req.body;
     const { restaurant } = res.locals as Locals;
@@ -171,7 +172,7 @@ router.post("/card", logged({ _id: 1, }), allowed({ settings: { money: 1 } }, "m
  * @throws { status: 422; reason: "InvalidInput" } - name is not provided or is invalid
  * @throws { status: 403; reason: "NamesAreTheSame" } - new name and old name are the same
  */
-router.post("/name", logged({ _id: 1, }), allowed({ info: { name: 1 }, }, "manager", "settings"), async (req, res) => {
+router.post("/name", logged({ _id: 1, }), allowed({ info: { name: 1 }, }, { restaurant: { settings: true } }), async (req, res) => {
     const { restaurant } = res.locals;
     const { name } = req.body;
 
@@ -199,7 +200,7 @@ router.post("/name", logged({ _id: 1, }), allowed({ info: { name: 1 }, }, "manag
  * 
  * @returns { success: boolean; }
  */
-router.post("/description", logged({ _id: 1 }), allowed({ info: { description: 1 }, }, "manager", "settings"), async (req, res) => {
+router.post("/description", logged({ _id: 1 }), allowed({ info: { description: 1 }, }, { restaurant: { settings: true } }), async (req, res) => {
     const { restaurant } = res.locals as Locals;
     const { description } = req.body;
 
@@ -227,7 +228,7 @@ router.post("/description", logged({ _id: 1 }), allowed({ info: { description: 1
  * 
  * @returns { success: boolean; }
  */
-router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, "manager", "settings"), async (req, res) => {
+router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, { restaurant: { settings: true } }), async (req, res) => {
     const { opens, closes } = req.body;
     const { restaurantId } = req.params;
 
@@ -287,7 +288,7 @@ router.post("/time", logged({ _id: 1, }), allowed({ _id: 1, }, "manager", "setti
 /**
  * updates restaurant mode
  */
-router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1, customers: 1, } }, "manager", "settings"), async (req, res) => {
+router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1, customers: 1, } }, { restaurant: { settings: true } }), async (req, res) => {
     const { mode } = req.body;
     const { restaurant, } = res.locals as Locals;
 
@@ -318,7 +319,7 @@ router.post("/mode", logged({ _id: 1 }), allowed({ _id: 1, settings: { staff: 1,
 
 
 
-router.post("/customers", logged({ _id: 1 }), allowed({ settings: { customers: 1 } }, "manager", "settings"), async (req, res) => {
+router.post("/customers", logged({ _id: 1 }), allowed({ settings: { customers: 1 } }, { restaurant: { settings: true } }), async (req, res) => {
     const { restaurant } = res.locals as Locals;
     const { setting } = req.body;
 

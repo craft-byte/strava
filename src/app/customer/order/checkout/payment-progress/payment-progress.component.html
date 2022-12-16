@@ -1,0 +1,30 @@
+<div class="app">
+    <div class="box">
+        <div class="pending" *ngIf="status == 'pending'">
+            <span class="title status-badge-purple">
+                PENDING
+            </span>
+        </div>
+        <div class="error" *ngIf="status == 'error'">
+            <span class="title status-badge-red">
+                ERROR
+            </span>
+            <button class="orange-button" (click)="onError()">
+                Try again
+            </button>
+        </div>
+        <div class="success" *ngIf="status == 'success'">
+            <span class="title status-badge-green">
+                SUCCESS
+            </span>
+        </div>
+        <div class="success" *ngIf="status == 'final'">
+            <span class="title status-badge-green">
+                SUCCESS
+            </span>
+            <button class="orange-button" (click)="tracking()">
+                Tracking <ion-icon name="chevron-forward"></ion-icon>
+            </button>
+        </div>
+    </div>
+</div>

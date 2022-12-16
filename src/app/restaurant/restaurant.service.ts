@@ -6,63 +6,55 @@ import { Dish } from 'src/models/dish';
 import { Restaurant } from 'src/models/general';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class RestaurantService {
 
-  url = environment.url + "/restaurant/";
-  restaurantId: string;
-  restaurant: Restaurant;
-  restaurants: { _id: string; name: string; }[];
-  currentDish: Dish;
-  showGoWork: boolean;
+    url = environment.url + "/restaurant/";
 
-  constructor(
-    private http: HttpClient,
-  ) { };
+    restaurant: Restaurant;
+
+    showGoWork: boolean;
+
+    constructor(
+        private http: HttpClient,
+    ) { };
 
 
-  patch<T>(body: any, ...args: string[]) {
-    if(!this.restaurantId) {
-      return null;
+    patch<T>(body: any, ...args: string[]) {
+        if (!this.restaurant._id) {
+            return null;
+        }
+        return this.http.patch<T>(this.url + this.restaurant._id + "/" + args.join("/"), body).toPromise();
     }
-    return this.http.patch<T>(this.url + this.restaurantId + "/" + args.join("/"), body).toPromise();
-  }
-  delete<T>(...args: string[]) {
-    if(!this.restaurantId) {
-      return null;
+    delete<T>(...args: string[]) {
+        if (!this.restaurant._id) {
+            return null;
+        }
+        return this.http.delete<T>(this.url + this.restaurant._id + "/" + args.join("/")).toPromise();
     }
-    return this.http.delete<T>(this.url + this.restaurantId + "/" + args.join("/")).toPromise();
-  }
-  get<T>(params: { [key: string]: string | boolean | number }, ...args: string[]) {
-    if(!this.restaurantId) {
-      return null;
+    get<T>(params: { [key: string]: string | boolean | number }, ...args: string[]) {
+        if (!this.restaurant._id) {
+            return null;
+        }
+        return this.http.get<T>(this.url + this.restaurant._id + "/" + args.join("/"), { params, headers: {} }).toPromise();
     }
-    return this.http.get<T>(this.url + this.restaurantId + "/" + args.join("/"), { params, headers: {} }).toPromise();
-  }
-  post<T>(body: any, ...args: string[]) {
-    if(!this.restaurantId) {
-      return null;
+    post<T>(body: any, ...args: string[]) {
+        if (!this.restaurant._id) {
+            return null;
+        }
+        return this.http.post<T>(this.url + this.restaurant._id + "/" + args.join("/"), body).toPromise();
     }
-    return this.http.post<T>(this.url + this.restaurantId + "/" + args.join("/"), body).toPromise();
-  }
 
-  init(restaurantId: string) {
-    this.restaurantId = restaurantId;
+    async init(restaurantId: string) {
+        const result = await this.http.get<{ restaurant: Restaurant; showGoWork: boolean; }>(this.url + restaurantId + "/check").toPromise();
 
-    return this.http.get(this.url + this.restaurantId + "/check");
+        if(result.restaurant) {
+            this.restaurant = result.restaurant;
 
-
-    // const result: any = await this.get("init");
-    
-    // // if(!result) {
-    // //   return null;
-    // // }
-
-    // // const { restaurant, user } = result;
-
-    // // this.restaurant = restaurant;
-
-    // return user as boolean;
-  }
+            if(result.showGoWork) {
+                this.showGoWork = result.showGoWork;
+            }
+        }
+    }
 }

@@ -1,0 +1,61 @@
+<div class="app">
+    <!-- [view]="view"  -->
+    <div class="week" *ngIf="data?.week">
+        <div class="info">
+            <div class="title">
+                <span class="text title-font">
+                    Within last 7 days
+                </span>
+            </div>
+            <div class="total">
+                <span class="text text-font">
+                    Total: {{ data.boughtWeek }}
+                </span>
+            </div>
+            <div class="chart" *ngIf="data.weekType[0] && data.weekType[0].value > 0 || data.weekType[1] && data.weekType[1].value > 0">
+                <ngx-charts-pie-chart 
+                [scheme]="colorScheme"
+                [results]="data.weekType"
+                [legend]="false"
+                [labels]="true"
+                [doughnut]="false"
+                >
+                </ngx-charts-pie-chart>
+            </div>
+        </div>
+        <div class="chart">
+            <ngx-charts-bar-vertical [scheme]="colorScheme" [results]="data.week" [xAxis]="true" [yAxis]="true"
+                [legend]="false" [showXAxisLabel]="false" [showYAxisLabel]="false">
+            </ngx-charts-bar-vertical>
+        </div>
+    </div>
+    <div class="month" *ngIf="data?.month">
+        <div class="info">
+            <div class="title">
+                <span class="text title-font">
+                    Within last 30 days
+                </span>
+            </div>
+            <div class="total">
+                <span class="text text-font">
+                    Total: {{ data.boughtMonth }}
+                </span>
+            </div>
+            <div class="chart">
+                <ngx-charts-pie-chart 
+                [scheme]="colorScheme"
+                [results]="data.monthType"
+                [legend]="false"
+                [labels]="true"
+                [doughnut]="false"
+                >
+                </ngx-charts-pie-chart>
+            </div>
+        </div>
+        <div class="chart">
+            <ngx-charts-bar-vertical [scheme]="colorScheme" [results]="data.month" [xAxis]="true" [yAxis]="true"
+                [legend]="false" [showXAxisLabel]="false" [showYAxisLabel]="false">
+            </ngx-charts-bar-vertical>
+        </div>
+    </div>
+</div>

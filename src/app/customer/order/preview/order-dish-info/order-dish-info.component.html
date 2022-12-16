@@ -1,0 +1,65 @@
+<div class="app" (click)="close()">
+    <div class="box" (click)="$event.stopPropagation()">
+        <div class="header">
+            <div class="title">
+                <div class="name">
+                    <span class="text title-font">
+                        {{ dish.name }}
+                    </span>
+                </div>
+                <div class="amount-price">
+                    <span class="amount text text-font">
+                        ${{ dish.price / 100 }}
+                    </span>
+                    <span class="x">
+                        x
+                    </span>
+                    <span class="amount text text-font">
+                        {{ amount }}
+                    </span>
+                </div>
+            </div>
+            <div class="buttons">
+                <button id="close" (click)="close()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="comment" *ngIf="dish.comment">
+                <span class="text text-font">
+                    {{ dish.comment }}
+                </span>
+            </div>
+            <div class="functions">
+                <button (click)="comment()">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                    <span class="text button-font" *ngIf="!dish.comment">
+                        Add a comment
+                    </span>
+                    <span class="text button-font" *ngIf="dish.comment">
+                        Change comment
+                    </span>
+                </button>
+                <button (click)="fullDish()">
+                    <ion-icon name="chevron-up-circle-outline"></ion-icon>
+                    <span class="text button-font">
+                        See the dish
+                    </span>
+                </button>
+                <button (click)="remove()">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span class="text button-font">
+                        Remove
+                    </span>
+                </button>
+            </div>
+            <div class="list">
+        
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-container #commentContainer></ng-container>

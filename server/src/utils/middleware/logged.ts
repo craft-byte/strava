@@ -67,10 +67,15 @@ export function logged(projection: UserProjection) {
  */
 export function passUserData(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {
-        if(!req.headers["customer-token"]) {
+        const customerToken = req.headers["customer-token"];
+
+        if(!customerToken) {
             return res.status(403).send({ reason: "CustomerTokenNotProvided" });
+        } else if(typeof customerToken != "string") {
+            return res.status(422).send({ reason: "InvalidCustomerToken" });
         }
-        res.locals.ct = req.headers["customer-token"];
+
+        res.locals.ct = id(customerToken);
         res.locals.status = "noinfo";
         return next();
     }
@@ -82,10 +87,6 @@ export function passUserData(req: Request, res: Response, next: NextFunction) {
         res.locals.status = "loggedout";
     } else {
         res.locals.status = "loggedin";
-    }
-
-    if (!data.userId) {
-        return next();
     }
 
     res.locals.userId = data.userId;

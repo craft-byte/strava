@@ -37,7 +37,7 @@ export class QrCodesPage implements OnInit {
         if(last) {
             this.router.go([last]);
         } else {
-            this.router.go(["restaurant", this.service.restaurantId, "settings"]);
+            this.router.go(["restaurant", this.service.restaurant._id, "settings"]);
         }
     }
 

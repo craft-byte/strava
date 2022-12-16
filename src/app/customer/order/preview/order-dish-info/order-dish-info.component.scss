@@ -1,0 +1,121 @@
+.app {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    padding-top: 20vh;
+    z-index: 100;
+
+    .box {
+        width: 100%;
+        max-width: 500px;
+        height: 100%;
+        
+        .header {
+            padding: 0 24px;
+            height: 64px;
+            background-color: var(--orange);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            
+            .title {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                
+                .name {
+                    .text {
+                        font-size: 20px;
+                        color: var(--black);
+                    }
+                }
+
+                .amount-price {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+    
+                    .x {
+                        font-size: 12px;
+                        color: var(--text-color);
+                    }
+                    .text {
+                        font-size: 14px;
+                        color: var(--text-color);
+                    }
+                }
+            }
+            
+            .buttons {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                
+                #close {
+                    height: 42px;
+                    width: 42px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: none;
+                    
+                    ion-icon {
+                        color: var(--black);
+                        font-size: 30px;
+                        position: absolute;
+                    }
+                }
+            }
+        }
+        
+        .content {
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+
+            .comment {
+                width: 100%;
+                padding: 8px 24px;
+                margin: 6px 0;
+                margin-top: 18px;
+                border-bottom: 1px solid var(--border-color);
+                border-top: 1px solid var(--border-color);
+                background-color: rgb(250, 250, 250);
+                
+                .text {
+                    color: var(--text-color);
+                }
+            }
+
+            .functions {
+                button {
+                    height: 42px;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    background: none;
+
+                    ion-icon {
+                        color: var(--black);
+                        font-size: 24px;
+                        margin: 0 24px;
+                    }
+
+                    .text {
+                        font-size: 18px;
+                        color: var(--black);
+                    }
+                }
+            }
+        }
+    }
+}

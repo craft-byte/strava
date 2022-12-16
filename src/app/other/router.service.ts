@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NavigationBehaviorOptions, NavigationEnd, NavigationExtras, Router, RouterEvent } from '@angular/router';
+import { NavigationEnd, NavigationExtras, Router, RouterEvent } from '@angular/router';
 import { LoadService } from './load.service';
 
 @Injectable({
@@ -9,12 +9,12 @@ export class RouterService {
   url: string;
 
   constructor(
-    private router: Router,
+    public r: Router,
     private loader: LoadService,
   ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = "reload";
-    this.router.events.subscribe((e: RouterEvent) => {
+    // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    // this.router.onSameUrlNavigation = "reload";
+    this.r.events.subscribe((e: RouterEvent) => {
       if(e instanceof NavigationEnd) {
         this.url = e.url;
       }
@@ -23,6 +23,6 @@ export class RouterService {
 
 
   async go(path: string[], options: NavigationExtras = {}, showLoader: boolean = true) {
-    this.router.navigate(path, { ...options });
+    this.r.navigate(path, { ...options, replaceUrl: false, });
   }
 }

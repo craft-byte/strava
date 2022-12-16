@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { Orders, Restaurant } from "../utils/restaurant";
+import { Restaurant } from "../utils/restaurant";
+import { Orders } from "../utils/orders";
 import { ComponentsRouter } from "./restaurant/components";
 import { StaffRouter } from "./restaurant/staff";
 import { DishesRouter } from "./restaurant/dishes";
@@ -11,7 +12,7 @@ import { logged } from "../utils/middleware/logged";
 import { allowed } from "../utils/middleware/restaurantAllowed";
 import { Locals } from "../models/other";
 import { SettingsRouter } from "./restaurant/settings";
-import { Settings } from "../models/components";
+import { SessionsRouter } from "./restaurant/sessions";
 
 
 const router = Router({ mergeParams: true });
@@ -22,20 +23,37 @@ router.use("/people", PeopleRouter);
 router.use("/staff", StaffRouter);
 router.use("/customers", CustomersRouter);
 router.use("/settings", SettingsRouter);
+router.use("/sessions", SessionsRouter);
 
 
-router.get("/check", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ info: { name: 1 }, status: 1, staff: 1, }, "manager"), async (req, res) => {
-    res.send(true);
-    // const{ restaurantId } = req.params;
-    // const { restaurant, user } = res.locals as Locals;
+router.get("/check", logged({ restaurants: { role: 1, restaurantId: 1 } }), allowed({ info: { name: 1 }, status: 1, staff: 1, }, {  }), async (req, res) => {
+    const { restaurant, user } = res.locals as Locals;
 
-    // // const restaurant = await Restaurant(restaurantId).get({ projection: { name: 1, status: 1 } });
-    // // const user = await getUser(req.user as string, { projection: { restaurants: { restaurantId: 1, role: 1 } } });
+    const result: any = {
+        restaurant,
+        showGoWork: false,
+    };
+
+    if (!restaurant.staff) {
+        return res.sendStatus(500);
+    }
+
+    for (let worker of restaurant.staff!) {
+        if (worker.userId.equals(user._id)) {
+
+            if (!worker.settings || !worker.settings.work) {
+                return res.sendStatus(500);
+            }
+
+            if (worker.settings.work.cook || worker.settings.work.waiter || worker.settings.isOwner) {
+                result.showGoWork = true;
+            }
+            break;
+        }
+    }
 
 
-
-    // console.log(workAs!);
-    // res.send({ workAs: workAs!, restaurant, restaurants: await Promise.all(promises) });
+    res.send(result);
 });
 
 
@@ -61,7 +79,7 @@ interface ReviewResult {
         cash: "enabled" | "disabled";
         payouts: "enabled" | "restricted" | "pending" | "rejected";
     };
-}; router.get("/home", logged({ restaurants: 1 }), allowed({ settings: { money: 1 } }, "owner"), async (req, res) => {
+}; router.get("/home", logged({ restaurants: 1 }), allowed({ settings: { money: 1 } }, { isOwner: true }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { restaurant, user } = res.locals as Locals;
 
@@ -69,10 +87,10 @@ interface ReviewResult {
     // const user = await getUser(req.user as string, { projection: { restaurants: 1 } });
 
 
-    if(!restaurant.settings?.money) {
+    if (!restaurant.settings?.money) {
         throw "NO restaurant.money property at /restaurant/home";
     }
-    
+
     const result: ReviewResult = {
         money: {
             cash: restaurant.settings.money.cash,
@@ -86,43 +104,43 @@ interface ReviewResult {
     for (let i of user.restaurants) {
         if (i.role == "owner" && i.restaurantId.equals(restaurantId)) {
 
-            if(!i.stripeAccountId) {
+            if (!i.stripeAccountId) {
                 console.error("at GET /restaurant/home no stripeAccountId");
                 throw "at GET /restaurant/home no stripeAccountId";
                 break;
             }
 
             const account = await stripe.accounts.retrieve(i.stripeAccountId!);
-            
-            if(!account) {
+
+            if (!account) {
                 break;
             }
 
-            if(!account.requirements) {
+            if (!account.requirements) {
                 break;
             }
 
             const { disabled_reason: status } = account.requirements!;
 
-            if(!account.payouts_enabled && account.requirements!.currently_due!.length == 0) {
+            if (!account.payouts_enabled && account.requirements!.currently_due!.length == 0) {
                 result.money!.payouts = "pending";
                 const update = await Restaurant(restaurantId).update({ $set: { "money.payouts": "pending" } });
 
                 console.log("payouts set to pending: ", update!.ok == 0);
             }
 
-            if(!account.external_accounts) {
+            if (!account.external_accounts) {
                 break;
             }
 
-            for(let i of account.external_accounts!.data) {
-                if(i.default_for_currency) {
+            for (let i of account.external_accounts!.data) {
+                if (i.default_for_currency) {
                     result.payouts = {};
                     result.payouts!.last4 = i.last4;
                     result.payouts!.currency = i.currency!;
                     result.payouts!.status = i.status!;
 
-                    if(status == "verification_failed" || status == "errored") {
+                    if (status == "verification_failed" || status == "errored") {
                         result.money!.payouts = "restricted";
                         const update = await Restaurant(restaurantId).update({ $set: { "money.payouts": "restricted" } });
 
@@ -133,9 +151,9 @@ interface ReviewResult {
 
             result.status = status!;
 
-            if(status != "rejected.other" && account.requirements?.eventually_due && account.requirements?.eventually_due.length > 0) {
+            if (status != "rejected.other" && account.requirements?.eventually_due && account.requirements?.eventually_due.length > 0) {
                 result.status = "requirements.eventually_due";
-                for(let i of account.requirements.eventually_due) {
+                for (let i of account.requirements.eventually_due) {
                     switch (i) {
                         case "individual.verification.document":
                             result.nextEventuallyUrl = `document`;
@@ -154,7 +172,7 @@ interface ReviewResult {
     }
 
 
-    if(restaurant.status == "enabled") {
+    if (restaurant.status == "enabled") {
 
     }
 
@@ -174,13 +192,13 @@ interface Chart {
         value: number;
         name: string;
     }[];
-}; router.get("/charts", logged({ _id: 1 }), allowed({ status: 1 }, "manager"), async (req, res) => {
+}; router.get("/charts", logged({ _id: 1 }), allowed({ status: 1 }, { work: { manager: true } }), async (req, res) => {
     const { restaurantId } = req.params;
     const { restaurant } = res.locals as Locals;
 
     // const restaurant = await Restaurant(restaurantId).get({ projection: { status: 1 } });
 
-    if(restaurant!.status != "disabled" && restaurant!.status != "enabled") {
+    if (restaurant!.status != "disabled" && restaurant!.status != "enabled") {
         return res.status(403).send({ reason: "RestaurantNotEnabled" });
     }
 
@@ -188,7 +206,7 @@ interface Chart {
 
     const orders = await (await Orders(restaurantId).history.many({ ordered: { $gte: weekAgo } }, { projection: { ordered: 1, dishes: { dishId: 1 }, money: 1, } })).toArray();
 
-    if(orders.length == 0) {
+    if (orders.length == 0) {
         return res.send(null);
     }
 
@@ -197,13 +215,13 @@ interface Chart {
     const result: any = {};
 
     const firstWeekDay = new Date().getDate();
-    for(let i = 0; i < 7; i++) {
+    for (let i = 0; i < 7; i++) {
         result[firstWeekDay - i] = null;
     }
 
-    for(let order of orders.reverse()) {
+    for (let order of orders.reverse()) {
         const day = new Date(order.ordered!).getDate();
-        if(!result[day]) {
+        if (!result[day]) {
             result[day] = 0;
         }
         result[day] += order.money!.subtotal;
@@ -225,7 +243,7 @@ interface Chart {
         series: [],
     };
 
-    for(let i of Object.keys(result)) {
+    for (let i of Object.keys(result)) {
         converted.series.push({
             name: i,
             value: result[i] / 100,
@@ -236,16 +254,16 @@ interface Chart {
 });
 
 
-router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, info: { name: 1 }, stripeAccountId: 1, cache: 1, settings: { staff: 1 } }, "owner"), async (req, res) => {
+router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ status: 1, info: { name: 1 }, stripeAccountId: 1, cache: 1, settings: { staff: 1 } }, { work: { manager: true } }), async (req, res) => {
     const { restaurant, user } = res.locals as Locals;
 
-    if(!restaurant.cache || !restaurant.cache.requirements) {
+    if (!restaurant.cache || !restaurant.cache.requirements) {
         const account = await stripe.accounts.retrieve(restaurant.stripeAccountId!);
         restaurant.cache = { ...restaurant.cache, requirements: account.requirements!.currently_due! };
     }
 
     let verificationUrl: string;
-    if(restaurant.cache?.requirements) {
+    if (restaurant.cache?.requirements) {
         for (let i of restaurant.cache.requirements) {
             switch (i) {
                 case "external_account":
@@ -279,29 +297,29 @@ router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ 
     const promises = [];
 
     let workAs: string;
-    for(let workIn of user!.restaurants!) {
-        if(!workIn.restaurantId.equals(restaurant._id)) {
-            promises.push(Restaurant(workIn.restaurantId).get({ projection: { name: 1 } } ));
+    for (let workIn of user!.restaurants!) {
+        if (!workIn.restaurantId.equals(restaurant._id)) {
+            promises.push(Restaurant(workIn.restaurantId).get({ projection: { name: 1 } }));
         } else {
-            if(workIn.role == "manager:working" || workIn.role == "owner") {
+            if (workIn.role == "manager:working" || workIn.role == "owner") {
                 workAs = "both";
                 break;
             } else {
-                for(let i of restaurant.staff!) {
-                    if(i.userId.equals(user._id)) {
-                        if(i.role == "manager") {
-                            if((i.settings as Settings.ManagerSettings).work.cook && (i.settings as Settings.ManagerSettings).work.waiter) {
-                                workAs = "both";
-                            } else if((i.settings as Settings.ManagerSettings).work.cook) {
-                                workAs = "cook"
-                            } else if((i.settings as Settings.ManagerSettings).work.waiter) {
-                                workAs = "waiter";
-                            } else {
-                                workAs = null!;
-                            }
+                for (let i of restaurant.staff!) {
+                    console.log(i);
+                    if (i.userId.equals(user._id)) {
+                        const roles = i.settings.work;
+
+                        if (!roles) {
                             break;
-                        } else {
-                            workAs = i.role;
+                        }
+
+                        if ((roles.cook && roles.waiter) || i.settings.isOwner) {
+                            workAs = "both";
+                        } else if (roles.cook) {
+                            workAs = "cook";
+                        } else if (roles.waiter) {
+                            workAs = "waiter";
                         }
                         break;
                     }
@@ -319,14 +337,14 @@ router.get("/restaurant-status", logged({ _id: 1, restaurants: 1, }), allowed({ 
  * for development only
  * should be reconsidered
  */
-router.delete("/", logged({ _id: 1, }), allowed({ info: { owner: 1 }, staff: 1, stripeAccountId: 1 }, "owner"), async (req, res) => {
+router.delete("/", logged({ _id: 1, }), allowed({ info: { owner: 1 }, staff: 1, stripeAccountId: 1 }, { isOwner: true }), async (req, res) => {
     const { restaurantId } = req.params;
     const { restaurant } = res.locals as Locals;
 
     // const restaurant = await Restaurant(restaurantId).get({ projection: { owner: 1, staff: 1, stripeAccountId: 1 } });
 
 
-    if(!restaurant.stripeAccountId) {
+    if (!restaurant.stripeAccountId) {
         throw "error at DELETE /restaurant no restaurant.stripeAccountId property";
     }
 
@@ -340,7 +358,7 @@ router.delete("/", logged({ _id: 1, }), allowed({ info: { owner: 1 }, staff: 1, 
 
     const result = await Restaurant(restaurantId).remove();
 
-    
+
     res.send({ removed: result });
 });
 
@@ -350,7 +368,7 @@ interface QRCodesResult {
     link: string;
     tables: { index: number; link: string; }[];
 }
-router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "manager"), async (req, res) => {
+router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, { work: { manager: true } }), async (req, res) => {
     const { restaurant, } = res.locals as Locals;
 
 
@@ -360,7 +378,7 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "ma
     }
 
 
-    for(let i = 0; i < restaurant!.info?.tables!; i++) {
+    for (let i = 0; i < restaurant!.info?.tables!; i++) {
         result.tables.push({
             index: i + 1,
             link: `${req.protocol}://${req.get("host")}/customer/order/${restaurant!._id.toString()}?table=${i + 1}`,
@@ -374,10 +392,10 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "ma
 /**
  * remove table
  */
- router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1, info: { tables: 1 } }, "manager", "customers"), async (req, res) => {
+router.delete("/table", logged({ _id: 1 }), allowed({ _id: 1, info: { tables: 1 } }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
-    if(restaurant.info?.tables! < 1) {
+    if (restaurant.info?.tables! < 1) {
         return res.send(null);
     }
 
@@ -389,11 +407,11 @@ router.get("/qr-codes", logged({ _id: 1 }), allowed({ info: { tables: 1 } }, "ma
 /**
  * add table
  */
-router.post("/table", logged({ _id: 1 }), allowed({ info: { tables: 1, } }, "manager", "customers"), async (req, res) => {
+router.post("/table", logged({ _id: 1 }), allowed({ info: { tables: 1, } }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurant } = res.locals as Locals;
 
 
-    if(restaurant.info?.tables! > 30) {
+    if (restaurant.info?.tables! > 30) {
         return res.status(403).send({ reason: "LimitExceeded" });
     }
 
@@ -406,5 +424,5 @@ router.post("/table", logged({ _id: 1 }), allowed({ info: { tables: 1, } }, "man
 
 
 export {
-    router as RadminRouter
+    router as RestaurantRouter
 }

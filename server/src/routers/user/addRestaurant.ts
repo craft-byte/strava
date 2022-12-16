@@ -5,9 +5,9 @@ import { id } from "../../utils/functions";
 import { Restaurant } from "../../utils/restaurant";
 import { getUser, updateUser, user } from "../../utils/users";
 import * as axios from "axios";
-import { Restaurant as RestaurantType } from "../../models/general";
+import { Restaurant as RestaurantType } from "../../models/Restaurant";
 import { months } from "../../assets/consts";
-import { dishesDBName, historyDBName, mainDBName, ordersDBName } from "../../environments/server";
+import { dishesDBName, historyDBName, mainDBName, sessionsDBName } from "../../environments/server";
 import { logged } from "../../utils/middleware/logged";
 import { confirmed } from "../../utils/middleware/confirmed";
 import { Locals } from "../../models/other";
@@ -227,10 +227,8 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
 
     const newRestaurant: RestaurantType = {
         _id: restaurantId,
-        staff: [{ userId: user._id, role: "owner", joined: Date.now(), settings: {} }],
-        invitations: [],
+        staff: [{ userId: user._id, joined: Date.now(), settings: { isOwner: true, work: { cook: true, waiter: true } } }],
         settings,
-        components: [],
         blacklist: [],
         status: "verification",
         info: {
@@ -257,7 +255,7 @@ router.post("/create", logged({ email: 1, status: 1 }), confirmed(true), async (
         const result1 = await client.db(mainDBName).collection("restaurants")
             .insertOne(newRestaurant);
         const result2 = await client.db(dishesDBName).createCollection(newRestaurant._id.toString());
-        const result3 = await client.db(ordersDBName).createCollection(newRestaurant._id.toString());
+        const result3 = await client.db(sessionsDBName).createCollection(newRestaurant._id.toString());
         const result4 = await client.db(historyDBName).createCollection(newRestaurant._id.toString());
         const result5 = await updateUser(
             { _id: id(user._id) },

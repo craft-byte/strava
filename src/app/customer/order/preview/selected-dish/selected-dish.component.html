@@ -1,0 +1,42 @@
+<div [style.transform]="'translateX('+swipeDistance+'px)'" [@slideInOut] ngSwipe (swipeMove)="onSwipeMove($event)"
+    (swipeEnd)="onSwipeEnd($event)" class="app">
+    <div class="go-dish">
+        DISH
+    </div>
+    <div class="dish" (click)="more()">
+        <div class="info">
+            <div class="name">
+                <span class="text text-font">
+                    {{ dish.name }}
+                </span>
+            </div>
+            <div class="price-comment">
+                <div class="price">
+                    <span class="text text-font">
+                        ${{ dish.price / 100 }}
+                    </span>
+                </div>
+                <span class="dot" *ngIf="dish.comment">
+                    &#9679;
+                </span>
+                <div class="comment" *ngIf="dish.comment">
+                    <span class="text text-font">
+                        with comment
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="button" (click)="$event.stopPropagation()">
+            <button (click)="more()">
+                <ion-icon name="ellipsis-vertical"></ion-icon>
+            </button>
+        </div>
+    </div>
+    <div class="remove">
+        REMOVE
+    </div>
+</div>
+
+
+<ng-container #modalContainer></ng-container>
+<ng-container #dishModalContainer></ng-container>

@@ -1,57 +1,6 @@
 import { LargeNumberLike } from "crypto";
 import { ObjectId } from "mongodb";
-import { Component, Cooking, Order, Feedback, Invitation, RestaurantSettings, Table, Id } from "./components";
-import { Worker } from "./worker";
-
-interface Restaurant {
-    _id: ObjectId;
-    staff?: Worker[];
-    settings?: RestaurantSettings;
-    components?: Component[];
-    invitations?: Invitation[];
-    blacklist?: (ObjectId | string)[];
-    stripeAccountId?: string;
-    status?: "verification" | "disabled" | "deleted" | "rejected" | "enabled";
-
-    
-    info?: {
-        description?: string;
-        name?: string;
-        theme?: string;
-        created?: number;
-        owner?: ObjectId;
-        tables?: number;
-
-        time: {
-            opens: {
-                hours: number;
-                minutes: number;
-                half: "AM" | "PM";
-            };
-            closes: {
-                hours: number;
-                minutes: number;
-                half: "AM" | "PM";
-            }
-        }
-        location?: {
-            country?: string;
-            city?: string;
-            state?: string;
-            line1?: string;
-            line2?: string;
-            postal_code?: string;
-        }
-    };
-    cache?: {
-        customers?: {
-            lastUpdate: number;
-            data: any[];
-        };
-        requirements: string[];
-    }
-}
-
+import { Cooking, Order, Feedback, Invitation, Table, Id } from "./components";
 
 interface Dish {
     _id: ObjectId;
@@ -70,8 +19,9 @@ interface Dish {
         created?: { date: number, userId: ObjectId };
         modified?: { date: number, userId: ObjectId };
         bought?: number;
-    }
-
+        rating?: number;
+    };
+    
     
     /* 
         new
@@ -142,85 +92,15 @@ interface User {
         codeToken?: string;
         codeConfirmed?: number;
         codeAsked?: number;
+        tokenUpdated: number;
     }
 
+    
 }
-
-
-interface Order {
-    _id: ObjectId;
-    
-    customer: ObjectId | null;
-    onBehalf?: ObjectId;
-    
-    by: "customer" | "staff";
-    
-    status: "ordering" | "progress" | "done" | "removed" | "done:removed";
-    method?: "card" | "cash";
-
-    type: "dinein" | "takeout";
-    id: string;
-
-    mode: "solo" | "standart" | "disabled";
-    
-    ordered?: number;
-    comment?: string;
-    
-    ip?: string;
-    connected?: number;
-    customerToken?: string;
-    socketId: string;
-    paymentIntentId?: string;
-
-    money?: {
-        hst: number;
-        subtotal: number;
-        total: number;
-    }
-    done?: {
-        feedback?: {
-            text?: string;
-            rating?: number;
-        };
-    }
-    removed?: {
-        time: number;
-        reason: string | "dishes";
-        userId: ObjectId;
-        userRole?: "owner" | "manager" | "admin" | null;
-    };
-    dishes: {
-        _id: ObjectId;
-        dishId: ObjectId;
-        comment: string;
-        id?: string;
-        status: "ordered" | "cooking" | "cooked" | "served" | "removed";
-
-        name?: string;
-        price?: number;
-
-        takenBy?: ObjectId;
-        cook?: ObjectId;
-        waiter?: ObjectId;
-
-        taken?: number;
-        cooked?: number;
-        served?: number;
-    
-        removed?: {
-            time: number;
-            userId: ObjectId;
-            userRole: "admin" | "cook" | "waiter" | "manager.cook" | "manager.waiter" | "manager" | null;
-            reason: "components" | "other" | string;
-        }
-    }[];
-}
-
 
 
 export {
     Restaurant,
     Dish,
     User,
-    Order,
 }

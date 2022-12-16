@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ViewWillEnter } from '@ionic/angular';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
-import { MainService } from 'src/app/services/main.service';
+import { MainService } from 'src/app/other/main.service';
 import { getImage } from 'src/functions';
 import { runInThisContext } from 'vm';
 import { UserService } from '../user.service';

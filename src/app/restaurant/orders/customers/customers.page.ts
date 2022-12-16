@@ -47,7 +47,7 @@ export class CustomersPage implements OnInit {
     }
 
     fullCustomer(id: string) {
-        this.router.go(["restaurant", this.service.restaurantId, "orders", "customer", id]);
+        this.router.go(["restaurant", this.service.restaurant._id, "orders", "customer", id]);
     }
 
     async addTable() {
@@ -90,7 +90,7 @@ export class CustomersPage implements OnInit {
         this.qrCodes[table].downloadUrl = event;
     }
     user(id: string) {
-        this.router.go(["restaurant", this.service.restaurantId, "orders", "customer", id], { replaceUrl: true });
+        this.router.go(["restaurant", this.service.restaurant._id, "orders", "customer", id], { replaceUrl: true });
     }
 
 

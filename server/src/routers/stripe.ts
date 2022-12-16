@@ -2,14 +2,13 @@ import { Router } from "express";
 import Stripe from "stripe";
 import { stripe } from "..";
 import * as e from "express";
-import { Orders, Restaurant } from "../utils/restaurant";
+import { Restaurant } from "../utils/restaurant";
+import { Orders } from "../utils/orders";
 import { id } from "../utils/functions";
-import { sendMessage } from "../utils/io";
-import { getDelay } from "../utils/other";
-import { updateUser } from "../utils/users";
-import { Order } from "../models/general";
 import { StripeOrderMetadata } from "../models/other";
 import { confirmOrder } from "../utils/confirmOrder";
+import { sendMessageToCustomer } from "../utils/io";
+import { CustomerData } from "../models/messages";
 
 
 const router = Router();
@@ -104,13 +103,13 @@ router.post("/account-webhook", e.raw({ type: 'application/json' }), async (req,
         console.log(data);
 
 
-        if (data.metadata.orderId && data.metadata.restaurantId) {
+        if (data.metadata.sessionId && data.metadata.restaurantId) {
 
-            const { orderId, restaurantId, } = data.metadata as StripeOrderMetadata;
+            const { sessionId, restaurantId, } = data.metadata as StripeOrderMetadata;
 
             console.log("ORDER CONFIRMED");
 
-            confirmOrder(restaurantId, orderId, "card");
+            confirmOrder(restaurantId, sessionId, "card");
             
         }
 
@@ -151,7 +150,7 @@ async function onOrderPaymentFailed(restaurantId: string, orderId: string, custo
         return;
     }
 
-    sendMessage([order.socketId], "customer", { type: "payment.failed", orderId, customerId, restaurantId });
+    sendMessageToCustomer(order.socketId, "payment/failed", <CustomerData.PaymentFailed>{ orderId, customerId, restaurantId });
 
 }
 

@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Nabla&display=swap');
+
+.app {
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+    display: flex;
+    padding-top: 20vh;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    .box {
+        width: 90%;
+        max-width: 400px;
+        padding: 32px 18px;
+        background-color: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 24px;
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .text {
+                font-family: 'Nabla', cursive;
+                font-size: 52px;
+                color: black;
+            }
+        }
+
+        .content {
+            .logged-in {
+                .user {
+                    display: flex;
+                    align-items: center;
+                    border-bottom: 2px solid var(--border-color);
+                    padding: 6px 2px;
+
+                    img {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 100%;
+                        object-fit: cover;
+                    };
+
+                    .name {
+                        color: var(--black);
+                        font-size: 18px;
+                        margin-left: 8px;
+                    }
+                }
+                .functions {
+                    button {
+                        display: flex;
+                        align-items: center;
+                        height: 36px;
+                        width: 100%;
+                        background: none;
+                        border-bottom: 1px solid var(--border-color);
+
+                        .text {
+                            color: var(--text-color);
+                            font-size: 16px;
+                        }
+
+                        ion-icon {
+                            color: var(--text-color);
+                            margin: 0 12px;
+                            font-size: 20px;
+                        }
+                    }
+                }
+                div.text {
+                    margin-top: 12px;
+
+                    span.text {
+                        color: var(--text-color);
+                        font-size: 14px;
+                    }
+                }
+            }
+            .no-info {
+                .button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 12px;
+                }
+                .info {
+                    margin-top: 12px;
+                    .text {
+                        color: var(--text-color);
+                    }
+                }
+            }
+        }
+    }
+}

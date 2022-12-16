@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
+import { CookMessage, WaiterMessage } from '../models/messages';
 
 @Injectable({
     providedIn: 'root'
@@ -11,30 +12,41 @@ export class SoloService {
 
     dishes: any;
 
-    obs: Observable<any>;
+    _waiter: Observable<WaiterMessage>;
+    _cook: Observable<CookMessage>;
 
     constructor(
         public socket: Socket,
     ) { };
 
     
-    get flow(): Observable<any> {
-        if(this.obs) {
-            return this.obs;
-        } else {
+    get waiter(): Observable<WaiterMessage> {
+        if(!this._waiter) {
             this.connect();
-            return this.obs;
         }
+
+        return this._waiter;
     }
+
+    get cook(): Observable<CookMessage> {
+        if(!this._cook) {
+            this.connect();
+        }
+
+        return this._cook;
+    }
+    
     
 
 
     connect() {
-        this.obs = new Observable<any>(subs => {
-            this.socket.on("waiter", (data: any) => {
+        this._waiter = new Observable<WaiterMessage>(subs => {
+            this.socket.on("waiter", (data: WaiterMessage) => {
                 subs.next(data);
             });
-            this.socket.on("kitchen", (data: any) => {
+        });
+        this._cook = new Observable<CookMessage>(subs => {
+            this.socket.on("cook", (data: CookMessage) => {
                 subs.next(data);
             });
         });

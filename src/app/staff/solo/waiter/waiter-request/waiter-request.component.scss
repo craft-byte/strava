@@ -1,0 +1,63 @@
+.app {
+    width: 324px;
+    background-color: rgba(250, 250, 250);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 12px;
+
+    .customer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--border-color);
+
+        img {
+            width: 32px;
+            height: 32px;
+            border-radius: 100%;
+            object-fit: cover;
+        }
+        .name {
+            color: var(--black);
+        }
+    }
+
+    .reason {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 12px;
+        padding-bottom: 12px;
+
+        .text {
+            color: var(--black);
+            
+            ion-icon {
+                font-size: 20px;
+                margin-right: 12px;
+                margin-left: 12px;
+                color: var(--text-color);
+            }
+        }
+    }
+
+    .buttons {
+        margin-top: 12px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        .cancel {
+            background: none;
+            font-size: 16px;
+            color: var(--red-dark);
+        }
+
+        .orange-button {
+            margin: 0;
+        }
+    }
+}

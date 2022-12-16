@@ -1,15 +1,26 @@
 <div class="app">
+    <div class="title" *ngIf="waiterRequests && waiterRequests.length > 0">
+        <span class="text title-font">
+            Waiter requests
+        </span>
+    </div>
+    <div class="requests" *ngIf="waiterRequests && waiterRequests.length > 0">
+        <div class="list">
+            <app-waiter-request (leave)="onWaiterRequestEmitted($event)" *ngFor="let request of waiterRequests" [request]="request"></app-waiter-request>
+        </div>
+    </div>
+
+
+
     <div class="title">
         <div class="text title-font">
             To be served
         </div>
     </div>
     <div class="no-dishes" *ngIf="orderDishes && orderDishes.length == 0">
-        <ion-icon name="flame-outline"></ion-icon>
         <span class="text">
             No dishes
         </span>
-        <ion-icon name="diamond-outline"></ion-icon>
     </div>
     <div class="dishes" *ngIf="orderDishes && orderDishes.length > 0">
         <app-waiter-dish (click)="openModal(i)" *ngFor="let i of orderDishes" [orderDish]="i"></app-waiter-dish>
@@ -18,3 +29,4 @@
 
 
 <ng-container #dishModalContainer></ng-container>
+<ng-container #modalContainer></ng-container>

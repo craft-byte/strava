@@ -5,8 +5,6 @@ import { LoggedGuard } from './guards/logged.guard';
 import { RestaurantGuard } from './guards/restaurant.guard';
 import { LoginGuard } from './guards/login.guard';
 import { StaffGuard } from './guards/staff.guard';
-import { KitchenSocketIdGuard } from './guards/kitchen-socket-id.guard';
-import { WaiterSocketIdGuard } from './guards/waiter-socket-id.guard';
 import { OrderGuard } from './guards/order.guard';
 import { SocketGuard } from './staff/solo/socket.guard';
 import { SocketGuardForDisabled } from './staff/disabled/socket-for-disabled.guard';
@@ -126,12 +124,12 @@ const restaurant: Routes = [
     },
     {
         path: "dish/:restaurantId/add",
-        loadChildren: () => import("./restaurant/dishes/dish-add/dish-add.module").then(m => m.DishAddPageModule),
+        loadChildren: () => import("./restaurant/menu/dishes/dish-add/dish-add.module").then(m => m.DishAddPageModule),
         canActivate: [LoggedGuard, RestaurantGuard]
     },
     {
         path: "dish/:restaurantId/edit/:dishId",
-        loadChildren: () => import("./restaurant/dishes/dish-edit/dish-edit.module").then(m => m.DishEditPageModule),
+        loadChildren: () => import("./restaurant/menu/dishes/dish-edit/dish-edit.module").then(m => m.DishEditPageModule),
         canActivate: [LoggedGuard, RestaurantGuard]
     },
     // {
@@ -141,21 +139,6 @@ const restaurant: Routes = [
     // },
 ];
 const staff: Routes = [
-    {
-        path: "staff/:restaurantId/dashboard",
-        loadChildren: () => import("./staff/dashboard/dashboard.module").then(m => m.DashboardPageModule),
-        canActivate: [LoggedGuard, StaffGuard]
-    },
-    {
-        path: "staff/:restaurantId/cook",
-        loadChildren: () => import("./staff/kitchen/main/main.module").then(m => m.MainPageModule),
-        canActivate: [LoggedGuard, StaffGuard, KitchenSocketIdGuard],
-    },
-    {
-        path: "staff/:restaurantId/waiter",
-        loadChildren: () => import("./staff/waiter/waiter/waiter.module").then(m => m.WaiterPageModule),
-        canActivate: [LoggedGuard, StaffGuard, WaiterSocketIdGuard],
-    },
     {
         path: "staff/:restaurantId/solo",
         loadChildren: () => import("./staff/solo/solo.module").then(m => m.SoloPageModule),
@@ -175,25 +158,29 @@ const customer: Routes = [
     },
     {
         path: "customer/order/:restaurantId",
-        loadChildren: () => import("./customer/order/main/main.module").then(m => m.MainPageModule),
-        canActivate: [OrderGuard],
-        runGuardsAndResolvers: "always"
-    },
-    {
-        path: "customer/order/:restaurantId/dish/:dishId",
-        loadChildren: () => import("./customer/order/dish/dish.module").then(m => m.DishPageModule),
+        loadChildren: () => import("./customer/order/order.module").then(m => m.OrderPageModule),
         canActivate: [OrderGuard],
     },
     {
-        path: "customer/order/:restaurantId/checkout",
-        loadChildren: () => import("./customer/order/checkout/checkout.module").then(m => m.CheckoutPageModule),
+        path: "customer/order/:restaurantId/tracking",
+        loadChildren: () => import("./customer/tracking/tracking.module").then(m => m.TrackingPageModule),
         canActivate: [OrderGuard],
     },
-    {
-        path: 'customer/tracking/:restaurantId',
-        loadChildren: () => import('./customer/order/tracking/tracking.module').then(m => m.TrackingPageModule),
-        canActivate: [OrderGuard],
-    },
+    // {
+    //     path: "customer/order/:restaurantId/dish/:dishId",
+    //     loadChildren: () => import("./customer/order-old/dish/dish.module").then(m => m.DishPageModule),
+    //     canActivate: [OrderGuard],
+    // },
+    // {
+    //     path: "customer/order/:restaurantId/checkout",
+    //     loadChildren: () => import("./customer/order-old/checkout/checkout.module").then(m => m.CheckoutPageModule),
+    //     canActivate: [OrderGuard],
+    // },
+    // {
+    //     path: 'customer/tracking/:restaurantId',
+    //     loadChildren: () => import('./customer/order-old/tracking/tracking.module').then(m => m.TrackingPageModule),
+    //     canActivate: [OrderGuard],
+    // },
 ];
 
 

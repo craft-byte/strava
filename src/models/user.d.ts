@@ -8,7 +8,7 @@ interface User {
         
     }
     _id?: string;
-    restaurants?: string[];
+    restaurants?: { restaurantId: string; role: string; }[];
     name?: string;
     changedAvatar?: boolean;
 }

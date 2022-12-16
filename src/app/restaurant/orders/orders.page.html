@@ -11,6 +11,9 @@
         <div class="link" [class.a]="current == 'customers'">
             <a routerLink="/restaurant/{{ restaurantId }}/orders/customers">Customers</a>
         </div>
+        <div class="link" [class.a]="current == 'sessions'">
+            <a routerLink="/restaurant/{{ restaurantId }}/orders/sessions">Ongoing sessions</a>
+        </div>
         <!-- <div class="link" [class.a]="current == 'money'">
             <a routerLink="/restaurant/{{ restaurantId }}/orders/money">Money</a>
         </div> -->

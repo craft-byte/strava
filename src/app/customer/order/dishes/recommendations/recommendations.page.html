@@ -1,0 +1,5 @@
+<div class="app">
+    <div class="dishes" *ngIf="dishes && dishes.length > 0">
+        <app-dish *ngFor="let dish of dishes" [dish]="dish" [showCategory]="true"></app-dish>
+    </div>
+</div>

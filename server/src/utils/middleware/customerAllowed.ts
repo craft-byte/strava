@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { Filter } from "mongodb";
-import { Order } from "../../models/general";
+import { Filter, ObjectId } from "mongodb";
+import { Order } from "../../models/Order";
 import { id } from "../functions";
-import { Orders } from "../restaurant";
+import { Orders } from "../orders";
 
 
 
@@ -20,7 +20,7 @@ import { Orders } from "../restaurant";
  */
 export function passOrder(projection: any) {
     return async (req: Request, res: Response, next: NextFunction) => {
-        const { status, userId, ct } = res.locals as { ct: string; status: "loggedin" | "loggedout" | "noinfo"; userId: string | null; };
+        const { status, userId, ct } = res.locals as { ct: ObjectId; status: "loggedin" | "loggedout" | "noinfo"; userId: string | null; };
         const { restaurantId } = req.params;
 
         if(!status || !restaurantId) {

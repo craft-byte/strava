@@ -6,7 +6,7 @@ import { createServer } from "https";
 import { createServer as createHttpServer, Server as HTTPServer } from "http"
 import { MongoClient } from "mongodb";
 import { UserRouter } from "./routers/user";
-import { RadminRouter } from "./routers/restaurant";
+import { RestaurantRouter } from "./routers/restaurant";
 import { serverEnvinroment } from "./environments/server";
 import { StaffRouter } from "./routers/staff";
 import logger from "morgan";
@@ -32,11 +32,19 @@ export const stripe = new Stripe("sk_test_51KNlK6LbfOFI72xWf6DWHg7bLESfEQLkCNSY5
 //            /\
 
 
+// AIzaSyDhzbYdNc0MJO3jEJ64cYY15pzwqubDRrk - google api
+
 export const client = new MongoClient(`mongodb+srv://bazhan:Kaliman228@cluster0.lbe4g.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`);
+
+
 
 const app = express();
 app.use(compression());
 app.use(enforce.HTTPS());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb' }));
+app.use(express.static(path.join(__dirname, "..", "..", "www")));
+app.set("trust proxy", true);
 app.use(cors({
     credentials: true,
     optionsSuccessStatus: 200,
@@ -44,6 +52,7 @@ app.use(cors({
         callback(null, true);
     },
 }));
+
 
 let server: HTTPServer;
 if (MODE == "prod") {
@@ -57,11 +66,7 @@ if (MODE == "prod") {
 }
 
 const io: Server = require("socket.io")(server, serverEnvinroment.ioOptions);
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb' }));
-app.use(express.static(path.join(__dirname, "..", "..", "www")));
 
-app.set("trust proxy", true);
 
 (async function () {
     await main(client);
@@ -72,7 +77,7 @@ async function main(client: MongoClient) {
         await client.connect();
 
         app.use("/api/user", UserRouter);
-        app.use("/api/restaurant/:restaurantId", RadminRouter);
+        app.use("/api/restaurant/:restaurantId", RestaurantRouter);
         app.use("/api/staff", StaffRouter);
         app.use("/api/customer", CustomerRouter);
         app.use("/api/stripe", StripeRouter);
@@ -91,7 +96,6 @@ async function main(client: MongoClient) {
         /**
          * 
          * SOCKET IO
-         * just needs to be initialized here \/
          * used to send data between customer and restaurant staff
          * 
          * function below connects user to socket.io and assigns socket.id to it
@@ -99,8 +103,13 @@ async function main(client: MongoClient) {
          * socket id can be accessed on frontend (angular)
          * socket id is used to send data to specific user
          * 
-         * socket id is saved to customer's orders (routers/customer/order.ts) (Order.socketId)
+         * socket id is saved to customer's orders (routers/customer/session.ts) (Order.socketId)
          * when data needs to be sent, staff can access the socket id of customer and send the data (routers/staff/kitchen or waiter)
+         * 
+         * these functions are used to send data:
+         *      sendMessageToCustomer
+         *      sendMessageToWaiter
+         *      sendMessageToCook
          * 
          */
         io.on("connection", socket => {
@@ -108,7 +117,6 @@ async function main(client: MongoClient) {
         });
     } catch (e) {
         console.error(e);
-        throw new Error("Mongo Connection");
     }
 }
 

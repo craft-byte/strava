@@ -1,4 +1,5 @@
-import { Restaurant, User } from "./general";
+import { User } from "./general";
+import { Restaurant } from "./Restaurant";
 
 interface Locals {
     user: User;
@@ -8,7 +9,7 @@ interface Locals {
 
 type StripeOrderMetadata = {
     by: "customer" | "staff";
-    orderId: string;
+    sessionId: string;
     restaurantId: string;
 }
 

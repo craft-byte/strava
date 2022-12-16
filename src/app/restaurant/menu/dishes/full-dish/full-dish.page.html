@@ -1,0 +1,79 @@
+<div class="app">
+    <div class="header">
+        <div class="back">
+            <p (click)="back()">
+                <ion-icon name="arrow-back"></ion-icon> BACK
+            </p>
+        </div>
+        <div class="buttons" *ngIf="dish">
+            <button (click)="edit()" class="orange-button">Edit</button>
+            <button (click)="remove()" class="red-button">Delete</button>
+        </div>
+    </div>
+    <div class="dish" *ngIf="dish">
+        <div class="image">
+            <img [src]="image" [class]="imageClass" alt="">
+            <div class="info button-font">
+                <span class="user">
+                    {{ dish.image.modified.user.name }}
+                </span>
+                <span class="dot">
+                    &#8226;
+                </span>
+                <span class="date">
+                    {{ dish.image.modified.date }}
+                </span>
+                <span class="dot">
+                    &#8226;
+                </span>
+                <span class="resolution">
+                    <span *ngIf="dish.image.resolution == 1">
+                        1 / 1
+                    </span>
+                    <span *ngIf="dish.image.resolution == 1.77">
+                        16 / 9
+                    </span>
+                    <span *ngIf="dish.image.resolution == 1.33">
+                        4 / 3
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div class="details">
+            <div class="name">
+                <span class="text title-font">
+                    {{ dish.name }}
+                </span>
+            </div>
+            <div class="price">
+                <span class="text text-font">
+                    ${{ dish.price / 100 }}
+                </span>
+            </div>
+            <div class="time">
+                <span *ngIf="dish.info.time">
+                    <span class="text text-font">
+                        {{ dish.info.time }} min.
+                    </span>
+                </span>
+                <span *ngIf="!dish.info.time">
+                    <button class="only-text-button" (click)="edit()">Add time</button>
+                </span>
+            </div>
+            <div class="description">
+                <span class="text text-font" *ngIf="dish.description">
+                    {{ dish.description }}
+                </span>
+                <span *ngIf="!dish.description">
+                    <button class="only-text-button">Add description</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="analytics" *ngIf="dish">
+        <app-analytics [dishId]="dish._id"></app-analytics>
+    </div>
+    <div *ngIf="!dish" class="loading">
+        <span class="spinner"></span>
+    </div>
+</div>

@@ -1,0 +1,160 @@
+<div class="app">
+    <div class="box">
+        <div class="header">
+            <button id="close" (click)="close()">
+                <ion-icon name="close"></ion-icon>
+            </button>
+            <div class="title">
+                <span class="text title-font">
+                    Checkout
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="order">
+                <div class="type">
+                    <span *ngIf="order.type == 'dinein'" class="text text-font">
+                        Dine-in, Table<span class="small">#{{ order.id }}</span>
+                    </span>
+                    <span *ngIf="order.type == 'takeout'" class="text text-font">
+                        Take out
+                    </span>
+                </div>
+                <div class="dishes" *ngIf="dishes && dishes.length > 0">
+                    <div *ngFor="let dish of dishes" class="dish">
+                        <div class="name">
+                            <span class="text text-font">
+                                {{ dish.name }}
+                            </span>
+                            <span class="x">
+                                x
+                            </span>
+                            <span class="text text-font">
+                                {{ dish.amount }}
+                            </span>
+                        </div>
+                        <div class="total">
+                            <span class="text text-font">
+                                ${{ dish.totalPrice / 100 }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="money" *ngIf="money">
+                    <div class="subtotal">
+                        <div class="title">
+                            <span class="text text-font">
+                                Subtotal
+                            </span>
+                        </div>
+                        <div class="border">
+
+                        </div>
+                        <div class="value">
+                            <span class="text text-font">
+                                ${{ money.subtotal / 100 }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="hst">
+                        <div class="title">
+                            <span class="text text-font">
+                                HST
+                            </span>
+                        </div>
+                        <div class="border">
+
+                        </div>
+                        <div class="value">
+                            <span class="text text-font">
+                                ${{ money.hst / 100 }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="total">
+                        <div class="title">
+                            <span class="text text-font">
+                                Total
+                            </span>
+                        </div>
+                        <div class="border">
+
+                        </div>
+                        <div class="value">
+                            <span class="text text-font">
+                                ${{ money.total / 100 }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment" *ngIf="order.settings.onlineOrdering">
+                <div class="cash" *ngIf="order.settings.cashPayments">
+                    <button (click)="payWithCash()" class="orange-button"><ion-icon name="cash-outline"></ion-icon>Pay with cash</button>
+                </div>
+
+                <div *ngIf="paymentMethods && paymentMethods.length > 0" class="saved-methods">
+                    <div class="methods-header">
+                        <div class="title">
+                            <span class="text title-font">
+                                Saved methods
+                            </span>
+                        </div>
+                        <div class="info">
+                            <span class="text text-font">
+                                Using saved method, you can remove dishes from you order, you will not be charged for them.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="list">
+                        <button *ngFor="let method of paymentMethods" class="method">
+                            <div class="info">
+                                <span class="text last4 text-font">
+                                    <span class="dot">
+                                        &#9679;
+                                    </span>
+                                    <span class="dot">
+                                        &#9679;
+                                    </span>
+                                    <span class="dot">
+                                        &#9679;
+                                    </span>
+                                    <span class="dot">
+                                        &#9679;
+                                    </span>
+                                    {{ method.last4 }}
+                                </span>
+                                <span class="text postal-code text-font">
+                                    {{ method.postalCode }}
+                                </span>
+                            </div>
+                            <div class="brand">
+                                <img src="./../../../../assets/icon/{{ method.brand }}.png" alt="">
+                            </div>
+                        </button>
+                    </div>
+                </div>
+    
+                <div class="card" *ngIf="order.settings.cardPayments">
+                    <ng-container *ngIf="clientSecret">
+                        <ngx-stripe-payment [elementsOptions]="elementsOptions" [clientSecret]="clientSecret">
+                        </ngx-stripe-payment>
+                    </ng-container>
+                    <div class="spinner-loading" *ngIf="!clientSecret">
+                        <span class="spinner"></span>
+                    </div>
+    
+                    <div class="button">
+                        <button *ngIf="clientSecret" (click)="pay()" class="green-button">
+                            PAY
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-container #paymentProgressContainer></ng-container>
+<ng-container #waiterRequestContainer></ng-container>

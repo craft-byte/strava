@@ -1,10 +1,12 @@
 import { ObjectId } from "mongodb";
-import { Order } from "../models/general";
+import { Order } from "../models/Order";
 import { id } from "./functions";
-import { sendMessage } from "./io";
 import { getDelay } from "./other";
-import { Orders, Restaurant } from "./restaurant";
+import { Restaurant } from "./restaurant";
+import { Orders } from "./orders";
 import { updateUser } from "./users";
+import { sendMessageToCook, sendMessageToCustomer } from "./io";
+import { ParsedOrderDish } from "../models/staff";
 
 
 
@@ -30,7 +32,6 @@ import { updateUser } from "./users";
  * 
  */
 async function confirmOrder(restaurantId: string | ObjectId, orderId: string | ObjectId, method: "card" | "cash") {
-    
 
     // set order type to progress (cooking)
     const update = await Orders(restaurantId).one({ _id: id(orderId) })
@@ -75,39 +76,22 @@ async function sendData(restaurantId: string | ObjectId, order: Order) {
 
     if(order.socketId) {
         // sends user to the tracking
-        sendMessage([order.socketId], "customer", { orderId: order._id, payed: true, type: "payment.succeeded" });
+        sendMessageToCustomer(order.socketId, "payment/succeeded", { orderId: order._id, payed: true });
     }
 
 
-    const ids = new Set<string>();
-
-    for (let i of order.dishes!) {
-        ids.add(i.dishId.toString());
-    }
-
-    const dishes = await Restaurant(restaurantId).dishes.many({ _id: { $in: Array.from(ids).map(a => id(a)) } }).get({ projection: { general: 1, } });
-
-    const forKitchen = [];
+    const forKitchen: ParsedOrderDish[] = [];
     const time = getDelay(order.ordered!);
     for (let i in order.dishes!) {
-        for (let { general, _id } of dishes) {
-            if (_id.equals(order.dishes[i].dishId)) {
-                forKitchen.push({
-                    orderId: order._id,
-                    ...order.dishes![i],
-                    time,
-                    general: general
-                });
-            }
-        }
+        forKitchen.push({
+            orderId: order._id,
+            ...order.dishes![i],
+            time,
+        });
     }
 
 
-    sendMessage([`${restaurantId}/kitchen`], "kitchen", {
-        type: "kitchen/order/new",
-        event: "kitchen",
-        data: forKitchen,
-    });
+    sendMessageToCook(restaurantId.toString(), "order/new", forKitchen);
 }
 
 

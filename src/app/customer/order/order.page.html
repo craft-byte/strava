@@ -1,0 +1,32 @@
+<div class="app">
+    <div class="header">
+        <div class="title">
+            <span class="text title-font">
+                {{ order?.restaurant?.name }}
+            </span>
+        </div>
+        <div class="account">
+            <button (click)="openAccountModal()" *ngIf="order.userStatus">
+                <ion-icon name="person" *ngIf="userStatus == 'noinfo'"></ion-icon>
+                <span *ngIf="order.userStatus == 'loggedin' || order.userStatus == 'loggedout'">
+                    <img *ngIf="user.avatar" [class.loggedout]="order.userStatus == 'loggedout'" [src]="user.avatar" alt="">
+                    <img *ngIf="!user.avatar" src="./../../../assets/images/plain-avatar.jpg" alt="">
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <div class="content">
+        <router-outlet></router-outlet>
+
+        <button (click)="openPreview()" id="preview">
+            <ion-icon name="cart-outline"></ion-icon>
+        </button>
+    </div>
+</div>
+
+
+<ng-container #previewContainer></ng-container>
+<ng-container #dishModalContainer></ng-container>
+<ng-container #accountModalContainer></ng-container>
+<ng-container #waiterRequestContainer></ng-container>

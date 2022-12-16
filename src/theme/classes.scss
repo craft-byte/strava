@@ -249,6 +249,20 @@ input[type=number] {
 }
 
 
+.spinner-loading {
+    height: 124px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border-top: 2px solid var(--border-color);
+        border-radius: 100%;
+        -webkit-animation: spin 1.5s linear infinite;
+        animation: spin 1.5s linear infinite;
+    }
+}
 
 @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }

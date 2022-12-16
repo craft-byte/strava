@@ -29,9 +29,12 @@ const routes: Routes = [
                 path: "customer/:userId",
                 loadChildren: () => import("./customer/customer.module").then(m => m.CustomerPageModule),
             },
+            {
+              path: 'sessions',
+              loadChildren: () => import('./sessions/sessions.module').then( m => m.SessionsPageModule)
+            },
         ]
     },
-
 ];
 
 @NgModule({

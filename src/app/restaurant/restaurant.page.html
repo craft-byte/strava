@@ -12,9 +12,9 @@
             class="link home button-font" [class.active]="page == 'home'" [class.disabled]="ui.disableAllButtons">
             Home
         </a>
-        <a routerLink="/restaurant/{{restaurant?._id}}/dishes" (click)="redirect()"
-            class="link dishes button-font" [class.disabled]="ui.disableAllButtons" [class.active]="page == 'dishes'">
-            Dishes
+        <a routerLink="/restaurant/{{restaurant?._id}}/menu" (click)="redirect()"
+            class="link dishes button-font" [class.disabled]="ui.disableAllButtons" [class.active]="page == 'menu'">
+            Menu
         </a>
         <a routerLink="/restaurant/{{restaurant?._id}}/staff" (click)="redirect()"
             class="link staff button-font" [class.disabled]="ui.disableAllButtons" [class.active]="page == 'staff'">
@@ -37,7 +37,7 @@
         <div class="work" *ngIf="workUrl">
             <a [class.disabled]="ui.disableAllButtons" (click)="redirect()" [routerLink]="workUrl">
                 <span class="title">
-                    Go work
+                    Kitchen
                 </span>
                 <ion-icon class="hide" name="chevron-forward-outline"></ion-icon>
                 <ion-icon class="show" name="construct-outline"></ion-icon>
@@ -85,7 +85,7 @@
             Home
         </span>
     </a>
-    <a id="dishes" [class.active]="page == 'dishes'" (click)="redirect()" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/dishes"
+    <a id="dishes" [class.active]="page == 'menu'" (click)="redirect()" [class.disabled]="ui.disableAllButtons" routerLink="/restaurant/{{restaurant?._id}}/menu"
         class="tab-button">
         <ion-icon name="fast-food"></ion-icon>
         <span class="text">

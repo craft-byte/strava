@@ -31,11 +31,11 @@ export class OrdersPage implements OnInit, OnDestroy {
     };
 
     customers() {
-        this.router.go(["restaurant", this.service.restaurantId, "customers"]);
+        this.router.go(["restaurant", this.service.restaurant._id, "customers"]);
     }
 
     ngOnInit() {
-        this.restaurantId = this.service.restaurantId;
+        this.restaurantId = this.service.restaurant._id;
         this.current = this.router.url.split("/")[4]?.split("?")[0] || "list";
     }
     ngOnDestroy(): void {

@@ -2,12 +2,13 @@ import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { Time } from "../../models/components";
-import { Order, User } from "../../models/general";
+import { User } from "../../models/general";
+import { Order } from "../../models/Order";
 import { DishHashTableUltra } from "../../utils/dish";
 import { getDate, id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { getRelativeDelay } from "../../utils/other";
-import { Orders } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
 import { getUser } from "../../utils/users";
 
 
@@ -31,7 +32,7 @@ interface ConvertedOrder {
 /**
  * @returns { ConvertedOrder[] } - list of last 12 orders
  */
-router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, "manager", "customers"), async (req, res) => {
+router.get("/orders", logged({ _id: 1 }), allowed({ blacklist: 1 }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurantId } = req.params as any;
     const { restaurant } = res.locals;
     const { p: skip } = req.query;
@@ -148,14 +149,13 @@ interface FullOrder {
             username: string;
             avatar: any;
             time: Time;
-            role: string;
         };
     }[];
 };
 /**
  * @returns { FullOrder } - info about whole order and all its dishes
  */
-router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager", "customers"), async (req, res) => {
+router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, { restaurant: { customers: true } }), async (req, res) => {
     const { restaurantId, orderId } = req.params;
 
     const order = await Orders(restaurantId).history.one({ _id: id(orderId) });
@@ -220,7 +220,6 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
             one.removed = {
                 avatar: user?.avatar?.binary!,
                 username: user?.name?.first || "User deleted",
-                role: dish.removed!.userRole || "other",
                 time: await getRelativeDelay(order.ordered!, dish.removed!.time!),
             }
         }
@@ -264,7 +263,7 @@ router.get("/order/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "manager"
 /**
  * @returns small info about a customer
  */
-router.get("/user/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, "manager", 'customers'), async (req, res) => {
+router.get("/user/:userId", logged({ _id: 1 }), allowed({ _id: 1 }, { restaurant: { customers: true } }), async (req, res) => {
     const { userId, restaurantId } = req.params as any;
 
     const user = await getUser(userId, { projection: { blacklisted: 1, name: 1, username: 1, avatar: 1 } });

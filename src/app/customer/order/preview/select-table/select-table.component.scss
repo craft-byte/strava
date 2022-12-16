@@ -1,0 +1,78 @@
+.app {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 10vh;
+
+    .box {
+        width: 100%;
+        max-width: 400px;
+
+        .header {
+            width: 100;
+            height: 42px;
+            background-color: var(--orange);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            align-items: center;
+
+            .title {
+                display: flex;
+                align-items: center;
+
+                .text {
+                    font-size: 18px;
+                    color: var(--black);
+                }
+            }
+
+            #close {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 42px;
+                height: 42px;
+                background: none;
+
+                ion-icon {
+                    font-size: 24px;
+                    color: var(--black);
+                    position: absolute;
+                }
+            }
+        }
+
+        .content {
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px;
+            background-color: white;
+            padding: 32px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .video-wrapper {
+                width: 248px;
+                height: 248px;
+                border-radius: 8px;
+
+                #camera-video {
+                    border: 2px solid var(--orange);
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 8px;
+                }
+            }
+
+
+        }
+    }
+}

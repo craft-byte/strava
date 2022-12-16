@@ -3,7 +3,8 @@ import { ObjectId } from "mongodb";
 import { Locals } from "../../models/other";
 import { getDate, id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
-import { manyRestaurants, Orders } from "../../utils/restaurant";
+import { manyRestaurants } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
 import { getUser } from "../../utils/users";
 
 

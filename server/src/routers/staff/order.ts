@@ -4,7 +4,7 @@ import { id } from "../../utils/functions";
 import { logged } from "../../utils/middleware/logged";
 import { allowed } from "../../utils/middleware/restaurantAllowed";
 import { getDelay } from "../../utils/other";
-import { Orders } from "../../utils/restaurant";
+import { Orders } from "../../utils/orders";
 import { getUser } from "../../utils/users";
 
 
@@ -12,7 +12,7 @@ import { getUser } from "../../utils/users";
 const router = Router({ mergeParams: true });
 
 
-router.get("/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, "staff"), async (req, res) => {
+router.get("/:orderId", logged({ _id: 1 }), allowed({ _id: 1, }, { work: { waiter: true } }), async (req, res) => {
     const { restaurantId, orderId } = req.params;
 
 

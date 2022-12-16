@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LoadService } from 'src/app/other/load.service';
 import { RouterService } from 'src/app/other/router.service';
-import { MainService } from 'src/app/services/main.service';
+import { MainService } from 'src/app/other/main.service';
 import { UserService } from '../../user.service';
 
 @Component({

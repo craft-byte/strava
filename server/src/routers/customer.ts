@@ -1,10 +1,5 @@
-import e from "cors";
 import { Router } from "express";
-import { Timestamp } from "mongodb";
-import { Locals } from "../models/other";
-import { id } from "../utils/functions";
-import { logged } from "../utils/middleware/logged";
-import { manyRestaurants, Orders, Restaurant } from "../utils/restaurant";
+import { manyRestaurants } from "../utils/restaurant";
 import { HistoryRouter } from "./customer/history";
 import { OrderRouter } from "./customer/order";
 

@@ -1,0 +1,75 @@
+<div class="app">
+    <div class="box">
+
+        <button (click)="close()" id="close">
+            <ion-icon name="close"></ion-icon>
+        </button>
+        
+        <div class="image">
+            <img [src]="image" *ngIf="image" class="{{ imageClass }}" alt="">
+
+            <div class="spinner-loading" *ngIf="ui.showImageLoading">
+                <span class="spinner"></span>
+            </div>
+
+            <div class="time-category">
+                <div class="time">
+                    <span class="text button-text">
+                        {{ dish?.time }} m.
+                    </span>
+                </div>
+                <div class="category">
+                    <span class="text button-text">
+                        {{ category }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="name-price">
+            <div class="name">
+                <span class="text title-font">
+                    {{ dish?.name }}
+                </span>
+            </div>
+            <div class="price">
+                <span class="text text-font">
+                    ${{ dish?.price / 100 }}
+                </span>
+            </div>
+        </div>
+        <div class="add-to-cart">
+            <div class="button">
+                <div class="amount" *ngIf="amount > 0">
+                    <span class="text text-font">
+                        {{ amount }}
+                    </span>
+                </div>
+                <div class="add" [class.only-plus]="ui.showPlusOnly">
+                    <ion-fab *ngIf="ui.showDoubleButton">
+                        <ion-fab-button size="large" color="orange">
+                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                        </ion-fab-button>
+                        <ion-fab-list>
+                            <ion-fab-button (click)="add(true)" color="purple">
+                                <ion-icon name="chatbox-ellipses-outline"></ion-icon>
+                            </ion-fab-button>
+                            <ion-fab-button (click)="add(false)" color="orange">
+                                <ion-icon name="add"></ion-icon>
+                            </ion-fab-button>
+                        </ion-fab-list>
+                    </ion-fab>
+                    <ion-fab-button *ngIf="ui.showPlusOnly" (click)="add(false)" [color]="theme">
+                        <ion-icon name="add"></ion-icon>
+                    </ion-fab-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="spinner-loading" *ngIf="ui.showLoading">
+            <span class="spinner"></span>
+        </div>
+    </div>
+</div>
+
+
+<ng-container #commentContainer></ng-container>

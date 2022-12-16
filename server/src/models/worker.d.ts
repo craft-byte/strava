@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb";
-import { Settings } from "./components";
 
 interface WorkerCache {
     lastUpdate: number;
@@ -10,11 +9,25 @@ interface WorkerCache {
     }
 }
 
+interface WorkerSettings {
+    work?: {
+        cook?: boolean;
+        waiter?: boolean;
+        manager?: boolean;
+    };
+    restaurant?: {
+        settings?: boolean;
+        dishes?: boolean;
+        staff?: boolean;
+        customers?: boolean;
+    };
+    isOwner?: boolean;
+}
+
 interface Worker {
     userId: ObjectId;
-    role: "manager" | "cook" | "waiter" | "owner";
     joined: number;
-    settings: Settings.ManagerSettings | Settings.CookSettings | Settings.WaiterSettings;
+    settings: WorkerSettings;
     lastManagerSettings?: Settings.ManagerSettings;
 
     workerCache?: WorkerCache;
@@ -27,5 +40,5 @@ interface Worker {
 
 
 export {
-    Worker
+    Worker,
 }

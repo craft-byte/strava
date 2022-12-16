@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, OnDestroy, ViewContainerRef, Injector, Ou
 import { StaffService } from '../../staff.service';
 import { SoloService } from '../solo.service';
 import { Subscription } from "rxjs";
+import { CookData } from '../../models/messages';
 
 @Component({
     selector: 'app-cook',
@@ -11,7 +12,7 @@ import { Subscription } from "rxjs";
 export class CookComponent implements OnInit, OnDestroy {
 
     dishes: any;
-    orderDishes: any[];
+    orderDishes: any;
     delayed: any;
     subscription: Subscription;
 
@@ -62,25 +63,28 @@ export class CookComponent implements OnInit, OnDestroy {
         }
 
 
-        this.subscription = this.s.flow.subscribe(async res => {
+        this.subscription = this.s.cook.subscribe(async res => {
             const { type } = res;
 
-            if (type == "kitchen/dish/take") {
-                const { orderDishId, taken: { user } } = res.data as any;
+            if (type == "dish/taken") {
+                const { _id, taken: { user } } = res.data as CookData.Dish;
+
                 for (let i in this.delayed) {
-                    if (this.delayed[i]._id == orderDishId) {
+                    if (this.delayed[i]._id == _id) {
                         this.delayed.splice(+i, 1);
                         break;
                     }
                 }
                 for (let i of this.orderDishes) {
-                    if (i._id == orderDishId) {
+                    if (i._id == _id) {
                         i.taken = user._id;
                         return;
                     }
                 }
-            } else if (type == "kitchen/order/new") {
-                const dishes = res.data as any[];
+            }
+            
+            else if (type == "order/new") {
+                const dishes = res.data as CookData.OrderNew;
                 for (let i of dishes) {
                     if (!this.s.dishes[i.dishId]) {
                         const dish = await this.service.get("dish", i.dishId);
@@ -91,20 +95,20 @@ export class CookComponent implements OnInit, OnDestroy {
                     }
                     this.orderDishes.push(i);
                 }
-            } else if (type == "kitchen/dish/done") {
-                const { orderDishId } = res.data as any;
+            } else if (type == "dish/done") {
+                const { _id } = res.data as CookData.Dish;
 
                 for (let i in this.orderDishes) {
-                    if (this.orderDishes[i]._id == orderDishId) {
+                    if (this.orderDishes[i]._id == _id) {
                         this.orderDishes.splice(+i, 1);
                         break;
                     }
                 }
-            } else if (type == "kitchen/dish/quitted") {
-                const { orderDishId } = res.data as any;
+            } else if (type == "dish/quitted") {
+                const { _id } = res.data as CookData.Dish;
 
                 for (let i in this.orderDishes) {
-                    if (this.orderDishes[i]._id == orderDishId) {
+                    if (this.orderDishes[i]._id == _id) {
                         this.orderDishes[i].taken = null;
                         break;
                     }

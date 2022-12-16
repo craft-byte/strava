@@ -1,0 +1,93 @@
+.app {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    padding-top: 20vh;
+    background-color: rgba(0, 0, 0, 0.2);
+
+
+
+    .box {
+        width: 100%;
+        max-width: 400px;
+        background-color: white;
+        border-radius: 8px;
+
+        .header {
+            display: flex;
+            align-items: center;
+            height: 42px;
+            width: 100%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            position: relative;
+            background-color: var(--orange);
+
+            #close, #save {
+                width: 42px;
+                height: 42px;
+                background: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                ion-icon {
+                    font-size: 24px;
+                    position: absolute;
+                    color: var(--black);
+                }
+            }
+
+            #save {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+
+            .title {
+                display: flex;
+                align-items: center;
+
+                .text {
+                    font-size: 20px;
+                    color: var(--black);
+                }
+            }
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background-color: white;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+
+            #comment-textarea {
+                width: 90%;
+                max-height: 324px;
+                min-height: 248px;
+                resize: vertical;
+                border-radius: 8px;
+                padding: 8px;
+                color: var(--black);
+                border: 1px solid var(--border-color);
+                outline: none;
+                background-color: white;
+
+                &:focus {
+                    border: 1px solid var(--gray);
+                }
+            }
+        }
+    }
+}

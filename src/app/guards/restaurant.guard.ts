@@ -1,65 +1,60 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { StripeInstance } from 'ngx-stripe';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RouterService } from '../other/router.service';
 import { SequentialRoutingGuardService } from '../other/sequential-routing-guard.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
-import { MainService } from '../services/main.service';
+import { MainService } from '../other/main.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class RestaurantGuard implements CanActivate {
-  constructor(
-    private service: RestaurantService,
-    private router: RouterService,
-    private main: MainService,
-    private sequentialRoutingGuardService: SequentialRoutingGuardService,
-  ) { };
+    constructor(
+        private service: RestaurantService,
+        private router: RouterService,
+        private main: MainService,
+        private sequentialRoutingGuardService: SequentialRoutingGuardService,
+    ) { };
 
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
 
-    const observable = new Observable<boolean>(subs => {
-      if (!this.main.user) {
-        return subs.next(false);
-      }
+        const observable = new Observable<boolean>(subs => {
 
-      const restaurantId = route.paramMap.get("restaurantId");
+            // if there's no main user we can't check if the user is part of the restaurant
+            if (!this.main.user) {
+                return subs.next(false);
+            }
 
 
-      if (restaurantId.length != 24) {
-        this.router.go(["user/info"], { replaceUrl: true });
-        return subs.next(false);
-      }
+            const restaurantId = route.paramMap.get("restaurantId");
 
-      this.service.init(restaurantId)
-      .pipe(
-        catchError(err => {
-          if(err.status == 403) {
-            this.router.go(["user/info"]);
-            return;
-          } else if(err.status == 404) {
-            this.router.go(["user/info"]);
-            return;
-          }
-          return throwError(err);
-        })
-      ).subscribe((res: any) => {
-        if (!res) {
-          this.router.go(["user/info"], { replaceUrl: true })
-          return subs.next(false);
-        }
+            // ObjectId is 24 chars length
+            if (restaurantId.length != 24) {
+                this.router.go(["user/info"], { replaceUrl: true });
+                return subs.next(false);
+            }
 
-        // this.service.restaurant = res.restaurant;
-        // this.service.restaurants = res.restaurants;
-        // this.service.showGoWork = res.showGoWork;
-        return subs.next(true);
-      });
-    });
+            // if main.user.restaurants doesn't have the restaurant, user is not part of it or should restart the page to update main.user
+            if(!this.main.user.restaurants.find(r => r.restaurantId == restaurantId)) {
+                this.router.go(["user/info"]);
+                return subs.next(false);
+            }
 
-    return this.sequentialRoutingGuardService.queue(route, observable);
-  }
+            if(!this.service.restaurant) {
+                this.service.init(restaurantId).then(() => {
+                    subs.next(true);
+                });
+                return;
+            }
+
+            subs.next(true);
+        });
+
+        return this.sequentialRoutingGuardService.queue(route, observable);
+    }
 
 }

@@ -4,7 +4,7 @@ import { PopoverController } from '@ionic/angular';
 import { StringOrNumberOrDate } from '@swimlane/ngx-charts';
 import { Subscription } from 'rxjs';
 import { Restaurant } from 'src/models/general';
-import { MainService } from '../services/main.service';
+import { MainService } from '../other/main.service';
 import { RestaurantService } from './restaurant.service';
 
 @Component({
@@ -42,7 +42,7 @@ export class RestaurantPage implements OnInit, OnDestroy {
     }
 
     verification() {
-        this.router.navigate(["restaurant", this.service.restaurantId, "conf", this.verificationUrl]);
+        this.router.navigate(["restaurant", this.service.restaurant._id, "conf", this.verificationUrl]);
     }
 
     async ngOnInit() {
@@ -57,11 +57,13 @@ export class RestaurantPage implements OnInit, OnDestroy {
 
         const result: { restaurant: any; workAs: string; verificationUrl: string; mode: string; restaurants: any; } = await this.service.get({}, "restaurant-status");
 
+        console.log(result);
+
         if(result) {
             this.restaurant = result.restaurant;
             this.verificationUrl = result.verificationUrl;
             
-            this.service.restaurantId = result.restaurant._id;
+            this.service.restaurant._id = result.restaurant._id;
             this.service.restaurant = result.restaurant;
 
             if(result.mode != "disabled") {
